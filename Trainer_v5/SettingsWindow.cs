@@ -96,9 +96,9 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "FreeStaff", !Helpers.GetProperty(settings, "FreeStaff")), column2);
 			Utils.AddToggle("FullSatisfaction".LocDef("Full Satisfaction"), Helpers.GetProperty(settings, "FullSatisfaction"),
 					a => Helpers.SetProperty(settings, "FullSatisfaction", !Helpers.GetProperty(settings, "FullSatisfaction")), column2);
-			//Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
-			//		a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
-			Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
+      Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
+          a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
+      Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
 					a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
 			Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
 					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);

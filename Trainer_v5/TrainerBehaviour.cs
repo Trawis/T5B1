@@ -201,13 +201,13 @@ namespace Trainer_v5
 					TimeOfDay.Instance.Sick.Clear();
 				}
 
-				//if (Helpers.GetProperty(TrainerSettings, "LockAge"))
-				//{
-				//	employee.AgeMonth = (int)employee.Age * 12;
-				//	actor.UpdateAgeLook();
-				//}
+        if (Helpers.GetProperty(TrainerSettings, "LockAge"))
+        {
+					employee.AgeMonth = employee.GetAgeMonth();
+          actor.UpdateAgeLook();
+        }
 
-				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
+        if (Helpers.GetProperty(TrainerSettings, "NoStress"))
 				{
 					employee.Stress = 1;
 				}
@@ -313,17 +313,17 @@ namespace Trainer_v5
 				}
 			}
 
-			//if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
-			//{
-			//	foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-			//	{
-			//		burglar.Dismiss();
-			//		burglar.Despawned = true;
-			//		Settings.sActorManager.RemoveFromAwaiting(burglar);
-			//	}
-			//}
+      if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+      {
+        foreach (var burglar in Settings.sActorManager.Others["Burglars"])
+        {
+          //burglar.Dismiss();
+          burglar.Despawned = true;
+          Settings.sActorManager.RemoveFromAwaiting(burglar);
+        }
+      }
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+      if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
 				var designDocuments = Settings.MyCompany.WorkItems
 														.OfType<DesignDocument>()
