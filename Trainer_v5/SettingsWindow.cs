@@ -11,7 +11,7 @@ namespace Trainer_v5
 		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version})";
 
 		public static GUIWindow Window { get; set; }
-		public static bool Shown { get; set; }
+		public static bool Shown => Window.Shown;
 
 		public static void Toggle()
 		{
@@ -23,8 +23,6 @@ namespace Trainer_v5
 			{
 				Window.Toggle();
 			}
-
-			Shown = Window.Shown;
 		}
 
 		private static void Init()

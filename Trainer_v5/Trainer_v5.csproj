@@ -76,9 +76,12 @@
     <Content Include="Libraries\UnityEngine.CoreModule.dll" />
     <Content Include="Libraries\UnityEngine.dll" />
     <Content Include="Libraries\UnityEngine.UI.dll" />
+    <Content Include="Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Localization\Croatian\Trainer.tyd" />
     <None Include="Localization\English\Trainer.tyd" />
+    <None Include="Localization\Spanish\Trainer.tyd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
