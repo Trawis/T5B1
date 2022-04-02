@@ -81,6 +81,8 @@
   <ItemGroup>
     <None Include="Localization\Croatian\Trainer.tyd" />
     <None Include="Localization\English\Trainer.tyd" />
+    <None Include="Localization\German\Trainer.tyd" />
+    <None Include="Localization\Korean\Trainer.tyd" />
     <None Include="Localization\Spanish\Trainer.tyd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
