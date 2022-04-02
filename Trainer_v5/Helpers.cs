@@ -24,6 +24,7 @@ namespace Trainer_v5
 			{
 				return new List<KeyValuePair<string, object>>
 				{
+					new KeyValuePair<string, object>("Default", null),
 					new KeyValuePair<string, object>("100%", 1),
 					new KeyValuePair<string, object>("200%", 2),
 					new KeyValuePair<string, object>("500%", 5),

@@ -41,9 +41,11 @@ namespace Trainer_v5
 							Destroy(Main.TrainerButton.gameObject);
 							Destroy(Main.SkillChangeButton.gameObject);
 						}
+						UnsubscribeFromEvents();
 						break;
 					case "MainScene":
 						Main.CreateUIButtons();
+						SubscribeToEvents();
 						break;
 					case "Customization":
 						ActorCustomization.StartYears = new[]
@@ -58,6 +60,24 @@ namespace Trainer_v5
 					default:
 						goto case "MainMenu";
 				}
+			}
+		}
+
+		private void SubscribeToEvents()
+    {
+			TimeOfDay.OnMonthPassed += (obj, args) => OnMonthPassed(obj, args);
+		}
+
+		private void UnsubscribeFromEvents()
+		{
+			TimeOfDay.OnMonthPassed -= (obj, args) => OnMonthPassed(obj, args);
+		}
+
+		private void OnMonthPassed(object obj, EventArgs args)
+    {
+			if (Helpers.GetProperty(TrainerSettings, "LockAge"))
+			{
+				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 			}
 		}
 
@@ -86,7 +106,7 @@ namespace Trainer_v5
 			}
 
 			if (_defaultEnvironmentISPCostFactor.IsZero())
-      {
+			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 			}
 
@@ -201,30 +221,45 @@ namespace Trainer_v5
 					TimeOfDay.Instance.Sick.Clear();
 				}
 
-        if (Helpers.GetProperty(TrainerSettings, "LockAge"))
-        {
+				/*
+				if (Helpers.GetProperty(TrainerSettings, "LockAge"))
+				{
+					
+					 TimeOfDay.OnMonthPassed += (a,b) => GameSettings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
+					
 					employee.AgeMonth = employee.GetAgeMonth();
-          actor.UpdateAgeLook();
-        }
+					actor.UpdateAgeLook();
+				}
+				*/
 
-        if (Helpers.GetProperty(TrainerSettings, "NoStress"))
+				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
 				{
 					employee.Stress = 1;
 				}
 
-				actor.Effectiveness = (employee.RoleString.Contains("Lead") ? Helpers.GetProperty(Stores, "LeadEfficiencyStore") : Helpers.GetProperty(Stores, "EfficiencyStore")).MakeFloat();
+				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "LeadEfficiencyStore") != null)
+        {
+					actor.Effectiveness = Helpers.GetProperty(Stores, "LeadEfficiencyStore").MakeFloat();
+				}
+
+				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "EfficiencyStore") != null)
+				{
+					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
+				}
+
+				//actor.Effectiveness = (employee.RoleString.Contains("Lead") ? Helpers.GetProperty(Stores, "LeadEfficiencyStore") : Helpers.GetProperty(Stores, "EfficiencyStore")).MakeFloat();
 
 				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
 				{
 					employee.JobSatisfaction = 2f;
 					employee.ActiveComplaint = false;
 					foreach (var thought in employee.Thoughts.Values.ToList())
-          {
+					{
 						if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-            {
+						{
 							employee.Thoughts.Remove(thought.Thought);
 						}
-          }
+					}
 
 					employee.SetMood("LoveWork", actor, 1f);
 				}
@@ -267,7 +302,7 @@ namespace Trainer_v5
 				//TimeOfDay.OnMonthPassed
 				//bool canHandleLoad = true;
 				if (Settings.Distribution != null && Settings.Distribution.Open)
-        {
+				{
 					//var serverGroup = Settings.GetServerGroup(Settings.Distribution.ServerName);
 					//canHandleLoad = serverGroup.Available >= 0.2f;
 
@@ -276,7 +311,7 @@ namespace Trainer_v5
 					foreach (var company in Settings.simulation.GetAllCompanies())
 					{
 						if (!company.IsPlayerOwned())
-            {
+						{
 							SimulatedCompany simulatedCompany = company as SimulatedCompany;
 							if (simulatedCompany != null)
 							{
@@ -313,17 +348,17 @@ namespace Trainer_v5
 				}
 			}
 
-      if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
-      {
-        foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-        {
-          //burglar.Dismiss();
-          burglar.Despawned = true;
-          Settings.sActorManager.RemoveFromAwaiting(burglar);
-        }
-      }
+			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+			{
+				foreach (var burglar in Settings.sActorManager.Others["Burglars"])
+				{
+					//burglar.Dismiss();
+					burglar.Despawned = true;
+					Settings.sActorManager.RemoveFromAwaiting(burglar);
+				}
+			}
 
-      if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
 				var designDocuments = Settings.MyCompany.WorkItems
 														.OfType<DesignDocument>()
@@ -474,29 +509,29 @@ namespace Trainer_v5
 			}
 
 			int amount;
-      if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
-      {
+			if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
+			{
 				WindowManager.SpawnDialog("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3", false, DialogWindow.DialogType.Error);
 				return;
-      }
-      else
-      {
-        selectedActors.ForEach(actor =>
-        {
-          foreach (var role in selectedRoles)
-          {
-            actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
+			}
+			else
+			{
+				selectedActors.ForEach(actor =>
+				{
+					foreach (var role in selectedRoles)
+					{
+						actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
 
-            foreach (var specialization in selectedSpecializations)
-            {
-              actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
-            }
-          }
-        });
+						foreach (var specialization in selectedSpecializations)
+						{
+							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
+						}
+					}
+				});
 
-        HUD.Instance.AddPopupMessage("Trainer: Employee skills/specializations are set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-      }
-    }
+				HUD.Instance.AddPopupMessage("Trainer: Employee skills/specializations are set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			}
+		}
 
 		public static void SetSkillPerEmployee()
 		{
