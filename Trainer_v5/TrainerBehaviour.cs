@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrbCreationExtensions;
@@ -724,6 +724,8 @@ namespace Trainer_v5
 			for (int index1 = 0; index1 < Settings.sActorManager.Actors.Count; index1++)
 			{
 				Actor actor = Settings.sActorManager.Actors[index1];
+				actor.employee.RevealCreativity(1f);
+
 				for (int index = 0; index < Enum.GetNames(typeof(Employee.EmployeeRole)).Length; index++)
 				{
 					actor.employee.ChangeSkillDirect((Employee.EmployeeRole)index, 1f);
