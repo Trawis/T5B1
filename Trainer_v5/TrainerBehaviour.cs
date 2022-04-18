@@ -716,6 +716,8 @@ namespace Trainer_v5
 
 		public static void EmployeesToMax()
 		{
+			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
+
 			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
 			{
 				return;
@@ -725,6 +727,12 @@ namespace Trainer_v5
 			{
 				Actor actor = Settings.sActorManager.Actors[index1];
 				actor.employee.RevealCreativity(1f);
+
+				for (int i = 0; i < softwareTypes.Length; i++)
+				{
+					SoftwareType t = softwareTypes[i];
+					actor.employee.LeadSpecialization[t] = 1f;
+				}
 
 				for (int index = 0; index < Enum.GetNames(typeof(Employee.EmployeeRole)).Length; index++)
 				{
