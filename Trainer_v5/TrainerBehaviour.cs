@@ -717,30 +717,30 @@ namespace Trainer_v5
 		public static void EmployeesToMax()
 		{
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
+			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
 
 			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
 			{
 				return;
 			}
 
-			for (int index1 = 0; index1 < Settings.sActorManager.Actors.Count; index1++)
+			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
-				Actor actor = Settings.sActorManager.Actors[index1];
-				actor.employee.RevealCreativity(1f);
+				actor.employee.CreativityKnown = 1f;
 
-				for (int i = 0; i < softwareTypes.Length; i++)
+				foreach (SoftwareType t in softwareTypes)
 				{
-					SoftwareType t = softwareTypes[i];
 					actor.employee.LeadSpecialization[t] = 1f;
 				}
 
-				for (int index = 0; index < Enum.GetNames(typeof(Employee.EmployeeRole)).Length; index++)
+				foreach (Employee.EmployeeRole employeeRole in employeeRoles)
 				{
-					actor.employee.ChangeSkillDirect((Employee.EmployeeRole)index, 1f);
+					actor.employee.ChangeSkillDirect(employeeRole, 1f);
 
-					foreach (var specialization in Settings.GetAllSpecializations((Employee.EmployeeRole)index))
+					string[] specializations = Settings.GetAllSpecializations(employeeRole);
+					foreach (string specialization in specializations)
 					{
-						actor.employee.AddSpecialization((Employee.EmployeeRole)index, specialization, false, true, 3);
+						actor.employee.AddSpecialization(employeeRole, specialization, false, true, 3);
 					}
 				}
 			}
