@@ -702,17 +702,16 @@ namespace Trainer_v5
 		}
 
 		public static void ResetAgeOfEmployees()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				var actor = Settings.sActorManager.Actors[i];
+        {
+            var currentTime = SDateTime.Now();
+            foreach (var actor in Settings.sActorManager.Actors)
+            {
+                actor.employee.BirthDate = currentTime - Employee.Youngest * 12;
+                actor.UpdateAgeLook();
+            }
 
-				actor.employee.AgeMonth = Employee.Youngest * 12;
-				actor.UpdateAgeLook();
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
+            HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+        }
 
 		public static void EmployeesToMax()
 		{
