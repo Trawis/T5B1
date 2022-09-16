@@ -144,6 +144,8 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent")), column3);
 			Utils.AddToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
 					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
+			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furnitur eStealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
+					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
 
 			#endregion
 
@@ -156,8 +158,8 @@ namespace Trainer_v5
 			Utils.AddEmptyBox(column4);
 			Utils.AddEmptyBox(column4);
 			Utils.AddEmptyBox(column4);
-			Utils.AddToggle("Auto Distribution Deals", Helpers.GetProperty(settings, "AutoDistributionDeals"),
-				a => Helpers.SetProperty(settings, "AutoDistributionDeals", !Helpers.GetProperty(settings, "AutoDistributionDeals")), column4);
+			//Utils.AddToggle("Auto Distribution Deals", Helpers.GetProperty(settings, "AutoDistributionDeals"),
+			//	a => Helpers.SetProperty(settings, "AutoDistributionDeals", !Helpers.GetProperty(settings, "AutoDistributionDeals")), column4);
 			Utils.AddToggle("FreePrint".LocDef("Free Print"), Helpers.GetProperty(settings, "FreePrint"),
 					a => Helpers.SetProperty(settings, "FreePrint", !Helpers.GetProperty(settings, "FreePrint")), column4);
 			Utils.AddToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), Helpers.GetProperty(settings, "NoWaterElectricity"),
