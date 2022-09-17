@@ -144,7 +144,7 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent")), column3);
 			Utils.AddToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
 					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
-			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furnitur eStealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
+			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
 					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
 
 			#endregion
