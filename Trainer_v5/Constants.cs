@@ -2,25 +2,25 @@
 {
 	public static class Constants
 	{
-		public static readonly int ELEMENT_WIDTH = 150;
-		public static readonly int ELEMENT_HEIGHT = 32;
+		public const int ELEMENT_WIDTH = 150;
+		public const int ELEMENT_HEIGHT = 32;
 
-		public static readonly int X_SETTINGS_WINDOW = 831;
-		public static readonly int X_EMPLOYEESKILLCHANGE_WINDOW = 300;
+		public const int X_SETTINGS_WINDOW = 831;
+		public const int X_EMPLOYEESKILLCHANGE_WINDOW = 300;
 
-		public static readonly int FIRST_COLUMN = 1;
-		public static readonly int SECOND_COLUMN = 161;
-		public static readonly int THIRD_COLUMN = 322;
-		public static readonly int FOURTH_COLUMN = 483;
-		public static readonly int FIFTH_COLUMN = 644;
+		public const int FIRST_COLUMN = 1;
+		public const int SECOND_COLUMN = 161;
+		public const int THIRD_COLUMN = 322;
+		public const int FOURTH_COLUMN = 483;
+		public const int FIFTH_COLUMN = 644;
 
-		public static readonly int FIRST_ROW;
-		public static readonly int SECOND_ROW = 32;
-		public static readonly int THIRD_ROW = 64;
-		public static readonly int FOURTH_ROW = 96;
-		public static readonly int FIFTH_ROW = 128;
-		public static readonly int SIXTH_ROW = 160;
-		public static readonly int SEVENTH_ROW = 192;
-		public static readonly int EIGHTH_ROW = 224;
+		public const int FIRST_ROW = 0;
+		public const int SECOND_ROW = 1 * ELEMENT_HEIGHT;
+		public const int THIRD_ROW = 2 * ELEMENT_HEIGHT;
+		public const int FOURTH_ROW = 3 * ELEMENT_HEIGHT;
+		public const int FIFTH_ROW = 4 * ELEMENT_HEIGHT;
+		public const int SIXTH_ROW = 5 * ELEMENT_HEIGHT;
+		public const int SEVENTH_ROW = 6 * ELEMENT_HEIGHT;
+		public const int EIGHTH_ROW = 7 * ELEMENT_HEIGHT;
 	}
 }
