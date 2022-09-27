@@ -41,8 +41,10 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Notification.cs" />
     <Compile Include="SettingsWindow.cs" />
     <Compile Include="TrainerBehaviour.cs" />
+    <Compile Include="InputHelper.cs" />
     <Compile Include="UIFactory.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

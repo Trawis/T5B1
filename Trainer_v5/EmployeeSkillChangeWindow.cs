@@ -26,6 +26,8 @@ namespace Trainer_v5
 		}
 
 
+
+
 		private static GUIWindow CreateWindow()
 		{
 			var window = WindowManager.SpawnWindow();
@@ -60,6 +62,8 @@ namespace Trainer_v5
 			}
 
 			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee);
+			yield return UIFactory.EmptyBox();
+			yield return UIFactory.Button("Set Base Skills", SetBaseSkills);
 		}
 
 
@@ -74,6 +78,39 @@ namespace Trainer_v5
 				var isOn = specs.GetOrDefault(key);
 				yield return UIFactory.Toggle(key, isOn, a => specs.Toggle(key));
 			}
+		}
+		
+
+
+
+		private static void SetBaseSkills()
+		{
+			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
+			var selectedRoles = Helpers.RolesList
+				.Where(r => r.Value)
+				.Select(e => e.Key.ToEmployeeRole())
+				.ToList();
+
+			if (selectedActors.Count == 0)
+			{
+				Notification.ShowError("Select one or more employees.");
+				return;
+			}
+			if (selectedRoles.Count == 0)
+			{
+				Notification.ShowError("Select one or more roles.");
+				return;
+			}
+
+			InputHelper.RequestFloat(
+				"How many base skill do you want?\nMin = 0, Max = 1.0",
+				$"Set base skill for {selectedActors.Count} actor(s)",
+				val => selectedActors.ForEach(actor => selectedRoles.ForEach(role =>
+				{
+					actor.employee.SkillCeiling = 1f;
+					actor.employee.ChangeSkillDirect(role, val);
+				}
+				)));
 		}
 	}
 
