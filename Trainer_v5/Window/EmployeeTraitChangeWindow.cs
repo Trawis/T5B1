@@ -10,9 +10,22 @@ namespace Trainer_v5.Window
 {
 	public class EmployeeTraitChangeWindow : MonoBehaviour
 	{
+		private static EmployeeTraitChangeWindow _instance;
+
 		private GUIWindow _window;
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
 		private Actor _actor;
+		
+
+		public static EmployeeTraitChangeWindow Instance
+		{
+			get
+			{
+				if (_instance == null)
+					_instance = new EmployeeTraitChangeWindow();
+				return _instance;
+			}
+		}
 
 
 		public void Show()
@@ -49,8 +62,6 @@ namespace Trainer_v5.Window
 				pair.Value.isOn = isOn;
 			}
 		}
-
-
 
 
 		private void CreateWindow()
@@ -94,8 +105,6 @@ namespace Trainer_v5.Window
 			_window = window;
 			_traitsToggles = traits;
 		}
-
-
 
 
 		private void ToggleTrait(Employee.Trait trait, bool on)

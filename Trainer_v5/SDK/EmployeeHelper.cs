@@ -19,7 +19,7 @@ namespace Trainer_v5.SDK
 			= Traits.Where(t => 0 != (Employee.GoodTraits & t));
 
 		public static IEnumerable<Employee.Trait> NeutralTraits { get; }
-			= Traits.Where(t => 0 != (Employee.BadTraits & t));
+			= Traits.Where(t => 0 != (Employee.NeutralTraits & t));
 
 		public static IEnumerable<Employee.Trait> BadTraits { get; }
 			= Traits.Where(t => 0 != (Employee.BadTraits & t));

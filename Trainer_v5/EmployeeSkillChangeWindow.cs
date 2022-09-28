@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Trainer_v5.Window;
 using UnityEngine;
 using Utils = Trainer_v5.Utilities;
 
@@ -25,8 +24,6 @@ namespace Trainer_v5
 				Window.Toggle();
 			}
 		}
-
-
 
 
 		private static GUIWindow CreateWindow()
@@ -81,8 +78,6 @@ namespace Trainer_v5
 			}
 		}
 		
-
-
 
 		private static void SetBaseSkills()
 		{
