@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,10 @@ namespace Trainer_v5
 		public override string Name => Helpers.TrainerVersion;
 		public static Button TrainerButton { get; set; }
 		public static Button SkillChangeButton { get; set; }
+		public static Button TraitChangeButton { get; set; }
+
+		private static EmployeeTraitChangeWindow _traitChangeWindow;
+
 
 		public override void Initialize(ModController.DLLMod parentMod)
 		{
@@ -33,11 +38,15 @@ namespace Trainer_v5
 
 		public static void CreateUIButtons()
 		{
+			_traitChangeWindow = new EmployeeTraitChangeWindow();
+
 			TrainerButton = Utilities.CreateUIButton(() => SettingsWindow.Toggle(), Helpers.TrainerVersion, "TrainerButton");
 			SkillChangeButton = Utilities.CreateUIButton(() => EmployeeSkillChangeWindow.Show(), "Skill Change", "EmployeeSkillButton");
+			TraitChangeButton = Utilities.CreateUIButton(() => _traitChangeWindow.Show(), "Trait Change", "EmployeeTraitButton");
 
 			Utilities.AddElementToElement(TrainerButton.gameObject, "MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32));
 			Utilities.AddElementToElement(SkillChangeButton.gameObject, "ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
+			Utilities.AddElementToElement(TraitChangeButton.gameObject, "ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
 		}
 
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)

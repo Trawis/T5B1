@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Trainer_v5.Window;
 using UnityEngine;
 using Utils = Trainer_v5.Utilities;
 
@@ -52,31 +53,31 @@ namespace Trainer_v5
 
 		private static IEnumerable<GameObject> FirstColumn()
 		{
-			yield return UIFactory.EmptyBox();
+			yield return UIFactory.EmptyBox().gameObject;
 
 			var rolesList = Helpers.RolesList;
 			foreach (var role in rolesList)
 			{
 				var isOn = rolesList.GetOrDefault(role.Key);
-				yield return UIFactory.Toggle(role.Key, isOn, a => rolesList.Toggle(role.Key));
+				yield return UIFactory.Toggle(role.Key, isOn, a => rolesList.Toggle(role.Key)).gameObject;
 			}
 
-			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee);
-			yield return UIFactory.EmptyBox();
-			yield return UIFactory.Button("Set Base Skills", SetBaseSkills);
+			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject;
+			yield return UIFactory.EmptyBox().gameObject;
+			yield return UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject;
 		}
 
 
 		private static IEnumerable<GameObject> SecondColumn()
 		{
-			yield return UIFactory.EmptyBox();
+			yield return UIFactory.EmptyBox().gameObject;
 
 			var specs = Helpers.SpecializationsList;
 			foreach (var spec in specs)
 			{
 				var key = spec.Key;
 				var isOn = specs.GetOrDefault(key);
-				yield return UIFactory.Toggle(key, isOn, a => specs.Toggle(key));
+				yield return UIFactory.Toggle(key, isOn, a => specs.Toggle(key)).gameObject;
 			}
 		}
 		
