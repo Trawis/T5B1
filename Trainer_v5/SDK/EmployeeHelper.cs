@@ -41,5 +41,16 @@ namespace Trainer_v5.SDK
 		}
 
 		#endregion
+
+
+		#region LeadDesign Demands
+
+		/// <summary>
+		/// All demands
+		/// </summary>
+		public static IEnumerable<LeadDesignDemands.Demand> Demands { get; }
+			= Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>();
+
+		#endregion
 	}
 }

@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="DetailWindowTrainer.cs" />
     <Compile Include="EmployeeSkillChangeWindow.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logger.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="InputHelper.cs" />
     <Compile Include="UIFactory.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="Window\EmployeeDemandChangeWindow.cs" />
     <Compile Include="Window\EmployeeTraitChangeWindow.cs" />
     <Compile Include="Window\WindowStyles.cs" />
   </ItemGroup>

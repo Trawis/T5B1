@@ -45,6 +45,7 @@ namespace Trainer_v5
             break;
           case "MainScene":
             Main.CreateUIButtons();
+            DetailWindowTrainer.Install();
             SubscribeToEvents();
             break;
           case "Customization":
