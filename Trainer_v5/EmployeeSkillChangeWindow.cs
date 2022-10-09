@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using Utils = Trainer_v5.Utilities;
 
-
 namespace Trainer_v5
 {
 	public class EmployeeSkillChangeWindow : MonoBehaviour
@@ -24,7 +23,6 @@ namespace Trainer_v5
 				Window.Toggle();
 			}
 		}
-
 
 		private static GUIWindow CreateWindow()
 		{
@@ -47,7 +45,6 @@ namespace Trainer_v5
 			return window;
 		}
 
-
 		private static IEnumerable<GameObject> FirstColumn()
 		{
 			yield return UIFactory.EmptyBox().gameObject;
@@ -63,7 +60,6 @@ namespace Trainer_v5
 			yield return UIFactory.EmptyBox().gameObject;
 			yield return UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject;
 		}
-
 
 		private static IEnumerable<GameObject> SecondColumn()
 		{

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-
 // ReSharper disable once InconsistentNaming
 namespace Trainer_v5
 {
@@ -34,7 +33,6 @@ namespace Trainer_v5
 		
 
 		private delegate bool TryParse<T>(string s, out T result) where T : struct;
-
 
 		private static T? TryParseAndValidate<T>(
 			string str,

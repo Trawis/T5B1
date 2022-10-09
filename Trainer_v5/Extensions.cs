@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-
 namespace Trainer_v5
 {
 	public static class Extensions

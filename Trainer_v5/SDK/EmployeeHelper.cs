@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace Trainer_v5.SDK
 {
 	public static class EmployeeHelper
@@ -24,7 +23,6 @@ namespace Trainer_v5.SDK
 		public static IEnumerable<Employee.Trait> BadTraits { get; }
 			= Traits.Where(t => 0 != (Employee.BadTraits & t));
 
-
 		public static bool IsGood(this Employee.Trait self)
 		{
 			return (self & Employee.GoodTraits) > 0;
@@ -41,7 +39,6 @@ namespace Trainer_v5.SDK
 		}
 
 		#endregion
-
 
 		#region LeadDesign Demands
 

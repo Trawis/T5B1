@@ -11,7 +11,6 @@ namespace Trainer_v5
 		public static Button TrainerButton { get; set; }
 		public static Button SkillChangeButton { get; set; }
 
-
 		public override void Initialize(ModController.DLLMod parentMod)
 		{
 			base.Initialize(parentMod);

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils = Trainer_v5.Utilities;
 
-
 namespace Trainer_v5.Window
 {
 	public class EmployeeDemandChangeWindow : MonoBehaviour
@@ -18,7 +17,6 @@ namespace Trainer_v5.Window
 		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
 		private Actor _actor;
 
-
 		public void Show()
 		{
 			if (_window == null)
@@ -27,7 +25,6 @@ namespace Trainer_v5.Window
 				_window.Toggle();
 			Refresh();
 		}
-
 
 		public void Refresh()
 		{
@@ -54,7 +51,6 @@ namespace Trainer_v5.Window
 			}
 		}
 
-
 		private void CreateWindow()
 		{
 			var self = this;
@@ -78,7 +74,6 @@ namespace Trainer_v5.Window
 			_window = window;
 			_demandToggles = demands;
 		}
-
 
 		private void ToggleDemand(LeadDesignDemands.Demand demand, bool on)
 		{

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 namespace Trainer_v5.Window
 {
 	public static class WindowStyles

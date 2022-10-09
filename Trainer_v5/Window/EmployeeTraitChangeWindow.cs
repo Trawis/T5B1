@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils = Trainer_v5.Utilities;
 
-
 namespace Trainer_v5.Window
 {
 	public class EmployeeTraitChangeWindow : MonoBehaviour
@@ -18,7 +17,6 @@ namespace Trainer_v5.Window
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
 		private Actor _actor;
 
-
 		public void Show()
 		{
 			if (_window == null)
@@ -27,7 +25,6 @@ namespace Trainer_v5.Window
 				_window.Toggle();
 			Refresh();
 		}
-
 
 		public void Refresh()
 		{
@@ -53,7 +50,6 @@ namespace Trainer_v5.Window
 				pair.Value.isOn = isOn;
 			}
 		}
-
 
 		private void CreateWindow()
 		{
@@ -96,7 +92,6 @@ namespace Trainer_v5.Window
 			_window = window;
 			_traitsToggles = traits;
 		}
-
 
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{

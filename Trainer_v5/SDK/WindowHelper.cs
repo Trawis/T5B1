@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 namespace Trainer_v5.SDK
 {
 	public static class WindowHelper

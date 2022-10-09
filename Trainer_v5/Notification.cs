@@ -7,7 +7,6 @@
 			HUD.Instance.AddPopupMessage(msg, icon, PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-
 		public static void ShowError(string msg)
 		{
 			WindowManager.SpawnDialog(msg, false, DialogWindow.DialogType.Error);

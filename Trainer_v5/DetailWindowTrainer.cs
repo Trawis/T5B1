@@ -3,7 +3,6 @@ using Trainer_v5.Window;
 using UnityEngine.UI;
 using UnityEngine;
 
-
 namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
@@ -11,7 +10,6 @@ namespace Trainer_v5
 		private static bool _installed = false;
 
 		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
-
 
 		public static void Install()
 		{
@@ -35,7 +33,6 @@ namespace Trainer_v5
 				Utilities.AddElementToElement(components[i].gameObject, "DetailWindow", new Rect(x, y, width, height));
 			}
 		}
-
 
 		/**
 		 * Not work
@@ -62,7 +59,6 @@ namespace Trainer_v5
 				min: 0,
 				max: 1);
 		}
-
 
 		private static void SetInspiration()
 		{

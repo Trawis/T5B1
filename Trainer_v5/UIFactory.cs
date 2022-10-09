@@ -2,7 +2,6 @@
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-
 // ReSharper disable once InconsistentNaming
 namespace Trainer_v5
 {
@@ -15,7 +14,6 @@ namespace Trainer_v5
 			label.text = string.Empty;
 			return label;
 		}
-
 
 		public static Text
 		Label(string text, TextStyle style = null)
@@ -33,7 +31,6 @@ namespace Trainer_v5
 			return r;
 		}
 
-
 		public static Button
 		Button(string text, UnityAction action)
 		{
@@ -42,7 +39,6 @@ namespace Trainer_v5
 			button.onClick.AddListener(action);
 			return button;
 		}
-
 
 		public static Button 
 		UIButton(string text, string name, UnityAction action)
@@ -54,7 +50,6 @@ namespace Trainer_v5
 			return button;
 		}
 
-
 		public static Toggle 
 		Toggle(string text, bool isOn, UnityAction<bool> action)
 		{
@@ -65,7 +60,6 @@ namespace Trainer_v5
 			return toggle;
 		}
 	}
-
 
 	public class TextStyle
 	{
