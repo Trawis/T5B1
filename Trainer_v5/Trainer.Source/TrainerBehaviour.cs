@@ -65,12 +65,26 @@ namespace Trainer_v5
 
     private void SubscribeToEvents()
     {
+      TimeOfDay.OnHourPassed += (obj, args) => OnHourPassed(obj, args);
+      TimeOfDay.OnDayPassed += (obj, args) => OnDayPassed(obj, args);
       TimeOfDay.OnMonthPassed += (obj, args) => OnMonthPassed(obj, args);
     }
 
     private void UnsubscribeFromEvents()
     {
+      TimeOfDay.OnHourPassed -= (obj, args) => OnHourPassed(obj, args);
+      TimeOfDay.OnDayPassed -= (obj, args) => OnDayPassed(obj, args);
       TimeOfDay.OnMonthPassed -= (obj, args) => OnMonthPassed(obj, args);
+    }
+
+    private void OnHourPassed(object obj, EventArgs args)
+    {
+
+    }
+
+    private void OnDayPassed(object obj, EventArgs args)
+    {
+
     }
 
     private void OnMonthPassed(object obj, EventArgs args)
@@ -279,6 +293,7 @@ namespace Trainer_v5
           employee.Salary = 0f;
           employee.AskedFor = 0f;
           employee.Demanded = 0f;
+          employee.UpfrontDemand = 0f;
           employee.ChangeSalary(0f, 0f, actor, false);
         }
 
@@ -290,6 +305,16 @@ namespace Trainer_v5
         if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
         {
           actor.VacationMonth = SDateTime.NextMonth(24);
+        }
+
+        if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
+        {
+          employee.Inspiration = 1f;
+        }
+
+        if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
+        {
+          employee.RevealCreativity(1f);
         }
 
         actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? 4f : 2f;

@@ -102,6 +102,10 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
 			Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
 					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);
+			Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
+					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column2);
+			Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
+					a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column2);
 
 			if (Helpers.IsDebug)
 			{
@@ -144,7 +148,7 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent")), column3);
 			Utils.AddToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
 					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
-			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furnitur eStealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
+			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
 					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
 
 			#endregion

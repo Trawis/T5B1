@@ -7,7 +7,7 @@ namespace Trainer_v5
   public static class Helpers
   {
     public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-    public static string Version => "5.0.3";
+    public static string Version => "5.0.5";
     public static string TrainerVersion => $"Trainer v{Version}";
     public static bool IsDebug => false;
     public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -70,7 +70,9 @@ namespace Trainer_v5
       {"AutoEndResearch", false},
       {"AutoEndPatent", false},
       {"ReduceBoxPrice", false},
-      {"DisableFurnitureStealing", false}
+      {"DisableFurnitureStealing", false},
+      {"MoreInspiration", false},
+      {"MoreCreativity", false}
     };
 
     public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
@@ -133,7 +135,7 @@ namespace Trainer_v5
         case 4:
           return values.FindIndex(x => x.Value.MakeBool() == GetProperty(properties, store).MakeBool());
         default:
-          "Method GetIndex received an unkown value type as parameter".Log();
+          "Method GetIndex received an unknown value type as parameter".Log();
           return -1;
       }
     }
