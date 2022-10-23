@@ -35,6 +35,14 @@
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Trainer.Source\Constants.cs" />
+    <Compile Include="Trainer.Source\EmployeeSkillChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Logger.cs" />
+    <Compile Include="Trainer.Source\Main.cs" />
+    <Compile Include="Trainer.Source\Helpers.cs" />
+    <Compile Include="Trainer.Source\SettingsWindow.cs" />
+    <Compile Include="Trainer.Source\TrainerBehaviour.cs" />
+    <Compile Include="Trainer.Source\Utilities.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DetailWindowTrainer.cs" />
     <Compile Include="EmployeeSkillChangeWindow.cs" />
@@ -85,6 +93,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Trainer.Libraries\Assembly-CSharp-firstpass.dll" />
+    <Content Include="Trainer.Libraries\Assembly-CSharp.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.CoreModule.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
+    <Content Include="Trainer.Localization\credits.txt" />
     <Content Include="Libraries\Assembly-CSharp-firstpass.dll" />
     <Content Include="Libraries\Assembly-CSharp.dll" />
     <Content Include="Libraries\UnityEngine.CoreModule.dll" />
@@ -94,11 +108,11 @@
     <Content Include="Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Localization\Croatian\Trainer.tyd" />
-    <None Include="Localization\English\Trainer.tyd" />
-    <None Include="Localization\German\Trainer.tyd" />
-    <None Include="Localization\Korean\Trainer.tyd" />
-    <None Include="Localization\Spanish\Trainer.tyd" />
+    <None Include="Trainer.Localization\Croatian\Trainer.tyd" />
+    <None Include="Trainer.Localization\English\Trainer.tyd" />
+    <None Include="Trainer.Localization\German\Trainer.tyd" />
+    <None Include="Trainer.Localization\Korean\Trainer.tyd" />
+    <None Include="Trainer.Localization\Spanish\Trainer.tyd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
