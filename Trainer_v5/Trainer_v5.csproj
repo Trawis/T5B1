@@ -43,24 +43,16 @@
     <Compile Include="Trainer.Source\SettingsWindow.cs" />
     <Compile Include="Trainer.Source\TrainerBehaviour.cs" />
     <Compile Include="Trainer.Source\Utilities.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="DetailWindowTrainer.cs" />
-    <Compile Include="EmployeeSkillChangeWindow.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Notification.cs" />
-    <Compile Include="SDK\WindowHelper.cs" />
-    <Compile Include="SDK\EmployeeHelper.cs" />
-    <Compile Include="SettingsWindow.cs" />
-    <Compile Include="TrainerBehaviour.cs" />
-    <Compile Include="InputHelper.cs" />
-    <Compile Include="UIFactory.cs" />
-    <Compile Include="Utilities.cs" />
-    <Compile Include="Window\EmployeeDemandChangeWindow.cs" />
-    <Compile Include="Window\EmployeeTraitChangeWindow.cs" />
-    <Compile Include="Window\WindowStyles.cs" />
+    <Compile Include="Trainer.Source\DetailWindowTrainer.cs" />
+    <Compile Include="Trainer.Source\Extensions.cs" />
+    <Compile Include="Trainer.Source\Notification.cs" />
+    <Compile Include="Trainer.Source\SDK\WindowHelper.cs" />
+    <Compile Include="Trainer.Source\SDK\EmployeeHelper.cs" />
+    <Compile Include="Trainer.Source\InputHelper.cs" />
+    <Compile Include="Trainer.Source\UIFactory.cs" />
+    <Compile Include="Trainer.Source\Window\EmployeeDemandChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Window\EmployeeTraitChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Window\WindowStyles.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -99,13 +91,6 @@
     <Content Include="Trainer.Libraries\UnityEngine.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
     <Content Include="Trainer.Localization\credits.txt" />
-    <Content Include="Libraries\Assembly-CSharp-firstpass.dll" />
-    <Content Include="Libraries\Assembly-CSharp.dll" />
-    <Content Include="Libraries\UnityEngine.CoreModule.dll" />
-    <Content Include="Libraries\UnityEngine.TextRenderingModule.dll" />
-    <Content Include="Libraries\UnityEngine.dll" />
-    <Content Include="Libraries\UnityEngine.UI.dll" />
-    <Content Include="Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Trainer.Localization\Croatian\Trainer.tyd" />
