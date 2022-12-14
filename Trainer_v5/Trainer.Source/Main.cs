@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +27,7 @@ namespace Trainer_v5
 		public static void CloseSettingsWindow()
 		{
 			if (SettingsWindow.Shown)
-      {
+			{
 				SettingsWindow.Toggle();
 			}
 		}

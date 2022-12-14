@@ -43,6 +43,16 @@
     <Compile Include="Trainer.Source\SettingsWindow.cs" />
     <Compile Include="Trainer.Source\TrainerBehaviour.cs" />
     <Compile Include="Trainer.Source\Utilities.cs" />
+    <Compile Include="Trainer.Source\DetailWindowTrainer.cs" />
+    <Compile Include="Trainer.Source\Extensions.cs" />
+    <Compile Include="Trainer.Source\Notification.cs" />
+    <Compile Include="Trainer.Source\SDK\WindowHelper.cs" />
+    <Compile Include="Trainer.Source\SDK\EmployeeHelper.cs" />
+    <Compile Include="Trainer.Source\InputHelper.cs" />
+    <Compile Include="Trainer.Source\UIFactory.cs" />
+    <Compile Include="Trainer.Source\Window\EmployeeDemandChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Window\EmployeeTraitChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Window\WindowStyles.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -64,6 +74,10 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
