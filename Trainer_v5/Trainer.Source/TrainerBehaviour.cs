@@ -310,7 +310,7 @@ namespace Trainer_v5
 
         if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
         {
-          employee.Inspiration = 1f;
+          employee.LastInpirationUse = new SDateTime(0);
         }
 
         if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
