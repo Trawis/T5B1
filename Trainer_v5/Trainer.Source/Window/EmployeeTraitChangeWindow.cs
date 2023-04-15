@@ -103,8 +103,5 @@ namespace Trainer_v5.Window
 			if (hasTrait != on)
 				employee.Traits ^= trait;
 		}
-		
-
 	}
-
 }

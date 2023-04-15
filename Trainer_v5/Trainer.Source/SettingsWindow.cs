@@ -70,6 +70,7 @@ namespace Trainer_v5
 			Utils.AddButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock, column1);
 			Utils.AddButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture, column1);
 			Utils.AddButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace, column1);
+			Utils.AddButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline, column1);
 
 			if (Helpers.IsDebug)
 			{

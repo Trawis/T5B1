@@ -85,8 +85,5 @@ namespace Trainer_v5.Window
 			if (has != on)
 				employee.DemandResults ^= demand;
 		}
-		
-
 	}
-
 }

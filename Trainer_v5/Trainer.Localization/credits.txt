@@ -1,5 +1,23 @@
-English - Trawis
-Spanish - jesustb
-Croatian - Trawis
+#CREDITS
 
-and others I forgot to mention... Many thanks
+###Localization
+* English - Trawis
+* Spanish - jesustb
+* Croatian - Trawis
+
+###Development
+* jiandy666
+* progresor
+
+**and others I forgot to mention... Many thanks!**
+If you want to list your name here, please contact me via Discord (link below)
+
+#DONATIONS
+If you want to support me and my current and future mods you can do it via
+* [Patreon](https://www.patreon.com/bePatron?u=29325755)
+* [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VMSXFPAWBPN9Q)
+* [Buy me a coffee](https://www.buymeacoffee.com/Trawis)
+* [Ko-Fi](https://ko-fi.com/trawis)
+
+***SUPPORT***
+* [Discord](https://discord.gg/NQpm5kn)

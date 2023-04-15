@@ -40,6 +40,7 @@
     <Compile Include="Trainer.Source\Logger.cs" />
     <Compile Include="Trainer.Source\Main.cs" />
     <Compile Include="Trainer.Source\Helpers.cs" />
+    <Compile Include="Trainer.Source\SDK\DefaultStyles.cs" />
     <Compile Include="Trainer.Source\SettingsWindow.cs" />
     <Compile Include="Trainer.Source\TrainerBehaviour.cs" />
     <Compile Include="Trainer.Source\Utilities.cs" />
@@ -50,7 +51,9 @@
     <Compile Include="Trainer.Source\SDK\EmployeeHelper.cs" />
     <Compile Include="Trainer.Source\InputHelper.cs" />
     <Compile Include="Trainer.Source\UIFactory.cs" />
+    <Compile Include="Trainer.Source\Window\ConsoleWindow.cs" />
     <Compile Include="Trainer.Source\Window\EmployeeDemandChangeWindow.cs" />
+    <Compile Include="Trainer.Source\Window\EmployeeLeadSpecChangeWindow.cs" />
     <Compile Include="Trainer.Source\Window\EmployeeTraitChangeWindow.cs" />
     <Compile Include="Trainer.Source\Window\WindowStyles.cs" />
   </ItemGroup>
@@ -65,6 +68,12 @@
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="KeraLua, Version=1.3.1.0, Culture=neutral, PublicKeyToken=6a194c04b9c89217, processorArchitecture=MSIL">
+      <HintPath>..\packages\KeraLua.1.3.1\lib\net46\KeraLua.dll</HintPath>
+    </Reference>
+    <Reference Include="NLua, Version=1.6.0.0, Culture=neutral, PublicKeyToken=6a194c04b9c89217, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLua.1.6.0\lib\net46\NLua.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -100,6 +109,7 @@
     <None Include="Trainer.Localization\German\Trainer.tyd" />
     <None Include="Trainer.Localization\Korean\Trainer.tyd" />
     <None Include="Trainer.Localization\Spanish\Trainer.tyd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -110,4 +120,11 @@ del "%25TrainerWorkshopPath%25\*.cs"
 copy "$(ProjectDir)*.cs" "%25TrainerWorkshopPath%25"
 )</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\KeraLua.1.3.1\build\net46\KeraLua.targets" Condition="Exists('..\packages\KeraLua.1.3.1\build\net46\KeraLua.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\KeraLua.1.3.1\build\net46\KeraLua.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\KeraLua.1.3.1\build\net46\KeraLua.targets'))" />
+  </Target>
 </Project>

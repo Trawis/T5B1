@@ -11,17 +11,17 @@ namespace Trainer_v5.SDK
 		/// <summary>
 		/// All traits
 		/// </summary>
-		public static IEnumerable<Employee.Trait> Traits { get; }
-			= Enum.GetValues(typeof(Employee.Trait)).Cast<Employee.Trait>();
+		public static IEnumerable<Employee.Trait> Traits
+			=> Enum.GetValues(typeof(Employee.Trait)).Cast<Employee.Trait>();
 
-		public static IEnumerable<Employee.Trait> GoodTraits { get; }
-			= Traits.Where(t => 0 != (Employee.GoodTraits & t));
+		public static IEnumerable<Employee.Trait> GoodTraits
+			=> Traits.Where(t => 0 != (Employee.GoodTraits & t));
 
-		public static IEnumerable<Employee.Trait> NeutralTraits { get; }
-			= Traits.Where(t => 0 != (Employee.NeutralTraits & t));
+		public static IEnumerable<Employee.Trait> NeutralTraits
+			=> Traits.Where(t => 0 != (Employee.NeutralTraits & t));
 
-		public static IEnumerable<Employee.Trait> BadTraits { get; }
-			= Traits.Where(t => 0 != (Employee.BadTraits & t));
+		public static IEnumerable<Employee.Trait> BadTraits
+			=> Traits.Where(t => 0 != (Employee.BadTraits & t));
 
 		public static bool IsGood(this Employee.Trait self)
 		{
@@ -45,8 +45,8 @@ namespace Trainer_v5.SDK
 		/// <summary>
 		/// All demands
 		/// </summary>
-		public static IEnumerable<LeadDesignDemands.Demand> Demands { get; }
-			= Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>();
+		public static IEnumerable<LeadDesignDemands.Demand> Demands
+			=> Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>();
 
 		#endregion
 	}

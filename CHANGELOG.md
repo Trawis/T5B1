@@ -14,8 +14,8 @@ Release notes for changes to the trainer
 
 14.12.2022. for Beta 1
 - Updated libraries
-- Refactor - PR #13 from jiandy666/dev
-- Inspiration use - PR #16 from progesor/main
+- Employee Demand change, Employee Lead Spec change Employee Trait change, Console - credits: jiandy666
+- Inspiration Use - credits: progesor
 
 ---
 
