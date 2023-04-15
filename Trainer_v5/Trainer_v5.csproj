@@ -87,8 +87,10 @@
   <ItemGroup>
     <Content Include="Trainer.Libraries\Assembly-CSharp-firstpass.dll" />
     <Content Include="Trainer.Libraries\Assembly-CSharp.dll" />
+    <Content Include="Trainer.Libraries\Unity.TextMeshPro.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.CoreModule.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
     <Content Include="Trainer.Localization\credits.txt" />
   </ItemGroup>

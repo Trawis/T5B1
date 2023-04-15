@@ -3,6 +3,22 @@ Release notes for changes to the trainer
 
 ---
 
+**5.0.7**
+
+15.4.2023. for Beta 1
+- Updated libraries
+
+---
+
+**5.0.6**
+
+14.12.2022. for Beta 1
+- Updated libraries
+- Refactor - PR #13 from jiandy666/dev
+- Inspiration use - PR #16 from progesor/main
+
+---
+
 **5.0.5**
 
 15.10.2022. for Beta 1
