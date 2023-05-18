@@ -38,10 +38,7 @@ namespace Trainer_v5
 			TrainerButton = Utilities.CreateUIButton(() => SettingsWindow.Toggle(), Helpers.TrainerVersion, "TrainerButton");
 			SkillChangeButton = Utilities.CreateUIButton(() => EmployeeSkillChangeWindow.Show(), "Skill Change", "EmployeeSkillButton");
 
-			var consoleButton = Utilities.CreateUIButton(() => ConsoleWindow.Instance.Show(), "Console", "ConsoleButton");
-
 			Utilities.AddElementToElement(TrainerButton.gameObject, "MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32));
-			Utilities.AddElementToElement(consoleButton.gameObject, "MainPanel/Holder/FanPanel", new Rect(270, 0, 100, 32));
 			Utilities.AddElementToElement(SkillChangeButton.gameObject, "ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
 		}
 
