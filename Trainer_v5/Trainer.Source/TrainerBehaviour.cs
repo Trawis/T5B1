@@ -49,14 +49,8 @@ namespace Trainer_v5
 						SubscribeToEvents();
 						break;
 					case "Customization":
-						ActorCustomization.StartYears = new[]
-						{
-			  1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100
-			};
-						ActorCustomization.StartLoans = new[]
-						{
-			  0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000
-			};
+						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
+						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000 };
 						break;
 					default:
 						goto case "MainMenu";
@@ -444,10 +438,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "NoEducationCost"))
 			{
-				EducationWindow.EdCost = new[]
-				{
-		  0f, 0f, 0f
-		};
+				EducationWindow.EdCost = new[] { 0f, 0f, 0f };
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
@@ -551,9 +542,9 @@ namespace Trainer_v5
 				{
 					foreach (var role in selectedRoles)
 					{
-				//actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
+						//actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
 
-				foreach (var specialization in selectedSpecializations)
+						foreach (var specialization in selectedSpecializations)
 						{
 							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
 						}
