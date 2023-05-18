@@ -7,10 +7,6 @@ namespace Trainer_v5.SDK
 	public static class EmployeeHelper
 	{
 		#region Traits
-
-		/// <summary>
-		/// All traits
-		/// </summary>
 		public static IEnumerable<Employee.Trait> Traits
 			=> Enum.GetValues(typeof(Employee.Trait)).Cast<Employee.Trait>();
 
@@ -42,9 +38,6 @@ namespace Trainer_v5.SDK
 
 		#region LeadDesign Demands
 
-		/// <summary>
-		/// All demands
-		/// </summary>
 		public static IEnumerable<LeadDesignDemands.Demand> Demands
 			=> Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>();
 

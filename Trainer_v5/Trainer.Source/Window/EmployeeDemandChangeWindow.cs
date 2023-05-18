@@ -35,15 +35,12 @@ namespace Trainer_v5.Window
 				return;
 			}
 
-			// get select actor
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
 			_actor = selectedActors.Any() ? selectedActors.First() : null;
 			var employee = _actor?.employee;
 
-			// refresh title
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {employee?.Name ?? "Nobody"}";
 
-			// refresh toggles
 			foreach (var pair in _demandToggles)
 			{
 				var isOn = employee?.HasDemanded(pair.Key) ?? false;

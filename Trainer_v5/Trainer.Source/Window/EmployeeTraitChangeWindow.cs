@@ -35,15 +35,12 @@ namespace Trainer_v5.Window
 				return;
 			}
 
-			// get select actor
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
 			_actor = selectedActors.Any() ? selectedActors.First() : null;
 			var employee = _actor?.employee;
 
-			// refresh title
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {employee?.Name ?? "Nobody"}";
 
-			// refresh toggles
 			foreach (var pair in _traitsToggles)
 			{
 				var isOn = employee?.HasTrait(pair.Key) ?? false;

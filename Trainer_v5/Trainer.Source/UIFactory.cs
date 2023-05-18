@@ -2,7 +2,6 @@
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-// ReSharper disable once InconsistentNaming
 namespace Trainer_v5
 {
 	public static class UIFactory
@@ -20,7 +19,6 @@ namespace Trainer_v5
 		{
 			var r = WindowManager.SpawnLabel();
 			r.text = text;
-			// apply style
 			if (style != null)
 			{
 				if (style.Alignment != null)

@@ -1,12 +1,5 @@
-﻿using LibTessDotNet;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
+﻿using System;
 
-// ReSharper disable once InconsistentNaming
 namespace Trainer_v5
 {
 	public static class InputHelper
@@ -38,7 +31,6 @@ namespace Trainer_v5
 			T? max = null
 			) where T : struct, IComparable<T>
 		{
-			// parse string
 			T val;
 			if (str.Length == 0 || !tryParse(str, out val))
 			{

@@ -36,12 +36,10 @@ namespace Trainer_v5.Trainer.Source.Window
 				return;
 			}
 
-			// get select actor
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
 			_actor = selectedActors.Any() ? selectedActors.First() : null;
 			var employee = _actor?.employee;
 
-			// refresh title
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {employee?.Name ?? "Nobody"}";
 		}
 
