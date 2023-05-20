@@ -6,16 +6,14 @@ namespace Trainer_v5
 {
 	public static class UIFactory
 	{
-		public static Text
-		EmptyBox()
+		public static Text EmptyBox()
 		{
 			var label = WindowManager.SpawnLabel();
 			label.text = string.Empty;
 			return label;
 		}
 
-		public static Text
-		Label(string text, TextStyle style = null)
+		public static Text Label(string text, TextStyle style = null)
 		{
 			var r = WindowManager.SpawnLabel();
 			r.text = text;
@@ -29,8 +27,7 @@ namespace Trainer_v5
 			return r;
 		}
 
-		public static Button
-		Button(string text, UnityAction action)
+		public static Button Button(string text, UnityAction action)
 		{
 			var button = WindowManager.SpawnButton();
 			button.GetComponentInChildren<Text>().text = text;
@@ -38,8 +35,7 @@ namespace Trainer_v5
 			return button;
 		}
 
-		public static Button 
-		UIButton(string text, string name, UnityAction action)
+		public static Button UIButton(string text, string name, UnityAction action)
 		{
 			var button = WindowManager.SpawnButton();
 			button.GetComponentInChildren<Text>().text = text;
@@ -48,8 +44,7 @@ namespace Trainer_v5
 			return button;
 		}
 
-		public static Toggle 
-		Toggle(string text, bool isOn, UnityAction<bool> action)
+		public static Toggle Toggle(string text, bool isOn, UnityAction<bool> action)
 		{
 			var toggle = WindowManager.SpawnCheckbox();
 			toggle.GetComponentInChildren<Text>().text = text;
@@ -58,8 +53,7 @@ namespace Trainer_v5
 			return toggle;
 		}
 
-		public static InputField
-		MultilineInput()
+		public static InputField MultilineInput()
 		{
 			var r = WindowManager.SpawnInputbox();
 			r.lineType = InputField.LineType.MultiLineNewline;

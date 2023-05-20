@@ -38,14 +38,14 @@ namespace Trainer_v5
 			Window.name = "TrainerSettings";
 			Window.MainPanel.name = "TrainerSettingsPanel";
 
-      if (Window.name == "TrainerSettings")
-      {
-        Window.GetComponentsInChildren<Button>()
-          .SingleOrDefault(x => x.name == "CloseButton")
-          .onClick.AddListener(() => Shown = false);
-      }
+			if (Window.name == "TrainerSettings")
+			{
+				Window.GetComponentsInChildren<Button>()
+				  .SingleOrDefault(x => x.name == "CloseButton")
+				  .onClick.AddListener(() => Shown = false);
+			}
 
-      List<GameObject> column1 = new List<GameObject>();
+			List<GameObject> column1 = new List<GameObject>();
 			List<GameObject> column2 = new List<GameObject>();
 			List<GameObject> column3 = new List<GameObject>();
 			List<GameObject> column4 = new List<GameObject>();
@@ -58,7 +58,7 @@ namespace Trainer_v5
 			Utils.AddEmptyBox(column1);
 			Utils.AddInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText, column1);
 			Utils.AddEmptyBox(column1);
-			Utils.AddButton("TakeoverCompany".LocDef("Takeover Company"),TrainerBehaviour.TakeoverCompany, column1);
+			Utils.AddButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany, column1);
 			Utils.AddEmptyBox(column1);
 			Utils.AddButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt, column1);
 			Utils.AddButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays, column1);
@@ -97,10 +97,10 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "FreeStaff", !Helpers.GetProperty(settings, "FreeStaff")), column2);
 			Utils.AddToggle("FullSatisfaction".LocDef("Full Satisfaction"), Helpers.GetProperty(settings, "FullSatisfaction"),
 					a => Helpers.SetProperty(settings, "FullSatisfaction", !Helpers.GetProperty(settings, "FullSatisfaction")), column2);
-      Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
-          a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
-      Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
-					a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
+			Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
+				a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
+			Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
+						  a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
 			Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
 					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);
 			Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
@@ -190,7 +190,7 @@ namespace Trainer_v5
 
 			#region column5
 			Utils.AddEmptyBox(column5);
-			Utils.AddButton("Discord".LocDef("DISCORD"),  () => TrainerBehaviour.ShowDiscordInvite(), column5);
+			Utils.AddButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite(), column5);
 			Utils.AddEmptyBox(column5);
 			Utils.AddEmptyBox(column5);
 			Utils.AddEmptyBox(column5);

@@ -35,9 +35,6 @@ namespace Trainer_v5
 			}
 		}
 
-		/**
-		 * Not work
-		 */
 		private static void SetCreativity()
 		{
 			var employee = CurrentEmployee;
@@ -54,7 +51,6 @@ namespace Trainer_v5
 					employee.CreativityKnown = factor;
 
 					// LastCreativity: not wok
-					// ReSharper disable once CommentTypo
 					// employee.LastCreatity = new []{val, val};
 				},
 				min: 0,

@@ -52,8 +52,7 @@ namespace Trainer_v5
 			var rolesList = Helpers.RolesList;
 			foreach (var role in rolesList)
 			{
-				var isOn = rolesList.GetOrDefault(role.Key);
-				yield return UIFactory.Toggle(role.Key, isOn, a => rolesList.Toggle(role.Key)).gameObject;
+				yield return UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key)).gameObject;
 			}
 
 			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject;
@@ -68,9 +67,7 @@ namespace Trainer_v5
 			var specs = Helpers.SpecializationsList;
 			foreach (var spec in specs)
 			{
-				var key = spec.Key;
-				var isOn = specs.GetOrDefault(key);
-				yield return UIFactory.Toggle(key, isOn, a => specs.Toggle(key)).gameObject;
+				yield return UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject;
 			}
 		}
 		
@@ -88,6 +85,7 @@ namespace Trainer_v5
 				Notification.ShowError("Select one or more employees.");
 				return;
 			}
+
 			if (selectedRoles.Count == 0)
 			{
 				Notification.ShowError("Select one or more roles.");
