@@ -18,7 +18,7 @@ All button features are initiated once
 | Set Product Price    | Product Name, Amount | Sets product's price to specified amount              |
 | Set Product Stock    | Product Name, Amount | Sets product's stock to specified amount              |
 | Set Product Users    | Product Name, Amount | Sets product's active users to specified amount       |
-| Takeover Comapny     | Company Name         | Takes over specified company                          |
+| Takeover Company     | Company Name         | Takes over specified company                          |
 | Subsidiary Company   | Company Name         | Specified company becomes your company's subsidiary   |
 | Bankrupt Company     | Company Name         | Forces specified company to go bankrupt               |
 | Bankrupt All         | None                 | Forces all companies but yours to go bankrupt         |
