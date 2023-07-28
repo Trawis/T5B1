@@ -3,6 +3,37 @@ Release notes for changes to the trainer
 
 ---
 
+**5.0.9**
+
+20.5.2023. for Beta 1
+- Updated libraries
+- Fixed compiler issues
+
+---
+
+**5.0.8**
+
+18.5.2023. for Beta 1
+- Updated libraries
+
+---
+
+**5.0.7**
+
+15.4.2023. for Beta 1
+- Updated libraries
+
+---
+
+**5.0.6**
+
+14.12.2022. for Beta 1
+- Updated libraries
+- Employee Demand change, Employee Lead Spec change Employee Trait change, Console - credits: jiandy666
+- Inspiration Use - credits: progesor
+
+---
+
 **5.0.5**
 
 15.10.2022. for Beta 1

@@ -26,7 +26,7 @@ namespace Trainer_v5
 		public static void CloseSettingsWindow()
 		{
 			if (SettingsWindow.Shown)
-      {
+			{
 				SettingsWindow.Toggle();
 			}
 		}
