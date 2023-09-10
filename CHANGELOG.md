@@ -3,6 +3,13 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.0**
+
+10.9.2023. for Beta 1
+- Updated libraries
+
+---
+
 **5.0.9**
 
 20.5.2023. for Beta 1

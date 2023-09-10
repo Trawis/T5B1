@@ -107,7 +107,7 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
-			if (!_specializationsLoaded && HUD.Instance.mainReputataionBars.company != null)
+			if (!_specializationsLoaded && HUD.Instance.mainReputataionBars.MyCompany != null)
 			{
 				LoadSpecializations();
 				_specializationsLoaded = true;
