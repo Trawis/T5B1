@@ -97,6 +97,8 @@
     <Content Include="Trainer.Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Trainer.Localization\Chinese %28Simplified%29\Trainer.tyd" />
+    <None Include="Trainer.Localization\Chinese\Trainer.tyd" />
     <None Include="Trainer.Localization\Croatian\Trainer.tyd" />
     <None Include="Trainer.Localization\English\Trainer.tyd" />
     <None Include="Trainer.Localization\German\Trainer.tyd" />

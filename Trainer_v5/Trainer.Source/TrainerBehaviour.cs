@@ -10,7 +10,7 @@ namespace Trainer_v5
 {
 	public class TrainerBehaviour : ModBehaviour
 	{
-		private bool _specializationsLoaded;
+		private static bool _specializationsLoaded = false;
 		private float _defaultEnvironmentISPCostFactor;
 
 		private static GameSettings Settings => GameSettings.Instance;
@@ -110,7 +110,6 @@ namespace Trainer_v5
 			if (!_specializationsLoaded && HUD.Instance.mainReputataionBars.MyCompany != null)
 			{
 				LoadSpecializations();
-				_specializationsLoaded = true;
 				ShowDiscordInvite(displayAsPopup: true);
 			}
 
@@ -493,6 +492,8 @@ namespace Trainer_v5
 			}
 
 			Helpers.SpecializationsList = specializations;
+
+			_specializationsLoaded = true;
 		}
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
@@ -751,7 +752,7 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
-					actor.employee.LeadSpecialization[t] = 1f;
+					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
 				}
 
 				foreach (Employee.EmployeeRole employeeRole in employeeRoles)
@@ -993,11 +994,11 @@ namespace Trainer_v5
 				return;
 			}
 
-			var simulatedCompanyWorth = simulatedCompany.Stocks[0].CurrentWorth;
+			var simulatedCompanyWorth = simulatedCompany.GetPossibleStockWorth();
 
 			simulatedCompany.BuyOut(new Company[]
 			{
-		Settings.MyCompany
+				Settings.MyCompany
 			}, false);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
