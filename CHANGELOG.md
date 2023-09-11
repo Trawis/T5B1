@@ -3,6 +3,14 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.1**
+
+11.9.2023. for Beta 1
+- Fixed Max Skill of employees feature
+- Added/Updated localizations
+
+---
+
 **5.1.0**
 
 10.9.2023. for Beta 1
