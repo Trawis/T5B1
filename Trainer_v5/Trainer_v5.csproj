@@ -62,38 +62,36 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Assembly-CSharp.dll</HintPath>
+      <HintPath>Trainer.Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>Trainer.Libraries\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\UnityEngine.dll</HintPath>
+      <HintPath>Trainer.Libraries\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>Trainer.Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>Trainer.Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\UnityEngine.UI.dll</HintPath>
+      <HintPath>Trainer.Libraries\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Trainer.Libraries\Assembly-CSharp-firstpass.dll" />
     <Content Include="Trainer.Libraries\Assembly-CSharp.dll" />
-    <Content Include="Trainer.Libraries\Unity.TextMeshPro.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.CoreModule.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.dll" />
-    <Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
-    <Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
+	<Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
+	<Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
     <Content Include="Trainer.Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -106,12 +104,4 @@
     <None Include="Trainer.Localization\Spanish\Trainer.tyd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>SET TrainerWorkshopPath=D:\SteamLibrary\steamapps\workshop\content\362620\1884023959
-
-if exist "%25TrainerWorkshopPath%25" (
-del "%25TrainerWorkshopPath%25\*.cs"
-copy "$(ProjectDir)*.cs" "%25TrainerWorkshopPath%25"
-)</PostBuildEvent>
-  </PropertyGroup>
 </Project>
