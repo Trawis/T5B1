@@ -3,6 +3,14 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.2**
+
+14.10.2023. for Beta 1
+- Updated libraries
+- Added Unlock and Claim all Rewards feature
+
+---
+
 **5.1.1**
 
 11.9.2023. for Beta 1

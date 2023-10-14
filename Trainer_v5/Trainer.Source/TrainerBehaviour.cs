@@ -1101,6 +1101,19 @@ namespace Trainer_v5
 
 		#endregion
 
+		#region UnlockAllRewards
+
+		public static void UnlockAndClaimAllRewards()
+		{
+			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
+			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
+			HUD.Instance.RefreshBuildButtons();
+
+			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
+		}
+
+		#endregion
+
 		#region Overrides
 
 		public override void OnActivate() { /* Mandatory but not needed */ }

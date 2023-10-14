@@ -71,6 +71,7 @@ namespace Trainer_v5
 			Utils.AddButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture, column1);
 			Utils.AddButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace, column1);
 			Utils.AddButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline, column1);
+			Utils.AddButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards, column1);
 
 			if (Helpers.IsDebug)
 			{
