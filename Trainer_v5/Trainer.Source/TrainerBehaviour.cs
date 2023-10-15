@@ -488,21 +488,28 @@ namespace Trainer_v5
 				{
 					foreach (var activeTechLevel in activeTechLevels)
 					{
-						var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
-						researchWork.AddDevTeams(defaultResearchTeams);
-
-						foreach (var workItem in Settings.MyCompany.WorkItems)
+						if (!Settings.IsResearching(activeTechLevel.Key) && !(Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1) >= TimeOfDay.Instance.Year))
 						{
-							if (workItem.Name == researchWork.Name)
-							{
-								return;
-							}
+							var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
+							researchWork.AddDevTeams(defaultResearchTeams);
 
 							Settings.MyCompany.AddWorkItem(researchWork);
 						}
 					}
 				}
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
+			{
+                foreach (var company in Settings.simulation.Companies)
+                {
+					company.Value.Distribution.Open = false;
+					company.Value.Distribution.MarketShare = 0f;
+					company.Value.Distribution.SetCut(1f);
+					company.Value.Distribution.SetAutoAcceptClients(false);
+					company.Value.Distribution.AvailableBandwidth = 0f;
+				}
+            }
 
 			GameSettings.MaxFloor = 100; //10 default
 			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 108 : 54;

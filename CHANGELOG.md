@@ -11,6 +11,7 @@ Release notes for changes to the trainer
 - Added Disable Force Freeze feature
 - Added Auto Research Start feature
 - Dynamic loading of software types for More Hosting Deals
+- Added Digital Distribution Monopol feature
 
 ---
 
