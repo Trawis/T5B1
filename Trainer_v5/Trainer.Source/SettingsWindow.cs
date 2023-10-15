@@ -152,6 +152,14 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
 			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
 					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
+			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
+					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column3);
+			Utils.AddToggle("DisableForcePause".LocDef("Disable Force Pause"), Helpers.GetProperty(settings, "DisableForcePause"),
+					a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause")), column3);
+			Utils.AddToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
+					a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze")), column3);
+			Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
+					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column3);
 
 			#endregion
 

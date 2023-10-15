@@ -3,6 +3,17 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.3**
+
+15.10.2023. for Beta 1
+- Added Disable Fire Inspection feature
+- Added Disable Force Pause feature
+- Added Disable Force Freeze feature
+- Added Auto Research Start feature
+- Dynamic loading of software types for More Hosting Deals
+
+---
+
 **5.1.2**
 
 14.10.2023. for Beta 1

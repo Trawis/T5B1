@@ -316,31 +316,31 @@ namespace Trainer_v5
 
 			//if (Helpers.GetProperty(TrainerSettings, "AutoDistributionDeals"))
 			//{
-			//  //TimeOfDay.OnDayPassed
-			//  //TimeOfDay.OnMonthPassed
-			//  //bool canHandleLoad = true;
-			//  if (Settings.Distribution != null && Settings.Distribution.Open)
-			//  {
-			//    //var serverGroup = Settings.GetServerGroup(Settings.Distribution.ServerName);
-			//    //canHandleLoad = serverGroup.Available >= 0.2f;
+			//	TimeOfDay.OnDayPassed
+			//	TimeOfDay.OnMonthPassed
+			//	bool canHandleLoad = true;
+			//	if (Settings.MyCompany.Distribution != null && Settings.MyCompany.Distribution.Open)
+			//	{
+			//		var serverGroup = Settings.GetServerGroup(Settings.Distribution.ServerName);
+			//		canHandleLoad = serverGroup.Available >= 0.2f;
 
-			//    Settings.Distribution.TimeToCancel = -10f;
+			//		Settings.MyCompany.Distribution.TimeToCancel = -10f;
 
-			//    foreach (var company in Settings.simulation.GetAllCompanies())
-			//    {
-			//      if (!company.IsPlayerOwned())
-			//      {
-			//        SimulatedCompany simulatedCompany = company as SimulatedCompany;
-			//        if (simulatedCompany != null)
-			//        {
-			//          simulatedCompany.DistributionDealCooldown = 0;
-			//        }
+			//		foreach (var company in Settings.simulation.GetAllCompanies())
+			//		{
+			//			if (!company.IsPlayerOwned())
+			//			{
+			//				SimulatedCompany simulatedCompany = company as SimulatedCompany;
+			//				if (simulatedCompany != null)
+			//				{
+			//					simulatedCompany.DistributionDealCooldown = 0;
+			//				}
 
-			//        company.HasDistributionDeal = true;
-			//        //MarketSimulation.DistributionStandardCut = company.HasDistributionDeal ? 1f : 0.3f;
-			//      }
-			//    }
-			//  }
+			//				company.HasDistributionDeal = true;
+			//				MarketSimulation.DistributionStandardCut = company.HasDistributionDeal ? 1f : 0.3f;
+			//			}
+			//		}
+			//	}
 			//}
 
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -461,6 +461,38 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
 			{
 				Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
+			{
+				Settings.ActiveFireReport.Reset();
+				Settings.PassedFireInspection = true;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableForcePause"))
+			{
+				GameSettings.ForcePause = false;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableForceFreeze"))
+			{
+				GameSettings.FreezeGame = false;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
+			{
+				var activeTechLevels = MarketSimulation.Active.TechLevels;
+				var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
+
+				if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
+				{
+					foreach (var activeTechLevel in activeTechLevels)
+					{
+						var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
+						researchWork.AddDevTeams(defaultResearchTeams);
+						Settings.MyCompany.AddWorkItem(researchWork);
+					}
+				}
 			}
 
 			GameSettings.MaxFloor = 100; //10 default
@@ -589,10 +621,7 @@ namespace Trainer_v5
 			Helpers.DealIsPushed = true;
 
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(false).Where(pr =>
-				  (pr.Type.ToString() == "CMS"
-				|| pr.Type.ToString() == "Office Software"
-				|| pr.Type.ToString() == "Operating System"
-				|| pr.Type.ToString() == "Game")
+				  MarketSimulation.Active.SoftwareTypes.ContainsKey(pr.Type.ToString())
 				&& pr.Userbase > 0
 				&& pr.DevCompany.Name != Settings.MyCompany.Name
 				&& pr.ServerReq > 0
