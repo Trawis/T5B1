@@ -490,7 +490,16 @@ namespace Trainer_v5
 					{
 						var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
 						researchWork.AddDevTeams(defaultResearchTeams);
-						Settings.MyCompany.AddWorkItem(researchWork);
+
+						foreach (var workItem in Settings.MyCompany.WorkItems)
+						{
+							if (workItem.Name == researchWork.Name)
+							{
+								return;
+							}
+
+							Settings.MyCompany.AddWorkItem(researchWork);
+						}
 					}
 				}
 			}
