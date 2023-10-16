@@ -108,6 +108,10 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column2);
 			Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
 					a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column2);
+			Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
+					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column2);
+			Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
+					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column2);
 
 			if (Helpers.IsDebug)
 			{
@@ -154,8 +158,7 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
 			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
 					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column3);
-			Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
-					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column3);
+			
 
 			#endregion
 
@@ -194,8 +197,6 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause")), column4);
 			Utils.AddToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
 					a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze")), column4);
-			Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
-					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column4);
 
 			#endregion
 

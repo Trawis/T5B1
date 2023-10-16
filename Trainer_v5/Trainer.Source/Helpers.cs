@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.1.3";
+		public static string Version => "5.1.4";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -30,7 +30,8 @@ namespace Trainer_v5
 				  new KeyValuePair<string, object>("500%", 5),
 				  new KeyValuePair<string, object>("1000%", 10),
 				  new KeyValuePair<string, object>("2000%", 20),
-				  new KeyValuePair<string, object>("4000%", 40)
+				  new KeyValuePair<string, object>("4000%", 40),
+				  new KeyValuePair<string, object>("8000%", 80)
 				};
 			}
 		}

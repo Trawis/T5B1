@@ -3,6 +3,14 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.4**
+
+16.10.2023. for Beta 1
+- Fixed Disable Fire Inspection feature
+- Trainer Window: Toggles sorting
+
+---
+
 **5.1.3**
 
 15.10.2023. for Beta 1

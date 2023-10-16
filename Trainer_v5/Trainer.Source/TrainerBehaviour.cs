@@ -465,6 +465,12 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
 			{
+				foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
+				{
+					fireInspector.Despawned = true;
+					Settings.sActorManager.RemoveFromAwaiting(fireInspector);
+				}
+
 				Settings.ActiveFireReport.Reset();
 				Settings.PassedFireInspection = true;
 			}
