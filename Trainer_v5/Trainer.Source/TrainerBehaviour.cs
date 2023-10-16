@@ -552,7 +552,7 @@ namespace Trainer_v5
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
 		{
-			string message = "Join us on our discord server\nhttps://discord.io/trainer";
+			string message = "Join us on our discord server\nhttps://discord.gg/NQpm5kn";
 			if (displayAsPopup)
 			{
 				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
