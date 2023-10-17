@@ -34,6 +34,24 @@
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_7|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\SWINCBETA1_7\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_6|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\SWINCBETA1_6\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Trainer.Source\Constants.cs" />
     <Compile Include="Trainer.Source\EmployeeSkillChangeWindow.cs" />
@@ -90,8 +108,8 @@
     <Content Include="Trainer.Libraries\Assembly-CSharp.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.CoreModule.dll" />
     <Content Include="Trainer.Libraries\UnityEngine.dll" />
-	<Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
-	<Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
+    <Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
     <Content Include="Trainer.Localization\credits.txt" />
   </ItemGroup>
   <ItemGroup>

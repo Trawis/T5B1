@@ -107,7 +107,13 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
-			if (!_specializationsLoaded && HUD.Instance.mainReputataionBars.MyCompany != null)
+#if !SWINCBETA && !SWINCRELEASE
+			var myCompany = HUD.Instance.mainReputataionBars.company;
+#else
+			var myCompany = HUD.Instance.mainReputataionBars.MyCompany;
+#endif
+
+			if (!_specializationsLoaded && myCompany != null)
 			{
 				LoadSpecializations();
 				ShowDiscordInvite(displayAsPopup: true);
@@ -507,15 +513,26 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
 			{
-                foreach (var company in Settings.simulation.Companies)
-                {
-					company.Value.Distribution.Open = false;
-					company.Value.Distribution.MarketShare = 0f;
-					company.Value.Distribution.SetCut(1f);
-					company.Value.Distribution.SetAutoAcceptClients(false);
-					company.Value.Distribution.AvailableBandwidth = 0f;
+				foreach (var company in Settings.simulation.Companies.Values)
+				{
+					if (company.Distribution == null || company == Settings.MyCompany || !company.Distribution.Open)
+						continue;
+
+					company.Distribution.Open = false;
+					company.Distribution.MarketShare = 0f;
+
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+					company.Distribution.SetCut(1f);
+					company.Distribution.SetAutoAcceptClients(false);
+					company.Distribution.AvailableBandwidth = 0f;
+					company.Distribution.ActualItemSales = 0f;
+					company.Distribution.LastLoad = 0f;
+					//MarketSimulation.Active.DistributionQueryChange.Remove(company);
+					//MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
+					MarketSimulation.Active.ClosePlatform(company.Distribution);
+#endif
 				}
-            }
+			}
 
 			GameSettings.MaxFloor = 100; //10 default
 			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 108 : 54;
@@ -803,7 +820,11 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
+#if !SWINCBETA && !SWINCRELEASE
+					actor.employee.LeadSpecialization[t] = 1f;
+#else
 					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
+#endif
 				}
 
 				foreach (Employee.EmployeeRole employeeRole in employeeRoles)

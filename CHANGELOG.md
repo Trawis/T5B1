@@ -7,7 +7,9 @@ Release notes for changes to the trainer
 
 16.10.2023. for Beta 1
 - Fixed Disable Fire Inspection feature
-- Trainer Window: Toggles sorting
+- Trainer Window: Toggles rearrange
+- Updated Discord invite link
+- Backward compatibility for Beta 1.6
 
 ---
 

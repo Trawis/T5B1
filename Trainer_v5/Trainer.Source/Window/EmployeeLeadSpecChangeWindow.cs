@@ -114,7 +114,13 @@ namespace Trainer_v5.Trainer.Source.Window
 				val =>
 				{
 					foreach (var type in selectTypes)
+					{
+#if !SWINCBETA && !SWINCRELEASE
+						employee.LeadSpecialization[type] = val;
+#else
 						employee.LeadSpecializationFix[type.ToString()] = val;
+#endif
+					}
 				},
 				min: 0, max: 1
 				);
