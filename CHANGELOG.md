@@ -10,6 +10,7 @@ Release notes for changes to the trainer
 - Trainer Window: Toggles rearrange
 - Updated Discord invite link
 - Backward compatibility for Beta 1.6
+- Added 8000% efficiency option
 
 ---
 
