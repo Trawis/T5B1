@@ -3,6 +3,13 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.5**
+
+16.10.2023. for Beta 1
+- Fixed not saving new toggles
+
+---
+
 **5.1.4**
 
 16.10.2023. for Beta 1

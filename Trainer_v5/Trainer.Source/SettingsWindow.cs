@@ -112,6 +112,8 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column2);
 			Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
 					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column2);
+			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
+					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column2);
 
 			if (Helpers.IsDebug)
 			{
@@ -156,9 +158,6 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
 			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
 					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
-			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
-					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column3);
-			
 
 			#endregion
 
