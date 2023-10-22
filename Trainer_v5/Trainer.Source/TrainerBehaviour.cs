@@ -107,13 +107,7 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
-#if !SWINCBETA && !SWINCRELEASE
-			var myCompany = HUD.Instance.mainReputataionBars.company;
-#else
-			var myCompany = HUD.Instance.mainReputataionBars.MyCompany;
-#endif
-
-			if (!_specializationsLoaded && myCompany != null)
+			if (!_specializationsLoaded && Settings.MyCompany != null)
 			{
 				LoadSpecializations();
 				ShowDiscordInvite(displayAsPopup: true);
@@ -226,7 +220,7 @@ namespace Trainer_v5
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = Settings.sActorManager.Actors[i].employee;
+				Employee employee = actor.employee;
 
 				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
 				{
@@ -246,16 +240,6 @@ namespace Trainer_v5
 				}
 
 				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "EfficiencyStore") != null)
-				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
-				}
-
-				if (Helpers.GetProperty(Stores, "LeadEfficiencyStore") != null && employee.RoleString.Contains("Lead"))
-				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "LeadEfficiencyStore").MakeFloat();
-				}
-
-				if (Helpers.GetProperty(Stores, "EfficiencyStore") != null && !employee.RoleString.Contains("Lead"))
 				{
 					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
 				}
@@ -513,25 +497,82 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
 			{
-				foreach (var company in Settings.simulation.Companies.Values)
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+				foreach (var company in Settings.simulation.Companies.Values.ToList())
 				{
-					if (company.Distribution == null || company == Settings.MyCompany || !company.Distribution.Open)
+					if (company.Bankrupt && company.Distribution != null)
+						MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
+
+					if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
 						continue;
 
-					company.Distribution.Open = false;
-					company.Distribution.MarketShare = 0f;
-
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 					company.Distribution.SetCut(1f);
 					company.Distribution.SetAutoAcceptClients(false);
 					company.Distribution.AvailableBandwidth = 0f;
+					company.Distribution.ItemSales = 0f;
 					company.Distribution.ActualItemSales = 0f;
 					company.Distribution.LastLoad = 0f;
+					company.Distribution.MarketShare = 0f;
+					//company.Distribution.Open = false;
+					MarketSimulation.Active.ClosePlatform(company.Distribution);
 					//MarketSimulation.Active.DistributionQueryChange.Remove(company);
 					//MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
-					MarketSimulation.Active.ClosePlatform(company.Distribution);
-#endif
 				}
+#endif
+			}
+
+			/*
+			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
+            {
+              actor.employee.BirthDate += months;
+              actor.employee.Hired += months;
+              actor.employee.LastWage += months;
+              actor.employee.LastInpirationUse += months;
+              actor.LastMeeting += months;
+              actor.MeetingTime += months;
+              actor.DriveTime += months;
+              actor.DespawnTime += months;
+              actor.LeaveTime += months;
+              actor.LastSocial += months;
+              actor.ForgetfulETA += months;
+            }
+			 * */
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
+			{
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+				var serverGroups = Settings.GetAllServerGroups().ToList();
+				if (serverGroups.Count == 0)
+					return;
+
+				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
+				foreach (var serverGroup in serverGroups)
+				{
+					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
+						mostPowerfulServerGroup = serverGroup;
+				}
+
+				//string server;
+				//if (GameSettings.GetPrefServer("Deal", out server))
+				//{
+				//	GameSettings.SavePrefServer("Deal", mostPowerfulServerGroup.Name);
+				//	HUD.Instance.dealWindow.Combo.SelectedItem = (object)server;
+				//}
+
+				var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
+				if (serverDeals.Count == 0)
+					return;
+
+				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
+				foreach (var serverDeal in serverDeals)
+				{
+					if (!activeServerDeals.Contains(serverDeal))
+					{
+						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
+						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
+					}
+				}
+#endif
 			}
 
 			GameSettings.MaxFloor = 100; //10 default
@@ -675,7 +716,11 @@ namespace Trainer_v5
 			int index = Helpers.Random.Next(0, Products.Length);
 			ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
 			deal.StillValid(true);
-			HUD.Instance.dealWindow.InsertDeal(deal);
+			deal.PerPower *= 2f;
+
+			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.Any(x => x.GetTitle() == deal.GetTitle());
+			if (!dealExist)
+				HUD.Instance.dealWindow.InsertDeal(deal);
 		}
 
 		public static void Test()
@@ -820,10 +865,10 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
-#if !SWINCBETA && !SWINCRELEASE
-					actor.employee.LeadSpecialization[t] = 1f;
-#else
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
+#else
+					actor.employee.LeadSpecialization[t] = 1f;
 #endif
 				}
 
@@ -1154,6 +1199,7 @@ namespace Trainer_v5
 			Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
 			Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
 			Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
 			WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
 		}
 

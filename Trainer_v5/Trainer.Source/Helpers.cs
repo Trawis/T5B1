@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.1.5";
+		public static string Version => "5.1.6";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -79,6 +79,7 @@ namespace Trainer_v5
 			{"DisableFireInspection", false},
 			{"DisableForcePause", false},
 			{"DisableForceFreeze", false},
+			{"AutoAcceptHostingDeals", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
@@ -168,5 +169,22 @@ namespace Trainer_v5
 		}
 
 		#endregion
+
+		public static string GetGameVersion()
+		{
+#if !SWINCBETA && !SWINCRELEASE
+			return "1.6";
+#elif SWINCBETA1_7
+			return "1.7";
+#elif SWINCBETA1_8
+			return "1.8";
+#elif SWINCBETA1_9
+			return "1.9";
+#elif SWINCBETA1_10
+			return "1.10";
+#else
+			return "UNKNOWN";
+#endif
+		}
 	}
 }

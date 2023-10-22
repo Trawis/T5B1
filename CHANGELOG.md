@@ -3,6 +3,18 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.6**
+
+22.10.2023. for Beta 1
+- Fixed Trainer Settings save on version increase
+- Display game version in Trainer Settings Window
+- Fixed duplicated Hosting Deals when More Hosting Deals is activated
+- Added Auto Accept Hosting Deals feature
+- Added missing Hosting category when using Max Reputation feature
+- Remove the distribution platform if the simulated company is bankrupt
+
+---
+
 **5.1.5**
 
 21.10.2023. for Beta 1

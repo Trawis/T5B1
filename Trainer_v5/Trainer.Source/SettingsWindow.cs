@@ -8,7 +8,7 @@ namespace Trainer_v5
 {
 	public class SettingsWindow : MonoBehaviour
 	{
-		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version})";
+		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version}) | GAME VERSION: {Helpers.GetGameVersion()}";
 
 		public static GUIWindow Window { get; set; }
 		public static bool Shown { get; set; }
@@ -196,6 +196,8 @@ namespace Trainer_v5
 					a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause")), column4);
 			Utils.AddToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
 					a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze")), column4);
+			Utils.AddToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), Helpers.GetProperty(settings, "AutoAcceptHostingDeals"),
+					a => Helpers.SetProperty(settings, "AutoAcceptHostingDeals", !Helpers.GetProperty(settings, "AutoAcceptHostingDeals")), column4);
 
 			#endregion
 
@@ -221,12 +223,8 @@ namespace Trainer_v5
 			Utils.CreateGameObjects(Constants.FOURTH_COLUMN, column4.ToArray(), Window);
 			Utils.CreateGameObjects(Constants.FIFTH_COLUMN, column5.ToArray(), Window, isComboBox: true);
 
-			int[] columnsCount = new int[]
-			{
-				column1.Count(), column2.Count(), column3.Count(), column4.Count(), column5.Count()
-			};
-
-			Utils.SetWindowSize(columnsCount.Max(), Constants.X_SETTINGS_WINDOW, Window);
+			int columnsCount = new int[] { column1.Count(), column2.Count(), column3.Count(), column4.Count(), column5.Count() }.Max();
+			Utils.SetWindowSize(columnsCount, Constants.X_SETTINGS_WINDOW, Window);
 		}
 	}
 }

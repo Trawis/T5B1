@@ -115,10 +115,10 @@ namespace Trainer_v5.Trainer.Source.Window
 				{
 					foreach (var type in selectTypes)
 					{
-#if !SWINCBETA && !SWINCRELEASE
-						employee.LeadSpecialization[type] = val;
-#else
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 						employee.LeadSpecializationFix[type.ToString()] = val;
+#else
+						employee.LeadSpecialization[type] = val;
 #endif
 					}
 				},

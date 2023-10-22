@@ -6,7 +6,7 @@ namespace Trainer_v5
 {
 	public class Main : ModMeta
 	{
-		public override string Name => Helpers.TrainerVersion;
+		public override string Name => "TrainerByTrawis";
 		public static Button TrainerButton { get; set; }
 		public static Button SkillChangeButton { get; set; }
 
