@@ -50,7 +50,7 @@ namespace Trainer_v5
 						break;
 					case "Customization":
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
-						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000 };
+						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000 };
 						break;
 					default:
 						goto case "MainMenu";
@@ -194,6 +194,7 @@ namespace Trainer_v5
 				if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
 				{
 					room.ClearDirt();
+					room.Smell = 0f;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
@@ -224,9 +225,15 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
 				{
+					TimeOfDay.Instance.Sick.Clear();
+
+					if (actor.SpecialState == Actor.HomeState.Sick)
+						actor.SpecialState = Actor.HomeState.Default;
+
 					actor.GermAdd = 0f;
 					actor.GermCount = 0f;
-					TimeOfDay.Instance.Sick.Clear();
+					actor.SickDays = 0;
+					//actor.WasSick = true;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
@@ -243,8 +250,6 @@ namespace Trainer_v5
 				{
 					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
 				}
-
-				//actor.Effectiveness = (employee.RoleString.Contains("Lead") ? Helpers.GetProperty(Stores, "LeadEfficiencyStore") : Helpers.GetProperty(Stores, "EfficiencyStore")).MakeFloat();
 
 				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
 				{
@@ -263,17 +268,19 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "NoNeeds"))
 				{
+					actor.NextSmell = 0f;
 					employee.Bladder = 1f;
 					employee.Hunger = 1f;
 					employee.Energy = 1f;
 					employee.Social = 1f;
 					employee.Posture = 1f;
-					//employee.Diligence = 1f;
+					employee.ActiveComplaint = false;
 					employee.HadProperFood = true;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
 				{
+					actor.NegotiateSalary = false;
 					employee.Salary = 0f;
 					employee.AskedFor = 0f;
 					employee.Demanded = 0f;
@@ -304,35 +311,6 @@ namespace Trainer_v5
 				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? 4f : 2f;
 			}
 
-			//if (Helpers.GetProperty(TrainerSettings, "AutoDistributionDeals"))
-			//{
-			//	TimeOfDay.OnDayPassed
-			//	TimeOfDay.OnMonthPassed
-			//	bool canHandleLoad = true;
-			//	if (Settings.MyCompany.Distribution != null && Settings.MyCompany.Distribution.Open)
-			//	{
-			//		var serverGroup = Settings.GetServerGroup(Settings.Distribution.ServerName);
-			//		canHandleLoad = serverGroup.Available >= 0.2f;
-
-			//		Settings.MyCompany.Distribution.TimeToCancel = -10f;
-
-			//		foreach (var company in Settings.simulation.GetAllCompanies())
-			//		{
-			//			if (!company.IsPlayerOwned())
-			//			{
-			//				SimulatedCompany simulatedCompany = company as SimulatedCompany;
-			//				if (simulatedCompany != null)
-			//				{
-			//					simulatedCompany.DistributionDealCooldown = 0;
-			//				}
-
-			//				company.HasDistributionDeal = true;
-			//				MarketSimulation.DistributionStandardCut = company.HasDistributionDeal ? 1f : 0.3f;
-			//			}
-			//		}
-			//	}
-			//}
-
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
 			{
 				int inGameHour = TimeOfDay.Instance.Hour;
@@ -360,7 +338,6 @@ namespace Trainer_v5
 			{
 				foreach (var burglar in Settings.sActorManager.Others["Burglars"])
 				{
-					//burglar.Dismiss();
 					burglar.Despawned = true;
 					Settings.sActorManager.RemoveFromAwaiting(burglar);
 				}
@@ -444,7 +421,6 @@ namespace Trainer_v5
 			{
 				Settings.ElectricityBill = 0f;
 				Settings.Waterbill = 0f;
-				//Settings.SolarPanelBill = 0f;
 				Settings.Gasbill = 0f;
 			}
 
@@ -497,11 +473,14 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
 			{
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 				foreach (var company in Settings.simulation.Companies.Values.ToList())
 				{
 					if (company.Bankrupt && company.Distribution != null)
+					{
 						MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
+						HUD.Instance.digitalDistributionWindow.PlatformList.Items.Remove(company.Distribution);
+					}
 
 					if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
 						continue;
@@ -513,34 +492,31 @@ namespace Trainer_v5
 					company.Distribution.ActualItemSales = 0f;
 					company.Distribution.LastLoad = 0f;
 					company.Distribution.MarketShare = 0f;
-					//company.Distribution.Open = false;
 					MarketSimulation.Active.ClosePlatform(company.Distribution);
-					//MarketSimulation.Active.DistributionQueryChange.Remove(company);
-					//MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
 				}
 #endif
 			}
 
 			/*
 			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
-            {
-              actor.employee.BirthDate += months;
-              actor.employee.Hired += months;
-              actor.employee.LastWage += months;
-              actor.employee.LastInpirationUse += months;
-              actor.LastMeeting += months;
-              actor.MeetingTime += months;
-              actor.DriveTime += months;
-              actor.DespawnTime += months;
-              actor.LeaveTime += months;
-              actor.LastSocial += months;
-              actor.ForgetfulETA += months;
-            }
+			{
+			  actor.employee.BirthDate += months;
+			  actor.employee.Hired += months;
+			  actor.employee.LastWage += months;
+			  actor.employee.LastInpirationUse += months;
+			  actor.LastMeeting += months;
+			  actor.MeetingTime += months;
+			  actor.DriveTime += months;
+			  actor.DespawnTime += months;
+			  actor.LeaveTime += months;
+			  actor.LastSocial += months;
+			  actor.ForgetfulETA += months;
+			}
 			 * */
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 				var serverGroups = Settings.GetAllServerGroups().ToList();
 				if (serverGroups.Count == 0)
 					return;
@@ -551,13 +527,6 @@ namespace Trainer_v5
 					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
 						mostPowerfulServerGroup = serverGroup;
 				}
-
-				//string server;
-				//if (GameSettings.GetPrefServer("Deal", out server))
-				//{
-				//	GameSettings.SavePrefServer("Deal", mostPowerfulServerGroup.Name);
-				//	HUD.Instance.dealWindow.Combo.SelectedItem = (object)server;
-				//}
 
 				var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
 				if (serverDeals.Count == 0)
@@ -698,8 +667,6 @@ namespace Trainer_v5
 
 		public static void PushDeal()
 		{
-			Helpers.DealIsPushed = true;
-
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(false).Where(pr =>
 				  MarketSimulation.Active.SoftwareTypes.ContainsKey(pr.Type.ToString())
 				&& pr.Userbase > 0
@@ -709,18 +676,20 @@ namespace Trainer_v5
 					  .ToArray();
 
 			if (Products.Length == 0)
-			{
 				return;
-			}
 
 			int index = Helpers.Random.Next(0, Products.Length);
-			ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
-			deal.StillValid(true);
-			deal.PerPower *= 2f;
-
-			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.Any(x => x.GetTitle() == deal.GetTitle());
+			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
+			{
+				ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
+				deal.StillValid(true);
+				deal.PerPower *= 2f;
+
 				HUD.Instance.dealWindow.InsertDeal(deal);
+
+				Helpers.DealIsPushed = true;
+			}
 		}
 
 		public static void Test()
@@ -865,7 +834,7 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
+#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
 #else
 					actor.employee.LeadSpecialization[t] = 1f;
@@ -943,30 +912,6 @@ namespace Trainer_v5
 				var deadline = contract.Deadline;
 				contract.Deadline = new SDateTime(deadline.Year + 1, deadline.Month, deadline.Day);
 			}
-		}
-
-		#endregion
-
-		#region Add Quality
-
-		public static void AddQualityAction(string input)
-		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
-					(item as SoftwareAlpha).Name == input && !(item as SoftwareAlpha).InBeta);
-
-			if (WorkItem == null)
-			{
-				return;
-			}
-
-			var softwareAlpha = ((SoftwareAlpha)WorkItem);
-			softwareAlpha.AddQuality(10f, 10f, false);
-		}
-
-		public static void AddQuality()
-		{
-			WindowManager.SpawnInputDialog("Type product name:", "Add Quality", "", AddQualityAction);
 		}
 
 		#endregion
@@ -1228,6 +1173,28 @@ namespace Trainer_v5
 			HUD.Instance.RefreshBuildButtons();
 
 			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
+		}
+
+		#endregion
+
+		#region Experimental/Test
+
+		public static void TestAction(string input)
+		{
+			WorkItem WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && !item.InBeta);
+
+			if (WorkItem == null)
+				return;
+
+			var softwareAlpha = ((SoftwareAlpha)WorkItem);
+			softwareAlpha.AddQuality(10f, 10f, false);
+		}
+
+		public static void TestButton()
+		{
+			WindowManager.SpawnInputDialog("Type product name in alpha (not beta):", "Add Quality", "", TestAction);
 		}
 
 		#endregion

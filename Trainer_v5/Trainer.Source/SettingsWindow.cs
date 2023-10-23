@@ -45,11 +45,14 @@ namespace Trainer_v5
 				  .onClick.AddListener(() => Shown = false);
 			}
 
+			bool experimental = Helpers.GetProperty(settings, "Experimental") || Helpers.IsDebug;
+
 			List<GameObject> column1 = new List<GameObject>();
 			List<GameObject> column2 = new List<GameObject>();
 			List<GameObject> column3 = new List<GameObject>();
 			List<GameObject> column4 = new List<GameObject>();
 			List<GameObject> column5 = new List<GameObject>();
+			List<GameObject> column6 = new List<GameObject>();
 
 			#region column1
 
@@ -72,11 +75,6 @@ namespace Trainer_v5
 			Utils.AddButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace, column1);
 			Utils.AddButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline, column1);
 			Utils.AddButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards, column1);
-
-			if (Helpers.IsDebug)
-			{
-				Utils.AddButton("Test".LocDef("Test"), TrainerBehaviour.AddQuality, column1);
-			}
 
 			#endregion
 
@@ -104,22 +102,12 @@ namespace Trainer_v5
 						  a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
 			Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
 					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);
-			Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
-					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column2);
-			Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
-					a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column2);
 			Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
 					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column2);
 			Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
 					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column2);
 			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
 					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column2);
-
-			if (Helpers.IsDebug)
-			{
-				bool isOn = false;
-				Utils.AddToggle("Test".LocDef("Test"), isOn, a => isOn = !isOn, column2);
-			}
 
 			#endregion
 
@@ -170,8 +158,6 @@ namespace Trainer_v5
 			Utils.AddEmptyBox(column4);
 			Utils.AddEmptyBox(column4);
 			Utils.AddEmptyBox(column4);
-			//Utils.AddToggle("Auto Distribution Deals", Helpers.GetProperty(settings, "AutoDistributionDeals"),
-			//	a => Helpers.SetProperty(settings, "AutoDistributionDeals", !Helpers.GetProperty(settings, "AutoDistributionDeals")), column4);
 			Utils.AddToggle("FreePrint".LocDef("Free Print"), Helpers.GetProperty(settings, "FreePrint"),
 					a => Helpers.SetProperty(settings, "FreePrint", !Helpers.GetProperty(settings, "FreePrint")), column4);
 			Utils.AddToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), Helpers.GetProperty(settings, "NoWaterElectricity"),
@@ -217,14 +203,33 @@ namespace Trainer_v5
 
 			#endregion
 
+			#region column6
+			Utils.AddToggle("Experimental".LocDef("Experimental"), Helpers.GetProperty(settings, "Experimental"),
+					a => Helpers.SetProperty(settings, "Experimental", !Helpers.GetProperty(settings, "Experimental")), column6);
+			Utils.AddEmptyBox(column6);
+
+			if (experimental)
+			{
+				bool isOn = false;
+				Utils.AddToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn, column6);
+				Utils.AddButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton, column6);
+				Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
+					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column6);
+				Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
+						a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column6);
+			}
+			
+			#endregion
+
 			Utils.CreateGameObjects(Constants.FIRST_COLUMN, column1.ToArray(), Window);
 			Utils.CreateGameObjects(Constants.SECOND_COLUMN, column2.ToArray(), Window);
 			Utils.CreateGameObjects(Constants.THIRD_COLUMN, column3.ToArray(), Window);
 			Utils.CreateGameObjects(Constants.FOURTH_COLUMN, column4.ToArray(), Window);
 			Utils.CreateGameObjects(Constants.FIFTH_COLUMN, column5.ToArray(), Window, isComboBox: true);
+			Utils.CreateGameObjects(Constants.SIXTH_COLUMN, column6.ToArray(), Window);
 
-			int columnsCount = new int[] { column1.Count(), column2.Count(), column3.Count(), column4.Count(), column5.Count() }.Max();
-			Utils.SetWindowSize(columnsCount, Constants.X_SETTINGS_WINDOW, Window);
+			int maxRowsCount = new int[] { column1.Count, column2.Count, column3.Count, column4.Count, column5.Count, column6.Count }.Max();
+			Utils.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW, Window);
 		}
 	}
 }

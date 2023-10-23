@@ -3,6 +3,17 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.7.**
+23.10.2023. for Beta 1
+- Added experimental features column.
+- Removed deprecated features (non-fixable).
+- Added new loans.
+- Possible fix for NoSickness.
+- Disable Employee smell (NoNeeds upgraded).
+- Possible fix for FreeEmployees where employee try to negotitate salary even if it's zero.
+
+---
+
 **5.1.6**
 
 22.10.2023. for Beta 1
