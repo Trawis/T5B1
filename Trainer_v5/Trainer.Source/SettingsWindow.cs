@@ -206,7 +206,7 @@ namespace Trainer_v5
 			#region column6
 			Utils.AddToggle("Experimental".LocDef("Experimental"), Helpers.GetProperty(settings, "Experimental"),
 					a => Helpers.SetProperty(settings, "Experimental", !Helpers.GetProperty(settings, "Experimental")), column6);
-			Utils.AddEmptyBox(column6);
+			Utils.AddLabel("After toggle re-open the window", column6);
 
 			if (experimental)
 			{

@@ -30,6 +30,13 @@ namespace Trainer_v5
 			WindowManager.AddElementToWindow(label.gameObject, window, labelRect, new Rect(0, 0, 0, 0));
 		}
 
+		public static void AddLabel(string text, List<GameObject> objects)
+		{
+			Text label = WindowManager.SpawnLabel();
+			label.text = text;
+			objects.Add(label.gameObject);
+		}
+
 		public static void AddToggle(string text, bool isOn, UnityAction<bool> action, List<GameObject> toggles)
 		{
 			Toggle toggle = WindowManager.SpawnCheckbox();
