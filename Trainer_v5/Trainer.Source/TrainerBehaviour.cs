@@ -455,17 +455,21 @@ namespace Trainer_v5
 			{
 				var activeTechLevels = MarketSimulation.Active.TechLevels;
 				var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
+				var currentYear = TimeOfDay.Instance.Year;
 
 				if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
 				{
 					foreach (var activeTechLevel in activeTechLevels)
 					{
-						if (!Settings.IsResearching(activeTechLevel.Key) && !(Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1) < TimeOfDay.Instance.Year))
+						if (!Settings.IsResearching(activeTechLevel.Key))
 						{
-							var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
-							researchWork.AddDevTeams(defaultResearchTeams);
-
-							Settings.MyCompany.AddWorkItem(researchWork);
+							int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
+							if (latestResearchYear < currentYear)
+							{
+								var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
+								researchWork.AddDevTeams(defaultResearchTeams);
+								Settings.MyCompany.AddWorkItem(researchWork);
+							}
 						}
 					}
 				}
