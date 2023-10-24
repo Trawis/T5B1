@@ -59,7 +59,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				toggles[pair.Key] = toggle;
 			}
 
-			var col1 = new VerticalLayout()
+			var col1 = new VerticalLayout
 			{
 				Gap = 2,
 				Components = LayoutHelper.EnumerableOf(

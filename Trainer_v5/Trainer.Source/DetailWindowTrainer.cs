@@ -7,7 +7,7 @@ namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
 	{
-		private static bool _installed = false;
+		private static bool _installed;
 
 		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 

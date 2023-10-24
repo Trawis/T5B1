@@ -10,7 +10,7 @@ namespace Trainer_v5
 {
 	public class TrainerBehaviour : ModBehaviour
 	{
-		private static bool _specializationsLoaded = false;
+		private static bool _specializationsLoaded;
 		private float _defaultEnvironmentISPCostFactor;
 
 		private static GameSettings Settings => GameSettings.Instance;
@@ -460,7 +460,7 @@ namespace Trainer_v5
 				{
 					foreach (var activeTechLevel in activeTechLevels)
 					{
-						if (!Settings.IsResearching(activeTechLevel.Key) && !(Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1) >= TimeOfDay.Instance.Year))
+						if (!Settings.IsResearching(activeTechLevel.Key) && !(Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1) < TimeOfDay.Instance.Year))
 						{
 							var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
 							researchWork.AddDevTeams(defaultResearchTeams);
@@ -596,24 +596,23 @@ namespace Trainer_v5
 			var selectedRoles = Helpers.RolesList.Where(r => r.Value).ToList();
 			var selectedSpecializations = Helpers.SpecializationsList.Where(s => s.Value).ToList();
 
+			int amount;
 			if (selectedActors.Count == 0)
 			{
 				WindowManager.SpawnDialog("Select one or more employees.", false, DialogWindow.DialogType.Error);
 				return;
 			}
-			else if (selectedRoles.Count() == 0)
+			else if (selectedRoles.Count == 0)
 			{
 				WindowManager.SpawnDialog("Select one or more roles.", false, DialogWindow.DialogType.Error);
 				return;
 			}
-			else if (selectedSpecializations.Count() == 0)
+			else if (selectedSpecializations.Count == 0)
 			{
 				WindowManager.SpawnDialog("Select one or more specializations.", false, DialogWindow.DialogType.Error);
 				return;
 			}
-
-			int amount;
-			if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
+			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
 			{
 				WindowManager.SpawnDialog("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3", false, DialogWindow.DialogType.Error);
 				return;
@@ -782,7 +781,7 @@ namespace Trainer_v5
 			var dict = new Dictionary<string, string[]>();
 			var sim = new MarketSimulation();
 			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, sim);
-			simComp.CanMakeTransaction(1000000000f);
+			simComp.CanMakeTransaction(2139095030f);
 
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
 				product.DevCompany == Settings.MyCompany &&
