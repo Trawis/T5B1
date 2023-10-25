@@ -69,7 +69,7 @@
     <Compile Include="Trainer.Source\SDK\DefaultStyles.cs" />
     <Compile Include="Trainer.Source\SettingsWindow.cs" />
     <Compile Include="Trainer.Source\TrainerBehaviour.cs" />
-    <Compile Include="Trainer.Source\UtilitiesV2.cs" />
+    <Compile Include="Trainer.Source\UIHelper.cs" />
     <Compile Include="Trainer.Source\Utilities.cs" />
     <Compile Include="Trainer.Source\DetailWindowTrainer.cs" />
     <Compile Include="Trainer.Source\Extensions.cs" />
