@@ -56,178 +56,344 @@ namespace Trainer_v5
 
 			#region column1
 
-			Utils.AddButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney, column1);
-			Utils.AddButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers, column1);
-			Utils.AddEmptyBox(column1);
-			Utils.AddInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText, column1);
-			Utils.AddEmptyBox(column1);
-			Utils.AddButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany, column1);
-			Utils.AddEmptyBox(column1);
-			Utils.AddButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt, column1);
-			Utils.AddButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays, column1);
-			Utils.AddButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans, column1);
-			Utils.AddButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition, column1);
-			Utils.AddButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax, column1);
-			Utils.AddButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft, column1);
-			Utils.AddButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees, column1);
-			Utils.AddButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock, column1);
-			Utils.AddButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture, column1);
-			Utils.AddButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace, column1);
-			Utils.AddButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline, column1);
-			Utils.AddButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards, column1);
+			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
+			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
+			column1.Add(UIHelper.CreateLabel());
+			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
+			column1.Add(UIHelper.CreateLabel());
+			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany));
+			column1.Add(UIHelper.CreateLabel());
+			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt));
+			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays));
+			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
+			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
+			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax));
+			column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
+			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
+			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
+			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
+			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
+			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
+			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards));
+
+			//Utils.AddButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney, column1);
+			//Utils.AddButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers, column1);
+			//Utils.AddEmptyBox(column1);
+			//Utils.AddInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText, column1);
+			//Utils.AddEmptyBox(column1);
+			//Utils.AddButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany, column1);
+			//Utils.AddEmptyBox(column1);
+			//Utils.AddButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt, column1);
+			//Utils.AddButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays, column1);
+			//Utils.AddButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans, column1);
+			//Utils.AddButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition, column1);
+			//Utils.AddButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax, column1);
+			//Utils.AddButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft, column1);
+			//Utils.AddButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees, column1);
+			//Utils.AddButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock, column1);
+			//Utils.AddButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture, column1);
+			//Utils.AddButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace, column1);
+			//Utils.AddButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline, column1);
+			//Utils.AddButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards, column1);
 
 			#endregion
 
 			#region column2
-			Utils.AddButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation, column2);
-			Utils.AddButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs, column2);
-			Utils.AddEmptyBox(column2);
-			Utils.AddButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice, column2);
-			Utils.AddEmptyBox(column2);
-			Utils.AddButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany, column2);
-			Utils.AddEmptyBox(column2);
-			Utils.AddToggle("DisableNeeds".LocDef("Disable Needs"), Helpers.GetProperty(settings, "NoNeeds"),
-					a => Helpers.SetProperty(settings, "NoNeeds", !Helpers.GetProperty(settings, "NoNeeds")), column2);
-			Utils.AddToggle("DisableStress".LocDef("Disable Stress"), Helpers.GetProperty(settings, "NoStress"),
-					a => Helpers.SetProperty(settings, "NoStress", !Helpers.GetProperty(settings, "NoStress")), column2);
-			Utils.AddToggle("FreeEmployees".LocDef("Free Employees"), Helpers.GetProperty(settings, "FreeEmployees"),
-					a => Helpers.SetProperty(settings, "FreeEmployees", !Helpers.GetProperty(settings, "FreeEmployees")), column2);
-			Utils.AddToggle("FreeStaff".LocDef("Free Staff"), Helpers.GetProperty(settings, "FreeStaff"),
-					a => Helpers.SetProperty(settings, "FreeStaff", !Helpers.GetProperty(settings, "FreeStaff")), column2);
-			Utils.AddToggle("FullSatisfaction".LocDef("Full Satisfaction"), Helpers.GetProperty(settings, "FullSatisfaction"),
-					a => Helpers.SetProperty(settings, "FullSatisfaction", !Helpers.GetProperty(settings, "FullSatisfaction")), column2);
-			Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
-				a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
-			Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
-						  a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
-			Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
-					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);
-			Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
-					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column2);
-			Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
-					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column2);
-			Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
-					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column2);
+
+			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
+			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
+			column2.Add(UIHelper.CreateLabel());
+			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
+			column2.Add(UIHelper.CreateLabel());
+			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany));
+			column2.Add(UIHelper.CreateLabel());
+			column2.Add(UIHelper.CreateToggle("DisableNeeds".LocDef("Disable Needs"), Helpers.GetProperty(settings, "NoNeeds"),
+					a => Helpers.SetProperty(settings, "NoNeeds", !Helpers.GetProperty(settings, "NoNeeds"))));
+			column2.Add(UIHelper.CreateToggle("DisableStress".LocDef("Disable Stress"), Helpers.GetProperty(settings, "NoStress"),
+					a => Helpers.SetProperty(settings, "NoStress", !Helpers.GetProperty(settings, "NoStress"))));
+			column2.Add(UIHelper.CreateToggle("FreeEmployees".LocDef("Free Employees"), Helpers.GetProperty(settings, "FreeEmployees"),
+					a => Helpers.SetProperty(settings, "FreeEmployees", !Helpers.GetProperty(settings, "FreeEmployees"))));
+			column2.Add(UIHelper.CreateToggle("FreeStaff".LocDef("Free Staff"), Helpers.GetProperty(settings, "FreeStaff"),
+					a => Helpers.SetProperty(settings, "FreeStaff", !Helpers.GetProperty(settings, "FreeStaff"))));
+			column2.Add(UIHelper.CreateToggle("FullSatisfaction".LocDef("Full Satisfaction"), Helpers.GetProperty(settings, "FullSatisfaction"),
+					a => Helpers.SetProperty(settings, "FullSatisfaction", !Helpers.GetProperty(settings, "FullSatisfaction"))));
+			column2.Add(UIHelper.CreateToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
+					a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge"))));
+			column2.Add(UIHelper.CreateToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
+					a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation"))));
+			column2.Add(UIHelper.CreateToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
+					a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness"))));
+			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
+					a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart"))));
+			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
+					a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol"))));
+			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
+					a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection"))));
+
+			//Utils.AddButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation, column2);
+			//Utils.AddButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs, column2);
+			//Utils.AddEmptyBox(column2);
+			//Utils.AddButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice, column2);
+			//Utils.AddEmptyBox(column2);
+			//Utils.AddButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany, column2);
+			//Utils.AddEmptyBox(column2);
+			//Utils.AddToggle("DisableNeeds".LocDef("Disable Needs"), Helpers.GetProperty(settings, "NoNeeds"),
+			//		a => Helpers.SetProperty(settings, "NoNeeds", !Helpers.GetProperty(settings, "NoNeeds")), column2);
+			//Utils.AddToggle("DisableStress".LocDef("Disable Stress"), Helpers.GetProperty(settings, "NoStress"),
+			//		a => Helpers.SetProperty(settings, "NoStress", !Helpers.GetProperty(settings, "NoStress")), column2);
+			//Utils.AddToggle("FreeEmployees".LocDef("Free Employees"), Helpers.GetProperty(settings, "FreeEmployees"),
+			//		a => Helpers.SetProperty(settings, "FreeEmployees", !Helpers.GetProperty(settings, "FreeEmployees")), column2);
+			//Utils.AddToggle("FreeStaff".LocDef("Free Staff"), Helpers.GetProperty(settings, "FreeStaff"),
+			//		a => Helpers.SetProperty(settings, "FreeStaff", !Helpers.GetProperty(settings, "FreeStaff")), column2);
+			//Utils.AddToggle("FullSatisfaction".LocDef("Full Satisfaction"), Helpers.GetProperty(settings, "FullSatisfaction"),
+			//		a => Helpers.SetProperty(settings, "FullSatisfaction", !Helpers.GetProperty(settings, "FullSatisfaction")), column2);
+			//Utils.AddToggle("LockAge".LocDef("Lock Age of Employees"), Helpers.GetProperty(settings, "LockAge"),
+			//	a => Helpers.SetProperty(settings, "LockAge", !Helpers.GetProperty(settings, "LockAge")), column2);
+			//Utils.AddToggle("NoVacation".LocDef("No Vacation"), Helpers.GetProperty(settings, "NoVacation"),
+			//			  a => Helpers.SetProperty(settings, "NoVacation", !Helpers.GetProperty(settings, "NoVacation")), column2);
+			//Utils.AddToggle("NoSickness".LocDef("No Sickness"), Helpers.GetProperty(settings, "NoSickness"),
+			//		a => Helpers.SetProperty(settings, "NoSickness", !Helpers.GetProperty(settings, "NoSickness")), column2);
+			//Utils.AddToggle("AutoResearchStart".LocDef("Auto Research Start"), Helpers.GetProperty(settings, "AutoResearchStart"),
+			//		a => Helpers.SetProperty(settings, "AutoResearchStart", !Helpers.GetProperty(settings, "AutoResearchStart")), column2);
+			//Utils.AddToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), Helpers.GetProperty(settings, "DigitalDistributionMonopol"),
+			//		a => Helpers.SetProperty(settings, "DigitalDistributionMonopol", !Helpers.GetProperty(settings, "DigitalDistributionMonopol")), column2);
+			//Utils.AddToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), Helpers.GetProperty(settings, "DisableFireInspection"),
+			//		a => Helpers.SetProperty(settings, "DisableFireInspection", !Helpers.GetProperty(settings, "DisableFireInspection")), column2);
 
 			#endregion
 
 			#region column3
-			Utils.AddEmptyBox(column3);
-			Utils.AddEmptyBox(column3);
-			Utils.AddEmptyBox(column3);
-			Utils.AddButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock, column3);
-			Utils.AddEmptyBox(column3);
-			Utils.AddButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt, column3);
-			Utils.AddEmptyBox(column3);
 
-			Utils.AddToggle("FullEnvironment".LocDef("Full Environment"), Helpers.GetProperty(settings, "FullEnvironment"),
-					a => Helpers.SetProperty(settings, "FullEnvironment", !Helpers.GetProperty(settings, "FullEnvironment")), column3);
-			Utils.AddToggle("FullSunLight".LocDef("Full Sun Light"), Helpers.GetProperty(settings, "FullRoomBrightness"),
-					a => Helpers.SetProperty(settings, "FullRoomBrightness", !Helpers.GetProperty(settings, "FullRoomBrightness")), column3);
-			Utils.AddToggle("LockTemperature".LocDef("Lock Temperature To 21"), Helpers.GetProperty(settings, "TemperatureLock"),
-					a => Helpers.SetProperty(settings, "TemperatureLock", !Helpers.GetProperty(settings, "TemperatureLock")), column3);
-			Utils.AddToggle("NoMaintenance".LocDef("No Maintenance"), Helpers.GetProperty(settings, "NoMaintenance"),
-					a => Helpers.SetProperty(settings, "NoMaintenance", !Helpers.GetProperty(settings, "NoMaintenance")), column3);
-			Utils.AddToggle("NoiseReduction".LocDef("Noise Reduction"), Helpers.GetProperty(settings, "NoiseReduction"),
-					a => Helpers.SetProperty(settings, "NoiseReduction", !Helpers.GetProperty(settings, "NoiseReduction")), column3);
-			Utils.AddToggle("RoomsNeverDirty".LocDef("Rooms Never Dirty"), Helpers.GetProperty(settings, "CleanRooms"),
-					a => Helpers.SetProperty(settings, "CleanRooms", !Helpers.GetProperty(settings, "CleanRooms")), column3);
-			Utils.AddToggle("NoEducationCost".LocDef("No Education Cost"), Helpers.GetProperty(settings, "NoEducationCost"),
-					a => Helpers.SetProperty(settings, "NoEducationCost", !Helpers.GetProperty(settings, "NoEducationCost")), column3);
-			Utils.AddToggle("DisableFires".LocDef("Disable Fires"), Helpers.GetProperty(settings, "DisableFires"),
-					a => Helpers.SetProperty(settings, "DisableFires", !Helpers.GetProperty(settings, "DisableFires")), column3);
-			Utils.AddToggle("AutoDesignEnd".LocDef("Auto Design End"), Helpers.GetProperty(settings, "AutoEndDesign"),
-					a => Helpers.SetProperty(settings, "AutoEndDesign", !Helpers.GetProperty(settings, "AutoEndDesign")), column3);
-			Utils.AddToggle("AutoResearchEnd".LocDef("Auto Research End"), Helpers.GetProperty(settings, "AutoEndResearch"),
-					a => Helpers.SetProperty(settings, "AutoEndResearch", !Helpers.GetProperty(settings, "AutoEndResearch")), column3);
-			Utils.AddToggle("AutoPatentEnd".LocDef("Auto Patent End"), Helpers.GetProperty(settings, "AutoEndPatent"),
-					a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent")), column3);
-			Utils.AddToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
-					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
-			Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
-					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
+			column3.Add(UIHelper.CreateLabel());
+			column3.Add(UIHelper.CreateLabel());
+			column3.Add(UIHelper.CreateLabel());
+			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock));
+			column3.Add(UIHelper.CreateLabel());
+			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt));
+			column3.Add(UIHelper.CreateLabel());
+
+			column3.Add(UIHelper.CreateToggle("FullEnvironment".LocDef("Full Environment"), Helpers.GetProperty(settings, "FullEnvironment"),
+					a => Helpers.SetProperty(settings, "FullEnvironment", !Helpers.GetProperty(settings, "FullEnvironment"))));
+			column3.Add(UIHelper.CreateToggle("FullSunLight".LocDef("Full Sun Light"), Helpers.GetProperty(settings, "FullRoomBrightness"),
+					a => Helpers.SetProperty(settings, "FullRoomBrightness", !Helpers.GetProperty(settings, "FullRoomBrightness"))));
+			column3.Add(UIHelper.CreateToggle("LockTemperature".LocDef("Lock Temperature To 21"), Helpers.GetProperty(settings, "TemperatureLock"),
+					a => Helpers.SetProperty(settings, "TemperatureLock", !Helpers.GetProperty(settings, "TemperatureLock"))));
+			column3.Add(UIHelper.CreateToggle("NoMaintenance".LocDef("No Maintenance"), Helpers.GetProperty(settings, "NoMaintenance"),
+					a => Helpers.SetProperty(settings, "NoMaintenance", !Helpers.GetProperty(settings, "NoMaintenance"))));
+			column3.Add(UIHelper.CreateToggle("NoiseReduction".LocDef("Noise Reduction"), Helpers.GetProperty(settings, "NoiseReduction"),
+					a => Helpers.SetProperty(settings, "NoiseReduction", !Helpers.GetProperty(settings, "NoiseReduction"))));
+			column3.Add(UIHelper.CreateToggle("RoomsNeverDirty".LocDef("Rooms Never Dirty"), Helpers.GetProperty(settings, "CleanRooms"),
+					a => Helpers.SetProperty(settings, "CleanRooms", !Helpers.GetProperty(settings, "CleanRooms"))));
+			column3.Add(UIHelper.CreateToggle("NoEducationCost".LocDef("No Education Cost"), Helpers.GetProperty(settings, "NoEducationCost"),
+					a => Helpers.SetProperty(settings, "NoEducationCost", !Helpers.GetProperty(settings, "NoEducationCost"))));
+			column3.Add(UIHelper.CreateToggle("DisableFires".LocDef("Disable Fires"), Helpers.GetProperty(settings, "DisableFires"),
+					a => Helpers.SetProperty(settings, "DisableFires", !Helpers.GetProperty(settings, "DisableFires"))));
+			column3.Add(UIHelper.CreateToggle("AutoDesignEnd".LocDef("Auto Design End"), Helpers.GetProperty(settings, "AutoEndDesign"),
+					a => Helpers.SetProperty(settings, "AutoEndDesign", !Helpers.GetProperty(settings, "AutoEndDesign"))));
+			column3.Add(UIHelper.CreateToggle("AutoResearchEnd".LocDef("Auto Research End"), Helpers.GetProperty(settings, "AutoEndResearch"),
+					a => Helpers.SetProperty(settings, "AutoEndResearch", !Helpers.GetProperty(settings, "AutoEndResearch"))));
+			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), Helpers.GetProperty(settings, "AutoEndPatent"),
+					a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent"))));
+			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
+					a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed"))));
+			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
+					a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing"))));
+
+			//Utils.AddEmptyBox(column3);
+			//Utils.AddEmptyBox(column3);
+			//Utils.AddEmptyBox(column3);
+			//Utils.AddButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock, column3);
+			//Utils.AddEmptyBox(column3);
+			//Utils.AddButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt, column3);
+			//Utils.AddEmptyBox(column3);
+
+			//Utils.AddToggle("FullEnvironment".LocDef("Full Environment"), Helpers.GetProperty(settings, "FullEnvironment"),
+			//		a => Helpers.SetProperty(settings, "FullEnvironment", !Helpers.GetProperty(settings, "FullEnvironment")), column3);
+			//Utils.AddToggle("FullSunLight".LocDef("Full Sun Light"), Helpers.GetProperty(settings, "FullRoomBrightness"),
+			//		a => Helpers.SetProperty(settings, "FullRoomBrightness", !Helpers.GetProperty(settings, "FullRoomBrightness")), column3);
+			//Utils.AddToggle("LockTemperature".LocDef("Lock Temperature To 21"), Helpers.GetProperty(settings, "TemperatureLock"),
+			//		a => Helpers.SetProperty(settings, "TemperatureLock", !Helpers.GetProperty(settings, "TemperatureLock")), column3);
+			//Utils.AddToggle("NoMaintenance".LocDef("No Maintenance"), Helpers.GetProperty(settings, "NoMaintenance"),
+			//		a => Helpers.SetProperty(settings, "NoMaintenance", !Helpers.GetProperty(settings, "NoMaintenance")), column3);
+			//Utils.AddToggle("NoiseReduction".LocDef("Noise Reduction"), Helpers.GetProperty(settings, "NoiseReduction"),
+			//		a => Helpers.SetProperty(settings, "NoiseReduction", !Helpers.GetProperty(settings, "NoiseReduction")), column3);
+			//Utils.AddToggle("RoomsNeverDirty".LocDef("Rooms Never Dirty"), Helpers.GetProperty(settings, "CleanRooms"),
+			//		a => Helpers.SetProperty(settings, "CleanRooms", !Helpers.GetProperty(settings, "CleanRooms")), column3);
+			//Utils.AddToggle("NoEducationCost".LocDef("No Education Cost"), Helpers.GetProperty(settings, "NoEducationCost"),
+			//		a => Helpers.SetProperty(settings, "NoEducationCost", !Helpers.GetProperty(settings, "NoEducationCost")), column3);
+			//Utils.AddToggle("DisableFires".LocDef("Disable Fires"), Helpers.GetProperty(settings, "DisableFires"),
+			//		a => Helpers.SetProperty(settings, "DisableFires", !Helpers.GetProperty(settings, "DisableFires")), column3);
+			//Utils.AddToggle("AutoDesignEnd".LocDef("Auto Design End"), Helpers.GetProperty(settings, "AutoEndDesign"),
+			//		a => Helpers.SetProperty(settings, "AutoEndDesign", !Helpers.GetProperty(settings, "AutoEndDesign")), column3);
+			//Utils.AddToggle("AutoResearchEnd".LocDef("Auto Research End"), Helpers.GetProperty(settings, "AutoEndResearch"),
+			//		a => Helpers.SetProperty(settings, "AutoEndResearch", !Helpers.GetProperty(settings, "AutoEndResearch")), column3);
+			//Utils.AddToggle("AutoPatentEnd".LocDef("Auto Patent End"), Helpers.GetProperty(settings, "AutoEndPatent"),
+			//		a => Helpers.SetProperty(settings, "AutoEndPatent", !Helpers.GetProperty(settings, "AutoEndPatent")), column3);
+			//Utils.AddToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), Helpers.GetProperty(settings, "IncreaseWalkSpeed"),
+			//		a => Helpers.SetProperty(settings, "IncreaseWalkSpeed", !Helpers.GetProperty(settings, "IncreaseWalkSpeed")), column3);
+			//Utils.AddToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), Helpers.GetProperty(settings, "DisableFurnitureStealing"),
+			//		a => Helpers.SetProperty(settings, "DisableFurnitureStealing", !Helpers.GetProperty(settings, "DisableFurnitureStealing")), column3);
 
 			#endregion
 
 			#region column4
 
-			Utils.AddEmptyBox(column4);
-			Utils.AddEmptyBox(column4);
-			Utils.AddEmptyBox(column4);
-			Utils.AddButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers, column4);
-			Utils.AddEmptyBox(column4);
-			Utils.AddEmptyBox(column4);
-			Utils.AddEmptyBox(column4);
-			Utils.AddToggle("FreePrint".LocDef("Free Print"), Helpers.GetProperty(settings, "FreePrint"),
-					a => Helpers.SetProperty(settings, "FreePrint", !Helpers.GetProperty(settings, "FreePrint")), column4);
-			Utils.AddToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), Helpers.GetProperty(settings, "NoWaterElectricity"),
-					a => Helpers.SetProperty(settings, "NoWaterElectricity", !Helpers.GetProperty(settings, "NoWaterElectricity")), column4);
-			Utils.AddToggle("IncreaseBookshelfSkill".LocDef("Increase Bookshelf Skill"), Helpers.GetProperty(settings, "IncreaseBookshelfSkill"),
-					a => Helpers.SetProperty(settings, "IncreaseBookshelfSkill", !Helpers.GetProperty(settings, "IncreaseBookshelfSkill")), column4);
-			Utils.AddToggle("IncreaseCourierCapacity".LocDef("Increase Courier Capacity"), Helpers.GetProperty(settings, "IncreaseCourierCapacity"),
-					a => Helpers.SetProperty(settings, "IncreaseCourierCapacity", !Helpers.GetProperty(settings, "IncreaseCourierCapacity")), column4);
-			Utils.AddToggle("IncreasePrintSpeed".LocDef("Increase Print Speed"), Helpers.GetProperty(settings, "IncreasePrintSpeed"),
-					a => Helpers.SetProperty(settings, "IncreasePrintSpeed", !Helpers.GetProperty(settings, "IncreasePrintSpeed")), column4);
-			Utils.AddToggle("MoreHostingDeals".LocDef("More Hosting Deals"), Helpers.GetProperty(settings, "MoreHostingDeals"),
-					a => Helpers.SetProperty(settings, "MoreHostingDeals", !Helpers.GetProperty(settings, "MoreHostingDeals")), column4);
-			Utils.AddToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), Helpers.GetProperty(settings, "ReduceISPCost"),
-					a => Helpers.SetProperty(settings, "ReduceISPCost", !Helpers.GetProperty(settings, "ReduceISPCost")), column4);
-			Utils.AddToggle("NoServerCost".LocDef("No Server Cost"), Helpers.GetProperty(settings, "NoServerCost"),
-					a => Helpers.SetProperty(settings, "NoServerCost", !Helpers.GetProperty(settings, "NoServerCost")), column4);
-			Utils.AddToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), Helpers.GetProperty(settings, "ReduceExpansionCost"),
-					a => Helpers.SetProperty(settings, "ReduceExpansionCost", !Helpers.GetProperty(settings, "ReduceExpansionCost")), column4);
-			Utils.AddToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), Helpers.GetProperty(settings, "ReduceBoxPrice"),
-					a => Helpers.SetProperty(settings, "ReduceBoxPrice", !Helpers.GetProperty(settings, "ReduceBoxPrice")), column4);
-			Utils.AddToggle("DisableForcePause".LocDef("Disable Force Pause"), Helpers.GetProperty(settings, "DisableForcePause"),
-					a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause")), column4);
-			Utils.AddToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
-					a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze")), column4);
-			Utils.AddToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), Helpers.GetProperty(settings, "AutoAcceptHostingDeals"),
-					a => Helpers.SetProperty(settings, "AutoAcceptHostingDeals", !Helpers.GetProperty(settings, "AutoAcceptHostingDeals")), column4);
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers));
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateLabel());
+			column4.Add(UIHelper.CreateToggle("FreePrint".LocDef("Free Print"), Helpers.GetProperty(settings, "FreePrint"),
+					a => Helpers.SetProperty(settings, "FreePrint", !Helpers.GetProperty(settings, "FreePrint"))));
+			column4.Add(UIHelper.CreateToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), Helpers.GetProperty(settings, "NoWaterElectricity"),
+					a => Helpers.SetProperty(settings, "NoWaterElectricity", !Helpers.GetProperty(settings, "NoWaterElectricity"))));
+			column4.Add(UIHelper.CreateToggle("IncreaseBookshelfSkill".LocDef("Increase Bookshelf Skill"), Helpers.GetProperty(settings, "IncreaseBookshelfSkill"),
+					a => Helpers.SetProperty(settings, "IncreaseBookshelfSkill", !Helpers.GetProperty(settings, "IncreaseBookshelfSkill"))));
+			column4.Add(UIHelper.CreateToggle("IncreaseCourierCapacity".LocDef("Increase Courier Capacity"), Helpers.GetProperty(settings, "IncreaseCourierCapacity"),
+					a => Helpers.SetProperty(settings, "IncreaseCourierCapacity", !Helpers.GetProperty(settings, "IncreaseCourierCapacity"))));
+			column4.Add(UIHelper.CreateToggle("IncreasePrintSpeed".LocDef("Increase Print Speed"), Helpers.GetProperty(settings, "IncreasePrintSpeed"),
+					a => Helpers.SetProperty(settings, "IncreasePrintSpeed", !Helpers.GetProperty(settings, "IncreasePrintSpeed"))));
+			column4.Add(UIHelper.CreateToggle("MoreHostingDeals".LocDef("More Hosting Deals"), Helpers.GetProperty(settings, "MoreHostingDeals"),
+					a => Helpers.SetProperty(settings, "MoreHostingDeals", !Helpers.GetProperty(settings, "MoreHostingDeals"))));
+			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), Helpers.GetProperty(settings, "ReduceISPCost"),
+					a => Helpers.SetProperty(settings, "ReduceISPCost", !Helpers.GetProperty(settings, "ReduceISPCost"))));
+			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), Helpers.GetProperty(settings, "NoServerCost"),
+					a => Helpers.SetProperty(settings, "NoServerCost", !Helpers.GetProperty(settings, "NoServerCost"))));
+			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), Helpers.GetProperty(settings, "ReduceExpansionCost"),
+					a => Helpers.SetProperty(settings, "ReduceExpansionCost", !Helpers.GetProperty(settings, "ReduceExpansionCost"))));
+			column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), Helpers.GetProperty(settings, "ReduceBoxPrice"),
+					a => Helpers.SetProperty(settings, "ReduceBoxPrice", !Helpers.GetProperty(settings, "ReduceBoxPrice"))));
+			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), Helpers.GetProperty(settings, "DisableForcePause"),
+					a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause"))));
+			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
+					a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze"))));
+			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), Helpers.GetProperty(settings, "AutoAcceptHostingDeals"),
+					a => Helpers.SetProperty(settings, "AutoAcceptHostingDeals", !Helpers.GetProperty(settings, "AutoAcceptHostingDeals"))));
+
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers, column4);
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddEmptyBox(column4);
+			//Utils.AddToggle("FreePrint".LocDef("Free Print"), Helpers.GetProperty(settings, "FreePrint"),
+			//		a => Helpers.SetProperty(settings, "FreePrint", !Helpers.GetProperty(settings, "FreePrint")), column4);
+			//Utils.AddToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), Helpers.GetProperty(settings, "NoWaterElectricity"),
+			//		a => Helpers.SetProperty(settings, "NoWaterElectricity", !Helpers.GetProperty(settings, "NoWaterElectricity")), column4);
+			//Utils.AddToggle("IncreaseBookshelfSkill".LocDef("Increase Bookshelf Skill"), Helpers.GetProperty(settings, "IncreaseBookshelfSkill"),
+			//		a => Helpers.SetProperty(settings, "IncreaseBookshelfSkill", !Helpers.GetProperty(settings, "IncreaseBookshelfSkill")), column4);
+			//Utils.AddToggle("IncreaseCourierCapacity".LocDef("Increase Courier Capacity"), Helpers.GetProperty(settings, "IncreaseCourierCapacity"),
+			//		a => Helpers.SetProperty(settings, "IncreaseCourierCapacity", !Helpers.GetProperty(settings, "IncreaseCourierCapacity")), column4);
+			//Utils.AddToggle("IncreasePrintSpeed".LocDef("Increase Print Speed"), Helpers.GetProperty(settings, "IncreasePrintSpeed"),
+			//		a => Helpers.SetProperty(settings, "IncreasePrintSpeed", !Helpers.GetProperty(settings, "IncreasePrintSpeed")), column4);
+			//Utils.AddToggle("MoreHostingDeals".LocDef("More Hosting Deals"), Helpers.GetProperty(settings, "MoreHostingDeals"),
+			//		a => Helpers.SetProperty(settings, "MoreHostingDeals", !Helpers.GetProperty(settings, "MoreHostingDeals")), column4);
+			//Utils.AddToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), Helpers.GetProperty(settings, "ReduceISPCost"),
+			//		a => Helpers.SetProperty(settings, "ReduceISPCost", !Helpers.GetProperty(settings, "ReduceISPCost")), column4);
+			//Utils.AddToggle("NoServerCost".LocDef("No Server Cost"), Helpers.GetProperty(settings, "NoServerCost"),
+			//		a => Helpers.SetProperty(settings, "NoServerCost", !Helpers.GetProperty(settings, "NoServerCost")), column4);
+			//Utils.AddToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), Helpers.GetProperty(settings, "ReduceExpansionCost"),
+			//		a => Helpers.SetProperty(settings, "ReduceExpansionCost", !Helpers.GetProperty(settings, "ReduceExpansionCost")), column4);
+			//Utils.AddToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), Helpers.GetProperty(settings, "ReduceBoxPrice"),
+			//		a => Helpers.SetProperty(settings, "ReduceBoxPrice", !Helpers.GetProperty(settings, "ReduceBoxPrice")), column4);
+			//Utils.AddToggle("DisableForcePause".LocDef("Disable Force Pause"), Helpers.GetProperty(settings, "DisableForcePause"),
+			//		a => Helpers.SetProperty(settings, "DisableForcePause", !Helpers.GetProperty(settings, "DisableForcePause")), column4);
+			//Utils.AddToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), Helpers.GetProperty(settings, "DisableForceFreeze"),
+			//		a => Helpers.SetProperty(settings, "DisableForceFreeze", !Helpers.GetProperty(settings, "DisableForceFreeze")), column4);
+			//Utils.AddToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), Helpers.GetProperty(settings, "AutoAcceptHostingDeals"),
+			//		a => Helpers.SetProperty(settings, "AutoAcceptHostingDeals", !Helpers.GetProperty(settings, "AutoAcceptHostingDeals")), column4);
 
 			#endregion
 
 			#region column5
-			Utils.AddEmptyBox(column5);
-			Utils.AddButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite(), column5);
-			Utils.AddEmptyBox(column5);
-			Utils.AddEmptyBox(column5);
-			Utils.AddEmptyBox(column5);
-			Utils.AddEmptyBox(column5);
 
-			GUICombobox efficiencyComboBox = Utils.AddComboBox("Efficiency", efficiencyValues, Helpers.GetIndex(efficiencyValues, stores, "EfficiencyStore", 2), column5);
+			column5.Add(UIHelper.CreateLabel());
+			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite()));
+			column5.Add(UIHelper.CreateLabel());
+			column5.Add(UIHelper.CreateLabel());
+			column5.Add(UIHelper.CreateLabel());
+			column5.Add(UIHelper.CreateLabel());
+
+			column5.Add(UIHelper.CreateLabel("Efficiency"));
+			var efficiencyComboBox = UIHelper.CreateComboBox(
+				selectableItems: efficiencyValues,
+				selection: Helpers.GetIndex(efficiencyValues, stores, "EfficiencyStore", 2)
+			);
 			efficiencyComboBox.OnSelectedChanged.AddListener(() => Helpers.SetProperty(stores, "EfficiencyStore", efficiencyValues[efficiencyComboBox.Selected].Value));
 
-			GUICombobox leadEfficiencyComboBox = Utils.AddComboBox("Lead Efficiency", Helpers.EfficiencyValues, Helpers.GetIndex(efficiencyValues, stores, "LeadEfficiencyStore", 2), column5);
+			column5.Add(UIHelper.CreateLabel("Lead Efficiency"));
+			var leadEfficiencyComboBox = UIHelper.CreateComboBox(
+				selectableItems: efficiencyValues,
+				selection: Helpers.GetIndex(efficiencyValues, stores, "LeadEfficiencyStore", 2)
+			);
 			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => Helpers.SetProperty(stores, "LeadEfficiencyStore", efficiencyValues[leadEfficiencyComboBox.Selected].Value));
+
+			//Utils.AddEmptyBox(column5);
+			//Utils.AddButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite(), column5);
+			//Utils.AddEmptyBox(column5);
+			//Utils.AddEmptyBox(column5);
+			//Utils.AddEmptyBox(column5);
+			//Utils.AddEmptyBox(column5);
+
+			//GUICombobox efficiencyComboBox = Utils.AddComboBox("Efficiency", efficiencyValues, Helpers.GetIndex(efficiencyValues, stores, "EfficiencyStore", 2), column5);
+			//efficiencyComboBox.OnSelectedChanged.AddListener(() => Helpers.SetProperty(stores, "EfficiencyStore", efficiencyValues[efficiencyComboBox.Selected].Value));
+
+			//GUICombobox leadEfficiencyComboBox = Utils.AddComboBox("Lead Efficiency", Helpers.EfficiencyValues, Helpers.GetIndex(efficiencyValues, stores, "LeadEfficiencyStore", 2), column5);
+			//leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => Helpers.SetProperty(stores, "LeadEfficiencyStore", efficiencyValues[leadEfficiencyComboBox.Selected].Value));
 
 			#endregion
 
 			#region column6
-			Utils.AddToggle("Experimental".LocDef("Experimental"), Helpers.GetProperty(settings, "Experimental"),
-					a => Helpers.SetProperty(settings, "Experimental", !Helpers.GetProperty(settings, "Experimental")), column6);
-			Utils.AddLabel("After toggle re-open the window", column6);
-			Utils.AddEmptyBox(column6);
+			column6.Add(UIHelper.CreateToggle("Experimental".LocDef("Experimental"), Helpers.GetProperty(settings, "Experimental"),
+					a => Helpers.SetProperty(settings, "Experimental", !Helpers.GetProperty(settings, "Experimental"))));
+			column6.Add(UIHelper.CreateLabel("After toggle re-open the window"));
+			column6.Add(UIHelper.CreateLabel());
 
 			if (experimental)
 			{
 				bool isOn = false;
-				Utils.AddToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn, column6);
-				Utils.AddButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton, column6);
-				Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
-					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column6);
-				Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
-						a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column6);
+				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
+				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
+				column6.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
+					a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration"))));
+				column6.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
+						a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity"))));
 			}
-			
+
+			//Utils.AddToggle("Experimental".LocDef("Experimental"), Helpers.GetProperty(settings, "Experimental"),
+			//		a => Helpers.SetProperty(settings, "Experimental", !Helpers.GetProperty(settings, "Experimental")), column6);
+			//Utils.AddLabel("After toggle re-open the window", column6);
+			//Utils.AddEmptyBox(column6);
+
+			//if (experimental)
+			//{
+			//	bool isOn = false;
+			//	Utils.AddToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn, column6);
+			//	Utils.AddButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton, column6);
+			//	Utils.AddToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), Helpers.GetProperty(settings, "MoreInspiration"),
+			//		a => Helpers.SetProperty(settings, "MoreInspiration", !Helpers.GetProperty(settings, "MoreInspiration")), column6);
+			//	Utils.AddToggle("MoreCreativity".LocDef("More Creativity [TEST]"), Helpers.GetProperty(settings, "MoreCreativity"),
+			//			a => Helpers.SetProperty(settings, "MoreCreativity", !Helpers.GetProperty(settings, "MoreCreativity")), column6);
+			//}
+
 			#endregion
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN, column1.ToArray(), Window);
-			Utils.CreateGameObjects(Constants.SECOND_COLUMN, column2.ToArray(), Window);
-			Utils.CreateGameObjects(Constants.THIRD_COLUMN, column3.ToArray(), Window);
-			Utils.CreateGameObjects(Constants.FOURTH_COLUMN, column4.ToArray(), Window);
-			Utils.CreateGameObjects(Constants.FIFTH_COLUMN, column5.ToArray(), Window, isComboBox: true);
-			Utils.CreateGameObjects(Constants.SIXTH_COLUMN, column6.ToArray(), Window);
+			//Utils.CreateGameObjects(Constants.FIRST_COLUMN, column1.ToArray(), Window);
+			//Utils.CreateGameObjects(Constants.SECOND_COLUMN, column2.ToArray(), Window);
+			//Utils.CreateGameObjects(Constants.THIRD_COLUMN, column3.ToArray(), Window);
+			//Utils.CreateGameObjects(Constants.FOURTH_COLUMN, column4.ToArray(), Window);
+			//Utils.CreateGameObjects(Constants.FIFTH_COLUMN, column5.ToArray(), Window, isComboBox: true);
+			//Utils.CreateGameObjects(Constants.SIXTH_COLUMN, column6.ToArray(), Window);
+
+			column1.AddToWindow(Window, Constants.FIRST_COLUMN);
+			column2.AddToWindow(Window, Constants.SECOND_COLUMN);
+			column3.AddToWindow(Window, Constants.THIRD_COLUMN);
+			column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
+			column5.AddToWindow(Window, Constants.FIFTH_COLUMN, isComboBox: true);
+			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
 			int maxRowsCount = new int[] { column1.Count, column2.Count, column3.Count, column4.Count, column5.Count, column6.Count }.Max();
 			Utils.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW, Window);
