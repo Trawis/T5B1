@@ -48,11 +48,11 @@ namespace Trainer_v5
 			return control.gameObject;
 		}
 
-		public static GUICombobox CreateComboBox(List<KeyValuePair<string, object>> selectableItems, int selection, string name = null)
+		public static GUICombobox CreateComboBox(Dictionary<string, object> selectableItems, int selection, string name = null)
 		{
 			var comboBox = WindowManager.SpawnComboBox();
 			comboBox.name = name.NameOrDefault<GUICombobox>();
-			comboBox.UpdateContent(selectableItems.Select((KeyValuePair<string, object> x) => x.Key));
+			comboBox.UpdateContent(selectableItems.Select(x => x.Key));
 			comboBox.UpdateSelection(selection);
 
 			return comboBox;

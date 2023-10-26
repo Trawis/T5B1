@@ -15,7 +15,7 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
-		private static Dictionary<string, object> Stores => Helpers.Stores;
+		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
 
 		private void Start()
 		{
@@ -241,14 +241,14 @@ namespace Trainer_v5
 					employee.Stress = 1;
 				}
 
-				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "LeadEfficiencyStore") != null)
+				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore") != null)
 				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "LeadEfficiencyStore").MakeFloat();
+					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore").MakeFloat();
 				}
 
-				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "EfficiencyStore") != null)
+				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "EfficiencyStore") != null)
 				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
+					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat();
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
