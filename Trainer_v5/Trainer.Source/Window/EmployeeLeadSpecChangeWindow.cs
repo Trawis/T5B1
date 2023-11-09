@@ -59,7 +59,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				toggles[pair.Key] = toggle;
 			}
 
-			var col1 = new VerticalLayout()
+			var col1 = new VerticalLayout
 			{
 				Gap = 2,
 				Components = LayoutHelper.EnumerableOf(
@@ -114,7 +114,13 @@ namespace Trainer_v5.Trainer.Source.Window
 				val =>
 				{
 					foreach (var type in selectTypes)
+					{
+#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 						employee.LeadSpecializationFix[type.ToString()] = val;
+#else
+						employee.LeadSpecialization[type] = val;
+#endif
+					}
 				},
 				min: 0, max: 1
 				);

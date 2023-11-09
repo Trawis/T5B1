@@ -63,7 +63,7 @@ namespace Trainer_v5
 
 	public class TextStyle
 	{
-		public TextAnchor? Alignment;
-		public FontStyle? FontStyle;
+		public TextAnchor? Alignment { get; set; }
+		public FontStyle? FontStyle { get; set; }
 	}
 }

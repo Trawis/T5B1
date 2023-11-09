@@ -5,7 +5,7 @@
 		public const int ELEMENT_WIDTH = 150;
 		public const int ELEMENT_HEIGHT = 32;
 
-		public const int X_SETTINGS_WINDOW = 831;
+		public const int X_SETTINGS_WINDOW = 982;
 		public const int X_EMPLOYEESKILLCHANGE_WINDOW = 300;
 
 		public const int FIRST_COLUMN = 1;
@@ -13,6 +13,7 @@
 		public const int THIRD_COLUMN = 322;
 		public const int FOURTH_COLUMN = 483;
 		public const int FIFTH_COLUMN = 644;
+		public const int SIXTH_COLUMN = 805;
 
 		public const int FIRST_ROW = 0;
 		public const int SECOND_ROW = 1 * ELEMENT_HEIGHT;

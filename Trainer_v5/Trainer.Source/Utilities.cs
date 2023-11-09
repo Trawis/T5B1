@@ -30,6 +30,13 @@ namespace Trainer_v5
 			WindowManager.AddElementToWindow(label.gameObject, window, labelRect, new Rect(0, 0, 0, 0));
 		}
 
+		public static void AddLabel(string text, List<GameObject> objects)
+		{
+			Text label = WindowManager.SpawnLabel();
+			label.text = text;
+			objects.Add(label.gameObject);
+		}
+
 		public static void AddToggle(string text, bool isOn, UnityAction<bool> action, List<GameObject> toggles)
 		{
 			Toggle toggle = WindowManager.SpawnCheckbox();
@@ -87,10 +94,10 @@ namespace Trainer_v5
 			WindowManager.AddElementToElement(gameObject, WindowManager.FindElementPath(path).gameObject, location, new Rect(0, 0, 0, 0));
 		}
 
-		public static void SetWindowSize(int colums, int xWindowSize, GUIWindow window)
+		public static void SetWindowSize(int rows, int xWindowSize, GUIWindow window)
 		{
 			window.MinSize.x = xWindowSize;
-			window.MinSize.y = (colums + 1) * Constants.ELEMENT_HEIGHT;
+			window.MinSize.y = (rows + 1) * Constants.ELEMENT_HEIGHT;
 		}
 	}
 }

@@ -6,7 +6,7 @@ namespace Trainer_v5
 {
 	public class Main : ModMeta
 	{
-		public override string Name => Helpers.TrainerVersion;
+		public override string Name => "TrainerByTrawis";
 		public static Button TrainerButton { get; set; }
 		public static Button SkillChangeButton { get; set; }
 
@@ -43,7 +43,7 @@ namespace Trainer_v5
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)
 		{
 			Text label = WindowManager.SpawnLabel();
-			label.text = "Please load a game and press 'Trainer' button.";
+			label.text = "Please load the game and press 'Trainer' button.";
 
 			WindowManager.AddElementToElement(label.gameObject, parent.gameObject, new Rect(0, 0, 400, 128),
 					new Rect(0, 0, 0, 0));

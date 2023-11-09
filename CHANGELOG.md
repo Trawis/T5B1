@@ -3,6 +3,67 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.7.**
+23.10.2023. for Beta 1
+- Added experimental features column.
+- Removed deprecated features (non-fixable).
+- Added new loans.
+- Possible fix for NoSickness.
+- Disable Employee smell (NoNeeds upgraded).
+- Possible fix for FreeEmployees where employee try to negotitate salary even if it's zero.
+
+---
+
+**5.1.6**
+
+22.10.2023. for Beta 1
+- Fixed Trainer Settings save on version increase
+- Display game version in Trainer Settings Window
+- Fixed duplicated Hosting Deals when More Hosting Deals is activated
+- Added Auto Accept Hosting Deals feature
+- Added missing Hosting category when using Max Reputation feature
+- Remove the distribution platform if the simulated company is bankrupt
+
+---
+
+**5.1.5**
+
+21.10.2023. for Beta 1
+- Fixed not saving new toggles
+
+---
+
+**5.1.4**
+
+16.10.2023. for Beta 1
+- Fixed Disable Fire Inspection feature
+- Trainer Window: Toggles rearrange
+- Updated Discord invite link
+- Backward compatibility for Beta 1.6
+- Added 8000% efficiency option
+
+---
+
+**5.1.3**
+
+15.10.2023. for Beta 1
+- Added Disable Fire Inspection feature
+- Added Disable Force Pause feature
+- Added Disable Force Freeze feature
+- Added Auto Research Start feature
+- Dynamic loading of software types for More Hosting Deals
+- Added Digital Distribution Monopol feature
+
+---
+
+**5.1.2**
+
+14.10.2023. for Beta 1
+- Updated libraries
+- Added Unlock and Claim all Rewards feature
+
+---
+
 **5.1.1**
 
 11.9.2023. for Beta 1

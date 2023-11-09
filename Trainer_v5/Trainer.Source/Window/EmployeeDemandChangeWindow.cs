@@ -53,8 +53,8 @@ namespace Trainer_v5.Window
 			var self = this;
 			var window = WindowManager.SpawnWindow();
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = "Edit demands for Nobody";
-			window.name = "EdiTrait";
-			window.MainPanel.name = "EdiTraitPanel";
+			window.name = "EditDemands";
+			window.MainPanel.name = "EditDemandsPanel";
 
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t => 
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));

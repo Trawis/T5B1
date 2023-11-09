@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.1.1";
+		public static string Version => "5.1.7";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -30,7 +30,8 @@ namespace Trainer_v5
 				  new KeyValuePair<string, object>("500%", 5),
 				  new KeyValuePair<string, object>("1000%", 10),
 				  new KeyValuePair<string, object>("2000%", 20),
-				  new KeyValuePair<string, object>("4000%", 40)
+				  new KeyValuePair<string, object>("4000%", 40),
+				  new KeyValuePair<string, object>("8000%", 80)
 				};
 			}
 		}
@@ -49,7 +50,6 @@ namespace Trainer_v5
 			{"NoNeeds", false},
 			{"FreeEmployees", false},
 			{"LockAge", false},
-			{"AutoDistributionDeals", false},
 			{"MoreHostingDeals", false},
 			{"IncreaseCourierCapacity", false},
 			{"ReduceISPCost", false},
@@ -72,7 +72,14 @@ namespace Trainer_v5
 			{"ReduceBoxPrice", false},
 			{"DisableFurnitureStealing", false},
 			{"MoreInspiration", false},
-			{"MoreCreativity", false}
+			{"MoreCreativity", false},
+			{"AutoResearchStart", false},
+			{"DigitalDistributionMonopol", false},
+			{"DisableFireInspection", false},
+			{"DisableForcePause", false},
+			{"DisableForceFreeze", false},
+			{"AutoAcceptHostingDeals", false},
+			{"Experimental", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
@@ -162,5 +169,22 @@ namespace Trainer_v5
 		}
 
 		#endregion
+
+		public static string GetGameVersion()
+		{
+#if !SWINCBETA && !SWINCRELEASE
+			return "1.6";
+#elif SWINCBETA1_7
+			return "1.7";
+#elif SWINCBETA1_8
+			return "1.8";
+#elif SWINCBETA1_9
+			return "1.9";
+#elif SWINCBETA1_10
+			return "1.10";
+#else
+			return "UNKNOWN";
+#endif
+		}
 	}
 }
