@@ -34,8 +34,6 @@ namespace Trainer_v5
 			var firstColumn = FirstColumn().ToArray();
 			var secondColumn = SecondColumn().ToArray();
 
-			Utils.AddLabel("Roles", new Rect(10, 5, 150, 32), window);
-			Utils.AddLabel("Specializations", new Rect(161, 5, 150, 32), window);
 			Utils.CreateGameObjects(Constants.FIRST_COLUMN, firstColumn, window);
 			Utils.CreateGameObjects(Constants.SECOND_COLUMN, secondColumn, window);
 
@@ -47,6 +45,7 @@ namespace Trainer_v5
 
 		private static IEnumerable<GameObject> FirstColumn()
 		{
+			yield return UIFactory.Label("Roles").gameObject;
 			yield return UIFactory.EmptyBox().gameObject;
 
 			var rolesList = Helpers.RolesList;
@@ -62,6 +61,7 @@ namespace Trainer_v5
 
 		private static IEnumerable<GameObject> SecondColumn()
 		{
+			yield return UIFactory.Label("Specializations").gameObject;
 			yield return UIFactory.EmptyBox().gameObject;
 
 			var specs = Helpers.SpecializationsList;
@@ -70,7 +70,6 @@ namespace Trainer_v5
 				yield return UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject;
 			}
 		}
-		
 
 		private static void SetBaseSkills()
 		{
@@ -83,24 +82,24 @@ namespace Trainer_v5
 			if (selectedActors.Count == 0)
 			{
 				Notification.ShowError("Select one or more employees.");
-				return;
 			}
-
-			if (selectedRoles.Count == 0)
+			else if (selectedRoles.Count == 0)
 			{
 				Notification.ShowError("Select one or more roles.");
-				return;
 			}
+			else
+			{
 
-			InputHelper.RequestFloat(
-				"How many base skill do you want?\nMin = 0, Max = 1.0",
-				$"Set base skill for {selectedActors.Count} actor(s)",
-				val => selectedActors.ForEach(actor => selectedRoles.ForEach(role =>
-				{
-					actor.employee.SkillCeiling = 1f;
-					actor.employee.ChangeSkillDirect(role, val);
-				}
-				)));
+				InputHelper.RequestFloat(
+					"How many base skill do you want?\nMin = 0, Max = 1.0",
+					$"Set base skill for {selectedActors.Count} actor(s)",
+					val => selectedActors.ForEach(actor => selectedRoles.ForEach(role =>
+					{
+						actor.employee.SkillCeiling = 1f;
+						actor.employee.ChangeSkillDirect(role, val);
+					}
+					)));
+			}
 		}
 	}
 

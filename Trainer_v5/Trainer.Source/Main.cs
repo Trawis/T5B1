@@ -57,9 +57,9 @@ namespace Trainer_v5
 				data[setting.Key] = Helpers.GetProperty(Helpers.Settings, setting.Key);
 			}
 
-			foreach (var store in Helpers.Stores)
+			foreach (var store in Helpers.StoresSettings)
 			{
-				data[store.Key] = Helpers.GetProperty(Helpers.Stores, store.Key);
+				data[store.Key] = Helpers.GetProperty(Helpers.StoresSettings, store.Key);
 			}
 
 			return data;
@@ -73,10 +73,10 @@ namespace Trainer_v5
 				Helpers.SetProperty(Helpers.Settings, setting, data.Get(setting, Helpers.GetProperty(Helpers.Settings, setting)));
 			}
 
-			var stores = Helpers.Stores.Keys.ToList();
+			var stores = Helpers.StoresSettings.Keys.ToList();
 			foreach (var store in stores)
 			{
-				Helpers.SetProperty(Helpers.Stores, store, data.Get(store, Helpers.GetProperty(Helpers.Stores, store)));
+				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, Helpers.GetProperty(Helpers.StoresSettings, store)));
 			}
 		}
 	}

@@ -18,23 +18,17 @@ namespace Trainer_v5
 		public static string ProductPriceName { get; set; }
 		public static Dictionary<string, bool> SpecializationsList { get; set; }
 
-		public static List<KeyValuePair<string, object>> EfficiencyValues
+		public static Dictionary<string, object> EfficiencySelectItems => new Dictionary<string, object>
 		{
-			get
-			{
-				return new List<KeyValuePair<string, object>>
-				{
-				  new KeyValuePair<string, object>("Default", null),
-				  new KeyValuePair<string, object>("100%", 1),
-				  new KeyValuePair<string, object>("200%", 2),
-				  new KeyValuePair<string, object>("500%", 5),
-				  new KeyValuePair<string, object>("1000%", 10),
-				  new KeyValuePair<string, object>("2000%", 20),
-				  new KeyValuePair<string, object>("4000%", 40),
-				  new KeyValuePair<string, object>("8000%", 80)
-				};
-			}
-		}
+			{"Default", null},
+			{"100%", 1},
+			{"200%", 2},
+			{"500%", 5},
+			{"1000%", 10},
+			{"2000%", 20},
+			{"4000%", 40},
+			{"8000%", 80}
+		};
 
 		public static Dictionary<string, bool> Settings { get; } = new Dictionary<string, bool>
 		{
@@ -91,10 +85,10 @@ namespace Trainer_v5
 			{"Designer", false}
 		};
 
-		public static Dictionary<string, object> Stores { get; } = new Dictionary<string, object>
+		public static Dictionary<string, object> StoresSettings { get; } = new Dictionary<string, object>
 		{
-			{"EfficiencyStore", 2},
-			{"LeadEfficiencyStore", 4}
+			{"EfficiencyStore", null},
+			{"LeadEfficiencyStore", null}
 		};
 
 		#region methods
