@@ -15,7 +15,7 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
-		private static Dictionary<string, object> Stores => Helpers.Stores;
+		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
 
 		private void Start()
 		{
@@ -241,14 +241,14 @@ namespace Trainer_v5
 					employee.Stress = 1;
 				}
 
-				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "LeadEfficiencyStore") != null)
+				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore") != null)
 				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "LeadEfficiencyStore").MakeFloat();
+					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore").MakeFloat();
 				}
 
-				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(Stores, "EfficiencyStore") != null)
+				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "EfficiencyStore") != null)
 				{
-					actor.Effectiveness = Helpers.GetProperty(Stores, "EfficiencyStore").MakeFloat();
+					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat();
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
@@ -455,17 +455,21 @@ namespace Trainer_v5
 			{
 				var activeTechLevels = MarketSimulation.Active.TechLevels;
 				var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
+				var currentYear = TimeOfDay.Instance.Year;
 
 				if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
 				{
 					foreach (var activeTechLevel in activeTechLevels)
 					{
-						if (!Settings.IsResearching(activeTechLevel.Key) && !(Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1) < TimeOfDay.Instance.Year))
+						if (!Settings.IsResearching(activeTechLevel.Key))
 						{
-							var researchWork = new ResearchWork(activeTechLevel.Key, TimeOfDay.Instance.Year);
-							researchWork.AddDevTeams(defaultResearchTeams);
-
-							Settings.MyCompany.AddWorkItem(researchWork);
+							int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
+							if (latestResearchYear < currentYear)
+							{
+								var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
+								researchWork.AddDevTeams(defaultResearchTeams);
+								Settings.MyCompany.AddWorkItem(researchWork);
+							}
 						}
 					}
 				}
