@@ -3,6 +3,15 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.8.**
+25.05.2024. for Beta 1
+- Updated libraries
+- UI logic refactor
+- Added confirmation for Max Reputation feature
+- Added experimental toggle
+
+---
+
 **5.1.7.**
 23.10.2023. for Beta 1
 - Added experimental features column.

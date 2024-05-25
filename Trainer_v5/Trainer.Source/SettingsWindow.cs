@@ -162,6 +162,7 @@ namespace Trainer_v5
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
+			column5.Add(UIHelper.CreateLabel());
 
 			column5.Add(UIHelper.CreateLabel("Efficiency"));
 			var efficiencyComboBox = UIHelper.CreateComboBox(
@@ -169,6 +170,7 @@ namespace Trainer_v5
 				selection: efficiencySelectItems.GetIndex(storesSettings, "EfficiencyStore", 2)
 			);
 			efficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("EfficiencyStore", efficiencySelectItems.GetAt(efficiencyComboBox.Selected).Value));
+			column5.Add(efficiencyComboBox.gameObject);
 
 			column5.Add(UIHelper.CreateLabel("Lead Efficiency"));
 			var leadEfficiencyComboBox = UIHelper.CreateComboBox(
@@ -176,6 +178,7 @@ namespace Trainer_v5
 				selection: efficiencySelectItems.GetIndex(storesSettings, "LeadEfficiencyStore", 2)
 			);
 			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("LeadEfficiencyStore", efficiencySelectItems.GetAt(leadEfficiencyComboBox.Selected).Value));
+			column5.Add(leadEfficiencyComboBox.gameObject);
 
 			#endregion
 

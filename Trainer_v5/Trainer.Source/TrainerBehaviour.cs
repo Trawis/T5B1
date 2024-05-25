@@ -1142,13 +1142,26 @@ namespace Trainer_v5
 
 		public static void MaxReputation()
 		{
-			Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
-			Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
-			Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
-			Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
-			Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
-			Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-			WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
+			Action<string> action = (input) =>
+			{
+				if (input == "YES")
+				{
+					Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
+					Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
+					Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
+					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
+					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
+					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
+					WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
+				}
+			};
+
+			Func<InputDialog> areYouSure = () =>
+			{
+				return WindowManager.SpawnInputDialog("Are you sure?", "Confirmation", "YES", action);
+			};
+
+			areYouSure();
 		}
 
 		public static void MaxMarketRecognition()
@@ -1179,6 +1192,11 @@ namespace Trainer_v5
 		}
 
 		#endregion
+
+		private static void AreYouSureAction(Action action)
+		{
+			action();
+		}
 
 		#region Experimental/Test
 
