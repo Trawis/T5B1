@@ -162,7 +162,6 @@ namespace Trainer_v5
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateLabel());
 
 			column5.Add(UIHelper.CreateLabel("Efficiency"));
 			var efficiencyComboBox = UIHelper.CreateComboBox(
