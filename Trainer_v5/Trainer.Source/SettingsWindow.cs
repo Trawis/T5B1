@@ -89,7 +89,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateLabel());
 
 			column2.Add(UIHelper.CreateToggle("DisableNeeds".LocDef("Disable Needs"), settings.Get("NoNeeds"), a => settings.Toggle("NoNeeds")));
-			column2.Add(UIHelper.CreateToggle("DisableStress".LocDef("Disable Stress"), settings.Get("DisableStress"), a => settings.Toggle("DisableStress")));
+			column2.Add(UIHelper.CreateToggle("DisableStress".LocDef("Disable Stress"), settings.Get("NoStress"), a => settings.Toggle("NoStress")));
 			column2.Add(UIHelper.CreateToggle("FreeEmployees".LocDef("Free Employees"), settings.Get("FreeEmployees"), a => settings.Toggle("FreeEmployees")));
 			column2.Add(UIHelper.CreateToggle("FreeStaff".LocDef("Free Staff"), settings.Get("FreeStaff"), a => settings.Toggle("FreeStaff")));
 			column2.Add(UIHelper.CreateToggle("FullSatisfaction".LocDef("Full Satisfaction"), settings.Get("FullSatisfaction"), a => settings.Toggle("FullSatisfaction")));
