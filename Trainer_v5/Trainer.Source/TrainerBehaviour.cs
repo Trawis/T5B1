@@ -238,7 +238,7 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
 				{
-					employee.Stress = 1;
+					employee.Stress = 1f;
 				}
 
 				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore") != null)
