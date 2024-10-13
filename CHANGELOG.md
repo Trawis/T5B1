@@ -3,6 +3,13 @@ Release notes for changes to the trainer
 
 ---
 
+**5.1.9.**
+13.10.2024. for Beta 1
+- Updated libraries
+- Disable Stress toggle fixed (savisitor15)
+
+---
+
 **5.1.8.**
 25.05.2024. for Beta 1
 - Updated libraries
