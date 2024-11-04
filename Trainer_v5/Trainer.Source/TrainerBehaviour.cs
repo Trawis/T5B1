@@ -366,7 +366,7 @@ namespace Trainer_v5
 				researchWorks.ForEach(researchWork =>
 				{
 					GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
-					TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year);
+					TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
 					if (tech != null)
 					{
 						LegalWork legalWork = new LegalWork(tech);
@@ -1061,10 +1061,14 @@ namespace Trainer_v5
 
 			var simulatedCompanyWorth = simulatedCompany.GetPossibleStockWorth();
 
-			simulatedCompany.BuyOut(new Company[]
-			{
-				Settings.MyCompany
-			}, false);
+			simulatedCompany.BuyOut(
+				new Company[] { Settings.MyCompany }, // companies buying out
+				false,                                // not broke
+				SDateTime.Now(),                      // current time
+				true                                  // can disconnect (default value)
+			);
+
+			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, null, false);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
 			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
@@ -1089,7 +1093,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			Company.MakeSubsidiary(Settings.MyCompany);
+			Company.MakeSubsidiary(Settings.MyCompany, SDateTime.Now());
 			HUD.Instance.AddPopupMessage("Trainer: Company " + Company.Name + " is now your subsidiary!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
