@@ -780,11 +780,13 @@ namespace Trainer_v5
 
 		public static void RemoveSoft()
 		{
+			return;
+
+			//currently broken
 			SDateTime time = new SDateTime(1, 70);
 			CompanyType type = new CompanyType();
 			var dict = new Dictionary<string, string[]>();
-			var sim = new MarketSimulation();
-			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, sim);
+			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, MarketSimulation.Active);
 			simComp.CanMakeTransaction(2139095030f);
 
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
@@ -796,8 +798,6 @@ namespace Trainer_v5
 				return;
 			}
 
-			var currentTime = SDateTime.Now();
-
 			for (int i = 0; i < Products.Length; i++)
 			{
 				SoftwareProduct Product = Products[i];
@@ -805,7 +805,7 @@ namespace Trainer_v5
 				Product.Userbase = 0;
 				Product.PhysicalCopies = 0;
 				Product.Marketing = 0;
-				Product.Trade(simComp, currentTime);
+				Product.Trade(simComp, time);
 			}
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
