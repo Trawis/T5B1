@@ -796,6 +796,8 @@ namespace Trainer_v5
 				return;
 			}
 
+			var currentTime = SDateTime.Now();
+
 			for (int i = 0; i < Products.Length; i++)
 			{
 				SoftwareProduct Product = Products[i];
@@ -803,7 +805,7 @@ namespace Trainer_v5
 				Product.Userbase = 0;
 				Product.PhysicalCopies = 0;
 				Product.Marketing = 0;
-				Product.Trade(simComp);
+				Product.Trade(simComp, currentTime);
 			}
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
