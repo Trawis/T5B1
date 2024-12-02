@@ -20,7 +20,7 @@ namespace Trainer_v5
 			{
 				UIFactory.Button("Trait",  () => EmployeeTraitChangeWindow.Instance.Show()),
 				UIFactory.Button("Demand", () => EmployeeDemandChangeWindow.Instance.Show()),
-				// UIFactory.Button("Creativity",  SetCreativity),
+				UIFactory.Button("Creativity",  SetCreativity),
 				UIFactory.Button("Inspiration", SetInspiration),
 				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 			};
