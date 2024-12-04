@@ -20,7 +20,7 @@ namespace Trainer_v5
 			{
 				UIFactory.Button("Trait",  () => EmployeeTraitChangeWindow.Instance.Show()),
 				UIFactory.Button("Demand", () => EmployeeDemandChangeWindow.Instance.Show()),
-				// UIFactory.Button("Creativity",  SetCreativity),
+				UIFactory.Button("Creativity",  SetCreativity),
 				UIFactory.Button("Inspiration", SetInspiration),
 				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 			};
@@ -40,18 +40,59 @@ namespace Trainer_v5
 			var employee = CurrentEmployee;
 			if (employee == null) return;
 
-			Notification.ShowError(string.Join("\n", employee.LastCreatity));
 			InputHelper.RequestFloat(
 				$"Current is {employee.Creativity}\nMin = 0, Max = 1.0",
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
-					// set by CreativityKnown: not work
-					var factor = val / employee.Creativity;
-					employee.CreativityKnown = factor;
+					var skills = new float[5];
+					for(int i = 0; i < 5; i++) {
+						skills[i] = employee.GetSkillI(i);
+					}
+					
+					// clone employee with new creativity value
+					var newEmployee = new Employee(
+						currentTime: SDateTime.Now(), 
+						female: employee.Female,
+						name: employee.Name,
+						skills: skills,
+						creativity: val,
+						person: employee.PersonalityTraits,
+						traits: employee.Traits,
+						specs: employee.GetAllSpecializations(),
+						graph: GameSettings.Instance.Personalities,
+						style: employee.StyleGen,
+						forceBrain: employee.HiredFor
+					);
+					
+					// transfer properties
+					newEmployee.Salary = employee.Salary;
+					newEmployee.CreativityKnown = 1f;
+					newEmployee.MyEmployer = employee.MyEmployer;
+					newEmployee.BirthDate = employee.BirthDate;
+					newEmployee.Hired = employee.Hired;
+					newEmployee.Thoughts = employee.Thoughts;
+					newEmployee.JobSatisfaction = employee.JobSatisfaction;
 
-					// LastCreativity: not wok
-					// employee.LastCreatity = new []{val, val};
+					// transfer lead specs
+					foreach (var kvp in employee.LeadSpecializationFix)
+					{
+						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
+					}
+					
+					var actor = employee.MyActor;
+					if (actor != null)
+					{
+						// update actor references
+						employee.MyActor = null;
+						actor.employee = newEmployee;
+						newEmployee.MyActor = actor;
+						
+						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == employee)
+						{
+							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
+						}
+					}
 				},
 				min: 0,
 				max: 1);
