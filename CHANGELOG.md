@@ -3,6 +3,12 @@ Release notes for changes to the trainer
 
 ---
 
+**5.2.2**
+23.12.2024. for Beta 1
+- Fix creativity modification in DetailWindowTrainer (muddxyii)
+
+---
+
 **5.2.1**
 27.11.2024. for Beta 1
 - Updated libraries
