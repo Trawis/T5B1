@@ -1,12 +1,9 @@
 using System;
 using System.Linq;
-using UnityEngine; // Assuming WindowManager, HUD, SelectorController etc. are in UnityEngine or related namespaces
+using UnityEngine;
 
 namespace Trainer_v5.Actions
 {
-	/// <summary>
-	/// Contains static methods for actions related to employees.
-	/// </summary>
 	public static class EmployeeActions
 	{
 		private static GameSettings Settings => GameSettings.Instance;

@@ -1,11 +1,8 @@
 using System.Linq;
-using UnityEngine; // Assuming WindowManager, HUD, etc. are in UnityEngine or related namespaces
+using UnityEngine;
 
 namespace Trainer_v5.Actions
 {
-	/// <summary>
-	/// Contains static methods for actions related to AI companies and takeovers.
-	/// </summary>
 	public static class CompanyActions
 	{
 		private static GameSettings Settings => GameSettings.Instance;

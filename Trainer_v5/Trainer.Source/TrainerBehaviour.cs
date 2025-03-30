@@ -121,13 +121,20 @@ namespace Trainer_v5
 
 		// --- Time-Based Event Handlers ---
 
-		// --- Time-Based Event Handlers ---
-
 		private void OnHourPassed(object obj, EventArgs args)
 		{
 			if (!isActiveAndEnabled || !Helpers.IsGameLoaded) return;
 
-			// --- Hourly Work Item Updates ---
+			ApplyHourlyWorkItemUpdates();
+			ApplyHourlyCompanyUpdates();
+			ApplyHourlyWorldSettingsUpdates();
+			ApplyHourlyTimedEvents();
+		}
+
+		// --- Hourly Update Helper Methods ---
+
+		private void ApplyHourlyWorkItemUpdates()
+		{
 			if (AutoEndDesignEnabled)
 			{
 				var designDocuments = Settings.MyCompany.WorkItems
@@ -169,14 +176,18 @@ namespace Trainer_v5
 
 				legalWorks.ForEach(legalWork => legalWork.PatentNow());
 			}
+		}
 
-			// --- Hourly Company Updates ---
+		private void ApplyHourlyCompanyUpdates()
+		{
 			if (AutoAcceptHostingDealsEnabled)
 			{
-				AcceptHostingDealsAutomatically();
+				AcceptHostingDealsAutomatically(); // This helper was already present
 			}
+		}
 
-			// --- Hourly World Settings Updates ---
+		private void ApplyHourlyWorldSettingsUpdates()
+		{
 			if (DisableBurglarsEnabled)
 			{
 				foreach (var burglar in Settings.sActorManager.Others["Burglars"].ToList()) // ToList for safe removal
@@ -196,49 +207,62 @@ namespace Trainer_v5
 				Settings.ActiveFireReport.Reset();
 				Settings.PassedFireInspection = true;
 			}
-
-            // --- Timed Events (Moved from HandleTimedEvents) ---
-            if (MoreHostingDealsEnabled)
-            {
-                int inGameHour = TimeOfDay.Instance.Hour;
-
-                // Push Deal logic
-                if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
-                {
-                    MiscActions.PushDeal(); // Call method from MiscActions class
-                }
-                else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
-                {
-                    Helpers.DealIsPushed = false;
-                }
-
-                // Push Reward logic
-                if (!Helpers.RewardIsGained && inGameHour == 12)
-                {
-                    MiscActions.PushReward(); // Call method from MiscActions class
-                }
-                else if (inGameHour != 12 && Helpers.RewardIsGained)
-                {
-                    Helpers.RewardIsGained = false;
-                }
-            }
 		}
+
+		private void ApplyHourlyTimedEvents()
+		{
+			// Timed Events (More Hosting Deals)
+			if (MoreHostingDealsEnabled)
+			{
+				int inGameHour = TimeOfDay.Instance.Hour;
+
+				// Push Deal logic
+				if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
+				{
+					MiscActions.PushDeal(); // Call method from MiscActions class
+				}
+				else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
+				{
+					Helpers.DealIsPushed = false;
+				}
+
+				// Push Reward logic
+				if (!Helpers.RewardIsGained && inGameHour == 12)
+				{
+					MiscActions.PushReward(); // Call method from MiscActions class
+				}
+				else if (inGameHour != 12 && Helpers.RewardIsGained)
+				{
+					Helpers.RewardIsGained = false;
+				}
+			}
+		}
+
 
 		private void OnDayPassed(object obj, EventArgs args)
 		{
 			if (!isActiveAndEnabled || !Helpers.IsGameLoaded) return;
 
-			// --- Daily Actor Updates ---
-			bool noSicknessDaily = NoSicknessEnabled; // Use property for daily check
+			ApplyDailyActorUpdates();
+			ApplyDailyWorkItemUpdates();
+			ApplyDailyCompanyUpdates();
+			ApplyDailyWorldSettingsUpdates();
+		}
+
+		// --- Daily Update Helper Methods ---
+
+		private void ApplyDailyActorUpdates()
+		{
+			bool noSicknessDaily = NoSicknessEnabled;
 			if (noSicknessDaily)
 			{
-				TimeOfDay.Instance.Sick.Clear(); // Clear global sick list once daily if setting is enabled
+				TimeOfDay.Instance.Sick.Clear(); // Clear global list
 			}
 
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee; // Get employee for sickness check
+				Employee employee = actor.employee;
 
 				if (noSicknessDaily)
 				{
@@ -247,47 +271,43 @@ namespace Trainer_v5
 
 					actor.GermAdd = 0f;
 					actor.GermCount = 0f;
-					actor.SickDays = 0; // Reset sick days daily
+					actor.SickDays = 0;
 				}
 
-				// Set VacationMonth daily if NoVacation is enabled
 				if (NoVacationEnabled)
 				{
 					actor.VacationMonth = SDateTime.NextMonth(24);
 				}
 			}
+		}
 
-			// --- Daily Work Item Updates ---
+		private void ApplyDailyWorkItemUpdates()
+		{
 			if (AutoResearchStartEnabled)
 			{
-				StartAutoResearch();
+				StartAutoResearch(); // This helper was already present
 			}
+		}
 
-			// --- Daily Company Updates ---
-			// Print settings
+		private void ApplyDailyCompanyUpdates()
+		{
 			if (FreePrintEnabled)
 			{
 				Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
 			}
 			else
 			{
-				// bool alreadySet = false;
-				// if (alreadySet == false)
-				// {
-				// 	Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0.1f); // Set to default price if setting is disabled
-				// 	alreadySet = true;
-				// }
+				// TODO: Add reset logic for PrintPrice
 			}
-			// TODO: Add else to reset PrintPrice if FreePrintEnabled is false
+
 			if (IncreasePrintSpeedEnabled)
 			{
 				Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
 			}
 			else
 			{
-				//Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 1f); // Reset to default speed if setting is disabled
+				// TODO: Add reset logic for PrintSpeed
 			}
-			// TODO: Add else to reset PrintSpeed if IncreasePrintSpeedEnabled is false
 
 			if (NoEducationCostEnabled)
 			{
@@ -295,35 +315,49 @@ namespace Trainer_v5
 			}
 			else
 			{
-				EducationWindow.EdCost = _edCost; // Reset to default costs if setting is disabled
+				EducationWindow.EdCost = _edCost; // Reset logic already present
 			}
-
-			// FreeStaff, NoServerCost, NoWaterElectricity bills moved to monthly
 
 			if (DigitalDistributionMonopolyEnabled)
 			{
-				ApplyDigitalDistributionMonopoly(); // Check daily if needed
+				ApplyDigitalDistributionMonopoly(); // This helper was already present
 			}
+		}
 
-			// --- Daily World Settings Updates ---
-			// Apply settings that modify global game parameters (checked daily)
-			GameSettings.MaxFloor = 100; // Consider if this should only be set once or configurable
+		private void ApplyDailyWorldSettingsUpdates()
+		{
+			GameSettings.MaxFloor = 100; // Consider making configurable or adding reset logic
+
 			AI.MaxBoxes = IncreaseCourierCapacityEnabled ? 108 : 54;
 			AI.MaxBoxCarry = IncreaseCourierCapacityEnabled ? 18 : 9;
+			// TODO: Add reset logic for Courier Capacity if needed
+
 			AI.BoxPrice = ReduceBoxPriceEnabled ? 62.5f : 125;
-			// Ensure _defaultEnvironmentISPCostFactor is initialized before this runs
+			// TODO: Add reset logic for Box Price if needed
+
 			if (!_defaultEnvironmentISPCostFactor.IsZero())
 			{
 				Settings.Environment.ISPCostFactor = ReduceISPCostEnabled ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
 			}
+			// Reset logic for ISP Cost is implicitly handled by the check above
+
 			Settings.ExpansionCost = ReduceExpansionCostEnabled ? 175f : 350f;
+			// TODO: Add reset logic for Expansion Cost if needed
 		}
+
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
 			if (!isActiveAndEnabled || !Helpers.IsGameLoaded) return;
 
-			// --- Monthly Actor Updates ---
+			ApplyMonthlyActorUpdates();
+			ApplyMonthlyCompanyUpdates();
+		}
+
+		// --- Monthly Update Helper Methods ---
+
+		private void ApplyMonthlyActorUpdates()
+		{
 			if (FreeEmployeesEnabled)
 			{
 				for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -342,31 +376,35 @@ namespace Trainer_v5
 				}
 			}
 
-			// --- Monthly Company Updates ---
+			if (LockAgeEnabled)
+			{
+				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
+			}
+		}
+
+		private void ApplyMonthlyCompanyUpdates()
+		{
 			if (FreeStaffEnabled)
 			{
 				Settings.StaffSalaryDue = 0f;
 			}
+			// TODO: Add reset logic for StaffSalaryDue
 
 			if (NoServerCostEnabled)
 			{
 				Settings.ServerCost = 0f;
 			}
+			// TODO: Add reset logic for ServerCost
 
 			if (NoWaterElectricityEnabled) // Bills are company-wide
 			{
 				Settings.ElectricityBill = 0f;
 				Settings.Waterbill = 0f;
 				Settings.Gasbill = 0f;
-				// Setting furniture water/wattage to 0 is handled daily if needed
 			}
-
-			// --- Monthly Actor Updates (Existing LockAge) ---
-			if (LockAgeEnabled)
-			{
-				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
-			}
+			// TODO: Add reset logic for Bills
 		}
+
 
 		// --- Update Loop (Per Frame) ---
 
@@ -379,15 +417,23 @@ namespace Trainer_v5
 
 			HandleInput();
 
-			// --- Frame Actor Updates (Moved from Hourly) ---
+			ApplyFrameActorUpdates();
+			ApplyFrameFurnitureUpdates();
+			ApplyFrameRoomUpdates();
+			ApplyFrameWorldSettingsUpdates();
+		}
+
+		// --- Frame Update Helper Methods ---
+
+		private void ApplyFrameActorUpdates()
+		{
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
 				Employee employee = actor.employee;
 
-				actor.WalkSpeed = IncreaseWalkSpeedEnabled ? 4f : 2f; // Keep walk speed here
+				actor.WalkSpeed = IncreaseWalkSpeedEnabled ? 4f : 2f;
 
-				// Actor updates moved from Hourly
 				if (NoStressEnabled)
 				{
 					employee.Stress = 0f;
@@ -471,11 +517,12 @@ namespace Trainer_v5
 					employee.RevealCreativity(1f);
 				}
 			}
+		}
 
-			// --- Frame Furniture Updates (Moved from Hourly) ---
+		private void ApplyFrameFurnitureUpdates()
+		{
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
-				// Furniture updates moved from Hourly
 				if (NoiseReductionEnabled)
 				{
 					furniture.ActorNoise = 0f;
@@ -511,7 +558,7 @@ namespace Trainer_v5
 					// furniture.CanSteal = true; // Or reset based on original furniture properties
 				}
 
-				// Existing Fire Check logic remains below
+				// Existing Fire Check logic
 				if (DisableFiresEnabled)
 				{
 					if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
@@ -528,8 +575,10 @@ namespace Trainer_v5
 					}
 				}
 			}
+		}
 
-			// --- Frame Room Updates (Moved from Hourly) ---
+		private void ApplyFrameRoomUpdates()
+		{
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
@@ -555,13 +604,15 @@ namespace Trainer_v5
 					room.IndirectLighting = 16;
 				}
 
-				if (NoSicknessEnabled) // Germs are room-related (Applying hourly might be too much, but moving as requested)
+				if (NoSicknessEnabled) // Germs are room-related
 				{
 					room.GermCount = 0f;
 				}
 			}
+		}
 
-			// --- Frame World Settings Updates ---
+		private void ApplyFrameWorldSettingsUpdates()
+		{
 			if (DisableForcePauseEnabled)
 			{
 				GameSettings.ForcePause = false;
@@ -571,7 +622,6 @@ namespace Trainer_v5
 			{
 				GameSettings.FreezeGame = false;
 			}
-
 		}
 
 		// --- Input Handling ---

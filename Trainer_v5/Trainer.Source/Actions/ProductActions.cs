@@ -1,14 +1,11 @@
 using System; // Needed for Math.Max
 using System.Collections.Generic;
 using System.Linq;
-using OrbCreationExtensions; // For ConvertToFloatDef, ConvertToIntDef
-using UnityEngine; // Assuming WindowManager, HUD, etc. are in UnityEngine or related namespaces
+using OrbCreationExtensions;
+using UnityEngine;
 
 namespace Trainer_v5.Actions
 {
-	/// <summary>
-	/// Contains static methods for actions related to software products.
-	/// </summary>
 	public static class ProductActions
 	{
 		private static GameSettings Settings => GameSettings.Instance;

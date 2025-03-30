@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrbCreationExtensions; // For ConvertToIntDef
-using UnityEngine; // Assuming WindowManager, HUD, etc. are in UnityEngine or related namespaces
+using OrbCreationExtensions;
+using UnityEngine;
 
 namespace Trainer_v5.Actions
 {
-	/// <summary>
-	/// Contains static methods for miscellaneous trainer actions.
-	/// </summary>
 	public static class MiscActions
 	{
 		private static GameSettings Settings => GameSettings.Instance;
