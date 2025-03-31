@@ -1,9 +1,11 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using OrbCreationExtensions;
 
 namespace Trainer_v5
 {
+	public enum ValueDataTypeEnum { Int = 1, Float = 2, String = 3, Bool = 4 }
+
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
@@ -123,23 +125,47 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		public static int GetIndex(List<KeyValuePair<string, object>> values, Dictionary<string, object> properties, string store, int valueType)
+		// Updated GetIndex to use ValueDataType enum
+		public static int GetIndex(List<KeyValuePair<string, object>> values, Dictionary<string, object> properties, string store, ValueDataTypeEnum valueType)
 		{
-			switch (valueType)
+			try // Added try-catch for safety when accessing properties
 			{
-				case 1:
-					return values.FindIndex(x => x.Value.MakeInt() == GetProperty(properties, store).MakeInt());
-				case 2:
-					return values.FindIndex(x => x.Value.MakeFloat() == GetProperty(properties, store).MakeFloat());
-				case 3:
-					return values.FindIndex(x => x.Value.MakeString() == GetProperty(properties, store).MakeString());
-				case 4:
-					return values.FindIndex(x => x.Value.MakeBool() == GetProperty(properties, store).MakeBool());
-				default:
-					"Method GetIndex received an unknown value type as parameter".Log();
-					return -1;
+				object propertyValue = GetProperty(properties, store);
+				if (propertyValue == null)
+				{
+					$"Property '{store}' not found or is null in GetIndex.".Log();
+					return -1; // Or a default index like 0 if appropriate
+				}
+
+				switch (valueType)
+				{
+					case ValueDataTypeEnum.Int:
+						int intValue = propertyValue.MakeInt();
+						return values.FindIndex(x => x.Value != null && x.Value.MakeInt() == intValue);
+					case ValueDataTypeEnum.Float:
+						float floatValue = propertyValue.MakeFloat();
+						return values.FindIndex(x => x.Value != null && x.Value.MakeFloat() == floatValue);
+					case ValueDataTypeEnum.String:
+						string stringValue = propertyValue.MakeString();
+						// Handle potential nulls in the list values as well
+						return values.FindIndex(x => x.Value != null && x.Value.MakeString() == stringValue);
+					case ValueDataTypeEnum.Bool:
+						bool boolValue = propertyValue.MakeBool();
+						return values.FindIndex(x => x.Value != null && x.Value.MakeBool() == boolValue);
+					default:
+						$"Method GetIndex received an unknown value type: {valueType}".Log();
+						return -1;
+				}
+			}
+			catch (Exception ex)
+			{
+				// Log the error message first, then log the exception details
+				$"Error in GetIndex for store '{store}' and type '{valueType}'".Log(false); // Log context without property name
+				ex.LogException(); // Correctly call the extension method on the exception object
+				return -1; // Return -1 or default index on error
 			}
 		}
+
 
 		public static void TryExecute(Action action)
 		{

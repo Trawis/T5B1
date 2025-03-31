@@ -1,8 +1,9 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Utils = Trainer_v5.Utilities;
+using Trainer_v5.Actions;
+using Trainer_v5;
 
 namespace Trainer_v5
 {
@@ -31,43 +32,43 @@ namespace Trainer_v5
 			window.name = "EditEmployee";
 			window.MainPanel.name = "EditEmployeePanel";
 
-			var firstColumn = FirstColumn().ToArray();
-			var secondColumn = SecondColumn().ToArray();
+			var firstColumn = FirstColumn().ToList();
+			var secondColumn = SecondColumn().ToList();
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN, firstColumn, window);
-			Utils.CreateGameObjects(Constants.SECOND_COLUMN, secondColumn, window);
+			firstColumn.AddToWindow(window, Constants.FIRST_COLUMN);
+			secondColumn.AddToWindow(window, Constants.SECOND_COLUMN);
 
-			var maxRows = Math.Max(firstColumn.Length, secondColumn.Length);
-			Utils.SetWindowSize(maxRows, Constants.X_EMPLOYEESKILLCHANGE_WINDOW, window);
+			var maxRows = Math.Max(firstColumn.Count, secondColumn.Count);
+			window.SetWindowSize(maxRows, Constants.X_EMPLOYEESKILLCHANGE_WINDOW);
 
 			return window;
 		}
 
 		private static IEnumerable<GameObject> FirstColumn()
 		{
-			yield return UIFactory.Label("Roles").gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
+			yield return UIHelper.CreateLabel("Roles");
+			yield return UIHelper.EmptyBox();
 
 			var rolesList = Helpers.RolesList;
 			foreach (var role in rolesList)
 			{
-				yield return UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key)).gameObject;
+				yield return UIHelper.CreateToggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key));
 			}
 
-			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
-			yield return UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject;
+			yield return UIHelper.CreateButton("Set Skills", EmployeeActions.SetSkillPerEmployee);
+			yield return UIHelper.EmptyBox();
+			yield return UIHelper.CreateButton("Set Base Skills", SetBaseSkills);
 		}
 
 		private static IEnumerable<GameObject> SecondColumn()
 		{
-			yield return UIFactory.Label("Specializations").gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
+			yield return UIHelper.CreateLabel("Specializations");
+			yield return UIHelper.EmptyBox();
 
 			var specs = Helpers.SpecializationsList;
 			foreach (var spec in specs)
 			{
-				yield return UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject;
+				yield return UIHelper.CreateToggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key));
 			}
 		}
 

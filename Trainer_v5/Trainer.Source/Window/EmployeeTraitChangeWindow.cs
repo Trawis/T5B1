@@ -1,10 +1,11 @@
-﻿using System;
+﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils = Trainer_v5.Utilities;
+using Trainer_v5; // Added for UIHelper extensions
+// Removed using Utils alias
 
 namespace Trainer_v5.Window
 {
@@ -56,8 +57,9 @@ namespace Trainer_v5.Window
 			window.name = "EditTrait";
 			window.MainPanel.name = "EditTraitPanel";
 
-			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t => 
-				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
+			// Use UIHelper to create toggles
+			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
+				UIHelper.CreateToggle(t.ToString(), false, on => ToggleTrait(t, on)).GetComponent<Toggle>());
 
 			var goodTraitsToggle = traits
 				.Where(p => p.Key.IsGood())
@@ -69,22 +71,25 @@ namespace Trainer_v5.Window
 				.Where(p => p.Key.IsBad())
 				.Select(p => p.Value.gameObject);
 
-			var col1 = new List<GameObject> { UIFactory.Label("Good", WindowStyles.TitleStyle).gameObject };
+			// Use UIHelper for labels and button
+			var col1 = new List<GameObject> { UIHelper.CreateLabel("Good", name: "GoodTitle") }; // Removed WindowStyles
 			col1.AddRange(goodTraitsToggle);
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			col1.Add(UIHelper.CreateButton("Refresh", () => self.Refresh()));
 
-			var col2 = new List<GameObject> { UIFactory.Label("Neutral", WindowStyles.TitleStyle).gameObject };
+			var col2 = new List<GameObject> { UIHelper.CreateLabel("Neutral", name: "NeutralTitle") }; // Removed WindowStyles
 			col2.AddRange(neutralTraitsToggle);
 
-			var col3 = new List<GameObject> { UIFactory.Label("Bad", WindowStyles.TitleStyle).gameObject };
+			var col3 = new List<GameObject> { UIHelper.CreateLabel("Bad", name: "BadTitle") }; // Removed WindowStyles
 			col3.AddRange(badTraitsToggle);
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN,  col1.ToArray(), window);
-			Utils.CreateGameObjects(Constants.SECOND_COLUMN, col2.ToArray(), window);
-			Utils.CreateGameObjects(Constants.THIRD_COLUMN,  col3.ToArray(), window);
+			// Use UIHelper extension method AddToWindow
+			col1.AddToWindow(window, Constants.FIRST_COLUMN);
+			col2.AddToWindow(window, Constants.SECOND_COLUMN);
+			col3.AddToWindow(window, Constants.THIRD_COLUMN);
 
 			var maxRows = new[] { col1.Count, col2.Count, col3.Count }.Max();
-			Utils.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1, window);
+			// Use UIHelper extension method SetWindowSize
+			window.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1);
 
 			_window = window;
 			_traitsToggles = traits;

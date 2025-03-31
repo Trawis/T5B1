@@ -1,8 +1,9 @@
-﻿﻿﻿using System.Collections.Generic;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Trainer_v5.Actions; // Added using directive for Actions namespace
+using Trainer_v5.Actions;
+using Trainer_v5;
 
 namespace Trainer_v5
 {
@@ -59,7 +60,7 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), MiscActions.IncreaseMoney));
 			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), ProductActions.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText)); // Assuming Helpers.ProductPriceName is still relevant or handled elsewhere
+			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyActions.TakeoverCompany));
 			column1.Add(UIHelper.CreateLabel());
@@ -69,7 +70,7 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), MiscActions.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), MiscActions.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeActions.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductActions.RemoveSoft)); // Still commented out
+			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductActions.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeActions.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductActions.SellProductStock));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), MiscActions.UnlockFurniture));
@@ -167,7 +168,7 @@ namespace Trainer_v5
 			column5.Add(UIHelper.CreateLabel("Efficiency"));
 			var efficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, "EfficiencyStore", 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, "EfficiencyStore", ValueDataTypeEnum.Float)
 			);
 			efficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("EfficiencyStore", efficiencySelectItems.GetAt(efficiencyComboBox.Selected).Value));
 			column5.Add(efficiencyComboBox.gameObject);
@@ -175,7 +176,7 @@ namespace Trainer_v5
 			column5.Add(UIHelper.CreateLabel("Lead Efficiency"));
 			var leadEfficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, "LeadEfficiencyStore", 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, "LeadEfficiencyStore", ValueDataTypeEnum.Float)
 			);
 			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("LeadEfficiencyStore", efficiencySelectItems.GetAt(leadEfficiencyComboBox.Selected).Value));
 			column5.Add(leadEfficiencyComboBox.gameObject);

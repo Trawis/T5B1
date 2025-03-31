@@ -1,36 +1,57 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿﻿﻿﻿﻿﻿using System.Collections.Generic;
+using System.Linq; // Re-added for Select and ToArray extension methods
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Trainer_v5.Window; // Moved using directive to the top
 
 namespace Trainer_v5
 {
 	public static class UIHelper
 	{
-		public static GameObject CreateLabel(string text = null, string name = null)
+		// Updated CreateLabel to accept optional TextStyle
+		public static GameObject CreateLabel(string text = null, string name = null, TextStyle style = null)
 		{
 			var control = WindowManager.SpawnLabel();
 			control.name = name.NameOrDefault<Text>(text);
 			control.text = text.TextOrEmpty();
 
+			// Apply style if provided
+			if (style != null)
+			{
+				if (style.Alignment.HasValue)
+					control.alignment = style.Alignment.Value;
+				if (style.FontStyle.HasValue)
+					control.fontStyle = style.FontStyle.Value;
+			}
+
 			return control.gameObject;
 		}
 
+		// Enhanced CreateButton to match UIFactory.UIButton functionality
 		public static GameObject CreateButton(string text, UnityAction action, string name = null)
 		{
 			var control = WindowManager.SpawnButton();
-			control.name = name.NameOrDefault<Button>(text);
+			control.name = name.NameOrDefault<Button>(text); // Use helper for name
 			control.GetComponentInChildren<Text>().text = text.TextOrEmpty();
 			control.onClick.AddListener(action);
 
 			return control.gameObject;
 		}
 
+		// Moved from UIFactory
+		public static GameObject EmptyBox(string name = "EmptyBox")
+		{
+			var label = WindowManager.SpawnLabel();
+			label.name = name;
+			label.text = string.Empty;
+			return label.gameObject;
+		}
+
 		public static GameObject CreateInputBox(string text, UnityAction<string> action, string name = null)
 		{
 			var control = WindowManager.SpawnInputbox();
-			control.name = name.NameOrDefault<InputField>(text);
+			control.name = name.NameOrDefault<InputField>(text); // Use helper for name
 			control.text = text;
 			control.onValueChanged.AddListener(action);
 
@@ -46,6 +67,15 @@ namespace Trainer_v5
 			control.onValueChanged.AddListener(action);
 
 			return control.gameObject;
+		}
+
+		// Moved from UIFactory
+		public static GameObject MultilineInput(string name = "MultilineInput")
+		{
+			var r = WindowManager.SpawnInputbox();
+			r.name = name;
+			r.lineType = InputField.LineType.MultiLineNewline;
+			return r.gameObject;
 		}
 
 		public static GUICombobox CreateComboBox(Dictionary<string, object> selectableItems, int selection, string name = null)
@@ -99,9 +129,5 @@ namespace Trainer_v5
 		}
 	}
 
-	public class ComboBox
-	{
-		public GameObject Label { get; set; }
-		public GameObject Dropdown { get; set; }
-	}
+	// Removed unused ComboBox class definition
 }

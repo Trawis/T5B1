@@ -1,30 +1,57 @@
-﻿using System;
+﻿﻿using System;
 using System.Globalization;
 
 namespace Trainer_v5
 {
 	public static class Logger
 	{
-		private static void ConsoleLogWithPropertyName(string str) => DevConsole.Console.Log($"Trainer Property {nameof(str)}: {str}");
-		private static void ConsoleLog(string str) => DevConsole.Console.Log(str);
+		// Simplified logging prefix
+		private const string LogPrefix = "Trainer: ";
 
-		public static void Log(this string str, bool withPropertyName = true)
+		// Simplified console log method
+		private static void ConsoleLog(string message) => DevConsole.Console.Log($"{LogPrefix}{message}");
+
+		// Updated Log extension for string (removed withPropertyName)
+		public static void Log(this string message)
 		{
-			if (withPropertyName)
+			ConsoleLog(message);
+		}
+		
+		// Overload for compatibility if Log(message, false) was used elsewhere, though unlikely now.
+        // Consider removing if no external calls use the boolean flag.
+        [Obsolete("Use Log(message) instead. The withPropertyName flag is deprecated.")]
+        public static void Log(this string message, bool withPropertyName)
+        {
+             ConsoleLog(message); // Ignore the flag, just log the message
+        }
+
+
+		// Updated Log extensions for other types
+		public static void Log(this bool value) => ConsoleLog(value.ToString());
+		public static void Log(this int value) => ConsoleLog(value.ToString());
+		public static void Log(this float value) => ConsoleLog(value.ToString(CultureInfo.InvariantCulture));
+		public static void Log(this double value) => ConsoleLog(value.ToString(CultureInfo.InvariantCulture));
+		public static void Log(this object obj) => ConsoleLog(obj?.ToString() ?? "null"); // Added null check
+
+		// Enhanced LogException to include type and stack trace
+		public static void LogException(this Exception ex)
+		{
+			if (ex == null)
 			{
-				ConsoleLogWithPropertyName(str);
+				ConsoleLog("LogException called with null exception.");
+				return;
 			}
-			else
+			// Log type, message, and stack trace for better debugging
+			ConsoleLog($"Exception Type: {ex.GetType().FullName}");
+			ConsoleLog($"Message: {ex.Message}");
+			ConsoleLog($"Stack Trace: {ex.StackTrace}");
+			// Optionally log inner exception if it exists
+			if (ex.InnerException != null)
 			{
-				ConsoleLog(str);
+				ConsoleLog("--- Inner Exception ---");
+				ex.InnerException.LogException(); // Recursively log inner exception
+				ConsoleLog("--- End Inner Exception ---");
 			}
 		}
-
-		public static void Log(this bool str) => ConsoleLogWithPropertyName(str.ToString());
-		public static void Log(this int str) => ConsoleLogWithPropertyName(str.ToString());
-		public static void Log(this float str) => ConsoleLogWithPropertyName(str.ToString(CultureInfo.InvariantCulture));
-		public static void Log(this double str) => ConsoleLogWithPropertyName(str.ToString(CultureInfo.InvariantCulture));
-		public static void Log(this object str) => ConsoleLogWithPropertyName(str.ToString());
-		public static void LogException(this Exception ex) => ConsoleLog($"Trainer Exception: {ex.Message}");
 	}
 }

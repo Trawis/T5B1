@@ -1,10 +1,10 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils = Trainer_v5.Utilities;
+using Trainer_v5;
 
 namespace Trainer_v5.Window
 {
@@ -56,17 +56,17 @@ namespace Trainer_v5.Window
 			window.name = "EditDemands";
 			window.MainPanel.name = "EditDemandsPanel";
 
-			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t => 
-				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
+			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
+				UIHelper.CreateToggle(t.ToString(), false, on => ToggleDemand(t, on)).GetComponent<Toggle>());
 
-			var col1 = new List<GameObject> { UIFactory.Label("Demands", WindowStyles.TitleStyle).gameObject };
+			var col1 = new List<GameObject> { UIHelper.CreateLabel("Demands", name: "DemandsTitle") };
 			col1.AddRange(demands.Values.Select(e => e.gameObject));
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			col1.Add(UIHelper.CreateButton("Refresh", () => self.Refresh()));
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN,  col1.ToArray(), window);
+			col1.AddToWindow(window, Constants.FIRST_COLUMN);
 
-			var maxRows = new[] { col1.Count }.Max();
-			Utils.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1, window);
+			var maxRows = col1.Count;
+			window.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1);
 
 			_window = window;
 			_demandToggles = demands;

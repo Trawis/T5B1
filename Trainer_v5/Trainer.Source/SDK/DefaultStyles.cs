@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Trainer_v5.Trainer.Source.SDK
+namespace Trainer_v5.SDK // Corrected namespace
 {
 	public static class ComponentStyleHelper
 	{

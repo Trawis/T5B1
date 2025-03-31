@@ -1,12 +1,13 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
-using Trainer_v5.Window;
+// Removed using Trainer_v5.Window; as it seems unused now
 using UnityEngine;
 using UnityEngine.UI;
+using Trainer_v5;
 
-namespace Trainer_v5.Trainer.Source.Window
+namespace Trainer_v5.Window
 {
 	public class EmployeeLeadSpecChangeWindow : MonoBehaviour
 	{
@@ -53,27 +54,24 @@ namespace Trainer_v5.Trainer.Source.Window
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
+			var columnItems = new List<GameObject>();
+
+			columnItems.Add(UIHelper.CreateLabel("Lead Spec", name: "LeadSpecTitle"));
+
 			foreach (var pair in softwareTypes)
 			{
-				var toggle = UIFactory.Toggle(pair.Key, false, isOn => self.OnToggle(pair.Key, isOn));
-				toggles[pair.Key] = toggle;
+				var toggleGO = UIHelper.CreateToggle(pair.Key, false, isOn => self.OnToggle(pair.Key, isOn));
+				toggles[pair.Key] = toggleGO.GetComponent<Toggle>();
+				columnItems.Add(toggleGO);
 			}
 
-			var col1 = new VerticalLayout
-			{
-				Gap = 2,
-				Components = LayoutHelper.EnumerableOf(
-					UIFactory.Label("Lead Spec", WindowStyles.TitleStyle),
-					toggles.Values.ToArray(),
-					UIFactory.Button("All", () => self.ToggleAll(true)),
-					UIFactory.Button("None", () => self.ToggleAll(false)),
-					UIFactory.Button("Set LeadSpec", () => self.SetLeadSpec())
-					).ToList()
-			};
-			window.Add(col1, new Rect(4, 4, 160, 0));
+			columnItems.Add(UIHelper.CreateButton("All", () => self.ToggleAll(true)));
+			columnItems.Add(UIHelper.CreateButton("None", () => self.ToggleAll(false)));
+			columnItems.Add(UIHelper.CreateButton("Set LeadSpec", () => self.SetLeadSpec()));
 
-			var maxHeight = new[] { col1.PreferHeight }.Max();
-			window.SetMinSize(168, maxHeight);
+			columnItems.AddToWindow(window, Constants.FIRST_COLUMN);
+
+			window.SetWindowSize(columnItems.Count, Constants.SECOND_COLUMN - 1);
 
 			_window = window;
 			_softwareTypes = softwareTypes;

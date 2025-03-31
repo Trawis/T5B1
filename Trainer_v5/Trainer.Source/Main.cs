@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿﻿﻿﻿﻿﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Trainer_v5;
 
 namespace Trainer_v5
 {
@@ -33,11 +34,11 @@ namespace Trainer_v5
 
 		public static void CreateUIButtons()
 		{
-			TrainerButton = Utilities.CreateUIButton(() => SettingsWindow.Toggle(), Helpers.TrainerVersion, "TrainerButton");
-			SkillChangeButton = Utilities.CreateUIButton(() => EmployeeSkillChangeWindow.Show(), "Skill Change", "EmployeeSkillButton");
+			TrainerButton = UIHelper.CreateButton(Helpers.TrainerVersion, () => SettingsWindow.Toggle(), "TrainerButton").GetComponent<Button>();
+			SkillChangeButton = UIHelper.CreateButton("Skill Change", () => EmployeeSkillChangeWindow.Show(), "EmployeeSkillButton").GetComponent<Button>();
 
-			Utilities.AddElementToElement(TrainerButton.gameObject, "MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32));
-			Utilities.AddElementToElement(SkillChangeButton.gameObject, "ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
+			TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32));
+			SkillChangeButton.gameObject.AddToElement("ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
 		}
 
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)
