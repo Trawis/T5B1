@@ -1,11 +1,10 @@
-﻿﻿﻿﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
 using UnityEngine;
 using UnityEngine.UI;
-using Trainer_v5; // Added for UIHelper extensions
-// Removed using Utils alias
+using Trainer_v5;
 
 namespace Trainer_v5.Window
 {
@@ -13,7 +12,7 @@ namespace Trainer_v5.Window
 	{
 		public static EmployeeTraitChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
-		
+
 		private GUIWindow _window;
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
 		private Actor _actor;
@@ -57,7 +56,6 @@ namespace Trainer_v5.Window
 			window.name = "EditTrait";
 			window.MainPanel.name = "EditTraitPanel";
 
-			// Use UIHelper to create toggles
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIHelper.CreateToggle(t.ToString(), false, on => ToggleTrait(t, on)).GetComponent<Toggle>());
 
@@ -71,24 +69,21 @@ namespace Trainer_v5.Window
 				.Where(p => p.Key.IsBad())
 				.Select(p => p.Value.gameObject);
 
-			// Use UIHelper for labels and button
-			var col1 = new List<GameObject> { UIHelper.CreateLabel("Good", name: "GoodTitle") }; // Removed WindowStyles
+			var col1 = new List<GameObject> { UIHelper.CreateLabel("Good", name: "GoodTitle") };
 			col1.AddRange(goodTraitsToggle);
 			col1.Add(UIHelper.CreateButton("Refresh", () => self.Refresh()));
 
-			var col2 = new List<GameObject> { UIHelper.CreateLabel("Neutral", name: "NeutralTitle") }; // Removed WindowStyles
+			var col2 = new List<GameObject> { UIHelper.CreateLabel("Neutral", name: "NeutralTitle") };
 			col2.AddRange(neutralTraitsToggle);
 
-			var col3 = new List<GameObject> { UIHelper.CreateLabel("Bad", name: "BadTitle") }; // Removed WindowStyles
+			var col3 = new List<GameObject> { UIHelper.CreateLabel("Bad", name: "BadTitle") };
 			col3.AddRange(badTraitsToggle);
 
-			// Use UIHelper extension method AddToWindow
 			col1.AddToWindow(window, Constants.FIRST_COLUMN);
 			col2.AddToWindow(window, Constants.SECOND_COLUMN);
 			col3.AddToWindow(window, Constants.THIRD_COLUMN);
 
 			var maxRows = new[] { col1.Count, col2.Count, col3.Count }.Max();
-			// Use UIHelper extension method SetWindowSize
 			window.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1);
 
 			_window = window;

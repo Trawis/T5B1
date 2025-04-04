@@ -1,6 +1,5 @@
-﻿﻿﻿﻿﻿﻿﻿﻿using System.Collections.Generic;
-// Removed using Trainer_v5.Trainer.Source.Window;
-using Trainer_v5.Window; // This namespace now contains the relevant window classes
+﻿﻿using System.Collections.Generic;
+using Trainer_v5.Window;
 using UnityEngine;
 
 namespace Trainer_v5
@@ -9,30 +8,25 @@ namespace Trainer_v5
 	{
 		private static bool _installed;
 
-		// Layout constants for buttons
 		private const int ButtonWidth = 80;
 		private const int ButtonHeight = 32;
 		private const int ButtonSpacing = 4;
-		private const int ButtonYOffset = 0 - ButtonSpacing - ButtonHeight; // Position below existing elements
+		private const int ButtonYOffset = 0 - ButtonSpacing - ButtonHeight;
 
-		// Safer property access
 		private static Employee CurrentEmployee
 		{
 			get
 			{
-				// Added null checks for safety
 				var detailWindow = HUD.Instance?.DetailWindow;
 				return detailWindow?.CurrentEmployee?.employee;
 			}
 		}
-
 
 		public static void Install()
 		{
 			if (_installed) return;
 			_installed = true;
 
-			// Changed to List<GameObject> and use UIHelper
 			var components = new List<GameObject>
 			{
 				UIHelper.CreateButton("Trait",  () => EmployeeTraitChangeWindow.Instance.Show()),
@@ -42,11 +36,9 @@ namespace Trainer_v5
 				UIHelper.CreateButton("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 			};
 
-			// add components to DetailWindow using constants
 			for (var i = 0; i < components.Count; i++)
 			{
 				var x = i * (ButtonWidth + ButtonSpacing);
-				// Use UIHelper extension method AddToElement
 				components[i].AddToElement("DetailWindow", new Rect(x, ButtonYOffset, ButtonWidth, ButtonHeight));
 			}
 		}
@@ -63,13 +55,12 @@ namespace Trainer_v5
 				skills[i] = originalEmployee.GetSkillI(i);
 			}
 
-			// clone employee with new creativity value
 			var newEmployee = new Employee(
 				currentTime: SDateTime.Now(),
 				female: originalEmployee.Female,
 				name: originalEmployee.Name,
 				skills: skills,
-				creativity: newCreativity, // Use the new value
+				creativity: newCreativity,
 				person: originalEmployee.PersonalityTraits,
 				traits: originalEmployee.Traits,
 				specs: originalEmployee.GetAllSpecializations(),
@@ -78,16 +69,14 @@ namespace Trainer_v5
 				forceBrain: originalEmployee.HiredFor
 			);
 
-			// transfer properties
 			newEmployee.Salary = originalEmployee.Salary;
-			newEmployee.CreativityKnown = 1f; // Assume creativity is now known
+			newEmployee.CreativityKnown = 1f;
 			newEmployee.MyEmployer = originalEmployee.MyEmployer;
 			newEmployee.BirthDate = originalEmployee.BirthDate;
 			newEmployee.Hired = originalEmployee.Hired;
 			newEmployee.Thoughts = originalEmployee.Thoughts;
 			newEmployee.JobSatisfaction = originalEmployee.JobSatisfaction;
 
-			// transfer lead specs
 			foreach (var kvp in originalEmployee.LeadSpecializationFix)
 			{
 				newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
@@ -106,28 +95,22 @@ namespace Trainer_v5
 				$"Set creativity for {originalEmployee.Name}",
 				newCreativityValue =>
 				{
-					// Use the helper method to create the new employee instance
 					var newEmployee = CloneEmployeeWithNewCreativity(originalEmployee, newCreativityValue);
-
 					var actor = originalEmployee.MyActor;
 					if (actor != null)
 					{
-						// Update actor references to point to the new employee instance
-						originalEmployee.MyActor = null; // Disassociate old employee
+						originalEmployee.MyActor = null;
 						actor.employee = newEmployee;
 						newEmployee.MyActor = actor;
 
-						// Update the detail window if it's showing the employee we just replaced
 						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == originalEmployee)
 						{
 							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
-							// Optionally force a refresh if the window doesn't update automatically
 							// HUD.Instance.DetailWindow.Show(actor);
 						}
 					}
 					else
 					{
-						// Handle case where actor might not be found? Log warning?
 						$"Could not find Actor for employee {originalEmployee.Name} during creativity update.".Log(false);
 					}
 				},
@@ -144,7 +127,7 @@ namespace Trainer_v5
 				$"Current is {employee.Inspiration}\nMin = 0, Max = 2.0",
 				$"Set inspiration for {employee.Name}",
 				val => employee.Inspiration = val,
-				min: 0, 
+				min: 0,
 				max: 2);
 		}
 	}

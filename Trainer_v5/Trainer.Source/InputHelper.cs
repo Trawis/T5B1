@@ -1,11 +1,9 @@
-﻿﻿using System;
+﻿﻿﻿﻿using System;
 
 namespace Trainer_v5
 {
 	public static class InputHelper
 	{
-		// Commented-out code removed
-
 		public static void RequestFloat(
 			string prompt,
 			string title,
@@ -37,8 +35,6 @@ namespace Trainer_v5
 		}
 
 		private delegate bool TryParse<T>(string s, out T result) where T : struct;
-
-		// Commented-out code removed
 
 		private static T? TryParseAndValidate<T>(
 			string str,

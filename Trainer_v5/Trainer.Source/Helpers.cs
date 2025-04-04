@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using OrbCreationExtensions;
 
@@ -125,10 +125,9 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		// Updated GetIndex to use ValueDataType enum
 		public static int GetIndex(List<KeyValuePair<string, object>> values, Dictionary<string, object> properties, string store, ValueDataTypeEnum valueType)
 		{
-			try // Added try-catch for safety when accessing properties
+			try
 			{
 				object propertyValue = GetProperty(properties, store);
 				if (propertyValue == null)
@@ -159,10 +158,9 @@ namespace Trainer_v5
 			}
 			catch (Exception ex)
 			{
-				// Log the error message first, then log the exception details
-				$"Error in GetIndex for store '{store}' and type '{valueType}'".Log(false); // Log context without property name
-				ex.LogException(); // Correctly call the extension method on the exception object
-				return -1; // Return -1 or default index on error
+				$"Error in GetIndex for store '{store}' and type '{valueType}'".Log(false);
+				ex.LogException();
+				return -1;
 			}
 		}
 

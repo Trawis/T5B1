@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrbCreationExtensions;
+using System; // Keep System for EventArgs, Random, Lazy, etc.
+using System.Collections.Generic;
+using System.Linq;
+using OrbCreationExtensions; // Keep for MakeFloat etc.
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Trainer_v5.Actions; // Add using directive for the new Actions namespace
-using Random = System.Random;
+using Trainer_v5.Actions;
+using Random = System.Random; // Keep alias
 
 namespace Trainer_v5
 {
@@ -182,7 +186,7 @@ namespace Trainer_v5
 		{
 			if (AutoAcceptHostingDealsEnabled)
 			{
-				AcceptHostingDealsAutomatically(); // This helper was already present
+				AcceptHostingDealsAutomatically();
 			}
 		}
 
@@ -211,25 +215,22 @@ namespace Trainer_v5
 
 		private void ApplyHourlyTimedEvents()
 		{
-			// Timed Events (More Hosting Deals)
 			if (MoreHostingDealsEnabled)
 			{
 				int inGameHour = TimeOfDay.Instance.Hour;
 
-				// Push Deal logic
 				if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
 				{
-					MiscActions.PushDeal(); // Call method from MiscActions class
+					MiscActions.PushDeal();
 				}
 				else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
 				{
 					Helpers.DealIsPushed = false;
 				}
 
-				// Push Reward logic
 				if (!Helpers.RewardIsGained && inGameHour == 12)
 				{
-					MiscActions.PushReward(); // Call method from MiscActions class
+					MiscActions.PushReward();
 				}
 				else if (inGameHour != 12 && Helpers.RewardIsGained)
 				{
@@ -285,7 +286,7 @@ namespace Trainer_v5
 		{
 			if (AutoResearchStartEnabled)
 			{
-				StartAutoResearch(); // This helper was already present
+				StartAutoResearch();
 			}
 		}
 
@@ -315,34 +316,29 @@ namespace Trainer_v5
 			}
 			else
 			{
-				EducationWindow.EdCost = _edCost; // Reset logic already present
+				EducationWindow.EdCost = _edCost;
 			}
 
 			if (DigitalDistributionMonopolyEnabled)
 			{
-				ApplyDigitalDistributionMonopoly(); // This helper was already present
+				ApplyDigitalDistributionMonopoly();
 			}
 		}
 
 		private void ApplyDailyWorldSettingsUpdates()
 		{
-			GameSettings.MaxFloor = 100; // Consider making configurable or adding reset logic
+			GameSettings.MaxFloor = 100;
 
 			AI.MaxBoxes = IncreaseCourierCapacityEnabled ? 108 : 54;
 			AI.MaxBoxCarry = IncreaseCourierCapacityEnabled ? 18 : 9;
-			// TODO: Add reset logic for Courier Capacity if needed
-
 			AI.BoxPrice = ReduceBoxPriceEnabled ? 62.5f : 125;
-			// TODO: Add reset logic for Box Price if needed
 
 			if (!_defaultEnvironmentISPCostFactor.IsZero())
 			{
 				Settings.Environment.ISPCostFactor = ReduceISPCostEnabled ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
 			}
-			// Reset logic for ISP Cost is implicitly handled by the check above
 
 			Settings.ExpansionCost = ReduceExpansionCostEnabled ? 175f : 350f;
-			// TODO: Add reset logic for Expansion Cost if needed
 		}
 
 
@@ -365,8 +361,8 @@ namespace Trainer_v5
 					Actor actor = Settings.sActorManager.Actors[i];
 					Employee employee = actor.employee;
 
-					actor.NegotiateSalary = false; // Ensure flag is off monthly too
-					if (employee.Salary > 0f) // Only change if salary is not already zero
+					actor.NegotiateSalary = false;
+					if (employee.Salary > 0f)
 					{
 						employee.ChangeSalary(0f, 0f, actor, false);
 					}
@@ -388,21 +384,18 @@ namespace Trainer_v5
 			{
 				Settings.StaffSalaryDue = 0f;
 			}
-			// TODO: Add reset logic for StaffSalaryDue
 
 			if (NoServerCostEnabled)
 			{
 				Settings.ServerCost = 0f;
 			}
-			// TODO: Add reset logic for ServerCost
 
-			if (NoWaterElectricityEnabled) // Bills are company-wide
+			if (NoWaterElectricityEnabled)
 			{
 				Settings.ElectricityBill = 0f;
 				Settings.Waterbill = 0f;
 				Settings.Gasbill = 0f;
 			}
-			// TODO: Add reset logic for Bills
 		}
 
 
@@ -497,12 +490,12 @@ namespace Trainer_v5
 					employee.HadProperFood = true;
 				}
 
-				if (FreeEmployeesEnabled) // Check frame for salary negotiation flag
+				if (FreeEmployeesEnabled)
 				{
 					actor.NegotiateSalary = false;
 				}
 
-				if (NoiseReductionEnabled) // Actor noisiness
+				if (NoiseReductionEnabled)
 				{
 					actor.Noisiness = 0;
 				}
@@ -544,7 +537,7 @@ namespace Trainer_v5
 					}
 					if (furniture.Type == "Chair" && furniture.Comfort < 1.2f)
 					{
-						furniture.Comfort = 1.5f;
+					furniture.Comfort = 1.5f;
 					}
 				}
 
@@ -555,10 +548,9 @@ namespace Trainer_v5
 				else
 				{
 					// Optionally reset CanSteal if the setting is disabled
-					// furniture.CanSteal = true; // Or reset based on original furniture properties
+					// furniture.CanSteal = true;
 				}
 
-				// Existing Fire Check logic
 				if (DisableFiresEnabled)
 				{
 					if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
@@ -604,7 +596,7 @@ namespace Trainer_v5
 					room.IndirectLighting = 16;
 				}
 
-				if (NoSicknessEnabled) // Germs are room-related
+				if (NoSicknessEnabled)
 				{
 					room.GermCount = 0f;
 				}
@@ -641,7 +633,6 @@ namespace Trainer_v5
 
 		// --- Initialization ---
 
-		// Called once when MainScene loads via OnLevelFinishedLoading
 		private void InitializeTrainerStateOnLoad()
 		{
 			if (!_specializationsLoaded && Settings.MyCompany != null)
@@ -656,9 +647,9 @@ namespace Trainer_v5
 			}
 		}
 
-        // --- Helper Methods (Kept for clarity) ---
+        // --- Helper Methods ---
 
-        private void StartAutoResearch() // Helper for OnDayPassed
+        private void StartAutoResearch()
         {
             var activeTechLevels = MarketSimulation.Active.TechLevels;
             var defaultResearchTeams = Settings.GetDefaultTeams("Research");
@@ -682,7 +673,7 @@ namespace Trainer_v5
             }
         }
 
-        private void ApplyDigitalDistributionMonopoly() // Helper for OnDayPassed
+        private void ApplyDigitalDistributionMonopoly()
         {
 #if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
             foreach (var company in Settings.simulation.Companies.Values.ToList())
@@ -709,7 +700,7 @@ namespace Trainer_v5
 #endif
         }
 
-        private void AcceptHostingDealsAutomatically() // Helper for OnHourPassed
+        private void AcceptHostingDealsAutomatically()
         {
 #if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
             var serverGroups = Settings.GetAllServerGroups().ToList();
