@@ -74,7 +74,7 @@ namespace Trainer_v5
 			}
 			catch (System.Exception ex)
 			{
-				$"Error in GetIndex extension for key '{key}' and type '{valueType}'".Log(false);
+				$"Error in GetIndex extension for key '{key}' and type '{valueType}'".Log();
 				ex.LogException();
 				return -1;
 			}

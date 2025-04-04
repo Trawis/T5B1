@@ -158,7 +158,7 @@ namespace Trainer_v5
 			}
 			catch (Exception ex)
 			{
-				$"Error in GetIndex for store '{store}' and type '{valueType}'".Log(false);
+				$"Error in GetIndex for store '{store}' and type '{valueType}'".Log();
 				ex.LogException();
 				return -1;
 			}

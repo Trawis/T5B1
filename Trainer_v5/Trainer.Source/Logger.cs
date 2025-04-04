@@ -14,12 +14,6 @@ namespace Trainer_v5
 			ConsoleLog(message);
 		}
 
-        [Obsolete("Use Log(message) instead. The withPropertyName flag is deprecated.")]
-        public static void Log(this string message, bool withPropertyName)
-        {
-             ConsoleLog(message);
-        }
-
 		public static void Log(this bool value) => ConsoleLog(value.ToString());
 		public static void Log(this int value) => ConsoleLog(value.ToString());
 		public static void Log(this float value) => ConsoleLog(value.ToString(CultureInfo.InvariantCulture));

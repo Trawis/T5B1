@@ -111,7 +111,7 @@ namespace Trainer_v5
 					}
 					else
 					{
-						$"Could not find Actor for employee {originalEmployee.Name} during creativity update.".Log(false);
+						$"Could not find Actor for employee {originalEmployee.Name} during creativity update.".Log();
 					}
 				},
 				min: 0,
