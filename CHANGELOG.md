@@ -3,7 +3,13 @@ Release notes for changes to the trainer
 
 ---
 
-**5.2.4**
+**5.2.5**
+16.01.2026. for Beta 1
+- Updated libraries
+
+---
+
+**5.2.5**
 08.10.2025. for Beta 1
 - Removed Reduce Box Price due to incompatibility
 - Updated libraries
