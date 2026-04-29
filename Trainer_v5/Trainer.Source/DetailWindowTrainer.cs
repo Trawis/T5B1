@@ -9,6 +9,8 @@ namespace Trainer_v5
 	{
 		private static bool _installed;
 
+		public static void Reset() => _installed = false;
+
 		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		public static void Install()
@@ -73,25 +75,41 @@ namespace Trainer_v5
 					newEmployee.Hired = employee.Hired;
 					newEmployee.Thoughts = employee.Thoughts;
 					newEmployee.JobSatisfaction = employee.JobSatisfaction;
+					newEmployee.NickName = employee.NickName;
+					newEmployee.Founder = employee.Founder;
+					newEmployee.MadeCEO = employee.MadeCEO;
+					newEmployee.Dismissed = employee.Dismissed;
+					newEmployee.Retired = employee.Retired;
+					newEmployee.PreviousEmployment = employee.PreviousEmployment;
+					newEmployee.AgeMonth = employee.AgeMonth;
+					newEmployee.SkillCeiling = employee.SkillCeiling;
+					newEmployee.LowestSatisfaction = employee.LowestSatisfaction;
+					newEmployee.DemandsMet = employee.DemandsMet;
+					newEmployee.DemandsRequested = employee.DemandsRequested;
+					newEmployee.CustomBenefits = employee.CustomBenefits;
 
-					// transfer lead specs
+					// transfer lead specs and projects
 					foreach (var kvp in employee.LeadSpecializationFix)
-					{
 						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
-					}
-					
+
+					foreach (var p in employee.LeadProjects)
+						newEmployee.LeadProjects.Add(p);
+
+					foreach (var id in employee.LeadProjectsFix)
+						newEmployee.LeadProjectsFix.Add(id);
+
 					var actor = employee.MyActor;
 					if (actor != null)
 					{
-						// update actor references
 						employee.MyActor = null;
 						actor.employee = newEmployee;
 						newEmployee.MyActor = actor;
-						
-						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == employee)
-						{
-							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
-						}
+
+						// DetailWindow.CurrentEmployee is the Actor; since actor.employee now
+						// points to newEmployee the window will read the updated data, but we
+						// force a Show() so any cached UI state is also refreshed.
+						if (HUD.Instance?.DetailWindow?.CurrentEmployee == actor)
+							HUD.Instance.DetailWindow.Show(actor);
 					}
 				},
 				min: 0,

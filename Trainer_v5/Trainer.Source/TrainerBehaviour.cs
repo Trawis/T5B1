@@ -42,6 +42,7 @@ namespace Trainer_v5
 							Destroy(Main.SkillChangeButton.gameObject);
 						}
 						UnsubscribeFromEvents();
+						DetailWindowTrainer.Reset();
 						break;
 					case "MainScene":
 						Main.CreateUIButtons();
@@ -60,16 +61,16 @@ namespace Trainer_v5
 
 		private void SubscribeToEvents()
 		{
-			TimeOfDay.OnHourPassed += (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed += (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed += (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed += OnHourPassed;
+			TimeOfDay.OnDayPassed += OnDayPassed;
+			TimeOfDay.OnMonthPassed += OnMonthPassed;
 		}
 
 		private void UnsubscribeFromEvents()
 		{
-			TimeOfDay.OnHourPassed -= (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed -= (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed -= (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed -= OnHourPassed;
+			TimeOfDay.OnDayPassed -= OnDayPassed;
+			TimeOfDay.OnMonthPassed -= OnMonthPassed;
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -551,8 +552,6 @@ namespace Trainer_v5
 			GameSettings.MaxFloor = 100; //10 default
 			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 108 : 54;
 			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 18 : 9;
-			//Not working
-			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
 			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
 			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? 175f : 350f;
 		}
@@ -757,9 +756,6 @@ namespace Trainer_v5
 
 		public static void SellProductStock()
 		{
-			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
-				false, DialogWindow.DialogType.Information);
-
 			SoftwareProduct[] Products = Settings.MyCompany.Products
 												 .Where(product => product.Userbase == 0)
 												 .ToArray();
@@ -777,6 +773,9 @@ namespace Trainer_v5
 				product.PhysicalCopies = 0;
 				Settings.MyCompany.MakeTransaction(st, Company.TransactionCategory.Sales);
 			}
+
+			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
+				false, DialogWindow.DialogType.Information);
 		}
 
 		public static void RemoveSoft()
@@ -987,7 +986,7 @@ namespace Trainer_v5
 			}
 
 			Product.Price = input.ConvertToFloatDef(50f);
-			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductPrice()
@@ -1010,7 +1009,7 @@ namespace Trainer_v5
 			}
 
 			Product.PhysicalCopies = (uint)input.ConvertToIntDef(100000);
-			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductStock()
@@ -1033,7 +1032,7 @@ namespace Trainer_v5
 			}
 
 			Product.Userbase = input.ConvertToIntDef(100000);
-			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void AddActiveUsers()
@@ -1072,7 +1071,7 @@ namespace Trainer_v5
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
+			WindowManager.SpawnDialog("Trainer: Company " + input + " has been taken over by you!", false, DialogWindow.DialogType.Information);
 		}
 
 		public static void TakeoverCompany()
@@ -1111,8 +1110,6 @@ namespace Trainer_v5
 		{
 			SimulatedCompany Company =
 				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
-
-			DevConsole.Console.Log("input => " + input + " Company: " + Company);
 
 			if (Company == null)
 			{

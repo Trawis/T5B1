@@ -68,7 +68,6 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
@@ -147,7 +146,6 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), settings.Get("ReduceISPCost"), a => settings.Toggle("ReduceISPCost")));
 			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), settings.Get("NoServerCost"), a => settings.Toggle("NoServerCost")));
 			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), settings.Get("ReduceExpansionCost"), a => settings.Toggle("ReduceExpansionCost")));
-			//column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get("ReduceBoxPrice"), a => settings.Toggle("ReduceBoxPrice")));
 			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get("DisableForcePause"), a => settings.Toggle("DisableForcePause")));
 			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get("DisableForceFreeze"), a => settings.Toggle("DisableForceFreeze")));
 			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get("AutoAcceptHostingDeals"), a => settings.Toggle("AutoAcceptHostingDeals")));
