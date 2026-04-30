@@ -12,6 +12,7 @@ namespace Trainer_v5
 	{
 		private static bool _specializationsLoaded;
 		private float _defaultEnvironmentISPCostFactor;
+		private static int _lastBoxesShipped;
 
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
@@ -48,6 +49,7 @@ namespace Trainer_v5
 						Main.CreateUIButtons();
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
+						_lastBoxesShipped = 0;
 						break;
 					case "Customization":
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
@@ -75,7 +77,20 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsGameLoaded || Settings.MyCompany == null || Settings.BoxController == null) return;
 
+			if (Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice"))
+			{
+				int currentBoxes = Settings.BoxController.BoxesShipped;
+				int newBoxes = Math.Max(0, currentBoxes - _lastBoxesShipped);
+				if (newBoxes > 0)
+					Settings.MyCompany.MakeTransaction(newBoxes * 62.5, Company.TransactionCategory.Bills);
+				_lastBoxesShipped = currentBoxes;
+			}
+			else
+			{
+				_lastBoxesShipped = Settings.BoxController.BoxesShipped;
+			}
 		}
 
 		private void OnDayPassed(object obj, EventArgs args)
@@ -780,33 +795,14 @@ namespace Trainer_v5
 
 		public static void RemoveSoft()
 		{
-			return;
-
-			//currently broken
-			SDateTime time = new SDateTime(1, 70);
-			CompanyType type = new CompanyType();
-			var dict = new Dictionary<string, string[]>();
-			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, MarketSimulation.Active);
-			simComp.CanMakeTransaction(2139095030f);
-
-			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
+			SoftwareProduct[] products = Settings.simulation.GetAllProducts(true).Where(product =>
 				product.DevCompany == Settings.MyCompany &&
 				product.Inventor != Settings.MyCompany.Name).ToArray();
 
-			if (Products.Length == 0)
-			{
-				return;
-			}
+			if (products.Length == 0) return;
 
-			for (int i = 0; i < Products.Length; i++)
-			{
-				SoftwareProduct Product = Products[i];
-
-				Product.Userbase = 0;
-				Product.PhysicalCopies = 0;
-				Product.Marketing = 0;
-				Product.Trade(simComp, time);
-			}
+			foreach (SoftwareProduct product in products)
+				Settings.simulation.ArchiveProduct(product, true);
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
 		}

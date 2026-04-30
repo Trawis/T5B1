@@ -47,6 +47,7 @@ namespace Trainer_v5
 			{"MoreHostingDeals", false},
 			{"IncreaseCourierCapacity", false},
 			{"ReduceISPCost", false},
+			{"ReduceBoxPrice", false},
 			{"IncreasePrintSpeed", false},
 			{"FreePrint", false},
 			{"IncreaseBookshelfSkill", false},
