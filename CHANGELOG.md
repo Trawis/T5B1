@@ -3,6 +3,13 @@ Release notes for changes to the trainer
 
 ---
 
+**5.2.6**
+24.05.2026. for Beta 1
+- Added Max Market Share button: instantly sets all company products to 100% market share
+- Added Auto Max Market Share toggle: keeps all company products at 100% market share continuously
+
+---
+
 **5.2.5**
 16.01.2026. for Beta 1
 - Updated libraries

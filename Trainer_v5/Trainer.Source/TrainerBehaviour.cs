@@ -518,6 +518,11 @@ namespace Trainer_v5
 			}
 			 * */
 
+			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			{
+				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
 #if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
@@ -1181,6 +1186,16 @@ namespace Trainer_v5
 			}
 
 			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
+		}
+
+		#endregion
+
+		#region Max Market Share
+
+		public static void MaxMarketShare()
+		{
+			Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		#endregion

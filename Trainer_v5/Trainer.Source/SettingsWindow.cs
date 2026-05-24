@@ -71,6 +71,7 @@ namespace Trainer_v5
 			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
+			column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
 			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
@@ -99,6 +100,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), settings.Get("AutoResearchStart"), a => settings.Toggle("AutoResearchStart")));
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get("DigitalDistributionMonopol"), a => settings.Toggle("DigitalDistributionMonopol")));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get("DisableFireInspection"), a => settings.Toggle("DisableFireInspection")));
+			column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get("AutoMaxMarketShare"), a => settings.Toggle("AutoMaxMarketShare")));
 
 			#endregion
 
