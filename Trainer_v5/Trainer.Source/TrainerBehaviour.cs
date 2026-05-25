@@ -11,6 +11,9 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
+
+		private static bool IsGameReady(bool requireSelector = false) =>
+			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
 
 		private static GameSettings Settings => GameSettings.Instance;
@@ -584,7 +587,7 @@ namespace Trainer_v5
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
 		{
-			string message = "Join us on our discord server\nhttps://discord.gg/NQpm5kn";
+			string message = $"Join us on our discord server\n{Helpers.DiscordUrl}";
 			if (displayAsPopup)
 			{
 				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -733,10 +736,7 @@ namespace Trainer_v5
 
 		public static void HREmployees()
 		{
-			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
-			{
-				return;
-			}
+			if (!IsGameReady(requireSelector: true)) return;
 
 			Actor[] Actors = Settings.sActorManager.Actors
 									 .Where(actor => actor.employee.RoleString.Contains("Lead"))
@@ -829,10 +829,7 @@ namespace Trainer_v5
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
 
-			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
-			{
-				return;
-			}
+			if (!IsGameReady(requireSelector: true)) return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -864,10 +861,7 @@ namespace Trainer_v5
 
 		public static void UnlockAllSpace()
 		{
-			if (!Helpers.IsGameLoaded)
-			{
-				return;
-			}
+			if (!IsGameReady()) return;
 
 			Example.TakeAllLand();
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -875,10 +869,7 @@ namespace Trainer_v5
 
 		public static void UnlockFurniture()
 		{
-			if (!Helpers.IsGameLoaded)
-			{
-				return;
-			}
+			if (!IsGameReady()) return;
 
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
