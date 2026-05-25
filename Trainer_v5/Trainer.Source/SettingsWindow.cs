@@ -151,6 +151,8 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get("DisableForcePause"), a => settings.Toggle("DisableForcePause")));
 			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get("DisableForceFreeze"), a => settings.Toggle("DisableForceFreeze")));
 			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get("AutoAcceptHostingDeals"), a => settings.Toggle("AutoAcceptHostingDeals")));
+			column4.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
+			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
 
 			#endregion
 
@@ -191,8 +193,7 @@ namespace Trainer_v5
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
 				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
-				column6.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
-				column6.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity [TEST]"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
+
 			}
 
 			#endregion
