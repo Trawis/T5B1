@@ -232,12 +232,14 @@ namespace Trainer_v5
 					TimeOfDay.Instance.Sick.Clear();
 
 					if (actor.SpecialState == Actor.HomeState.Sick)
+					{
 						actor.SpecialState = Actor.HomeState.Default;
+						actor.WasSick = true;
+					}
 
 					actor.GermAdd = 0f;
 					actor.GermCount = 0f;
 					actor.SickDays = 0;
-					//actor.WasSick = true;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
@@ -300,6 +302,8 @@ namespace Trainer_v5
 				if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
 				{
 					actor.VacationMonth = SDateTime.NextMonth(24);
+					if (actor.SpecialState == Actor.HomeState.Vacation)
+						actor.SpecialState = Actor.HomeState.Default;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
