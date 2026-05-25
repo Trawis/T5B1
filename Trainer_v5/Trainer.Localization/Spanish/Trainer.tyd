@@ -15,6 +15,7 @@ BankruptAll							"AI en bancarrota todo"
 DaysPerMonth						"Días por mes"
 ClearAllLoans						"Borrar todos los préstamos"
 MaxMarketRecognition				"Reconocimiento máximo del mercado"
+MaxMarketShare						"Máxima cuota de mercado"
 MaxSkill							"Máxima habilidad de los empleados"
 RemoveProducts						"Eliminar productos"
 ResetAge							"Restablecer la edad de los empleados"
@@ -52,6 +53,7 @@ ReduceInternetCost					"Reducir el costo de Internet"
 NoServerCost						"Sin costo de servidor"
 ReduceExpansionCost					"Reducir el costo de expansión"
 ReduceBoxPrice						"Reducir el precio de la caja"
+AutoMaxMarketShare					"Cuota de mercado máxima automática"
 
 
 
