@@ -31,6 +31,7 @@ All button features are initiated once
 | Reset Employees Age  | None                 | All employees ages are set to 21                      |
 | Unlock All Furniture | None                 | All furniture is unlocked                             |
 | Unlock All Space     | None                 | All space is unlocked                                 |
+| Max Market Share     | None                 | Sets market share to 100% for all company products    |
 
 **Toggles**
 
@@ -61,3 +62,4 @@ All toggle features last as long as they are toggled
 | Inc. Print Speed     | Printers print faster                                 |
 | More Hosting Deals   | You receive more hosting deals automatically          |
 | Reduce Internet Cost | Internet costs less                                   |
+| Auto Max Market Share| All company products are kept at 100% market share   |
