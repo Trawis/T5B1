@@ -23,5 +23,20 @@
 		public const int SIXTH_ROW = 5 * ELEMENT_HEIGHT;
 		public const int SEVENTH_ROW = 6 * ELEMENT_HEIGHT;
 		public const int EIGHTH_ROW = 7 * ELEMENT_HEIGHT;
+
+		public const float BOOKSHELF_AURA_BOOSTED = 0.75f;
+		public const float CHAIR_COMFORT_LOW       = 1.2f;
+		public const float CHAIR_COMFORT_HIGH      = 1.5f;
+		public const int   ENV_FULL                = 8;
+		public const int   ROOM_BRIGHTNESS_FULL    = 16;
+		public const int   MAX_FLOOR               = 100;
+		public const int   MAX_BOXES_BOOSTED       = 108;
+		public const int   MAX_BOXES_DEFAULT       = 54;
+		public const int   MAX_CARRY_BOOSTED       = 18;
+		public const int   MAX_CARRY_DEFAULT       = 9;
+		public const float EXPANSION_COST          = 350f;
+		public const float EXPANSION_COST_HALF     = 175f;
+		public const float WALK_SPEED_BOOSTED      = 4f;
+		public const float WALK_SPEED_DEFAULT      = 2f;
 	}
 }
