@@ -155,7 +155,7 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill") && furniture.Type == "Bookshelf")
 				{
-					furniture.AuraValues[1] = 0.75f;
+					furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
 				}
 
 				//TODO: else 0.25
@@ -164,9 +164,9 @@ namespace Trainer_v5
 					switch (furniture.Type)
 					{
 						case "Chair":
-							if (furniture.Comfort < 1.2f)
+							if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
 							{
-								furniture.Comfort = 1.5f;
+								furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
 							}
 							goto case "Ventilation";
 						case "CCTV":
@@ -207,12 +207,12 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
 				{
-					room.FurnEnvironment = 8;
+					room.FurnEnvironment = Constants.ENV_FULL;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
 				{
-					room.IndirectLighting = 16;
+					room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
@@ -311,7 +311,7 @@ namespace Trainer_v5
 					employee.RevealCreativity(1f);
 				}
 
-				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? 4f : 2f;
+				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -556,13 +556,13 @@ namespace Trainer_v5
 #endif
 			}
 
-			GameSettings.MaxFloor = 100; //10 default
-			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 108 : 54;
-			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 18 : 9;
+			GameSettings.MaxFloor = Constants.MAX_FLOOR;
+			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
 			//Not working
 			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
 			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
-			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? 175f : 350f;
+			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
 		}
 
 		private static void LoadSpecializations()
