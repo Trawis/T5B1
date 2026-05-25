@@ -60,16 +60,16 @@ namespace Trainer_v5
 
 		private void SubscribeToEvents()
 		{
-			TimeOfDay.OnHourPassed += (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed += (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed += (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed += OnHourPassed;
+			TimeOfDay.OnDayPassed += OnDayPassed;
+			TimeOfDay.OnMonthPassed += OnMonthPassed;
 		}
 
 		private void UnsubscribeFromEvents()
 		{
-			TimeOfDay.OnHourPassed -= (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed -= (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed -= (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed -= OnHourPassed;
+			TimeOfDay.OnDayPassed -= OnDayPassed;
+			TimeOfDay.OnMonthPassed -= OnMonthPassed;
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
