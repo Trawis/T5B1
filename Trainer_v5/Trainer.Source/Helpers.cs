@@ -150,6 +150,7 @@ namespace Trainer_v5
 			catch (Exception ex)
 			{
 				ex.LogException();
+				UnityEngine.Debug.LogException(ex);
 			}
 		}
 
@@ -159,7 +160,11 @@ namespace Trainer_v5
 
 		public static Employee.EmployeeRole ToEmployeeRole(this string str)
 		{
-			return (Employee.EmployeeRole)Enum.Parse(typeof(Employee.EmployeeRole), str);
+			Employee.EmployeeRole role;
+			if (Enum.TryParse(str, out role))
+				return role;
+			$"ToEmployeeRole: unknown role '{str}', defaulting to Programmer".Log();
+			return Employee.EmployeeRole.Programmer;
 		}
 
 		#endregion
