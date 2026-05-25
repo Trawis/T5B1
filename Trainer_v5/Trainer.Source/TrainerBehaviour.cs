@@ -44,6 +44,7 @@ namespace Trainer_v5
 							Destroy(Main.TrainerButton.gameObject);
 							Destroy(Main.SkillChangeButton.gameObject);
 						}
+						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
 						break;
 					case "MainScene":

@@ -9,6 +9,11 @@ namespace Trainer_v5
 	{
 		private static bool _installed;
 
+		public static void Reset()
+		{
+			_installed = false;
+		}
+
 		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		public static void Install()
