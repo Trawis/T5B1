@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.2.0";
+		public static string Version => "5.2.6";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -73,6 +73,7 @@ namespace Trainer_v5
 			{"DisableForcePause", false},
 			{"DisableForceFreeze", false},
 			{"AutoAcceptHostingDeals", false},
+			{"AutoMaxMarketShare", false},
 			{"Experimental", false},
 		};
 
@@ -150,6 +151,7 @@ namespace Trainer_v5
 			catch (Exception ex)
 			{
 				ex.LogException();
+				UnityEngine.Debug.LogException(ex);
 			}
 		}
 
@@ -159,7 +161,11 @@ namespace Trainer_v5
 
 		public static Employee.EmployeeRole ToEmployeeRole(this string str)
 		{
-			return (Employee.EmployeeRole)Enum.Parse(typeof(Employee.EmployeeRole), str);
+			Employee.EmployeeRole role;
+			if (Enum.TryParse(str, out role))
+				return role;
+			$"ToEmployeeRole: unknown role '{str}', defaulting to Programmer".Log();
+			return Employee.EmployeeRole.Programmer;
 		}
 
 		#endregion

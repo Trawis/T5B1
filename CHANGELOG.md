@@ -3,6 +3,45 @@ Release notes for changes to the trainer
 
 ---
 
+**5.2.6**
+25.05.2026. for Beta 1
+- Added Max Market Share button: instantly sets all company products to 100% market share
+- Added Auto Max Market Share toggle: keeps all company products at 100% market share continuously
+
+---
+
+**5.2.5**
+16.01.2026. for Beta 1
+- Updated libraries
+
+---
+
+**5.2.5**
+08.10.2025. for Beta 1
+- Removed Reduce Box Price due to incompatibility
+- Updated libraries
+
+---
+ 
+**5.2.3**
+24.08.2025. for Beta 1
+- Updated libraries
+
+---
+
+**5.2.2**
+23.12.2024. for Beta 1
+- Fix creativity modification in DetailWindowTrainer (muddxyii)
+
+---
+
+**5.2.1**
+27.11.2024. for Beta 1
+- Updated libraries
+- Fixed broken features
+
+---
+
 **5.2.0**
 08.11.2024. for Beta 1
 - Updated libraries
