@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
@@ -37,9 +37,9 @@ namespace Trainer_v5.Trainer.Source.Window
 			}
 
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.Any() ? selectedActors.First() : null;
-			var employee = _actor?.employee;
+			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
 
+			var employee = _actor?.employee;
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {employee?.Name ?? "Nobody"}";
 		}
 
@@ -59,25 +59,41 @@ namespace Trainer_v5.Trainer.Source.Window
 				toggles[pair.Key] = toggle;
 			}
 
+			var typeKeys = softwareTypes.Keys.ToList();
+			int half = (typeKeys.Count + 1) / 2;
+
 			var col1 = new VerticalLayout
 			{
 				Gap = 2,
 				Components = LayoutHelper.EnumerableOf(
 					UIFactory.Label("Lead Spec", WindowStyles.TitleStyle),
-					toggles.Values.ToArray(),
-					UIFactory.Button("All", () => self.ToggleAll(true)),
-					UIFactory.Button("None", () => self.ToggleAll(false)),
-					UIFactory.Button("Set LeadSpec", () => self.SetLeadSpec())
-					).ToList()
+					typeKeys.Take(half).Select(k => (Component)toggles[k]).ToArray(),
+					UIFactory.Button("All",         () => self.ToggleAll(true)),
+					UIFactory.Button("None",        () => self.ToggleAll(false)),
+					UIFactory.Button("Set LeadSpec",() => self.SetLeadSpec())
+				).ToList()
 			};
-			window.Add(col1, new Rect(4, 4, 160, 0));
 
-			var maxHeight = new[] { col1.PreferHeight }.Max();
-			window.SetMinSize(168, maxHeight);
+			var col2 = new VerticalLayout
+			{
+				Gap = 2,
+				Components = LayoutHelper.EnumerableOf(
+					UIFactory.Label("", WindowStyles.TitleStyle),
+					typeKeys.Skip(half).Select(k => (Component)toggles[k]).ToArray()
+				).ToList()
+			};
 
-			_window = window;
+			const int colWidth = 160, padding = 4, colGap = 8;
+			window.Add(col1, new Rect(padding,                  padding, colWidth, 0));
+			window.Add(col2, new Rect(padding + colWidth + colGap, padding, colWidth, 0));
+
+			int totalWidth  = padding * 2 + colWidth * 2 + colGap;
+			int totalHeight = new[] { col1.PreferHeight, col2.PreferHeight }.Max() + padding * 2;
+			window.SetMinSize(totalWidth, totalHeight);
+
+			_window      = window;
 			_softwareTypes = softwareTypes;
-			_specToggles = toggles;
+			_specToggles  = toggles;
 		}
 
 		private void OnToggle(string key, bool isOn)
@@ -94,7 +110,10 @@ namespace Trainer_v5.Trainer.Source.Window
 		private void SetLeadSpec()
 		{
 			if (_actor == null)
+			{
+				Notification.ShowError("Select an employee first.");
 				return;
+			}
 			var employee = _actor.employee;
 
 			var selectTypes = _specToggles
@@ -123,7 +142,7 @@ namespace Trainer_v5.Trainer.Source.Window
 					}
 				},
 				min: 0, max: 1
-				);
+			);
 		}
 	}
 }

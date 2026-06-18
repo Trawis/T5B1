@@ -34,7 +34,8 @@ namespace Trainer_v5
 				input =>
 				{
 					var val = TryParseAndValidate(input, float.TryParse, min, max);
-					onFinish.Invoke(val.Value);
+					if (val.HasValue)
+						onFinish.Invoke(val.Value);
 				});
 		}
 

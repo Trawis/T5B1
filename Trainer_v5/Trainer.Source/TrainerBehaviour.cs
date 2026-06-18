@@ -11,6 +11,9 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
+
+		private static bool IsGameReady(bool requireSelector = false) =>
+			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
 
 		private static GameSettings Settings => GameSettings.Instance;
@@ -41,6 +44,7 @@ namespace Trainer_v5
 							Destroy(Main.TrainerButton.gameObject);
 							Destroy(Main.SkillChangeButton.gameObject);
 						}
+						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
 						break;
 					case "MainScene":
@@ -60,16 +64,16 @@ namespace Trainer_v5
 
 		private void SubscribeToEvents()
 		{
-			TimeOfDay.OnHourPassed += (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed += (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed += (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed += OnHourPassed;
+			TimeOfDay.OnDayPassed += OnDayPassed;
+			TimeOfDay.OnMonthPassed += OnMonthPassed;
 		}
 
 		private void UnsubscribeFromEvents()
 		{
-			TimeOfDay.OnHourPassed -= (obj, args) => OnHourPassed(obj, args);
-			TimeOfDay.OnDayPassed -= (obj, args) => OnDayPassed(obj, args);
-			TimeOfDay.OnMonthPassed -= (obj, args) => OnMonthPassed(obj, args);
+			TimeOfDay.OnHourPassed -= OnHourPassed;
+			TimeOfDay.OnDayPassed -= OnDayPassed;
+			TimeOfDay.OnMonthPassed -= OnMonthPassed;
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -152,7 +156,7 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill") && furniture.Type == "Bookshelf")
 				{
-					furniture.AuraValues[1] = 0.75f;
+					furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
 				}
 
 				//TODO: else 0.25
@@ -161,9 +165,9 @@ namespace Trainer_v5
 					switch (furniture.Type)
 					{
 						case "Chair":
-							if (furniture.Comfort < 1.2f)
+							if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
 							{
-								furniture.Comfort = 1.5f;
+								furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
 							}
 							goto case "Ventilation";
 						case "CCTV":
@@ -204,12 +208,12 @@ namespace Trainer_v5
 
 				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
 				{
-					room.FurnEnvironment = 8;
+					room.FurnEnvironment = Constants.ENV_FULL;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
 				{
-					room.IndirectLighting = 16;
+					room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
@@ -228,12 +232,14 @@ namespace Trainer_v5
 					TimeOfDay.Instance.Sick.Clear();
 
 					if (actor.SpecialState == Actor.HomeState.Sick)
+					{
 						actor.SpecialState = Actor.HomeState.Default;
+						actor.WasSick = true;
+					}
 
 					actor.GermAdd = 0f;
 					actor.GermCount = 0f;
 					actor.SickDays = 0;
-					//actor.WasSick = true;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
@@ -296,6 +302,8 @@ namespace Trainer_v5
 				if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
 				{
 					actor.VacationMonth = SDateTime.NextMonth(24);
+					if (actor.SpecialState == Actor.HomeState.Vacation)
+						actor.SpecialState = Actor.HomeState.Default;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
@@ -308,7 +316,7 @@ namespace Trainer_v5
 					employee.RevealCreativity(1f);
 				}
 
-				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? 4f : 2f;
+				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -518,6 +526,11 @@ namespace Trainer_v5
 			}
 			 * */
 
+			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			{
+				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
 #if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
@@ -548,12 +561,13 @@ namespace Trainer_v5
 #endif
 			}
 
-			GameSettings.MaxFloor = 100; //10 default
-			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 108 : 54;
-			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? 18 : 9;
-			AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
+			GameSettings.MaxFloor = Constants.MAX_FLOOR;
+			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
+			//Not working
+			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
 			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
-			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? 175f : 350f;
+			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
 		}
 
 		private static void LoadSpecializations()
@@ -583,7 +597,7 @@ namespace Trainer_v5
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
 		{
-			string message = "Join us on our discord server\nhttps://discord.gg/NQpm5kn";
+			string message = $"Join us on our discord server\n{Helpers.DiscordUrl}";
 			if (displayAsPopup)
 			{
 				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -732,10 +746,7 @@ namespace Trainer_v5
 
 		public static void HREmployees()
 		{
-			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
-			{
-				return;
-			}
+			if (!IsGameReady(requireSelector: true)) return;
 
 			Actor[] Actors = Settings.sActorManager.Actors
 									 .Where(actor => actor.employee.RoleString.Contains("Lead"))
@@ -780,11 +791,13 @@ namespace Trainer_v5
 
 		public static void RemoveSoft()
 		{
+			return;
+
+			//currently broken
 			SDateTime time = new SDateTime(1, 70);
 			CompanyType type = new CompanyType();
 			var dict = new Dictionary<string, string[]>();
-			var sim = new MarketSimulation();
-			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, sim);
+			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, MarketSimulation.Active);
 			simComp.CanMakeTransaction(2139095030f);
 
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
@@ -803,7 +816,7 @@ namespace Trainer_v5
 				Product.Userbase = 0;
 				Product.PhysicalCopies = 0;
 				Product.Marketing = 0;
-				Product.Trade(simComp);
+				Product.Trade(simComp, time);
 			}
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
@@ -826,10 +839,7 @@ namespace Trainer_v5
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
 
-			if (!Helpers.IsGameLoaded || SelectorController.Instance == null)
-			{
-				return;
-			}
+			if (!IsGameReady(requireSelector: true)) return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -861,10 +871,7 @@ namespace Trainer_v5
 
 		public static void UnlockAllSpace()
 		{
-			if (!Helpers.IsGameLoaded)
-			{
-				return;
-			}
+			if (!IsGameReady()) return;
 
 			Example.TakeAllLand();
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -872,10 +879,7 @@ namespace Trainer_v5
 
 		public static void UnlockFurniture()
 		{
-			if (!Helpers.IsGameLoaded)
-			{
-				return;
-			}
+			if (!IsGameReady()) return;
 
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
@@ -1178,6 +1182,16 @@ namespace Trainer_v5
 			}
 
 			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
+		}
+
+		#endregion
+
+		#region Max Market Share
+
+		public static void MaxMarketShare()
+		{
+			Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		#endregion
