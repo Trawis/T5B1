@@ -32,6 +32,8 @@
 
 ## Branching / Merge Safety
 - [ ] Work was done on a task branch
+- [ ] Branch name follows `feature/<short-kebab-description>`, `release/<version>`, or `hotfix/<short-kebab-description>`
+- [ ] Branch family follows strict Git Flow
 - [ ] PR targets the correct Git Flow branch
 - [ ] No auto-merge requested/performed
 - [ ] No branch protection bypass requested/performed

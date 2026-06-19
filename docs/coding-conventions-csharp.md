@@ -2,9 +2,9 @@
 
 Detailed C#/.NET conventions for repositories that use this agent guideline pack.
 
-**Version**: 1.18  
+**Version**: 1.22  
 **Status**: Active  
-**Last Updated**: 2026-06-18
+**Last Updated**: 2026-06-19
 
 Use repository-specific conventions first. If the target repository or child `AGENTS.md` defines different C# rules, follow the nearest applicable project rule.
 
