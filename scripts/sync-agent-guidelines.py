@@ -23,8 +23,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 SCRIPT_NAME = "sync-agent-guidelines"
-SCRIPT_VERSION = "1.2.0"
-PACK_VERSION = "1.22.0"
+SCRIPT_VERSION = "1.4.0"
+PACK_VERSION = "1.24.0"
 MANIFEST_FILE = ".agent-guidelines-manifest.json"
 CONFLICT_DIR = ".agent-guidelines-conflicts"
 
@@ -76,6 +76,14 @@ def is_git_repo(target_root: Path) -> bool:
 
 def git_status_porcelain(target_root: Path) -> str:
     return run_git(target_root, "status", "--porcelain", check=True).stdout.strip()
+
+
+def fetch_remote_state(target_root: Path) -> str | None:
+    result = run_git(target_root, "fetch", "--all", "--prune", check=False)
+    if result.returncode == 0:
+        return None
+    message = result.stderr.strip() or result.stdout.strip() or "git fetch failed"
+    return message
 
 
 def branch_exists(target_root: Path, branch_name: str) -> bool:
@@ -132,7 +140,7 @@ def ensure_base_branch(target_root: Path, base_branch: str) -> list[str]:
     return messages
 
 
-def prepare_branch(target_root: Path, branch_name: str, base_branch: str, dry_run: bool, no_branch: bool) -> list[str]:
+def prepare_branch(target_root: Path, branch_name: str, base_branch: str, dry_run: bool, no_branch: bool, skip_fetch: bool) -> list[str]:
     if no_branch:
         return ["branch creation skipped because --no-branch was used"]
 
@@ -147,9 +155,19 @@ def prepare_branch(target_root: Path, branch_name: str, base_branch: str, dry_ru
         )
 
     if dry_run:
-        return [f"dry-run: would create or reuse branch {branch_name} from {base_branch}"]
+        if skip_fetch:
+            return [f"dry-run: would create or reuse branch {branch_name} from {base_branch}"]
+        return [f"dry-run: would fetch/prune remotes, then create or reuse branch {branch_name} from {base_branch}"]
 
-    messages = ensure_base_branch(target_root, base_branch)
+    messages: list[str] = []
+    if not skip_fetch:
+        fetch_error = fetch_remote_state(target_root)
+        if fetch_error:
+            messages.append(f"remote fetch/prune skipped or failed: {fetch_error}")
+        else:
+            messages.append("fetched/pruned remotes before branch preparation")
+
+    messages.extend(ensure_base_branch(target_root, base_branch))
 
     if branch_exists(target_root, branch_name):
         switch_branch(target_root, branch_name)
@@ -322,6 +340,7 @@ def main() -> int:
     parser.add_argument("--branch-name", default=version_branch_name(PACK_VERSION), help="Task branch to create or reuse. Defaults to feature/sync-agent-guidelines-<version>.")
     parser.add_argument("--base-branch", default="develop", help="Base branch for the sync branch. Defaults to develop.")
     parser.add_argument("--no-branch", action="store_true", help="Do not create/switch branches. Use only when the caller has already prepared the correct branch.")
+    parser.add_argument("--skip-fetch", action="store_true", help="Do not run git fetch --all --prune before creating/reusing the sync branch.")
     parser.add_argument("--include-project-docs", action="store_true", help="Also copy README.md, CHANGELOG.md, and FEATURES.md only when missing.")
     parser.add_argument("--force-project-docs", action="store_true", help="Overwrite README.md, CHANGELOG.md, and FEATURES.md when --include-project-docs is used.")
     parser.add_argument("--skip-editorconfig", action="store_true", help="Do not sync .editorconfig.")
@@ -344,7 +363,7 @@ def main() -> int:
         return 2
 
     try:
-        branch_messages = prepare_branch(target_root, args.branch_name, args.base_branch, args.dry_run, args.no_branch)
+        branch_messages = prepare_branch(target_root, args.branch_name, args.base_branch, args.dry_run, args.no_branch, args.skip_fetch)
     except (RuntimeError, subprocess.CalledProcessError) as ex:
         print(f"Branch preparation failed: {ex}", file=sys.stderr)
         return 2

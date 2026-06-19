@@ -2,17 +2,15 @@
 
 Repository-level instructions for AI coding agents.
 
-**Version**: 1.22  
+**Version**: 1.24  
 **Status**: Active  
 **Last Updated**: 2026-06-19
 
 **Recent changes**:
-- Renamed the repo-seed sync script to the stable path `scripts/sync-agent-guidelines.py` so Git history tracks changes cleanly.
-- Clarified that repo-maintained scripts use stable filenames; versioned suffixes are for distributed copies, generated outputs, and archive artifacts.
-- Enforced strict Git Flow branch families: `feature/*` for all normal work, `release/*` for releases, `hotfix/*` for production fixes.
-- Added `feature/sync-agent-guidelines-<version>` as the recommended branch for pack updates.
-- Added explicit PR creation/proposal requirement for every task branch.
-- Split Python and shell script conventions into separate files.
+- Added comment discipline for code, scripts, and generated documentation.
+- Added summary discipline so PR/task summaries stay concise and specific.
+- Clarified that obvious code should not be commented and summaries should not be padded.
+- Added Git/PR preflight guidance to avoid duplicate branches and PRs.
 
 ---
 
@@ -20,6 +18,8 @@ Repository-level instructions for AI coding agents.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.24 | 2026-06-19 | Added comment and summary discipline for code, scripts, PRs, and agent completion notes. |
+| 1.23 | 2026-06-19 | Added Git/PR preflight checks, duplicate-work protection, and generic-example guidance. |
 | 1.22 | 2026-06-19 | Renamed the repo-seed sync script to a stable filename and clarified script filename/versioning guidance. |
 | 1.21 | 2026-06-19 | Enforced strict Git Flow branch families and added repo-seed sync workflow/script guidance. |
 | 1.19 | 2026-06-19 | Unified branch prefix selection, PR creation/proposal behavior, and fallback PR reporting. |
@@ -122,6 +122,10 @@ Rules:
 - Report what changed, what was validated, and any remaining risks.
 - Do not include AI assistant, tool, or model names in branch names, commit messages, PR titles, PR descriptions, changelog entries, release notes, generated helper text, or user-facing documentation unless the task is explicitly about AI tooling or these agent-guideline files.
 - Never hide failing tests, build errors, skipped checks, or uncertainty.
+- Do not add obvious comments, noisy summaries, or broad explanatory text that does not help maintainers understand intent, risk, tradeoffs, or non-obvious behavior.
+- Run Git/PR preflight before creating a branch, starting duplicate work, or opening a PR when the repository has Git remotes or hosted PR tooling available.
+- Keep comments purposeful. Explain why something exists, non-obvious behavior, tradeoffs, edge cases, or external constraints; do not comment obvious code.
+- Keep task summaries, PR summaries, and generated documentation concise. Do not pad with broad explanations, repeated points, or generic praise.
 
 Ask before:
 
@@ -219,6 +223,46 @@ Rules:
 
 ---
 
+## Comments and Summaries
+
+Use comments and summaries to clarify important information, not to narrate obvious code or fill space.
+
+Comment rules:
+
+- Comments should explain intent, constraints, tradeoffs, non-obvious behavior, edge cases, external requirements, or safety concerns.
+- Do not comment obvious assignments, simple conditionals, straightforward loops, or self-explanatory method calls.
+- Do not add large header comments, banner comments, or wide comment blocks unless the surrounding file already uses that style.
+- Prefer clearer names and simpler code over comments that explain confusing code.
+- Preserve useful existing comments, but remove or update stale comments when editing related code.
+- Public API/XML/doc comments are acceptable when the project already uses them or when they clarify behavior for consumers. Do not add XML comments to every member by default.
+
+Summary rules:
+
+- Task/PR summaries should be short, specific, and factual.
+- Summarize what changed, why it changed when relevant, validation performed, and remaining risks.
+- Do not include generic praise, broad filler, repeated bullets, or long explanations that belong in design docs.
+- Do not mention AI assistant/tool/model names in summaries unless the task is explicitly about AI tooling or agent-guideline files.
+
+Good comment:
+
+```csharp
+// Keep this timeout below the gateway limit so retries happen client-side.
+private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(25);
+```
+
+Bad comments:
+
+```csharp
+// Set allowed to false.
+var allowed = false;
+
+// If the order is null, throw an exception.
+if (order == null)
+	throw new ArgumentNullException(nameof(order));
+```
+
+---
+
 ## Git Workflow
 
 This repository uses strict Git Flow. Normal work must flow through `develop`; `main` is reserved for released/production-ready code.
@@ -271,6 +315,28 @@ Default PR targets:
 - `release/*` targets `main`; changes must also be brought back to `develop` after merge.
 - `hotfix/*` targets `main`; fix must also be brought back to `develop` after merge.
 
+### Git and PR Preflight
+
+Before creating a new branch, starting duplicate work, or opening a pull request, agents MUST check the current repository and remote state when tools are available.
+
+Run, when practical:
+
+```bash
+git fetch --all --prune
+git status --short
+git branch --show-current
+git log --oneline --decorate --graph --all -20
+git branch -r --merged origin/develop
+```
+
+Rules:
+
+- Do not create duplicate branches or PRs for work already merged into `develop`.
+- If an equivalent branch or open PR already exists, update/report that branch/PR instead of creating another one.
+- If the requested change appears already merged, report that finding and ask before creating a new branch.
+- If remote/PR checks cannot be run, state the limitation and continue using the available local Git evidence.
+- Do not assume stale local branch state reflects hosted PR state; fetch/prune first when possible.
+
 ### No AI Names in Git Artifacts
 
 Do not include AI assistant, tool, provider, or model names in branch names, commit messages, PR titles, PR descriptions, changelog entries, or release notes.
@@ -304,7 +370,7 @@ python /path/to/repo-seed/scripts/sync-agent-guidelines.py --source /path/to/rep
 python /path/to/repo-seed/scripts/sync-agent-guidelines.py --source /path/to/repo-seed --target .
 ```
 
-Recommended branch for syncing: `feature/sync-agent-guidelines-<version>`
+Recommended branch for syncing: `feature/sync-agent-guidelines-1-24-0`
 
 Syncing must not auto-commit, auto-push, create a PR, or auto-merge. Review the diff, resolve any conflicts, run relevant checks, then commit and open a PR to `develop`.
 
@@ -374,6 +440,9 @@ Before finishing a task, confirm:
 - PR title, branch name, source branch, and target branch follow strict Git Flow conventions.
 - Branch names, commit messages, PR text, changelog entries, and helper text do not contain AI assistant/model/tool names.
 - The PR was not auto-merged.
+- Comments and summaries are purposeful, concise, and do not explain obvious code.
+- Git/PR preflight was run when available, or unavailable checks were reported.
+- Existing branches/PRs/merged work were checked to avoid duplicate work.
 
 ---
 
