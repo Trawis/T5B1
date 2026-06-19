@@ -2,18 +2,17 @@
 
 Repository-level instructions for AI coding agents.
 
-**Version**: 1.18  
+**Version**: 1.22  
 **Status**: Active  
-**Last Updated**: 2026-06-18
+**Last Updated**: 2026-06-19
 
 **Recent changes**:
-- Added `MUST` / `SHOULD` / `MAY` strictness levels.
-- Added rule that Git artifacts and PR text must not contain AI assistant, tool, or model names.
-- Clarified that indentation should preserve the existing file/repository style.
-- Clarified C# control-flow style: single-statement guards may omit braces, but the statement must be on the next line.
-- Added rule to preserve existing Unicode/ASCII punctuation and UI/output separator style.
-- Added C# spacing rule requiring a blank line after a completed control block before the next independent statement.
-- Softened Git Flow and PR requirements for local-only or solo repositories while keeping branch isolation and no auto-merge.
+- Renamed the repo-seed sync script to the stable path `scripts/sync-agent-guidelines.py` so Git history tracks changes cleanly.
+- Clarified that repo-maintained scripts use stable filenames; versioned suffixes are for distributed copies, generated outputs, and archive artifacts.
+- Enforced strict Git Flow branch families: `feature/*` for all normal work, `release/*` for releases, `hotfix/*` for production fixes.
+- Added `feature/sync-agent-guidelines-<version>` as the recommended branch for pack updates.
+- Added explicit PR creation/proposal requirement for every task branch.
+- Split Python and shell script conventions into separate files.
 
 ---
 
@@ -21,6 +20,9 @@ Repository-level instructions for AI coding agents.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.22 | 2026-06-19 | Renamed the repo-seed sync script to a stable filename and clarified script filename/versioning guidance. |
+| 1.21 | 2026-06-19 | Enforced strict Git Flow branch families and added repo-seed sync workflow/script guidance. |
+| 1.19 | 2026-06-19 | Unified branch prefix selection, PR creation/proposal behavior, and fallback PR reporting. |
 | 1.18 | 2026-06-18 | Clarified that single-statement C# guards may omit braces when the statement is on the next line; replaced project-specific terminal examples with generic examples. |
 | 1.17 | 2026-06-18 | Added C# spacing rule requiring a blank line after a completed control block before the next independent statement. |
 | 1.16 | 2026-06-18 | Added UI/output text style preservation rule for Unicode/ASCII punctuation and decorative separators. |
@@ -42,7 +44,7 @@ Use these levels when applying this file:
 Defaults:
 
 - Safety, secrets, destructive commands, branch protection, no auto-merge, and honesty about validation are `MUST`.
-- Code style, formatting preferences, Git Flow ceremony, and documentation updates are usually `SHOULD` unless the repository makes them mandatory.
+- Code style, formatting preferences, and documentation updates are usually `SHOULD` unless the repository makes them mandatory. Git Flow branch family and PR-target rules are `MUST` when this pack is used as the repository workflow source of truth.
 - New child `AGENTS.md` files, new convention files, extra templates, and stricter automation are `MAY` unless requested.
 
 When a rule is too strict for a solo/local repository, keep the intent: isolate the change, document the intended branch/PR, validate what is practical, and never pretend unavailable workflow steps were completed.
@@ -193,6 +195,7 @@ Use stable, searchable filenames for generated artifacts, bundles, and release p
 - Do not use vague suffixes such as `final`, `final2`, `new`, `latest`, `copy`, `fixed`, or `v2`.
 - Use `MAJOR.MINOR.PATCH` format.
 - Keep the artifact name prefix stable across versions.
+- Scripts committed to this repository use stable filenames. Versioned suffixes are for distributed standalone copies, generated output files, and archive artifacts.
 
 Pattern: `<artifact-name>_<major>.<minor>.<patch>.<extension>`
 
@@ -203,7 +206,9 @@ Pattern: `<artifact-name>_<major>.<minor>.<patch>.<extension>`
 Detailed code conventions live in separate files under `docs/`:
 
 - C#/.NET: `docs/coding-conventions-csharp.md`
-- Shell/Python scripts: `docs/coding-conventions-scripts.md`
+- Shell scripts: `docs/coding-conventions-shell.md`
+- Python scripts: `docs/coding-conventions-python.md`
+- General script guidance: `docs/coding-conventions-scripts.md`
 
 Rules:
 
@@ -216,54 +221,63 @@ Rules:
 
 ## Git Workflow
 
-This repository uses Git Flow. The long-lived branches are:
+This repository uses strict Git Flow. Normal work must flow through `develop`; `main` is reserved for released/production-ready code.
+
+### Long-Lived Branches
 
 - `main` — production branch (releases merged here)
-- `develop` — integration branch (feature work targets here)
+- `develop` — integration branch (all feature work targets here)
 
-### Task Branches
+### Strict Git Flow Branch Families
 
-Create a new branch for work whenever the environment allows it. Never commit directly to `main` or `develop`.
+| Branch family | Base branch | PR target | Use for |
+|---------------|-------------|-----------|---------|
+| `feature/*` | `develop` | `develop` | All normal planned work, including implementation, docs, tests, refactors, tooling, and non-emergency fixes |
+| `release/*` | `develop` | `main` | Release preparation, version bumps, release notes, final stabilization |
+| `hotfix/*` | `main` | `main` | Urgent fixes for production/released code |
 
-Branch naming:
+Do not create `docs/*`, `test/*`, `refactor/*`, `chore/*`, or `bugfix/*` branches. Use `feature/*` for all normal work, even when the change is documentation-only, test-only, maintenance, or a non-emergency bug fix.
+
+### Branch Naming
 
 ```text
-feature/<short-description>
-bugfix/<short-description>
-release/<version>
-hotfix/<short-description>
-chore/<short-description>
-docs/<short-description>
+feature/<short-kebab-description>
+release/<major>.<minor>.<patch>
+hotfix/<short-kebab-description>
 ```
 
-Branch source rules:
+Examples:
 
-- `feature/*`, `bugfix/*`, `chore/*`, and `docs/*` branch from `develop`.
-- `release/*` branches from `develop`.
-- `hotfix/*` branches from `main`.
-
-Use lowercase kebab-case for branch descriptions.
-
-### No AI Names in Git Artifacts
-
-Do not include AI assistant, tool, provider, or model names in branch names, commit messages, PR titles, PR descriptions, review comments, changelog entries, release notes, or generated helper text.
-
-Write Git artifacts as if authored by the repository maintainer.
-
-Allowed exception: files whose purpose is AI-agent configuration or documentation, such as `AGENTS.md` and `CLAUDE.md`.
+```text
+feature/add-money-button
+feature/fix-no-stress-toggle
+feature/update-agent-guidelines
+feature/sync-agent-guidelines-1-22-0
+release/5.3.0
+hotfix/fix-crash-on-load
+```
 
 ### Pull Request Rules
 
-- Create or propose a pull request for completed work.
+Every task branch MUST create or propose a pull request. Do not skip PR creation.
+
 - Do not auto-merge pull requests.
 - Do not approve your own pull request.
 - Do not bypass branch protection.
 
 Default PR targets:
 
-- `feature/*`, `bugfix/*`, `chore/*`, and `docs/*` target `develop`.
-- `release/*` targets `main`.
-- `hotfix/*` targets `main`, then must also be brought back to `develop`.
+- `feature/*` targets `develop`.
+- `release/*` targets `main`; changes must also be brought back to `develop` after merge.
+- `hotfix/*` targets `main`; fix must also be brought back to `develop` after merge.
+
+### No AI Names in Git Artifacts
+
+Do not include AI assistant, tool, provider, or model names in branch names, commit messages, PR titles, PR descriptions, changelog entries, or release notes.
+
+Write Git artifacts as if authored by the repository maintainer.
+
+Allowed exception: files whose purpose is AI-agent configuration or documentation, such as `AGENTS.md` and `CLAUDE.md`.
 
 ### Commit Rules
 
@@ -274,10 +288,25 @@ Default PR targets:
 Examples:
 
 ```text
-Add order export validation
-Fix enum mapping for payment status
-Update agent guidelines
+Add money button feature
+Fix no-stress toggle
+Sync agent guidelines
 ```
+
+---
+
+## Syncing This Pack
+
+The sync script at `scripts/sync-agent-guidelines.py` can update guideline files from a central source repository.
+
+```bash
+python /path/to/repo-seed/scripts/sync-agent-guidelines.py --source /path/to/repo-seed --target . --dry-run
+python /path/to/repo-seed/scripts/sync-agent-guidelines.py --source /path/to/repo-seed --target .
+```
+
+Recommended branch for syncing: `feature/sync-agent-guidelines-<version>`
+
+Syncing must not auto-commit, auto-push, create a PR, or auto-merge. Review the diff, resolve any conflicts, run relevant checks, then commit and open a PR to `develop`.
 
 ---
 
@@ -333,6 +362,7 @@ Before finishing a task, confirm:
 - Existing indentation style was preserved in modified files (tabs for C#).
 - Existing user-facing text/output style was preserved, including ASCII vs Unicode punctuation and decorative separators.
 - C# control-flow style was preserved or applied: no inline `if (...) return ...;`, braces required for multi-statement blocks, and blank line after a completed control block before the next independent statement.
+- Branch family follows strict Git Flow: `feature/*`, `release/*`, or `hotfix/*`.
 - A new task branch was created, or branch creation was impossible and the reason is reported.
 - Changes are focused on the requested task.
 - New behavior has unit tests when feasible, or a clear explanation why tests were not added.
@@ -341,6 +371,7 @@ Before finishing a task, confirm:
 - The implementation was rechecked against requirements and changed files.
 - `README.md`, `CHANGELOG.md`, or `FEATURES.md` were updated when the change affected public behavior, setup, commands, or features.
 - A pull request was created, or exact PR instructions were provided.
+- PR title, branch name, source branch, and target branch follow strict Git Flow conventions.
 - Branch names, commit messages, PR text, changelog entries, and helper text do not contain AI assistant/model/tool names.
 - The PR was not auto-merged.
 
@@ -368,6 +399,11 @@ Use `.github/pull_request_template.md` when it exists. Otherwise, use this struc
 - [ ] `dotnet test`
 - [ ] Smoke/manual check where practical
 - [ ] Implementation rechecked against requirements
+
+## Branching / Merge Safety
+- [ ] Branch follows `feature/*`, `release/*`, or `hotfix/*`
+- [ ] PR targets the correct Git Flow branch
+- [ ] No auto-merge requested/performed
 
 ## Notes / Risks
 - 
