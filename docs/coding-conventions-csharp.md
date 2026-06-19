@@ -2,7 +2,7 @@
 
 Detailed C#/.NET conventions for repositories that use this agent guideline pack.
 
-**Version**: 1.22  
+**Version**: 1.24  
 **Status**: Active  
 **Last Updated**: 2026-06-19
 
@@ -121,6 +121,8 @@ public enum FilePermissionsEnum
 	Delete = 8
 }
 ```
+
+Shared guideline examples should use generic enum names like `OrderStatusEnum` or `FilePermissionsEnum`. Do not introduce project-specific enum names into reusable templates unless the document is for that specific project.
 
 ---
 
@@ -245,7 +247,10 @@ if (order.Status != OrderStatusEnum.Pending)
 
 if (!isValid)
 {
-	_logger.LogWarning("Order {OrderId} is invalid.", order.Id);
+	_logger.LogWarning(
+		"Order {OrderId} cannot be processed in status {OrderStatus}.",
+		order.Id,
+		OrderStatusEnum.Cancelled);
 	return false;
 }
 ```
@@ -274,7 +279,10 @@ Correct spacing after a completed control block:
 ```csharp
 if (!allowed)
 {
-	_logger.LogWarning("Operation is not allowed: {Reason}", reason);
+	_logger.LogWarning(
+		"Order {OrderId} is blocked in status {OrderStatus}.",
+		order.Id,
+		OrderStatusEnum.Cancelled);
 }
 
 return allowed;
@@ -285,7 +293,10 @@ Incorrect spacing after a completed control block:
 ```csharp
 if (!allowed)
 {
-	_logger.LogWarning("Operation is not allowed: {Reason}", reason);
+	_logger.LogWarning(
+		"Order {OrderId} is blocked in status {OrderStatus}.",
+		order.Id,
+		OrderStatusEnum.Cancelled);
 }
 return allowed;
 ```
@@ -347,6 +358,39 @@ _output.WriteLine("── Training & Capabilities ──────────
 _output.WriteLine("-- Inventory --");
 ```
 
+---
+
+## Comments and Documentation Summaries
+
+Use comments to explain useful context, not obvious code.
+
+Rules:
+
+- Prefer readable names and simple code before adding comments.
+- Comment why code exists, non-obvious behavior, edge cases, external constraints, tradeoffs, or safety requirements.
+- Do not comment obvious assignments, straightforward `if` checks, simple returns, or self-explanatory method calls.
+- Do not add wide banner comments, decorative separators, or large comment blocks unless the local file already uses that style.
+- Update or remove stale comments when editing nearby code.
+- Use XML documentation for public APIs only when the project already uses it or when it clarifies behavior for external consumers. Do not add XML documentation to every member by default.
+- Keep summaries concise and factual. Avoid filler, repeated points, and generic praise.
+
+Good:
+
+```csharp
+// Keep this timeout below the gateway limit so retries happen client-side.
+private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(25);
+```
+
+Bad:
+
+```csharp
+// Set allowed to false.
+var allowed = false;
+
+// If the order is null, throw an exception.
+if (order == null)
+	throw new ArgumentNullException(nameof(order));
+```
 ---
 
 ## Error Handling and Logging
