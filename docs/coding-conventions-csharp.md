@@ -2,7 +2,7 @@
 
 Detailed C#/.NET conventions for repositories that use this agent guideline pack.
 
-**Version**: 1.17  
+**Version**: 1.18  
 **Status**: Active  
 **Last Updated**: 2026-06-18
 
@@ -23,7 +23,7 @@ Use repository-specific conventions first. If the target repository or child `AG
 | Interfaces | `I` prefix |
 | Enums | Project-specific `Enum` suffix, real values start at `1` |
 | Async methods | `Async` suffix for `Task`, `Task<T>`, `ValueTask`, `ValueTask<T>` |
-| Control flow | Always use braces; no inline `if (...) return/throw/break/continue` statements; add a blank line after completed control blocks before independent statements |
+| Control flow | Single-statement guards may omit braces, but the statement must be on the next line; multi-statement blocks use braces; add a blank line after completed control blocks before independent statements |
 | User-facing text | Preserve existing ASCII/Unicode punctuation and decorative separator style |
 | Member order | Constants → Fields → Properties → Events → Constructor → Expression-bodied → Public → Protected → Protected event raisers → Private |
 
@@ -228,31 +228,34 @@ Constants:
 
 ## Control Flow and Spacing
 
-Always use braces for `if`, `else if`, and `else`, even for single-line statements.
+Single-statement guard clauses may omit braces when the controlled statement is on the next line.
 
-Do not place control-flow actions inline after a condition. Put `return`, `throw`, `break`, `continue`, and similar statements inside the block on their own line.
+Use braces for multi-statement blocks and when braces improve readability. Preserve stricter project style if the local repository always uses braces.
+
+Do not place control-flow actions inline after a condition. Put `return`, `throw`, `break`, `continue`, and similar statements on their own line.
 
 Correct:
 
 ```csharp
 if (order == null)
-{
 	throw new ArgumentNullException(nameof(order));
-}
 
-if (task.Category != TaskCategoryEnum.Training)
-{
+if (order.Status != OrderStatusEnum.Pending)
 	return true;
+
+if (!isValid)
+{
+	_logger.LogWarning("Order {OrderId} is invalid.", order.Id);
+	return false;
 }
 ```
 
 Incorrect:
 
 ```csharp
-if (order == null)
-	throw new ArgumentNullException(nameof(order));
+if (order == null) throw new ArgumentNullException(nameof(order));
 
-if (task.Category != TaskCategoryEnum.Training) return true;
+if (order.Status != OrderStatusEnum.Pending) return true;
 ```
 
 Spacing rules are preferred readability guidelines, not hard blockers.
@@ -271,10 +274,7 @@ Correct spacing after a completed control block:
 ```csharp
 if (!allowed)
 {
-	EventBus.Publish(new OnTerminalMessage(
-		reason,
-		TerminalPrefixEnum.Warn,
-		TerminalCategoryEnum.Locked));
+	_logger.LogWarning("Operation is not allowed: {Reason}", reason);
 }
 
 return allowed;
@@ -285,10 +285,7 @@ Incorrect spacing after a completed control block:
 ```csharp
 if (!allowed)
 {
-	EventBus.Publish(new OnTerminalMessage(
-		reason,
-		TerminalPrefixEnum.Warn,
-		TerminalCategoryEnum.Locked));
+	_logger.LogWarning("Operation is not allowed: {Reason}", reason);
 }
 return allowed;
 ```
@@ -332,22 +329,22 @@ Rules:
 Correct when the surrounding output uses plain ASCII:
 
 ```csharp
-_terminal.AppendLine("-- Training & Capabilities --", TerminalPrefixEnum.Sys);
-_terminal.AppendLine("-- Inventory --", TerminalPrefixEnum.Sys);
+_output.WriteLine("-- Training & Capabilities --");
+_output.WriteLine("-- Inventory --");
 ```
 
 Correct when the surrounding output uses Unicode separators:
 
 ```csharp
-_terminal.AppendLine("── Training & Capabilities ──────────────────────────", TerminalPrefixEnum.Sys);
-_terminal.AppendLine("── Inventory ────────────────────────────────────────", TerminalPrefixEnum.Sys);
+_output.WriteLine("── Training & Capabilities ──────────────────────────");
+_output.WriteLine("── Inventory ────────────────────────────────────────");
 ```
 
 Incorrect mixed style:
 
 ```csharp
-_terminal.AppendLine("── Training & Capabilities ──────────────────────────", TerminalPrefixEnum.Sys);
-_terminal.AppendLine("-- Inventory --", TerminalPrefixEnum.Sys);
+_output.WriteLine("── Training & Capabilities ──────────────────────────");
+_output.WriteLine("-- Inventory --");
 ```
 
 ---

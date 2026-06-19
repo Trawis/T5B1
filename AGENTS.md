@@ -2,7 +2,7 @@
 
 Repository-level instructions for AI coding agents.
 
-**Version**: 1.17  
+**Version**: 1.18  
 **Status**: Active  
 **Last Updated**: 2026-06-18
 
@@ -10,7 +10,7 @@ Repository-level instructions for AI coding agents.
 - Added `MUST` / `SHOULD` / `MAY` strictness levels.
 - Added rule that Git artifacts and PR text must not contain AI assistant, tool, or model names.
 - Clarified that indentation should preserve the existing file/repository style.
-- Added C# control-flow rule forbidding inline guard statements such as `if (...) return ...;`.
+- Clarified C# control-flow style: single-statement guards may omit braces, but the statement must be on the next line.
 - Added rule to preserve existing Unicode/ASCII punctuation and UI/output separator style.
 - Added C# spacing rule requiring a blank line after a completed control block before the next independent statement.
 - Softened Git Flow and PR requirements for local-only or solo repositories while keeping branch isolation and no auto-merge.
@@ -21,6 +21,7 @@ Repository-level instructions for AI coding agents.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.18 | 2026-06-18 | Clarified that single-statement C# guards may omit braces when the statement is on the next line; replaced project-specific terminal examples with generic examples. |
 | 1.17 | 2026-06-18 | Added C# spacing rule requiring a blank line after a completed control block before the next independent statement. |
 | 1.16 | 2026-06-18 | Added UI/output text style preservation rule for Unicode/ASCII punctuation and decorative separators. |
 | 1.15 | 2026-06-18 | Added C# control-flow convention forbidding inline guard statements such as `if (...) return ...;`. |
@@ -215,7 +216,7 @@ Rules:
 
 ## Git Workflow
 
-This repository uses a simplified Git Flow. The long-lived branches are:
+This repository uses Git Flow. The long-lived branches are:
 
 - `main` — production branch (releases merged here)
 - `develop` — integration branch (feature work targets here)
@@ -262,7 +263,7 @@ Default PR targets:
 
 - `feature/*`, `bugfix/*`, `chore/*`, and `docs/*` target `develop`.
 - `release/*` targets `main`.
-- `hotfix/*` targets `main`, then must also be brought back to `dev`.
+- `hotfix/*` targets `main`, then must also be brought back to `develop`.
 
 ### Commit Rules
 
@@ -331,7 +332,7 @@ Before finishing a task, confirm:
 - Applicable convention docs under `docs/` were checked for changed code/scripts/docs.
 - Existing indentation style was preserved in modified files (tabs for C#).
 - Existing user-facing text/output style was preserved, including ASCII vs Unicode punctuation and decorative separators.
-- C# control-flow spacing was preserved or applied: blank line after a completed control block before the next independent statement.
+- C# control-flow style was preserved or applied: no inline `if (...) return ...;`, braces required for multi-statement blocks, and blank line after a completed control block before the next independent statement.
 - A new task branch was created, or branch creation was impossible and the reason is reported.
 - Changes are focused on the requested task.
 - New behavior has unit tests when feasible, or a clear explanation why tests were not added.
