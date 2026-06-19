@@ -9,25 +9,30 @@
 - 
 
 ## Requirements / Spec Alignment
-- [ ] Issue / acceptance criteria reviewed if provided
+- [ ] FSD reviewed if provided
+- [ ] TSD reviewed if provided
+- [ ] GDD reviewed if game-related and provided
+- [ ] Acceptance criteria / issue / ticket reviewed if provided
 - [ ] Conflicts or unclear requirements reported
 
 ## Documentation
 - [ ] README.md updated if needed
 - [ ] CHANGELOG.md updated if needed
 - [ ] FEATURES.md updated if needed
-- [ ] No invented features, claims, or compatibility guarantees
+- [ ] docs/ updated if needed
+- [ ] No invented features, claims, screenshots, benchmarks, or compatibility guarantees
 
 ## Validation
-- [ ] `dotnet format --verify-no-changes`
-- [ ] `dotnet build`
-- [ ] `dotnet test`
+- [ ] Build ran or skip reason documented
+- [ ] Unit tests added/updated where feasible
+- [ ] Tests ran or skip reason documented
 - [ ] Smoke/manual check ran where practical
-- [ ] Implementation rechecked against task and changed files
+- [ ] Format/lint checks ran where configured
+- [ ] Implementation rechecked against task/specs/changed files
 
 ## Branching / Merge Safety
 - [ ] Work was done on a task branch
-- [ ] PR targets `dev` (features/bugfixes/chores) or `main` (releases/hotfixes)
+- [ ] PR targets the correct Git Flow branch
 - [ ] No auto-merge requested/performed
 - [ ] No branch protection bypass requested/performed
 
