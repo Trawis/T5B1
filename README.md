@@ -22,11 +22,20 @@ Branch from `develop` and open a PR back to `develop`:
 
 ```
 feature/<short-description>
-bugfix/<short-description>
-chore/<short-description>
-docs/<short-description>
 ```
 
-Hotfixes branch from `main` and are merged back to both `main` and `develop`.
+Use `feature/*` for all normal work — including documentation, tests, maintenance, and non-emergency bug fixes.
+
+For releases, branch from `develop` as `release/<major>.<minor>.<patch>` and target `main`.
+
+Hotfixes branch from `main` as `hotfix/<short-description>` and are merged back to both `main` and `develop`.
 
 See [`AGENTS.md`](AGENTS.md) for full branching rules and coding conventions.
+
+## CI / CD
+
+| Trigger | Workflow | Result |
+|---------|----------|--------|
+| Push or PR to `develop` | CI | Build check |
+| Push to `main` | Release | Build + zip artifact |
+| Tag `v*.*.*` on `main` | Release | Build + zip artifact + draft GitHub Release |
