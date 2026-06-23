@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
@@ -12,10 +12,11 @@ namespace Trainer_v5.Window
 	{
 		public static EmployeeTraitChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
-		
+
 		private GUIWindow _window;
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
 		private Actor _actor;
+		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -36,16 +37,18 @@ namespace Trainer_v5.Window
 			}
 
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.Any() ? selectedActors.First() : null;
+			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
 			var employee = _actor?.employee;
 
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {employee?.Name ?? "Nobody"}";
 
+			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
 			{
 				var isOn = employee?.HasTrait(pair.Key) ?? false;
 				pair.Value.isOn = isOn;
 			}
+			_isRefreshing = false;
 		}
 
 		private void CreateWindow()
@@ -56,7 +59,7 @@ namespace Trainer_v5.Window
 			window.name = "EditTrait";
 			window.MainPanel.name = "EditTraitPanel";
 
-			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t => 
+			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
 
 			var goodTraitsToggle = traits
@@ -93,7 +96,11 @@ namespace Trainer_v5.Window
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{
 			if (_actor == null)
+			{
+				if (!_isRefreshing)
+					Notification.ShowError("Select an employee first.");
 				return;
+			}
 			var employee = _actor.employee;
 
 			var hasTrait = (employee.Traits & trait) > 0;

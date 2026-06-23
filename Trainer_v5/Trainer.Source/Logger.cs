@@ -5,7 +5,7 @@ namespace Trainer_v5
 {
 	public static class Logger
 	{
-		private static void ConsoleLogWithPropertyName(string str) => DevConsole.Console.Log($"Trainer Property {nameof(str)}: {str}");
+		private static void ConsoleLogWithPropertyName(string str) => DevConsole.Console.Log($"Trainer: {str}");
 		private static void ConsoleLog(string str) => DevConsole.Console.Log(str);
 
 		public static void Log(this string str, bool withPropertyName = true)

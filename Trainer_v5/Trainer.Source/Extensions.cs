@@ -41,16 +41,17 @@ namespace Trainer_v5
 
 		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, string key, int valueType)
 		{
+			var stored = settings.Get(key);
 			switch (valueType)
 			{
 				case 1:
-					return items.FindIndex(x => x.Value.MakeInt() == settings.Get(key).MakeInt());
+					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeInt() == stored.MakeInt());
 				case 2:
-					return items.FindIndex(x => x.Value.MakeFloat() == settings.Get(key).MakeFloat());
+					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeFloat() == stored.MakeFloat());
 				case 3:
-					return items.FindIndex(x => x.Value.MakeString() == settings.Get(key).MakeString());
+					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeString() == stored.MakeString());
 				case 4:
-					return items.FindIndex(x => x.Value.MakeBool() == settings.Get(key).MakeBool());
+					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeBool() == stored.MakeBool());
 				default:
 					"Method GetIndex received an unknown value type as parameter".Log();
 					return -1;

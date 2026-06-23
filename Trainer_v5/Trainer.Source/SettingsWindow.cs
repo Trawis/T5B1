@@ -68,9 +68,10 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax));
-			column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
+			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
+			column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
 			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
@@ -99,6 +100,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), settings.Get("AutoResearchStart"), a => settings.Toggle("AutoResearchStart")));
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get("DigitalDistributionMonopol"), a => settings.Toggle("DigitalDistributionMonopol")));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get("DisableFireInspection"), a => settings.Toggle("DisableFireInspection")));
+			column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get("AutoMaxMarketShare"), a => settings.Toggle("AutoMaxMarketShare")));
 
 			#endregion
 
@@ -147,10 +149,12 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), settings.Get("ReduceISPCost"), a => settings.Toggle("ReduceISPCost")));
 			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), settings.Get("NoServerCost"), a => settings.Toggle("NoServerCost")));
 			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), settings.Get("ReduceExpansionCost"), a => settings.Toggle("ReduceExpansionCost")));
-			column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get("ReduceBoxPrice"), a => settings.Toggle("ReduceBoxPrice")));
+			//column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get("ReduceBoxPrice"), a => settings.Toggle("ReduceBoxPrice")));
 			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get("DisableForcePause"), a => settings.Toggle("DisableForcePause")));
 			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get("DisableForceFreeze"), a => settings.Toggle("DisableForceFreeze")));
 			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get("AutoAcceptHostingDeals"), a => settings.Toggle("AutoAcceptHostingDeals")));
+			column4.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
+			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
 
 			#endregion
 
@@ -191,8 +195,7 @@ namespace Trainer_v5
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
 				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
-				column6.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration [TEST]"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
-				column6.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity [TEST]"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
+
 			}
 
 			#endregion
