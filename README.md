@@ -11,24 +11,22 @@ Report bugs and suggestions through GitHub Issues.
 
 This repository follows Git Flow.
 
+### Long-lived branches
+
 | Branch | Purpose |
 |--------|---------|
-| `main` | Stable releases only |
-| `develop` | Integration branch — all feature work targets here |
+| `main` | Production — stable releases only |
+| `develop` | Integration — all feature work targets here |
 
-### Contributing
+### Branch families
 
-Branch from `develop` and open a PR back to `develop`:
+| Branch | Base | PR target | Use for |
+|--------|------|-----------|---------|
+| `feature/<short-description>` | `develop` | `develop` | All normal work: features, fixes, docs, tests, refactors, tooling |
+| `release/<major>.<minor>.<patch>` | `develop` | `main` | Release preparation and version bumps |
+| `hotfix/<short-description>` | `main` | `main` | Urgent fixes for released code |
 
-```
-feature/<short-description>
-```
-
-Use `feature/*` for all normal work — including documentation, tests, maintenance, and non-emergency bug fixes.
-
-For releases, branch from `develop` as `release/<major>.<minor>.<patch>` and target `main`.
-
-Hotfixes branch from `main` as `hotfix/<short-description>` and are merged back to both `main` and `develop`.
+`release/*` and `hotfix/*` changes must also be brought back to `develop` after merge.
 
 See [`AGENTS.md`](AGENTS.md) for full branching rules and coding conventions.
 
