@@ -528,7 +528,9 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
 			{
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+#endif
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
@@ -1190,8 +1192,10 @@ namespace Trainer_v5
 
 		public static void MaxMarketShare()
 		{
+#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 			Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+#endif
 		}
 
 		#endregion
