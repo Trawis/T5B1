@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Verify formatting
+        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+
+      - name: Build
+        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Debug --no-incremental

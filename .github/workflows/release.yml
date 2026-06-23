@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build and publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Build (Release)
+        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trainer_v5
+          path: Trainer_v5/bin/Release/net46/Trainer_v5.dll
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Trainer_v5/bin/Release/net46/Trainer_v5.dll
+          draft: true
+          generate_release_notes: false
