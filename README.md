@@ -35,5 +35,6 @@ See [`AGENTS.md`](AGENTS.md) for full branching rules and coding conventions.
 | Trigger | Workflow | Result |
 |---------|----------|--------|
 | Push or PR to `develop` | CI | Build check |
-| Push to `main` | Release | Build + zip artifact |
-| Tag `v*.*.*` on `main` | Release | Build + zip artifact + draft GitHub Release |
+| Push to `main` | Release | Build + versioned zip artifact + versioned GitHub Release |
+
+The release workflow reads the semantic version from `Helpers.Version`. A release creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the downloadable archive name. Increase `Helpers.Version` before merging another release to `main`.
