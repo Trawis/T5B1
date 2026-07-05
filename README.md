@@ -35,6 +35,9 @@ See [`AGENTS.md`](AGENTS.md) for full branching rules and coding conventions.
 | Trigger | Workflow | Result |
 |---------|----------|--------|
 | Push or PR to `develop` | CI | Build check |
+| Daily schedule or manual dispatch | Nightly | Build + versioned RC artifact + prerelease |
 | Push to `main` | Release | Build + versioned zip artifact + versioned GitHub Release |
 
 The release workflow reads the semantic version from `Helpers.Version`. A release creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the downloadable archive name. Increase `Helpers.Version` before merging another release to `main`.
+
+The nightly workflow appends the workflow run number as an RC suffix, producing versions such as `5.2.6-rc123`. Nightly prereleases do not replace the latest stable release.
