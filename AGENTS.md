@@ -4,7 +4,7 @@ Repository-level instructions for coding agents.
 
 **Document role**: Managed coding-agent instructions
 **Sync destination**: `AGENTS.md`
-**Version**: 3.2.3
+**Version**: 4.0.0
 
 ## Start Here
 
@@ -24,6 +24,8 @@ Instruction precedence is: user request, closest child `AGENTS.md`, `.agents/pro
 - `docs/project/` contains authoritative live project documentation.
 - `docs/templates/` contains managed, read-only references.
 - Never edit target templates or treat their placeholders as requirements.
+- Untouched scaffolds and unconfirmed Draft or inferred content are not
+  authoritative requirements.
 - When behavior changes, update relevant project-owned documentation when practical.
 
 Read `.agents/guidelines/documentation.md` for documentation work or changes affecting setup, behavior, architecture, features, guides, or specifications.
@@ -78,8 +80,10 @@ Read the relevant Git or CI/CD guideline before performing that specialized work
 When provided:
 
 - FSD controls observable behavior and acceptance criteria;
-- TSD controls technical constraints and implementation design;
 - GDD controls gameplay intent and player experience;
+- architecture describes the verified current technical system;
+- an accepted technical design under `docs/project/designs/` controls only its
+  scoped change;
 - tickets and explicit acceptance criteria define task scope.
 
 Report conflicts between requirement sources before implementing.
@@ -98,15 +102,25 @@ Do not run irrelevant language or project checks. Report checks that could not r
 
 ## Sync Ownership
 
-Routine sync overwrites:
+Routine sync updates these files when their pack content differs:
 
 - `AGENTS.md`, `CLAUDE.md`, and selected `.agents/` guidance;
 - `docs/templates/`;
 - `scripts/sync-docs.py`.
 
+Routine sync retires only unchanged legacy-managed files whose hashes match the old manifest. Modified or unrecorded files, reclassified project-owned files, and legacy conflict output are preserved and reported.
+
+Routine sync also maintains committed `.repo-seed-state.json` ownership
+metadata. A smaller profile removes unchanged managed files that are no longer
+selected. Modified stale files are preserved and remain tombstoned for review.
+Do not edit this state file manually.
+
 Do not customize these managed files in target repositories.
 
-Project-owned files include `.agents/project.md`, child `AGENTS.md` files, root `README.md` and `CHANGELOG.md`, `.editorconfig`, `.gitignore`, `docs/project/`, and every unmapped path. Scaffolding creates missing project-owned files but never overwrites them.
+Project-owned files include `.agents/project.md`, child `AGENTS.md` files, root
+`README.md` and `CHANGELOG.md`, `.editorconfig`, `.gitignore`, `docs/project/`,
+and every unmapped path. Scaffolding creates missing project-owned files and
+may upgrade Markdown only while repo-seed provenance proves it unchanged.
 
 ## Completion
 
