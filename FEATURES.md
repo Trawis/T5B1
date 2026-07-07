@@ -1,65 +1,113 @@
 # Features
 List of features in the trainer
 
+Open the trainer with the **Trainer** button (or F1; F2 closes it). Product
+actions read the product name from the *Product Name Here* input box at the top
+of the first column.
+
 ---
 
 **Buttons**
 
-All button features are initiated once
+Button features are applied once when clicked.
 
-|  Feature             | Parameters           | Description                                           |
-|:--------------------:|:--------------------:|:-----------------------------------------------------:|
-| Add Money            | Amount               | Adds money to company                                 |
-| Add Rep              | Amount               | Adds reputation to company                            |
-| Max Followers        | None                 | Adds maximum followers possible to company            |
-| Max Code             | Product Name         | Maxes code for specified product in development       |
-| Max Art              | Product Name         | Maxes art for specified product in development        |
-| Fix Bugs             | Product Name         | Fixes all possible bugs for specified product in beta |
-| Set Product Price    | Product Name, Amount | Sets product's price to specified amount              |
-| Set Product Stock    | Product Name, Amount | Sets product's stock to specified amount              |
-| Set Product Users    | Product Name, Amount | Sets product's active users to specified amount       |
-| Takeover Company     | Company Name         | Takes over specified company                          |
-| Subsidiary Company   | Company Name         | Specified company becomes your company's subsidiary   |
-| Bankrupt Company     | Company Name         | Forces specified company to go bankrupt               |
-| Bankrupt All         | None                 | Forces all companies but yours to go bankrupt         |
-| Days Per Month       | Amount               | Changes days per month to specified amount            |
-| Clear all loans      | None                 | Clears all loans                                      |
-| HR Leaders           | None                 | Gives all leaders HR training                         |
-| Max Employees Skills | None                 | All employee skills and education are maxed           |
-| Remove Products      | None                 | Products your company didn't invent are removed       |
-| Sell Products Stock  | None                 | Products with no active users are sold for half price |
-| Reset Employees Age  | None                 | All employees ages are set to 21                      |
-| Unlock All Furniture | None                 | All furniture is unlocked                             |
-| Unlock All Space     | None                 | All space is unlocked                                 |
-| Max Market Share     | None                 | Sets market share to 100% for all company products    |
+|  Feature               | Parameters             | Description                                                 |
+|:----------------------:|:----------------------:|:-----------------------------------------------------------:|
+| Add Money              | Amount                 | Adds money to your company (Deals category)                 |
+| Max Followers          | Product Name           | Maxes followers for the specified product in development    |
+| Takeover Company       | Company Name           | Buys out the specified company                              |
+| Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
+| Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
+| AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
+| Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
+| Set Product Price      | Product Name, Amount   | Sets the product's price                                    |
+| Set Product Stock      | Product Name, Amount   | Sets the product's physical stock                           |
+| Set Active Users       | Product Name, Amount   | Sets the product's active users                             |
+| Sell products stock    | None                   | Stock of products with no active users is sold at half price|
+| Max Market Share       | None                   | Sets market share to 100% for all your products             |
+| Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
+| Max market recognition | None                   | Maxes market recognition for all software types/categories  |
+| Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
+| Reset age of employees | None                   | Resets every employee to the youngest age                   |
+| Days per month         | Amount                 | Changes days per month (requires restart)                   |
+| Clear all loans        | None                   | Clears all loans                                            |
+| Extend Deadline        | None                   | Extends every contract deadline by one year                 |
+| Unlock all furniture   | None                   | Unlocks all furniture                                       |
+| Unlock all space       | None                   | Unlocks all plots of land                                   |
+| Unlock and Claim Rewards | None                 | Completes and claims all task rewards                       |
+| Discord                | None                   | Opens the Discord invite message                            |
+
+---
+
+**Dropdowns**
+
+- **Efficiency**: Default, 100%-8000%; sets effectiveness for non-lead
+  employees.
+- **Lead Efficiency**: Default, 100%-8000%; sets effectiveness for lead
+  employees.
+
+---
 
 **Toggles**
 
-All toggle features last as long as they are toggled
+Toggle features stay active for as long as they are enabled.
 
-|  Feature             | Description                                           |
-|:--------------------:|:-----------------------------------------------------:|
-| Disable Needs        | Disable employees needs                               |
-| Disable Stress       | Disable employees stress                              |
-| Free Employees       | You do not pay your employees                         |
-| Free Staff           | You do not pay your staff                             |
-| Full Efficiency      | Your employees operate at full efficiency             |
-| Full Satisfaction    | Your employees are satisfied to the fullest extent    |
-| Lock Employees Age   | Your employees do not age                             |
-| No Vacation          | Your employees do not go on vacation                  |
-| No Sickness          | Your employees do not fall ill                        |
-| Ultra Efficiency     | Your employees are even more efficient                |
-| Full Sunlight        | All rooms are lighted with sunlight                   |
-| Lock Temperature     | All rooms temperatures are 21C                        |
-| No Maintenance       | Nothing requires maintenance                          |
-| Noise Reduction      | All rooms are less noisy                              |
-| Rooms Never Dirty    | All rooms are always clean                            |
-| Auto Distr. Deals    | You receive more distribution deals automatically     |
-| Free Print           | Print without expenses                                |
-| Free Water & Elec.   | Water and electricity are free                        |
-| Inc. Bookshelf Skill | Bookshelves provide more skill                        |
-| Inc. Courier Cap.    | Couriers can carry more boxes                         |
-| Inc. Print Speed     | Printers print faster                                 |
-| More Hosting Deals   | You receive more hosting deals automatically          |
-| Reduce Internet Cost | Internet costs less                                   |
-| Auto Max Market Share| All company products are kept at 100% market share   |
+|  Feature                    | Description                                                   |
+|:---------------------------:|:------------------------------------------------------------:|
+| Disable Needs               | Employees have no needs                                      |
+| Disable Stress              | Employees have no stress                                     |
+| Free Employees              | You do not pay your employees                                |
+| Free Staff                  | You do not pay your staff                                    |
+| Full Satisfaction           | Employees are fully satisfied and negative thoughts clear    |
+| Lock Age of Employees       | Employees do not age                                         |
+| No Vacation                 | Employees do not go on vacation                              |
+| No Sickness                 | Employees do not fall ill                                    |
+| Auto Research Start         | Automatically starts research for available tech levels      |
+| Digital Distribution Monopol| Shuts down rival digital distribution platforms              |
+| Disable Fire Inspection     | Removes fire inspectors and passes inspections               |
+| Auto Max Market Share       | Keeps all your products at 100% market share                 |
+| Full Environment            | Rooms have maximum furniture environment                     |
+| Full Sun Light              | Rooms are fully lit                                          |
+| Lock Temperature To 21      | Room temperatures are locked to 21 C                         |
+| No Maintenance              | Furniture never needs maintenance                            |
+| Noise Reduction             | Furniture and employees produce no noise                     |
+| Rooms Never Dirty           | Rooms are always clean and odorless                          |
+| No Education Cost           | Education is free                                            |
+| Disable Fires               | Prevents and extinguishes fires                              |
+| Auto Design End             | Automatically promotes finished design documents             |
+| Auto Research End           | Automatically finishes research and files patents            |
+| Auto Patent End             | Automatically completes finished patents                     |
+| Increase Walk Speed         | Employees walk faster                                        |
+| Disable Furniture Stealing  | Furniture cannot be stolen                                   |
+| Free Print                  | Printing has no cost                                         |
+| Free Water & Electricity    | Water, electricity, and gas are free                         |
+| Increase Bookshelf Skill    | Bookshelves provide more skill                               |
+| Increase Courier Capacity   | Couriers can carry more boxes                                |
+| Increase Print Speed        | Printers print faster                                       |
+| More Hosting Deals          | Generates extra hosting deals and rewards                    |
+| Reduce Internet Cost        | Halves ISP cost                                             |
+| No Server Cost              | Servers are free                                            |
+| Reduce Expansion Cost       | Halves expansion cost                                       |
+| Disable Force Pause         | Prevents the game from force-pausing                         |
+| Disable Force Freeze        | Prevents the game from force-freezing                        |
+| Auto Accept Hosting Deals   | Automatically accepts available server deals                 |
+| More Inspiration            | Inspiration can be used without cooldown                     |
+| More Creativity             | Reveals full creativity for employees                        |
+| Experimental                | Reveals experimental test controls (re-open window to apply) |
+
+---
+
+**Employee editing**
+
+The **Skill Change** button (on the actor window) and the extra buttons added to
+the game's employee detail window let you edit selected employees.
+
+|  Feature       | Description                                                        |
+|:--------------:|:-----------------------------------------------------------------:|
+| Set Skills     | Sets specialization stars (-3 to 3) for selected roles/specs       |
+| Set Base Skills| Sets base role skill (0 to 1.0)                                     |
+| Trait          | Toggles an employee's traits                                       |
+| Demand         | Toggles a lead's design demands                                    |
+| LeadSpec       | Sets lead specialization values per software type                  |
+| Creativity     | Sets an employee's creativity (0 to 1.0)                           |
+| Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
