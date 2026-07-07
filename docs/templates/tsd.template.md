@@ -42,7 +42,8 @@ is needed.
 |---|---|
 | | |
 
-Describe changes to architecture boundaries, interfaces, data flow, and dependencies.
+Describe changes to architecture boundaries, interfaces, data flow, and
+dependencies.
 
 ## Alternatives and Rationale
 
@@ -51,7 +52,8 @@ proposed approach is preferred.
 
 ## Data and Interfaces
 
-Document persistence, migrations, APIs, commands, events, contracts, or messages affected by the change.
+Document persistence, migrations, APIs, commands, events, contracts, or
+messages affected by the change.
 
 ## Security, Reliability, and Observability
 
@@ -60,7 +62,8 @@ authentication, authorization, privacy, and secrets.
 
 ## Performance and Compatibility
 
-Document expected load, limits, concurrency, backward compatibility, and migration concerns.
+Document expected load, limits, concurrency, backward compatibility, and
+migration concerns.
 
 ## Validation
 
@@ -70,7 +73,8 @@ Document expected load, limits, concurrency, backward compatibility, and migrati
 
 ## Rollout and Rollback
 
-Describe deployment order, feature flags, migration, rollback, and release notes when applicable.
+Describe deployment order, feature flags, migration, rollback, and release
+notes when applicable.
 
 ## Architecture Documentation Updates
 

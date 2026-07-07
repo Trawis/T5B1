@@ -4,19 +4,22 @@
 **Document role**: Managed project-document template
 **Template source**: `docs/templates/architecture.template.md`
 **Scaffold destination**: `docs/project/architecture.md`
-**Scaffold behavior**: The live file is project-owned; only a verified unchanged scaffold may be upgraded
+**Scaffold behavior**: The live file is project-owned; only a verified
+unchanged scaffold may be upgraded
 <!-- repo-seed-template:end -->
 
 **Project**:
 **Status**: Draft
 **Last Updated**: YYYY-MM-DD
 
+<!-- Remove this guidance when populating the live architecture document.
 Describe the verified current technical system. Keep proposed changes in
-`docs/project/designs/` and link them here after they are accepted or implemented.
+`docs/project/designs/` and link them here after they are accepted or
+implemented.
 
 When this document grows, keep it as the stable overview and move detailed
 subjects under `docs/project/architecture/`. Do not create detail files until
-they add value.
+they add value. -->
 
 ## Purpose, Scope, and Quality Goals
 

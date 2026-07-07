@@ -2,7 +2,8 @@
 **Document role**: Managed project-file template
 **Template source**: `docs/templates/.github/feature-request.template.md`
 **Scaffold destination**: `.github/ISSUE_TEMPLATE/feature_request.md`
-**Scaffold behavior**: The live file is project-owned; only a verified unchanged scaffold may be upgraded
+**Scaffold behavior**: The live file is project-owned; only a verified
+unchanged scaffold may be upgraded
 <!-- repo-seed-template:end -->
 
 ---
@@ -21,7 +22,8 @@ Describe the problem or unmet need.
 
 ## Proposed Outcome
 
-Describe the desired behavior without prescribing unnecessary implementation details.
+Describe the desired behavior without prescribing unnecessary implementation
+details.
 
 ## Acceptance Notes
 
