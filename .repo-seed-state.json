@@ -5,9 +5,9 @@
     ".agents/conventions/scripts.md": "b5f2340822cd7402d4eb6087428c0b62ffd71802824559c8492f778afcfda245",
     ".agents/conventions/shell.md": "165c0382882a8cce818be34368dc5b29a0297d7c2c66a40fd7e4729c397764b9",
     ".agents/guidelines/ci-cd.md": "e4d6bd8bc0f0696f27501ec87fa3c25d85b103e17bfe7a8993fc61ff63d4faa0",
-    ".agents/guidelines/documentation.md": "07c41e49fabc3ca3807246fe451611b96e6549ac991156e7fbd46271b1bc33f0",
+    ".agents/guidelines/documentation.md": "c73b9a220b282dabfefd5853bf0032ee485f02530a2ec3aa1e765b2762f78a62",
     ".agents/guidelines/git.md": "4773262f86d33c6e7c8cae87f652a2e4f979de79956bc723a5374dc6889eede5",
-    "AGENTS.md": "6585e8c7d15fbeadb98b3945fd79c575db62ccc3efab39535f2055bc536f0694",
+    "AGENTS.md": "9c33c47abef0e42a2be3e48fd95cddef8af5935ffdda15d7921c8f4e961c7025",
     "CLAUDE.md": "7050308e6cd5b0b953105fddc8fe5a4d259038dc8de1183414833bc90788554a",
     "docs/templates/.github/bug-report.template.md": "9e898d893d05a6962300f774120350559082f6b1d68be76e30c2696c1efdb53e",
     "docs/templates/.github/config.template.yml": "ade4f33049e309848b2f0a64d11c41be3204cd476ac112ee311cdd320cd39313",
@@ -15,11 +15,11 @@
     "docs/templates/architecture.template.md": "701a4193f0c5eb903af5172e2457af01e5148bddbeae8343b80fa1d02ed4fe90",
     "docs/templates/changelog.template.md": "731c8ef26b6104fd569f516f344197c0437aa609256aa10257eb3eaff6f6d427",
     "docs/templates/editorconfig.template": "74b219dcd26beaefc51a9892f5e74b136ac30ff0b04ef70039fbaa9903ead77a",
-    "docs/templates/readme.template.md": "d0be705d90d1c0cff0f27ed9e70f3848a3ad6498f38d918a2821fe4c2e98ba1c",
-    "docs/templates/tsd.template.md": "718bf526bfabaa33b34f6fc80fadca19ff5fae790a07d2a93239b2004607b7bf",
-    "scripts/sync-docs.py": "c6cf2eb16b3b8ebea81308572b0abfc92ab3589ecc98f0c4ff703b8b4068646e"
+    "docs/templates/readme.template.md": "dedfdbef06ccca95a257f1d16d761fb46f976a41a5682f2b6c42ddf3a549298a",
+    "docs/templates/tsd.template.md": "7d03ea43180ad7388a4ec19aa04126a5825f0cb15518d10e575bcaca11136f93",
+    "scripts/sync-docs.py": "f00b7a8807162df1af9d6eb3b7b1d8d1aca4c17aa51c4588607c00c160032653"
   },
-  "pack_version": "4.0.0",
+  "pack_version": "4.0.1",
   "profile": "library",
   "schema_version": 1,
   "tombstones": {}
