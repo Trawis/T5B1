@@ -12,7 +12,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-SCRIPT_VERSION = "4.0.2"
+SCRIPT_VERSION = "4.0.3"
 MANIFEST_FILE = "manifest.json"
 FILES_DIRECTORY = "files"
 TEMPLATE_METADATA_START = "repo-seed-template:start"

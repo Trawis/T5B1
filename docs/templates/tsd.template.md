@@ -7,10 +7,10 @@
 **Usage**: Copy on demand for one substantial technical change
 <!-- repo-seed-template:end -->
 
-**Change**:
-**Status**: Proposed / Accepted / Implemented / Superseded / Rejected
-**Owner**:
-**Last Updated**: YYYY-MM-DD
+- **Change**:
+- **Status**: Proposed / Accepted / Implemented / Superseded / Rejected
+- **Owner**:
+- **Last Updated**: YYYY-MM-DD
 
 Describe one substantial technical change. Reference the applicable requirement,
 issue, acceptance criteria, FSD, or GDD for behavior and

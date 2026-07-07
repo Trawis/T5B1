@@ -8,9 +8,9 @@
 unchanged scaffold may be upgraded
 <!-- repo-seed-template:end -->
 
-**Project**:
-**Status**: Draft
-**Last Updated**: YYYY-MM-DD
+- **Project**:
+- **Status**: Draft
+- **Last Updated**: YYYY-MM-DD
 
 <!-- Remove this guidance when populating the live architecture document.
 Describe the verified current technical system. Keep proposed changes in
