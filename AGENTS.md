@@ -4,7 +4,7 @@ Repository-level instructions for coding agents.
 
 **Document role**: Managed coding-agent instructions
 **Sync destination**: `AGENTS.md`
-**Version**: 4.0.0
+**Version**: 4.0.1
 
 ## Start Here
 
@@ -119,8 +119,10 @@ Do not customize these managed files in target repositories.
 
 Project-owned files include `.agents/project.md`, child `AGENTS.md` files, root
 `README.md` and `CHANGELOG.md`, `.editorconfig`, `.gitignore`, `docs/project/`,
-and every unmapped path. Scaffolding creates missing project-owned files and
-may upgrade Markdown only while repo-seed provenance proves it unchanged.
+`.github/workflows/`, and every unmapped path. The sync manifest cannot manage,
+scaffold, retire, or delete workflow files. Scaffolding creates missing
+project-owned files and may upgrade Markdown only while repo-seed provenance
+proves it unchanged.
 
 ## Completion
 

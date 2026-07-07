@@ -55,7 +55,7 @@ Add examples for common usage.
 
 ## Documentation
 
-- [`CHANGELOG.md`](CHANGELOG.md) — version history
+- `CHANGELOG.md` — version history
 
 Link the live project documents under `docs/project/` that exist in this repository, such as the architecture document, feature list, or user guide.
 

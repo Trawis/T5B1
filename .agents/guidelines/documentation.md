@@ -63,8 +63,9 @@ When asked to populate documentation for an existing repository:
 
 1. inspect source, tests, configuration, schemas, workflows, assets, and useful
    Git history;
-2. populate FSD, GDD, architecture, user guidance, README, and changelog only
-   from relevant evidence;
+2. populate only applicable documents from relevant evidence: FSD for
+   applications or GDD for games, architecture for libraries/applications/games,
+   user guidance for user-facing products, plus README and changelog;
 3. distinguish intended behavior, verified as-built behavior, local inference,
    and unknowns where the difference matters;
 4. cite repository evidence for meaningful inferences and request confirmation

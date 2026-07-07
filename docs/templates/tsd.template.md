@@ -12,10 +12,10 @@
 **Owner**:
 **Last Updated**: YYYY-MM-DD
 
-Describe one substantial technical change. Reference the FSD or GDD for
-behavior and `docs/project/architecture.md` for the current system. This design
-records a transition; it is not the canonical description of the current
-architecture.
+Describe one substantial technical change. Reference the applicable requirement,
+issue, acceptance criteria, FSD, or GDD for behavior and
+`docs/project/architecture.md` for the current system. This design records a
+transition; it is not the canonical description of the current architecture.
 
 Create a design for changes involving multiple components, public contracts,
 persistence or migration, security, concurrency, deployment, compatibility,
