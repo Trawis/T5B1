@@ -4,7 +4,8 @@
 **Document role**: Managed project-document template
 **Template source**: `docs/templates/readme.template.md`
 **Scaffold destination**: `README.md`
-**Scaffold behavior**: The live file is project-owned; only a verified unchanged scaffold may be upgraded
+**Scaffold behavior**: The live file is project-owned; only a verified
+unchanged scaffold may be upgraded
 <!-- repo-seed-template:end -->
 
 Short description of what this project does and who it is for.
@@ -19,7 +20,8 @@ Current status: `planning`, `prototype`, `active`, `maintenance`, or `archived`.
 
 ## Requirements
 
-Document required runtimes, SDKs, databases, services, tools, or platform requirements here.
+Document required runtimes, SDKs, databases, services, tools, or platform
+requirements here.
 
 ## Setup
 
@@ -47,7 +49,8 @@ Document required runtimes, SDKs, databases, services, tools, or platform requir
 
 ## Configuration
 
-Describe required configuration, environment variables, local settings, and safe defaults. Do not document real secrets.
+Describe required configuration, environment variables, local settings, and
+safe defaults. Do not document real secrets.
 
 ## Usage
 
@@ -55,9 +58,10 @@ Add examples for common usage.
 
 ## Documentation
 
-- `CHANGELOG.md` — version history
+- `CHANGELOG.md` - version history
 
-Link the live project documents under `docs/project/` that exist in this repository, such as the architecture document, feature list, or user guide.
+Link the live project documents under `docs/project/` that exist in this
+repository, such as the architecture document, feature list, or user guide.
 
 ## Known Limitations
 

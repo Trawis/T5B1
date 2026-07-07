@@ -2,7 +2,8 @@
 **Document role**: Managed project-file template
 **Template source**: `docs/templates/.github/bug-report.template.md`
 **Scaffold destination**: `.github/ISSUE_TEMPLATE/bug_report.md`
-**Scaffold behavior**: The live file is project-owned; only a verified unchanged scaffold may be upgraded
+**Scaffold behavior**: The live file is project-owned; only a verified
+unchanged scaffold may be upgraded
 <!-- repo-seed-template:end -->
 
 ---
