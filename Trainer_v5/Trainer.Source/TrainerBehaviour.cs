@@ -849,11 +849,7 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
-#else
-					actor.employee.LeadSpecialization[t] = 1f;
-#endif
 				}
 
 				foreach (Employee.EmployeeRole employeeRole in employeeRoles)

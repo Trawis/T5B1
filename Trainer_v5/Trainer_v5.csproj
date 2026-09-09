@@ -27,12 +27,6 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_6|AnyCPU'">
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA|AnyCPU'">
 	</PropertyGroup>
 

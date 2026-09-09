@@ -13,6 +13,12 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Documentation restructured to the managed templates (README, CHANGELOG, and
   the architecture overview).
 
+### Removed
+
+- Support for *Software Inc.* Beta 1.6: dropped the `SWINCBETA1_6` build
+  configuration and the 1.6-specific compatibility code paths. The trainer now
+  targets Beta 1.7 and newer.
+
 ## [5.2.6] - 2026-05-25
 
 ### Added
@@ -26,7 +32,7 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 - Updated libraries.
 
-## [5.2.5] - 2025-10-08
+## [5.2.4] - 2025-10-08
 
 ### Changed
 
