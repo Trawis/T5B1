@@ -12,6 +12,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   the architecture overview).
 - Removed version-conditional compilation from the lead-specialization setters;
   they now use a single code path.
+- Fixed Digital Distribution Monopol and Auto Accept Hosting Deals being
+  compiled out of Release builds; they are now included in released binaries.
 
 ## [5.2.6] - 2026-05-25
 

@@ -146,10 +146,10 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Build configurations / conditional compilation.** The solution defines
   `Debug`, `Release`, `SWINCBETA`, `SWINCBETA1_7`, and `SWINCRELEASE`
   configurations. Code adapts to game versions via preprocessor symbols
-  (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating features
-  such as `MaxMarketShare`, `AutoAcceptHostingDeals`, and
-  `DigitalDistributionMonopol`. `Helpers.GetGameVersion` maps these symbols to a
-  displayed version string.
+  (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating the
+  `MaxMarketShare` and `AutoMaxMarketShare` features, which require a game build
+  that exposes `SoftwareProduct.MarketShare`. `Helpers.GetGameVersion` maps these
+  symbols to a displayed version string.
 - **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.

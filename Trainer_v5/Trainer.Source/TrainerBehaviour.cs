@@ -485,7 +485,6 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
 			{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 				foreach (var company in Settings.simulation.Companies.Values.ToList())
 				{
 					if (company.Bankrupt && company.Distribution != null)
@@ -506,7 +505,6 @@ namespace Trainer_v5
 					company.Distribution.MarketShare = 0f;
 					MarketSimulation.Active.ClosePlatform(company.Distribution);
 				}
-#endif
 			}
 
 			/*
@@ -535,7 +533,6 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 				var serverGroups = Settings.GetAllServerGroups().ToList();
 				if (serverGroups.Count == 0)
 					return;
@@ -560,7 +557,6 @@ namespace Trainer_v5
 						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 					}
 				}
-#endif
 			}
 
 			GameSettings.MaxFloor = Constants.MAX_FLOOR;
