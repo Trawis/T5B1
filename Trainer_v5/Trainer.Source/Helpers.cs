@@ -172,14 +172,18 @@ namespace Trainer_v5
 
 		public static string GetGameVersion()
 		{
-#if SWINCBETA1_8
+#if !SWINCBETA && !SWINCRELEASE
+			return "1.6";
+#elif SWINCBETA1_7
+			return "1.7";
+#elif SWINCBETA1_8
 			return "1.8";
 #elif SWINCBETA1_9
 			return "1.9";
 #elif SWINCBETA1_10
 			return "1.10";
 #else
-			return "1.7";
+			return "UNKNOWN";
 #endif
 		}
 	}

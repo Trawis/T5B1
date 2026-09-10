@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-09
+**Last Updated**: 2026-09-10
 
 This document describes the verified current technical system. Proposed changes
 belong under `docs/project/designs/` until accepted or implemented.
@@ -149,8 +149,7 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating features
   such as `MaxMarketShare`, `AutoAcceptHostingDeals`, and
   `DigitalDistributionMonopol`. `Helpers.GetGameVersion` maps these symbols to a
-  displayed version string. The oldest supported target is Beta 1.7; support
-  for Beta 1.6 has been removed.
+  displayed version string.
 - **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
