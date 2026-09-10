@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-07-07
+**Last Updated**: 2026-09-10
 
 This document describes the verified current technical system. Proposed changes
 belong under `docs/project/designs/` until accepted or implemented.
@@ -146,12 +146,11 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Build configurations / conditional compilation.** The solution defines
   `Debug`, `Release`, `SWINCBETA`, `SWINCBETA1_7`, and `SWINCRELEASE`
   configurations. Code adapts to game versions via preprocessor symbols
-  (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example choosing
-  `Employee.LeadSpecializationFix` vs `LeadSpecialization` and gating features
-  such as `MaxMarketShare`, `AutoAcceptHostingDeals`, and
-  `DigitalDistributionMonopol`. `Helpers.GetGameVersion` maps these symbols to a
-  displayed version string.
-- **Version source of truth.** `Helpers.Version` (currently `5.2.6`) is the
+  (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating the
+  `MaxMarketShare` and `AutoMaxMarketShare` features, which require a game build
+  that exposes `SoftwareProduct.MarketShare`. `Helpers.GetGameVersion` maps these
+  symbols to a displayed version string.
+- **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
 - **Packaging / deployment.** The Release build produces `Trainer_v5.dll`, which
