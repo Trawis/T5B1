@@ -4,133 +4,88 @@ Repository-level instructions for coding agents.
 
 **Document role**: Managed coding-agent instructions
 **Sync destination**: `AGENTS.md`
-**Version**: 4.0.3
 
 ## Start Here
 
-Before changing files:
-
 1. Follow the current user request.
 2. Read `.agents/project.md` when it exists.
-3. Read the nearest child `AGENTS.md` for each path you may change.
-4. Read applicable live requirements under `docs/project/`.
-5. Load only the specialized guidance relevant to the task.
+3. Read the nearest child `AGENTS.md` when working in its scope.
+4. Load specialized guidance only when its subject is relevant to the operation.
+5. Read project requirements or documentation only when the task refers to them,
+   they govern the affected behavior, or they are needed to resolve a concrete
+   uncertainty. Do not scan `docs/project/` by default.
 
-Instruction precedence is: user request, closest child `AGENTS.md`, `.agents/project.md`, this file, then supporting guidance. Report meaningful conflicts instead of guessing.
+Instruction precedence is: user request, closest child `AGENTS.md`,
+`.agents/project.md`, this file, then supporting guidance. Report meaningful
+conflicts instead of guessing.
 
-## Documentation Authority
+## Ownership and Documentation Authority
 
-- `README.md` and `CHANGELOG.md` are project-owned root entry points.
-- `docs/project/` contains authoritative live project documentation.
-- `docs/templates/` contains managed, read-only references.
-- Never edit target templates or treat their placeholders as requirements.
+- `docs/project/` is authoritative, project-owned documentation.
+- `docs/templates/` contains managed, read-only reference material. Never edit
+  target templates or treat placeholders as live requirements.
+- `.agents/project.md`, child `AGENTS.md` files, project documentation,
+  workflows, and other project-owned paths remain project-owned.
+- Repo-seed managed files, including this file, `CLAUDE.md`, selected
+  `.agents/` guidance, templates, and `scripts/sync-docs.py`, must not be
+  customized directly in target repositories.
+- `.repo-seed-state.json` is managed sync state; do not edit it manually.
 - Untouched scaffolds and unconfirmed Draft or inferred content are not
   authoritative requirements.
-- When behavior changes, update relevant project-owned documentation when practical.
 
-Read `.agents/guidelines/documentation.md` for documentation work or changes affecting setup, behavior, architecture, features, guides, or specifications.
+If a change makes existing project-owned documentation inaccurate, update the
+affected documentation.
 
 ## Working Rules
 
-- Inspect relevant implementation, tests, and instructions before editing.
-- Make the smallest safe change that satisfies the task.
-- Preserve existing architecture, APIs, naming, formatting, and user-facing style.
-- Do not reformat, rename, or clean up unrelated code.
-- Prefer source files over generated output.
-- Keep comments focused on constraints or non-obvious intent.
+- Inspect the affected implementation and nearby tests before editing. Follow
+  nearby established patterns. Consult additional project documentation,
+  configuration, or conventions only when relevant to the change or needed to
+  resolve an uncertainty.
+- Make the smallest safe change that satisfies the task. Do not reformat,
+  rename, or clean up unrelated code.
+- Prefer source files over generated output, and keep comments focused on
+  constraints or non-obvious intent.
 - Add or update relevant tests for behavior changes when practical.
-- For review or diagnosis, report evidence without making changes unless a fix is requested.
-
-## Safety
-
-Do not:
-
-- expose, invent, rename, or commit secrets, credentials, tokens, certificates, or private keys;
-- run destructive commands without explicit authorization;
-- rewrite long-lived branch history, bypass protections, auto-merge, or approve your own pull request;
-- hide failures, skipped checks, conflicts, or uncertainty;
-- alter production deployment, infrastructure, schemas, authentication, payments, licensing, telemetry, or public contracts unless the task requires it;
-- add or replace production dependencies without a clear requirement.
-
-Ask before broad refactors, framework replacement, repository restructuring, or new cross-codebase patterns unless they are explicitly requested.
+- For review or diagnosis, report evidence without changing files unless a fix
+  is requested.
+- Do not expose secrets or conceal failures.
+- Do not run destructive commands without authorization.
+- Do not alter production infrastructure, schemas, authentication, payments,
+  licensing, telemetry, public contracts, or production dependencies unless
+  the task requires it.
+- Ask before broad refactors, framework replacement, repository restructuring,
+  or new cross-codebase patterns unless explicitly requested.
 
 ## Specialized Guidance
 
-Use focused guidance only when applicable:
+Load only the guidance relevant to the task:
 
-- documentation: `.agents/guidelines/documentation.md`
-- Git and pull requests: `.agents/guidelines/git.md`
-- CI/CD and releases: `.agents/guidelines/ci-cd.md`
-- language and script conventions: `.agents/conventions/`
+- language or script work: `.agents/conventions/`
+- Git, branches, commits, or pull requests: `.agents/guidelines/git.md`
+- CI/CD or releases: `.agents/guidelines/ci-cd.md`
+- substantial documentation work, including creation, restructuring,
+  bootstrapping, technical designs or specifications, and significant
+  maintenance: `.agents/guidelines/documentation.md`
 
-Repository-specific rules and nearby code always take precedence over managed conventions.
+Repository-specific rules and nearby code take precedence over managed
+conventions. Do not create or materially alter workflows, permissions,
+publishing, deployment, or infrastructure unless explicitly requested.
 
-## Git and CI/CD
+When provided, explicit acceptance criteria and tickets define task scope;
+FSDs govern observable application behavior; GDDs govern gameplay intent; and
+accepted technical designs govern only their scoped changes. Report conflicts
+between requirement sources before implementing.
 
-Follow the branching model documented by the repository or its hosted settings. When none exists, use the hosted default branch and a short descriptive task branch. Do not create a long-lived integration branch implicitly.
+## Validation and Completion
 
-Before branch or pull-request work, check remote state and existing work when tooling is available. Keep branch names, commits, PR text, changelog entries, and release notes factual and free of assistant or tool names.
+Run the narrowest relevant validation, such as focused tests, configured lint
+or formatting checks, a build of the affected project, or a practical smoke
+check. Do not run irrelevant language or project checks.
 
-Do not create or materially alter workflows, permissions, publishing, deployment, or infrastructure unless explicitly requested. Preserve existing gates and state what was validated locally versus what requires hosted verification.
-
-Read the relevant Git or CI/CD guideline before performing that specialized work.
-
-## Requirements and Specifications
-
-When provided:
-
-- FSD controls observable behavior and acceptance criteria;
-- GDD controls gameplay intent and player experience;
-- architecture describes the verified current technical system;
-- an accepted technical design under `docs/project/designs/` controls only its
-  scoped change;
-- tickets and explicit acceptance criteria define task scope.
-
-Report conflicts between requirement sources before implementing.
-
-## Validation
-
-Run the narrowest relevant checks available:
-
-1. build the affected project;
-2. run focused tests;
-3. run configured lint or format checks;
-4. perform a practical smoke check;
-5. review the diff against the request and live documentation.
-
-Do not run irrelevant language or project checks. Report checks that could not run and why.
-
-## Sync Ownership
-
-Routine sync updates these files when their pack content differs:
-
-- `AGENTS.md`, `CLAUDE.md`, and selected `.agents/` guidance;
-- `docs/templates/`;
-- `scripts/sync-docs.py`.
-
-Routine sync retires only unchanged legacy-managed files whose hashes match the old manifest. Modified or unrecorded files, reclassified project-owned files, and legacy conflict output are preserved and reported.
-
-Routine sync also maintains committed `.repo-seed-state.json` ownership
-metadata. A smaller profile removes unchanged managed files that are no longer
-selected. Modified stale files are preserved and remain tombstoned for review.
-Do not edit this state file manually.
-
-Do not customize these managed files in target repositories.
-
-Project-owned files include `.agents/project.md`, child `AGENTS.md` files, root
-`README.md` and `CHANGELOG.md`, `.editorconfig`, `.gitignore`, `docs/project/`,
-`.github/workflows/`, and every unmapped path. The sync manifest cannot manage,
-scaffold, retire, or delete workflow files. Scaffolding creates missing
-project-owned files and may upgrade Markdown only while repo-seed provenance
-proves it unchanged.
-
-## Completion
-
-Report:
-
-- what changed;
-- what was validated;
-- skipped or blocked checks;
-- remaining risks or follow-up.
-
-Never claim an action or verification succeeded unless it actually did.
+Before completion, review the final diff against the request for scope,
+correctness, applicable local conventions, ownership boundaries, and relevant
+validation. Check branch and pull-request requirements only when performing Git
+or pull-request operations. Report what changed and was validated, along with
+skipped or blocked checks and remaining risks. Never claim an action or check
+succeeded unless it did.

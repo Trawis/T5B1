@@ -12,9 +12,9 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-SCRIPT_VERSION = "4.0.3"
 MANIFEST_FILE = "manifest.json"
 FILES_DIRECTORY = "files"
+DEFAULT_STATE_FILE = ".repo-seed-state.json"
 TEMPLATE_METADATA_START = "repo-seed-template:start"
 TEMPLATE_METADATA_END = "repo-seed-template:end"
 VALID_TYPES = {"managed", "template"}
@@ -493,6 +493,36 @@ def discover_source_root() -> Path | None:
         if (candidate / MANIFEST_FILE).is_file() and (candidate / FILES_DIRECTORY).is_dir():
             return candidate
     return None
+
+
+def read_state_version(target_root: Path) -> str | None:
+    state_path = safe_child(target_root, DEFAULT_STATE_FILE, "managed state path")
+    if state_path.is_symlink():
+        raise ValueError(f"Managed state cannot be a symbolic link: {DEFAULT_STATE_FILE}")
+    if not state_path.exists():
+        return None
+    if not state_path.is_file():
+        raise ValueError(f"Managed state is not a file: {DEFAULT_STATE_FILE}")
+    try:
+        raw = json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as ex:
+        raise ValueError(f"Managed state is not valid JSON: {ex}") from ex
+    version = raw.get("pack_version")
+    if version is None:
+        return None
+    if not isinstance(version, str) or not SEMVER_PATTERN.fullmatch(version):
+        raise ValueError("Managed state pack_version must use MAJOR.MINOR.PATCH")
+    return version
+
+
+def resolve_cli_version(source: str | None, target: str | None) -> str:
+    if source:
+        return load_manifest(Path(source).expanduser().resolve()).pack_version
+    source_root = discover_source_root()
+    if source_root is not None:
+        return load_manifest(source_root).pack_version
+    target_root = Path(target).expanduser().resolve() if target else Path.cwd().resolve()
+    return read_state_version(target_root) or "unknown"
 
 
 def validate_parent_directory(target: Path, target_root: Path, context: str) -> None:
@@ -1182,13 +1212,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create .editorconfig only when it is missing.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Validate and show operations without writing files.")
-    parser.add_argument("--version", action="version", version=f"%(prog)s {SCRIPT_VERSION}")
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Show the detected pack version and exit.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
     try:
+        if args.version:
+            print(f"{parser.prog} {resolve_cli_version(args.source, args.target)}")
+            return 0
         if args.source:
             source_root = Path(args.source).expanduser().resolve()
         else:

@@ -13,9 +13,9 @@ unchanged scaffold may be upgraded
 - **Last Updated**: YYYY-MM-DD
 
 <!-- Remove this guidance when populating the live architecture document.
-Describe the verified current technical system. Keep proposed changes in
-`docs/project/designs/` and link them here after they are accepted or
-implemented.
+Describe the verified current technical system. Keep this document
+current-state focused: components, boundaries, runtime, data, deployment,
+quality approaches, decisions, risks, and links to accepted design records.
 
 When this document grows, keep it as the stable overview and move detailed
 subjects under `docs/project/architecture/`. Do not create detail files until
@@ -63,8 +63,8 @@ and any important environment limitations.
 
 ## Decisions and Design Records
 
-Link significant technical designs under `docs/project/designs/`. Record only
-the resulting current state here; do not copy proposal history into this file.
+List current technical decisions and link significant design records under
+`docs/project/designs/`. Keep this section compact.
 
 ## Risks, Technical Debt, and Open Questions
 

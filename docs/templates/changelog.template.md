@@ -14,7 +14,8 @@ this file.
 Use newest entries first. Do not dump raw git commits here.
 
 Use semantic versions when the project defines a versioned public interface.
-Remove empty categories before publishing.
+Use direct bullets that state changed items only. Remove filler and empty
+categories before publishing.
 
 ## Version - YYYY-MM-DD
 

@@ -12,19 +12,18 @@
 - **Owner**:
 - **Last Updated**: YYYY-MM-DD
 
-Describe one substantial technical change. Reference the applicable requirement,
-issue, acceptance criteria, FSD, or GDD for behavior and
-`docs/project/architecture.md` for the current system. This design records a
-transition; it is not the canonical description of the current architecture.
+Describe one substantial technical change as a compact design record. Reference
+the applicable requirement, issue, acceptance criteria, FSD, or GDD for
+behavior and `docs/project/architecture.md` for the current system. Do not use
+this file as the canonical description of current architecture.
 
 Create a design for changes involving multiple components, public contracts,
 persistence or migration, security, concurrency, deployment, compatibility,
 high uncertainty, or difficult rollback. Do not create one for routine changes.
 
-## Problem and Motivation
+## Context
 
-Link the requirement, issue, or acceptance criteria and explain why the change
-is needed.
+Link the requirement, issue, acceptance criteria, or affected current behavior.
 
 ## Goals and Non-Goals
 
@@ -45,10 +44,9 @@ is needed.
 Describe changes to architecture boundaries, interfaces, data flow, and
 dependencies.
 
-## Alternatives and Rationale
+## Options and Tradeoffs
 
-Describe credible alternatives, the consequences of doing nothing, and why the
-proposed approach is preferred.
+List credible options and the key tradeoffs that matter to the decision.
 
 ## Data and Interfaces
 
@@ -73,8 +71,8 @@ migration concerns.
 
 ## Rollout and Rollback
 
-Describe deployment order, feature flags, migration, rollback, and release
-notes when applicable.
+Describe deployment order, feature flags, migration, rollback, and release-note
+items when applicable.
 
 ## Architecture Documentation Updates
 
