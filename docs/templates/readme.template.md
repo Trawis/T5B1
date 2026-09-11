@@ -12,7 +12,9 @@ Short description of what this project does and who it is for.
 
 ## Why
 
-Explain the problem this project solves and why someone would choose it.
+- Problem:
+- Audience:
+- Primary value:
 
 ## Status
 

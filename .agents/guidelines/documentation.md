@@ -14,6 +14,9 @@
 - An accepted FSD or GDD controls intended behavior. Architecture describes the
   verified current technical system. An accepted technical design controls only
   its scoped change.
+- Keep docs current-state focused. Do not narrate history, rationale,
+  consolidation, replacement, or agent decision-making unless the file is
+  explicitly a changelog or design record.
 
 ## Update the Relevant Document
 
@@ -53,9 +56,8 @@ compatibility, high uncertainty, or difficult rollback. Routine fixes and
 localized refactors do not need one.
 
 Use `Proposed`, `Accepted`, `Implemented`, `Superseded`, or `Rejected` status.
-After implementation, update architecture with the resulting current state and
-leave the design as historical rationale. Current truth must not remain only in
-an old design.
+After implementation, update architecture with the current state. Current truth
+must not remain only in a design record.
 
 ## Existing-Project Bootstrap
 
@@ -89,9 +91,26 @@ improvements and preserve verified project content.
 
 ## Style
 
+Documentation style:
+
+- Describe the current truth.
+- Use the shortest structure that makes the content clear.
+- Use bullets for lists, scope, requirements, constraints, tasks, and
+  changelogs.
+- Use short prose when explaining overview, intent, product direction, or
+  design.
+- Do not require bullets everywhere.
+- Do not narrate agent reasoning, consolidation, replacement, or redesign
+  history.
+- Do not explain why a previous doc changed.
+- Do not write agent/process phrases such as "we decided", "this replaces",
+  "the old system", "consolidated", "tighter redesign", or "because the
+  previous version".
+- Keep changelogs factual: what changed, not the agent's reasoning.
+- Keep decision rationale only in files explicitly meant for decisions or ADRs.
+
 - Be concise, factual, and example-driven.
 - Link to detailed documents instead of duplicating them.
-- Keep current state in living documents and proposal history in design records.
-- Curate changelogs; do not paste commit history.
+- Keep living documents focused on current design, scope, rules, and decisions.
 - Omit unknown information rather than inventing it.
 - Preserve the repository's established formatting and punctuation.
