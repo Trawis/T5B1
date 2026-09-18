@@ -38,5 +38,6 @@
 		public const float EXPANSION_COST_HALF     = 175f;
 		public const float WALK_SPEED_BOOSTED      = 4f;
 		public const float WALK_SPEED_DEFAULT      = 2f;
+		public const float DESIGN_PROMOTION_RETRY_DELAY = 5f;
 	}
 }

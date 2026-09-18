@@ -11,6 +11,7 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
+		private static readonly Dictionary<DesignDocument, float> _designPromotionRetryAt = new Dictionary<DesignDocument, float>();
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
@@ -353,14 +354,40 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
+				// PromoteAction() itself blocks on this precondition (staying HasFinished forever
+				// without it), so it must be mirrored here to avoid calling it on ineligible designs.
 				var designDocuments = Settings.MyCompany.WorkItems
 									.OfType<DesignDocument>()
-									.Where(d => d.HasFinished)
+									.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
 									.ToList();
+
+				if (_designPromotionRetryAt.Count > 0)
+				{
+					var stillEligible = new HashSet<DesignDocument>(designDocuments);
+					foreach (var stale in _designPromotionRetryAt.Keys.Where(d => !stillEligible.Contains(d)).ToList())
+					{
+						_designPromotionRetryAt.Remove(stale);
+					}
+				}
 
 				designDocuments.ForEach(designDocument =>
 				{
-					designDocument.PromoteAction();
+					float retryAt;
+					if (_designPromotionRetryAt.TryGetValue(designDocument, out retryAt) && Time.time < retryAt)
+					{
+						return;
+					}
+
+					try
+					{
+						designDocument.PromoteAction();
+						_designPromotionRetryAt.Remove(designDocument);
+					}
+					catch (Exception ex)
+					{
+						ex.LogException();
+						_designPromotionRetryAt[designDocument] = Time.time + Constants.DESIGN_PROMOTION_RETRY_DELAY;
+					}
 				});
 			}
 

@@ -6,6 +6,12 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## Unreleased
+
+- Fixed Auto Design End repeatedly attempting to promote finished design
+  documents that still need a lead designer assigned, instead of skipping
+  them until a lead designer is set.
+
 ## [5.2.7] - 2026-09-10
 
 - Documentation restructured to the managed templates (README, CHANGELOG, and
