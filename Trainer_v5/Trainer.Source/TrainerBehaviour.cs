@@ -47,6 +47,7 @@ namespace Trainer_v5
 						}
 						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
+						_designPromotionRetryAt.Clear();
 						break;
 					case "MainScene":
 						Main.CreateUIButtons();
@@ -386,6 +387,7 @@ namespace Trainer_v5
 					catch (Exception ex)
 					{
 						ex.LogException();
+						UnityEngine.Debug.LogException(ex);
 						_designPromotionRetryAt[designDocument] = Time.time + Constants.DESIGN_PROMOTION_RETRY_DELAY;
 					}
 				});
