@@ -353,9 +353,11 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
+				// PromoteAction() itself blocks on this precondition (staying HasFinished forever
+				// without it), so it must be mirrored here to avoid calling it on ineligible designs.
 				var designDocuments = Settings.MyCompany.WorkItems
 									.OfType<DesignDocument>()
-									.Where(d => d.HasFinished)
+									.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
 									.ToList();
 
 				designDocuments.ForEach(designDocument =>
