@@ -11,7 +11,6 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
-		private static readonly Dictionary<DesignDocument, float> _designPromotionRetryAt = new Dictionary<DesignDocument, float>();
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
@@ -47,7 +46,6 @@ namespace Trainer_v5
 						}
 						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
-						_designPromotionRetryAt.Clear();
 						break;
 					case "MainScene":
 						Main.CreateUIButtons();
@@ -362,25 +360,9 @@ namespace Trainer_v5
 									.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
 									.ToList();
 
-				if (_designPromotionRetryAt.Count > 0)
-				{
-					var stillEligible = new HashSet<DesignDocument>(designDocuments);
-					foreach (var stale in _designPromotionRetryAt.Keys.Where(d => !stillEligible.Contains(d)).ToList())
-					{
-						_designPromotionRetryAt.Remove(stale);
-					}
-				}
-
 				designDocuments.ForEach(designDocument =>
 				{
-					float retryAt;
-					if (_designPromotionRetryAt.TryGetValue(designDocument, out retryAt) && Time.time < retryAt)
-					{
-						return;
-					}
-
 					designDocument.PromoteAction();
-					_designPromotionRetryAt.Remove(designDocument);
 				});
 			}
 
