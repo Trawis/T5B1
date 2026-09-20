@@ -149,7 +149,20 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating the
   `MaxMarketShare` and `AutoMaxMarketShare` features, which require a game build
   that exposes `SoftwareProduct.MarketShare`. `Helpers.GetGameVersion` maps these
-  symbols to a displayed version string.
+  symbols to a displayed version string, checking the most specific
+  point-version symbol first so that defining e.g. `SWINCBETA1_7` alone is
+  sufficient (it does not also require `SWINCBETA`).
+  `Debug` and `Release` both define `SWINCBETA;SWINCBETA1_7`, so the shipped
+  build and the CI build target the same, currently-maintained Beta 1.7
+  version and both include version-gated features like Max Market Share.
+  `SWINCBETA1_7` is kept as a separate, explicitly-named debug configuration
+  for developers who want to build against that sub-version specifically.
+  `SWINCBETA` and `SWINCRELEASE` (with no point-version symbol) are
+  channel-only builds that intentionally report `UNKNOWN` from
+  `Helpers.GetGameVersion`. Source branches also exist for
+  `SWINCBETA1_8`/`1_9`/`1_10`, but no solution configuration defines those
+  symbols: there is no vendored-library or release evidence that those
+  sub-versions are actually supported, so no build claims to target them.
 - **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
