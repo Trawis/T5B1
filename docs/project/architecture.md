@@ -131,6 +131,9 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Game API surface.** The mod is tightly coupled to the game's internal types.
   It links against the game assemblies shipped in `Trainer.Libraries/`
   (`Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll`) and Unity modules.
+  See [`docs/project/library-compatibility.md`](library-compatibility.md) for
+  each vendored assembly's deterministic identity (SHA-256) and the
+  procedure for updating them.
 - **UI.** All widgets are spawned through the game's `WindowManager`
   (`SpawnWindow`, `SpawnButton`, `SpawnCheckbox`, `SpawnComboBox`,
   `SpawnInputDialog`, etc.), so the trainer UI is native game UI.

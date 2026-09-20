@@ -1,0 +1,35 @@
+{
+  "$comment": "Deterministic identity for the vendored Software Inc / Unity reference assemblies. See docs/project/library-compatibility.md for the update procedure. Regenerate hashes with scripts/verify-library-compatibility.ps1 -UpdateManifest after replacing any file below.",
+  "files": [
+    {
+      "name": "Assembly-CSharp.dll",
+      "sizeBytes": 5389824,
+      "sha256": "5e2ee420b8689baf89d7b7b8397c712deac856c7cb8a092047e960c524807f4a"
+    },
+    {
+      "name": "Assembly-CSharp-firstpass.dll",
+      "sizeBytes": 454656,
+      "sha256": "a066f82eab18ecf63d9ee134285d4fc22c250cd943327a639a81da284ccef340"
+    },
+    {
+      "name": "UnityEngine.dll",
+      "sizeBytes": 72704,
+      "sha256": "4a436f325c99de49d030bdc7d9f12d019f716da384c55266360f4fac113a40d5"
+    },
+    {
+      "name": "UnityEngine.CoreModule.dll",
+      "sizeBytes": 851456,
+      "sha256": "3670754bf8aaacc634b50cbe565ea38712a244b643a1e2e214a019b737024dca"
+    },
+    {
+      "name": "UnityEngine.TextRenderingModule.dll",
+      "sizeBytes": 26624,
+      "sha256": "cb9fa16373a2031d1141801dcab5fb59c6c757b2a6eeef7d6c290f5464f9e4bf"
+    },
+    {
+      "name": "UnityEngine.UI.dll",
+      "sizeBytes": 216576,
+      "sha256": "57270e258e604ad27dc12e9e94eeeeb64573552170b9e7ef37c66bd82ab7b8c0"
+    }
+  ]
+}

@@ -94,6 +94,7 @@ full feature list.
 ## Documentation
 
 - [`docs/project/architecture.md`](docs/project/architecture.md) - architecture and technical overview
+- [`docs/project/library-compatibility.md`](docs/project/library-compatibility.md) - vendored game/Unity assembly identity and update procedure
 - [`FEATURES.md`](FEATURES.md) - feature list
 - [`CHANGELOG.md`](CHANGELOG.md) - version history
 
