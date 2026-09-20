@@ -8,9 +8,7 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
-- Hid the Max Market Share button and Auto Max Market Share toggle due to a
-  game compatibility issue; the implementation is kept, commented out, for
-  a future fix (#150).
+- Removed Max Market Share due to a game compatibility issue.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.

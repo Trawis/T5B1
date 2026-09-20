@@ -150,8 +150,8 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   target the current vendored Software Inc Beta 1 assemblies under
   `Trainer.Libraries/` directly, so code that depends on the game's API
   compiles unconditionally rather than behind a compatibility guard.
-  (Exception: Max Market Share is hidden from the UI and commented out in
-  `TrainerBehaviour.cs` due to a game compatibility issue; see #150.)
+  (Exception: Max Market Share, removed due to a game compatibility issue;
+  see #150.)
   `Helpers.GetGameVersion()` returns a constant
   `"Beta 1"` string: there is no reliable way to read an exact Software Inc
   build number from committed information, so it reports the current target
