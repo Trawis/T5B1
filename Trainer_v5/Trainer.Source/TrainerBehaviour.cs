@@ -11,6 +11,8 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
+		private bool _sceneEventsSubscribed;
+		private bool _timeEventsSubscribed;
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
@@ -29,7 +31,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			SceneManager.sceneLoaded += OnLevelFinishedLoading;
+			SubscribeToSceneEvents();
 		}
 
 		private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
@@ -69,18 +71,54 @@ namespace Trainer_v5
 			}
 		}
 
+		private void SubscribeToSceneEvents()
+		{
+			if (_sceneEventsSubscribed)
+			{
+				return;
+			}
+
+			SceneManager.sceneLoaded += OnLevelFinishedLoading;
+			_sceneEventsSubscribed = true;
+		}
+
+		private void UnsubscribeFromSceneEvents()
+		{
+			if (!_sceneEventsSubscribed)
+			{
+				return;
+			}
+
+			SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+			_sceneEventsSubscribed = false;
+		}
+
 		private void SubscribeToEvents()
 		{
+			if (_timeEventsSubscribed)
+			{
+				return;
+			}
+
 			TimeOfDay.OnHourPassed += OnHourPassed;
 			TimeOfDay.OnDayPassed += OnDayPassed;
 			TimeOfDay.OnMonthPassed += OnMonthPassed;
+
+			_timeEventsSubscribed = true;
 		}
 
 		private void UnsubscribeFromEvents()
 		{
+			if (!_timeEventsSubscribed)
+			{
+				return;
+			}
+
 			TimeOfDay.OnHourPassed -= OnHourPassed;
 			TimeOfDay.OnDayPassed -= OnDayPassed;
 			TimeOfDay.OnMonthPassed -= OnMonthPassed;
+
+			_timeEventsSubscribed = false;
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -1235,9 +1273,23 @@ namespace Trainer_v5
 
 		#region Overrides
 
-		public override void OnActivate() { /* Mandatory but not needed */ }
+		public override void OnActivate()
+		{
+			SubscribeToSceneEvents();
 
-		public override void OnDeactivate() { /* Mandatory but not needed */ }
+			// No fresh sceneLoaded event fires if we are reactivated while already
+			// in MainScene, so pick up the time-event subscriptions directly here.
+			if (SceneManager.GetActiveScene().name == "MainScene")
+			{
+				SubscribeToEvents();
+			}
+		}
+
+		public override void OnDeactivate()
+		{
+			UnsubscribeFromEvents();
+			UnsubscribeFromSceneEvents();
+		}
 
 		#endregion
 	}

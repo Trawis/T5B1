@@ -20,6 +20,11 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed trainer UI button teardown on returning to the main menu throwing
   when the trainer button and skill-change button did not share the same
   initialization state.
+- Fixed repeated scene loads (e.g. loading a different save while already in
+  game) stacking duplicate time-event subscriptions, which caused Lock Age to
+  advance employee birth dates more than once per in-game month passed.
+- Fixed the LeadSpec window showing stale toggle state from the previously
+  edited employee instead of refreshing to match the selected employee.
 - Fixed Product stock accepting a negative number and silently wrapping it
   into a stock of billions of copies; Days per month, Product price, Product
   stock, Active users, and Add Money now reject malformed numeric input with
