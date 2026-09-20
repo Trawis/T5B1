@@ -131,6 +131,8 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Game API surface.** The mod is tightly coupled to the game's internal types.
   It links against the game assemblies shipped in `Trainer.Libraries/`
   (`Assembly-CSharp.dll`, `Assembly-CSharp-firstpass.dll`) and Unity modules.
+  See "Game Library Refresh" below for the full reference list and the
+  procedure for updating them.
 - **UI.** All widgets are spawned through the game's `WindowManager`
   (`SpawnWindow`, `SpawnButton`, `SpawnCheckbox`, `SpawnComboBox`,
   `SpawnInputDialog`, etc.), so the trainer UI is native game UI.
@@ -167,6 +169,50 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   is packaged with the `Trainer.Localization` folder into
   `Trainer_v5_<version>.zip`. The player installs the DLL and localization into
   the game's mod directory.
+
+## Game Library Refresh
+
+`Trainer_v5.csproj` references exactly six vendored Software Inc / Unity
+assemblies under `Trainer_v5/Trainer.Libraries/` (`Private=False`; the game
+supplies them at runtime, they are not shipped with the mod):
+
+- `Assembly-CSharp.dll`
+- `Assembly-CSharp-firstpass.dll`
+- `UnityEngine.dll`
+- `UnityEngine.CoreModule.dll`
+- `UnityEngine.TextRenderingModule.dll`
+- `UnityEngine.UI.dll`
+
+If this list ever changes, update it to match `Trainer_v5.csproj`'s
+`<Reference>`/`<Content>` entries - they are the source of truth.
+
+**Supported target.** T5B1 supports the current vendored Software Inc Beta 1
+build only; there is no backward compatibility with older builds. The exact
+Software Inc build number cannot be established reliably from the committed
+assemblies: their embedded version resources (`FileVersion`/`ProductVersion`)
+are either `0.0.0.0` or blank, and none contain a recognizable Unity engine
+version string. The strongest claim that can actually be proven is: **the
+current Beta 1 assembly set committed under `Trainer_v5/Trainer.Libraries/`
+in this repository**. Git already versions these binaries, so no separate
+hash manifest or validation script is maintained for them.
+
+**Refresh procedure**, when Software Inc updates:
+
+1. Update Software Inc to the current supported Beta 1 build.
+2. Obtain the required assemblies from that installation (the game's own
+   managed-assembly folder).
+3. Replace the corresponding DLLs under `Trainer_v5/Trainer.Libraries/`,
+   matching the six filenames above exactly.
+4. Review the binary file replacements in Git (e.g. `git status`) before
+   committing, to confirm only the intended files changed.
+5. Build `Debug`.
+6. Build `Release`.
+7. Resolve any source/API incompatibilities the new assemblies introduce.
+8. Perform focused in-game smoke testing of the affected features.
+9. Commit the DLL refresh together with whatever compatibility fixes step 7
+   required.
+10. Prepare release notes/version changes later, on the normal
+    `release/<version>` branch - not as part of the refresh commit.
 
 ## Cross-Cutting Concerns
 
@@ -225,8 +271,9 @@ Record significant future changes there and summarize the resulting state here.
   broken (e.g. `RemoveSoft` is disabled, `ReduceBoxPrice` is commented out,
   `//TODO` notes on maintenance and print pricing). `HREmployees` exists but is
   not currently wired to any UI button.
-- Heavy coupling to internal game types means game updates can break the build;
-  compatibility is maintained manually through preprocessor symbols.
+- Heavy coupling to internal game types means game updates can break the
+  build; compatibility is maintained by refreshing the vendored assemblies
+  under `Trainer.Libraries/` (see "Game Library Refresh" below).
 - No automated tests exist; regressions are caught only by in-game testing.
 
 ## Detailed Documentation
