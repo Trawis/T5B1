@@ -571,6 +571,17 @@ namespace Trainer_v5
 			}
 			 * */
 
+			// AutoMaxMarketShare is disabled: it called SoftwareProduct.MarketShare,
+			// a member that does not exist on the currently vendored Assembly-CSharp.dll
+			// (confirmed by inspecting the assembly's metadata directly, and independently
+			// confirmed by an earlier fix - see the commit that unguarded
+			// DigitalDistributionMonopol/AutoAcceptHostingDeals but deliberately left this
+			// one guarded). Re-enable once a verified mechanism exists; tracked in #150.
+			//if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			//{
+			//	Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			//}
+
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
 				var serverGroups = Settings.GetAllServerGroups().ToList();
@@ -1209,6 +1220,19 @@ namespace Trainer_v5
 
 			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
 		}
+
+		#endregion
+
+		#region Max Market Share
+
+		// Disabled: SoftwareProduct.MarketShare does not exist on the currently
+		// vendored Assembly-CSharp.dll. Not wired up to any UI button while
+		// disabled. Re-enable once a verified mechanism exists; tracked in #150.
+		//public static void MaxMarketShare()
+		//{
+		//	Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+		//	HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		//}
 
 		#endregion
 
