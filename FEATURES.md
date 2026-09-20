@@ -24,7 +24,6 @@ Button features are applied once when clicked.
 | Set Product Stock      | Product Name, Amount   | Sets the product's physical stock                           |
 | Set Active Users       | Product Name, Amount   | Sets the product's active users                             |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
-| Max Market Share       | None                   | Sets market share to 100% for all your products             |
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
@@ -65,7 +64,6 @@ Toggle features stay active for as long as they are enabled.
 | Auto Research Start         | Automatically starts research for available tech levels      |
 | Digital Distribution Monopol| Shuts down rival digital distribution platforms              |
 | Disable Fire Inspection     | Removes fire inspectors and passes inspections               |
-| Auto Max Market Share       | Keeps all your products at 100% market share                 |
 | Full Environment            | Rooms have maximum furniture environment                     |
 | Full Sun Light              | Rooms are fully lit                                          |
 | Lock Temperature To 21      | Room temperatures are locked to 21 C                         |

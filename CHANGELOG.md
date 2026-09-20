@@ -8,6 +8,11 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
+- Removed the Max Market Share button and Auto Max Market Share toggle: both
+  called `SoftwareProduct.MarketShare`, a member that does not exist on the
+  currently vendored `Assembly-CSharp.dll` (confirmed by inspecting the
+  assembly's metadata directly), which broke every CI build since the
+  `#if SWINCBETA1_7 || ...` compatibility guard around them was removed.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.

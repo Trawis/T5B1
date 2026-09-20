@@ -73,7 +73,6 @@ namespace Trainer_v5
 			{"DisableForcePause", false},
 			{"DisableForceFreeze", false},
 			{"AutoAcceptHostingDeals", false},
-			{"AutoMaxMarketShare", false},
 			{"Experimental", false},
 		};
 
