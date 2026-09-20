@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Trainer.Source.Window
 {
-	public class EmployeeLeadSpecChangeWindow : MonoBehaviour
+	public class EmployeeLeadSpecChangeWindow
 	{
 		public static EmployeeLeadSpecChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeLeadSpecChangeWindow> _instance = new Lazy<EmployeeLeadSpecChangeWindow>(() => new EmployeeLeadSpecChangeWindow());

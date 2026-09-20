@@ -8,7 +8,7 @@ using Utils = Trainer_v5.Utilities;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeDemandChangeWindow : MonoBehaviour
+	public class EmployeeDemandChangeWindow
 	{
 		public static EmployeeDemandChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
