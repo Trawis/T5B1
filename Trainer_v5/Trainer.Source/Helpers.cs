@@ -170,24 +170,10 @@ namespace Trainer_v5
 
 		#endregion
 
-		public static string GetGameVersion()
-		{
-			// Check the most specific point-version symbol first: defining e.g.
-			// SWINCBETA1_7 alone (without SWINCBETA) must still report "1.7"
-			// rather than falling through to the "no version pinned" default.
-#if SWINCBETA1_10
-			return "1.10";
-#elif SWINCBETA1_9
-			return "1.9";
-#elif SWINCBETA1_8
-			return "1.8";
-#elif SWINCBETA1_7
-			return "1.7";
-#elif !SWINCBETA && !SWINCRELEASE
-			return "1.6";
-#else
-			return "UNKNOWN";
-#endif
-		}
+		// T5B1 targets whichever Software Inc Beta 1 build the assemblies under
+		// Trainer.Libraries/ were vendored from; there is no reliable way to
+		// read an exact build number from committed information, so this
+		// reports the current target generically instead of guessing one.
+		public static string GetGameVersion() => "Beta 1";
 	}
 }

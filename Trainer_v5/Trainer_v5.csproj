@@ -9,50 +9,23 @@
 	</PropertyGroup>
 
 	<!--
-		Game-version configuration matrix (see Helpers.GetGameVersion and
-		docs/project/architecture.md for the full rationale):
-
-		- Debug / Release: the actively maintained Software Inc Beta 1 target
-		  (currently 1.7), so the plain configurations that CI and the
-		  release/nightly workflows build always include the trainer's full
-		  current feature set (e.g. Max Market Share) instead of silently
-		  compiling it out.
-		- SWINCBETA1_7: explicit debug build pinned to Beta 1.7, kept for
-		  developers who want to build against that specific sub-version by
-		  name.
-		- SWINCBETA / SWINCRELEASE (no sub-version symbol): generic
-		  channel-only builds with no specific point version pinned; reporting
-		  "UNKNOWN" from Helpers.GetGameVersion for these is intentional.
+		T5B1 targets the current vendored Software Inc Beta 1 assemblies under
+		Trainer.Libraries/ directly. Debug and Release are the only supported
+		configurations; game compatibility is updated by refreshing those
+		assemblies, not by adding version-specific preprocessor symbols. See
+		docs/project/architecture.md.
 	-->
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>full</DebugType>
 		<Optimize>false</Optimize>
-		<DefineConstants>DEBUG;TRACE;SWINCBETA;SWINCBETA1_7</DefineConstants>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<DebugType>pdbonly</DebugType>
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;SWINCBETA;SWINCBETA1_7</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_7|AnyCPU'">
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE;SWINCBETA;SWINCBETA1_7</DefineConstants>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA|AnyCPU'">
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE;SWINCBETA</DefineConstants>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCRELEASE|AnyCPU'">
-		<DebugType>pdbonly</DebugType>
-		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;SWINCRELEASE</DefineConstants>
+		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
