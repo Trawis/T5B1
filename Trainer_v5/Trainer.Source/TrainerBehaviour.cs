@@ -573,7 +573,8 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
 			{
-				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+				// Disabled, see #150
+				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
@@ -1221,8 +1222,9 @@ namespace Trainer_v5
 
 		public static void MaxMarketShare()
 		{
-			Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
-			HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			// Disabled, see #150
+			//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			//HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		#endregion
