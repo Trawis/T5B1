@@ -192,15 +192,18 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 
 ## Development and Validation
 
-- **Build.** `dotnet build "Trainer v5 - Beta 1.sln"` (CI builds the `Debug`
-  configuration on `windows-latest` with .NET 8 SDK; the toolchain still targets
-  `net46`).
+- **Build.** `dotnet build "Trainer v5 - Beta 1.sln"` (CI builds every
+  intentionally supported configuration - `Debug`, `Release`, `SWINCBETA`,
+  and `SWINCRELEASE` - as a matrix job on `windows-latest` with .NET 8 SDK;
+  the toolchain still targets `net46`). `SWINCBETA1_7` is not built
+  separately since it defines the same symbols as `Debug`.
 - **Local checks.** `dotnet format --verify-no-changes` for formatting;
   `dotnet build` for compilation. There is no automated test project, so
   `dotnet test` provides no coverage; behavior is validated by loading the mod
   in the game.
 - **CI/CD.**
-  - *CI* (`.github/workflows/ci.yml`): builds on push/PR to `develop`.
+  - *CI* (`.github/workflows/ci.yml`): builds each supported configuration on
+    push/PR to `develop`; any configuration's compile failure fails the job.
   - *Nightly* (`.github/workflows/nightly.yml`): daily/manual; if `develop` had
     commits in the last 24h, builds a Release artifact and publishes a
     `v<version>-rc<run-number>` prerelease.
