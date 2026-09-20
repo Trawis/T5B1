@@ -47,6 +47,8 @@ The solution defines exactly two configurations, `Debug` and `Release`, and
 both target the current vendored Software Inc Beta 1 assemblies under
 `Trainer_v5/Trainer.Libraries/` directly - there are no version-specific
 preprocessor symbols or additional configurations to choose between.
+`Release` is the only configuration built by CI/CD; `Debug` is for local
+development and must be built locally.
 
 Old game-version-specific configurations (e.g. per-sub-version `SWINC*`
 configurations) are not maintained. T5B1 does not preserve backward
