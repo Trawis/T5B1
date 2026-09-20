@@ -11,6 +11,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.
+- Fixed generated UI control names using the literal suffix `_T` instead of
+  the actual control type name.
 - Fixed the Trainer Settings window crashing on open when its close button
   is missing or duplicated; such cases are now logged instead.
 
