@@ -162,7 +162,7 @@ namespace Trainer_v5
 				return null;
 			}
 
-			if (typeof(T) == typeof(float))
+			if ((object)val is float)
 			{
 				var f = (float)(object)val;
 				if (float.IsNaN(f) || float.IsInfinity(f))
@@ -189,7 +189,7 @@ namespace Trainer_v5
 				return null;
 			}
 
-			if (typeof(T) == typeof(float))
+			if ((object)val is float)
 			{
 				var f = (float)(object)val;
 				if (float.IsNaN(f) || float.IsInfinity(f))

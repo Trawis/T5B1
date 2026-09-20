@@ -11,6 +11,10 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Replaced the reflection-based generic type-name lookup used to build
   fallback UI control names with an explicit suffix passed by each caller,
   removing a runtime reflection lookup from every UI control creation.
+- Replaced exact-type checks that read a `System.Type` (`GetType() ==
+  typeof(...)`, `typeof(T) == typeof(float)`) with `is` type tests so the
+  compiled trainer no longer touches any `System.Reflection.MemberInfo`
+  member, which the game's mod loader security check rejects.
 - Removed Max Market Share due to a game compatibility issue.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping

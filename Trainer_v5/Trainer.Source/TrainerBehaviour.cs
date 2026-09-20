@@ -1155,7 +1155,7 @@ namespace Trainer_v5
 		public static void FixBugsAction(string input)
 		{
 			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
+				.Where(item => item is SoftwareAlpha).FirstOrDefault(item =>
 					(item as SoftwareAlpha).Name == input && (item as SoftwareAlpha).InBeta);
 
 			if (WorkItem == null)
@@ -1178,7 +1178,7 @@ namespace Trainer_v5
 		public static void MaxFollowersAction(string input)
 		{
 			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
+				.Where(item => item is SoftwareAlpha).FirstOrDefault(item =>
 					(item as SoftwareAlpha).Name == input && !(item as SoftwareAlpha).Paused);
 
 			if (WorkItem == null)
