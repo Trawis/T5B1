@@ -53,6 +53,72 @@ namespace Trainer_v5
 				});
 		}
 
+		public static void RequestInt(
+			string prompt,
+			string title,
+			string defaultValue,
+			Action<int> onFinish,
+			int min,
+			int max)
+		{
+			WindowManager.SpawnInputDialog(prompt, title,
+				defaultValue,
+				input =>
+				{
+					var val = TryParseAndValidate(input, int.TryParse, min, max);
+					if (val.HasValue)
+						onFinish.Invoke(val.Value);
+				});
+		}
+
+		public static void RequestInt(
+			string prompt,
+			string title,
+			string defaultValue,
+			Action<int> onFinish)
+		{
+			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
+				input =>
+				{
+					var val = TryParseAndValidate<int>(input, int.TryParse);
+					if (val != null)
+						onFinish.Invoke(val.Value);
+				});
+		}
+
+		public static void RequestUInt(
+			string prompt,
+			string title,
+			string defaultValue,
+			Action<uint> onFinish,
+			uint min,
+			uint max)
+		{
+			WindowManager.SpawnInputDialog(prompt, title,
+				defaultValue,
+				input =>
+				{
+					var val = TryParseAndValidate(input, uint.TryParse, min, max);
+					if (val.HasValue)
+						onFinish.Invoke(val.Value);
+				});
+		}
+
+		public static void RequestUInt(
+			string prompt,
+			string title,
+			string defaultValue,
+			Action<uint> onFinish)
+		{
+			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
+				input =>
+				{
+					var val = TryParseAndValidate<uint>(input, uint.TryParse);
+					if (val != null)
+						onFinish.Invoke(val.Value);
+				});
+		}
+
 		private delegate bool TryParse<T>(string s, out T result) where T : struct;
 
 		//private static T? TryParseAndValidate<T>(
@@ -96,6 +162,16 @@ namespace Trainer_v5
 				return null;
 			}
 
+			if (typeof(T) == typeof(float))
+			{
+				var f = (float)(object)val;
+				if (float.IsNaN(f) || float.IsInfinity(f))
+				{
+					Notification.ShowError("Invalid input!");
+					return null;
+				}
+			}
+
 			return val;
 		}
 
@@ -111,6 +187,16 @@ namespace Trainer_v5
 			{
 				Notification.ShowError("Invalid input!");
 				return null;
+			}
+
+			if (typeof(T) == typeof(float))
+			{
+				var f = (float)(object)val;
+				if (float.IsNaN(f) || float.IsInfinity(f))
+				{
+					Notification.ShowError("Invalid input!");
+					return null;
+				}
 			}
 
 			if (val.CompareTo(min) < 0)

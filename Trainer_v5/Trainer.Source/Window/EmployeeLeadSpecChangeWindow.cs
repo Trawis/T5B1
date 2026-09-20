@@ -17,6 +17,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private Dictionary<string, SoftwareType> _softwareTypes;
 		private Dictionary<string, Toggle> _specToggles;
 		private Actor _actor;
+		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -41,6 +42,15 @@ namespace Trainer_v5.Trainer.Source.Window
 
 			var employee = _actor?.employee;
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {employee?.Name ?? "Nobody"}";
+
+			_isRefreshing = true;
+			foreach (var pair in _specToggles)
+			{
+				float value;
+				var isOn = employee != null && employee.LeadSpecializationFix.TryGetValue(pair.Key, out value) && value > 0f;
+				pair.Value.isOn = isOn;
+			}
+			_isRefreshing = false;
 		}
 
 		private void CreateWindow()
@@ -98,6 +108,9 @@ namespace Trainer_v5.Trainer.Source.Window
 
 		private void OnToggle(string key, bool isOn)
 		{
+			if (_isRefreshing)
+				return;
+
 			_specToggles[key].isOn = isOn;
 		}
 
