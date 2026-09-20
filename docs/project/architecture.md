@@ -192,10 +192,8 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Build.** `dotnet build "Trainer v5 - Beta 1.sln"` with `--configuration
   Debug` or `--configuration Release` (the only two supported
   configurations) on `windows-latest` with .NET 8 SDK; the toolchain still
-  targets `net46`. `.github/workflows/ci.yml` still lists the retired
-  `SWINCBETA`/`SWINCRELEASE` configurations as of this writing; those matrix
-  entries will fail until the workflow is updated to build `Release`
-  (tracked separately).
+  targets `net46`. CI/CD only builds and supports `Release`; `Debug` is for
+  local development and must be built locally.
 - **Local checks.** `dotnet format --verify-no-changes` for formatting;
   `dotnet build` for compilation. There is no automated test project, so
   `dotnet test` provides no coverage; behavior is validated by loading the mod

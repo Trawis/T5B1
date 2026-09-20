@@ -10,21 +10,8 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.configuration }})
+    name: Build (Release)
     runs-on: windows-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        # Every configuration the repo intentionally supports, per the
-        # compatibility matrix established in #119. SWINCBETA1_7 is not
-        # listed separately: it defines the same symbols as Debug
-        # (DEBUG;TRACE;SWINCBETA;SWINCBETA1_7) and would be a duplicate build.
-        configuration:
-          - Debug
-          - Release
-          - SWINCBETA
-          - SWINCRELEASE
 
     steps:
       - name: Checkout
@@ -36,4 +23,4 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build
-        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration ${{ matrix.configuration }} --no-incremental
+        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental
