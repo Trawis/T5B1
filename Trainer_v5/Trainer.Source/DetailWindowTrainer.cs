@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
 using UnityEngine;
@@ -12,6 +13,13 @@ namespace Trainer_v5
 		// transitions, so a plain "installed once" flag would permanently skip
 		// re-installation on every DetailWindow after the first one.
 		private static DetailWindow _installedOn;
+
+		// Employee.Creativity is a public but read-only (initonly) field, so the C# compiler
+		// rejects a direct assignment from outside Employee's constructor. Reflection is not
+		// bound by that compile-time restriction, so it is the only way to change it in place
+		// without replacing the Employee object.
+		private static readonly FieldInfo CreativityField =
+			typeof(Employee).GetField("Creativity", BindingFlags.Public | BindingFlags.Instance);
 
 		public static void Reset()
 		{
@@ -59,11 +67,11 @@ namespace Trainer_v5
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
-					// Creativity is a plain public field on Employee, so it can be updated
-					// directly on the existing object instead of replacing it. This keeps
-					// the object identity intact for any other references the game holds
-					// (e.g. actor.employee) and preserves every other field automatically.
-					employee.Creativity = val;
+					// Set the read-only field via reflection on the existing object instead
+					// of replacing it. This keeps the object identity intact for any other
+					// references the game holds (e.g. actor.employee) and preserves every
+					// other field automatically.
+					CreativityField.SetValue(employee, val);
 					employee.CreativityKnown = 1f;
 				},
 				min: 0,
