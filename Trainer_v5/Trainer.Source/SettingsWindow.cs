@@ -39,9 +39,22 @@ namespace Trainer_v5
 
 			if (Window.name == "TrainerSettings")
 			{
-				Window.GetComponentsInChildren<Button>()
-				  .SingleOrDefault(x => x.name == "CloseButton")
-				  .onClick.AddListener(() => Shown = false);
+				var closeButtons = Window.GetComponentsInChildren<Button>()
+				  .Where(x => x.name == "CloseButton")
+				  .ToList();
+
+				if (closeButtons.Count == 1)
+				{
+					closeButtons[0].onClick.AddListener(() => Shown = false);
+				}
+				else if (closeButtons.Count == 0)
+				{
+					"SettingsWindow: no CloseButton found on the spawned window; close button listener was not attached.".Log();
+				}
+				else
+				{
+					$"SettingsWindow: expected exactly one CloseButton but found {closeButtons.Count}; close button listener was not attached.".Log();
+				}
 			}
 
 			bool experimental = Helpers.GetProperty(settings, "Experimental") || Helpers.IsDebug;
