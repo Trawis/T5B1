@@ -14,6 +14,11 @@ namespace Trainer_v5
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
+		// Tracks the last-seen state of toggles whose upkeep runs on OnHourPassed instead of
+		// every frame, so a toggle that just got switched on can be applied immediately
+		// instead of waiting for the next hour tick.
+		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
+
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
@@ -123,7 +128,102 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
+			{
+				ApplyHostingDealTiming();
+			}
 
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+			{
+				ApplyAutoEndDesign();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
+			{
+				ApplyAutoEndResearch();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
+			{
+				ApplyAutoEndPatent();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
+			{
+				Settings.StaffSalaryDue = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoServerCost"))
+			{
+				Settings.ServerCost = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
+			{
+				Settings.ElectricityBill = 0f;
+				Settings.Waterbill = 0f;
+				Settings.Gasbill = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
+			{
+				ApplyDisableFurnitureStealing();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
+			{
+				ApplyAutoResearchStart();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
+			{
+				ApplyDigitalDistributionMonopol();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			{
+				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
+			{
+				ApplyAutoAcceptHostingDeals();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
+			{
+				ApplyCleanRooms();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
+			{
+				ApplyNoSickness();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
+			{
+				ApplyNoMaintenance();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
+			{
+				ApplyFullSatisfaction();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
+			{
+				ApplyNoVacation();
+			}
+		}
+
+		private bool ToggleJustEnabled(string settingKey)
+		{
+			bool isEnabled = Helpers.GetProperty(TrainerSettings, settingKey);
+			bool wasEnabled;
+			_reducedCadenceToggleState.TryGetValue(settingKey, out wasEnabled);
+			_reducedCadenceToggleState[settingKey] = isEnabled;
+
+			return isEnabled && !wasEnabled;
 		}
 
 		private void OnDayPassed(object obj, EventArgs args)
@@ -167,6 +267,101 @@ namespace Trainer_v5
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 			}
 
+			// These toggles are otherwise only enforced on OnHourPassed (or, for
+			// NoEducationCost, only once). Apply them the moment they're switched on so
+			// enabling mid-hour doesn't wait for the next hour tick.
+			if (ToggleJustEnabled("CleanRooms"))
+			{
+				ApplyCleanRooms();
+			}
+
+			if (ToggleJustEnabled("NoSickness"))
+			{
+				ApplyNoSickness();
+			}
+
+			if (ToggleJustEnabled("NoMaintenance"))
+			{
+				ApplyNoMaintenance();
+			}
+
+			if (ToggleJustEnabled("FullSatisfaction"))
+			{
+				ApplyFullSatisfaction();
+			}
+
+			if (ToggleJustEnabled("NoVacation"))
+			{
+				ApplyNoVacation();
+			}
+
+			if (ToggleJustEnabled("MoreHostingDeals"))
+			{
+				ApplyHostingDealTiming();
+			}
+
+			if (ToggleJustEnabled("AutoEndDesign"))
+			{
+				ApplyAutoEndDesign();
+			}
+
+			if (ToggleJustEnabled("AutoEndResearch"))
+			{
+				ApplyAutoEndResearch();
+			}
+
+			if (ToggleJustEnabled("AutoEndPatent"))
+			{
+				ApplyAutoEndPatent();
+			}
+
+			if (ToggleJustEnabled("FreeStaff"))
+			{
+				Settings.StaffSalaryDue = 0f;
+			}
+
+			if (ToggleJustEnabled("NoServerCost"))
+			{
+				Settings.ServerCost = 0f;
+			}
+
+			if (ToggleJustEnabled("NoWaterElectricity"))
+			{
+				Settings.ElectricityBill = 0f;
+				Settings.Waterbill = 0f;
+				Settings.Gasbill = 0f;
+			}
+
+			if (ToggleJustEnabled("DisableFurnitureStealing"))
+			{
+				ApplyDisableFurnitureStealing();
+			}
+
+			if (ToggleJustEnabled("NoEducationCost"))
+			{
+				EducationWindow.EdCost = new[] { 0f, 0f, 0f };
+			}
+
+			if (ToggleJustEnabled("AutoResearchStart"))
+			{
+				ApplyAutoResearchStart();
+			}
+
+			if (ToggleJustEnabled("DigitalDistributionMonopol"))
+			{
+				ApplyDigitalDistributionMonopol();
+			}
+
+			if (ToggleJustEnabled("AutoMaxMarketShare"))
+			{
+				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
+			if (ToggleJustEnabled("AutoAcceptHostingDeals"))
+			{
+				ApplyAutoAcceptHostingDeals();
+			}
+
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
@@ -203,48 +398,11 @@ namespace Trainer_v5
 				{
 					furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
 				}
-
-				//TODO: else 0.25
-				if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
-				{
-					switch (furniture.Type)
-					{
-						case "Chair":
-							if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
-							{
-								furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
-							}
-							goto case "Ventilation";
-						case "CCTV":
-						case "Computer":
-						case "Lamp":
-						case "Server":
-						case "Product Printer":
-						case "Radiator":
-						case "Sink":
-						case "Toilet":
-						case "Ventilation":
-							break;
-						default:
-							break;
-					}
-
-					if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
-					{
-						furniture.upg.RepairMe();
-					}
-				}
 			}
 
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
-
-				if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
-				{
-					room.ClearDirt();
-					room.Smell = 0f;
-				}
 
 				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
 				{
@@ -260,32 +418,12 @@ namespace Trainer_v5
 				{
 					room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 				}
-
-				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
-				{
-					room.GermCount = 0f;
-				}
 			}
 
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
 				Employee employee = actor.employee;
-
-				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
-				{
-					TimeOfDay.Instance.Sick.Clear();
-
-					if (actor.SpecialState == Actor.HomeState.Sick)
-					{
-						actor.SpecialState = Actor.HomeState.Default;
-						actor.WasSick = true;
-					}
-
-					actor.GermAdd = 0f;
-					actor.GermCount = 0f;
-					actor.SickDays = 0;
-				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
 				{
@@ -300,21 +438,6 @@ namespace Trainer_v5
 				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "EfficiencyStore") != null)
 				{
 					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat();
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
-				{
-					employee.JobSatisfaction = 2f;
-					employee.ActiveComplaint = false;
-					foreach (var thought in employee.Thoughts.Values.ToList())
-					{
-						if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-						{
-							employee.Thoughts.Remove(thought.Thought);
-						}
-					}
-
-					employee.SetMood("LoveWork", actor, 1f);
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoNeeds"))
@@ -344,13 +467,6 @@ namespace Trainer_v5
 					actor.Noisiness = 0;
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
-				{
-					actor.VacationMonth = SDateTime.NextMonth(24);
-					if (actor.SpecialState == Actor.HomeState.Vacation)
-						actor.SpecialState = Actor.HomeState.Default;
-				}
-
 				if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
 				{
 					employee.LastInpirationUse = new SDateTime(0);
@@ -364,29 +480,6 @@ namespace Trainer_v5
 				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
-			{
-				int inGameHour = TimeOfDay.Instance.Hour;
-
-				if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
-				{
-					PushDeal();
-				}
-				else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
-				{
-					Helpers.DealIsPushed = false;
-				}
-
-				if (!Helpers.RewardIsGained && inGameHour == 12)
-				{
-					PushReward();
-				}
-				else if (inGameHour != 12 && Helpers.RewardIsGained)
-				{
-					Helpers.RewardIsGained = false;
-				}
-			}
-
 			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
 			{
 				foreach (var burglar in Settings.sActorManager.Others["Burglars"])
@@ -394,56 +487,6 @@ namespace Trainer_v5
 					burglar.Despawned = true;
 					Settings.sActorManager.RemoveFromAwaiting(burglar);
 				}
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
-			{
-				// PromoteAction() itself blocks on this precondition (staying HasFinished forever
-				// without it), so it must be mirrored here to avoid calling it on ineligible designs.
-				var designDocuments = Settings.MyCompany.WorkItems
-									.OfType<DesignDocument>()
-									.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
-									.ToList();
-
-				designDocuments.ForEach(designDocument =>
-				{
-					designDocument.PromoteAction();
-				});
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
-			{
-				var researchWorks = Settings.MyCompany.WorkItems
-									.OfType<ResearchWork>()
-									.Where(rw => rw.Finished)
-									.ToList();
-
-				researchWorks.ForEach(researchWork =>
-				{
-					GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
-					TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
-					if (tech != null)
-					{
-						LegalWork legalWork = new LegalWork(tech);
-						GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
-						GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
-					}
-					researchWork.Kill(false);
-				});
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
-			{
-				var legalWorks = Settings.MyCompany.WorkItems
-								   .OfType<LegalWork>()
-								   .Where(lw => lw.CurrentStage() == "Finished" &&
-										lw.Type == LegalWork.WorkType.Patent)
-								   .ToList();
-
-				legalWorks.ForEach(legalWork =>
-				{
-					legalWork.PatentNow();
-				});
 			}
 
 			//TODO: add printspeed and printprice when it's disabled (else)
@@ -455,33 +498,6 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
 			{
 				Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoEducationCost"))
-			{
-				EducationWindow.EdCost = new[] { 0f, 0f, 0f };
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
-			{
-				Settings.StaffSalaryDue = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoServerCost"))
-			{
-				Settings.ServerCost = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
-			{
-				Settings.ElectricityBill = 0f;
-				Settings.Waterbill = 0f;
-				Settings.Gasbill = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
-			{
-				Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
@@ -506,54 +522,6 @@ namespace Trainer_v5
 				GameSettings.FreezeGame = false;
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
-			{
-				var activeTechLevels = MarketSimulation.Active.TechLevels;
-				var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
-				var currentYear = TimeOfDay.Instance.Year;
-
-				if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
-				{
-					foreach (var activeTechLevel in activeTechLevels)
-					{
-						if (!Settings.IsResearching(activeTechLevel.Key))
-						{
-							int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
-							if (latestResearchYear < currentYear)
-							{
-								var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
-								researchWork.AddDevTeams(defaultResearchTeams);
-								Settings.MyCompany.AddWorkItem(researchWork);
-							}
-						}
-					}
-				}
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
-			{
-				foreach (var company in Settings.simulation.Companies.Values.ToList())
-				{
-					if (company.Bankrupt && company.Distribution != null)
-					{
-						MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
-						HUD.Instance.digitalDistributionWindow.PlatformList.Items.Remove(company.Distribution);
-					}
-
-					if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
-						continue;
-
-					company.Distribution.SetCut(1f);
-					company.Distribution.SetAutoAcceptClients(false);
-					company.Distribution.AvailableBandwidth = 0f;
-					company.Distribution.ItemSales = 0f;
-					company.Distribution.ActualItemSales = 0f;
-					company.Distribution.LastLoad = 0f;
-					company.Distribution.MarketShare = 0f;
-					MarketSimulation.Active.ClosePlatform(company.Distribution);
-				}
-			}
-
 			/*
 			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
 			{
@@ -571,37 +539,6 @@ namespace Trainer_v5
 			}
 			 * */
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
-			{
-				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
-			{
-				var serverGroups = Settings.GetAllServerGroups().ToList();
-				var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
-
-				if (serverGroups.Count > 0 && serverDeals.Count > 0)
-				{
-					ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
-					foreach (var serverGroup in serverGroups)
-					{
-						if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
-							mostPowerfulServerGroup = serverGroup;
-					}
-
-					var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
-					foreach (var serverDeal in serverDeals)
-					{
-						if (!activeServerDeals.Contains(serverDeal))
-						{
-							HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
-							Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
-						}
-					}
-				}
-			}
-
 			GameSettings.MaxFloor = Constants.MAX_FLOOR;
 			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
 			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
@@ -609,6 +546,263 @@ namespace Trainer_v5
 			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
 			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
 			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
+		}
+
+		// The following Apply* methods hold logic that used to run every frame inside
+		// Update(). They now run on OnHourPassed (see above) and once immediately when
+		// their toggle is switched on (via ToggleJustEnabled), instead of every frame.
+
+		private static void ApplyCleanRooms()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				room.ClearDirt();
+				room.Smell = 0f;
+			}
+		}
+
+		private static void ApplyNoSickness()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Settings.sRoomManager.Rooms[i].GermCount = 0f;
+			}
+
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+
+				TimeOfDay.Instance.Sick.Clear();
+
+				if (actor.SpecialState == Actor.HomeState.Sick)
+				{
+					actor.SpecialState = Actor.HomeState.Default;
+					actor.WasSick = true;
+				}
+
+				actor.GermAdd = 0f;
+				actor.GermCount = 0f;
+				actor.SickDays = 0;
+			}
+		}
+
+		private static void ApplyNoMaintenance()
+		{
+			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			{
+				switch (furniture.Type)
+				{
+					case "Chair":
+						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
+						{
+							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
+						}
+						goto case "Ventilation";
+					case "CCTV":
+					case "Computer":
+					case "Lamp":
+					case "Server":
+					case "Product Printer":
+					case "Radiator":
+					case "Sink":
+					case "Toilet":
+					case "Ventilation":
+						break;
+					default:
+						break;
+				}
+
+				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
+				{
+					furniture.upg.RepairMe();
+				}
+			}
+		}
+
+		private static void ApplyFullSatisfaction()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				Employee employee = actor.employee;
+
+				employee.JobSatisfaction = 2f;
+				employee.ActiveComplaint = false;
+				foreach (var thought in employee.Thoughts.Values.ToList())
+				{
+					if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
+					{
+						employee.Thoughts.Remove(thought.Thought);
+					}
+				}
+
+				employee.SetMood("LoveWork", actor, 1f);
+			}
+		}
+
+		private static void ApplyNoVacation()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+
+				actor.VacationMonth = SDateTime.NextMonth(24);
+				if (actor.SpecialState == Actor.HomeState.Vacation)
+					actor.SpecialState = Actor.HomeState.Default;
+			}
+		}
+
+		private static void ApplyHostingDealTiming()
+		{
+			int inGameHour = TimeOfDay.Instance.Hour;
+
+			if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
+			{
+				PushDeal();
+			}
+			else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
+			{
+				Helpers.DealIsPushed = false;
+			}
+
+			if (!Helpers.RewardIsGained && inGameHour == 12)
+			{
+				PushReward();
+			}
+			else if (inGameHour != 12 && Helpers.RewardIsGained)
+			{
+				Helpers.RewardIsGained = false;
+			}
+		}
+
+		private static void ApplyAutoEndDesign()
+		{
+			// PromoteAction() itself blocks on this precondition (staying HasFinished forever
+			// without it), so it must be mirrored here to avoid calling it on ineligible designs.
+			var designDocuments = Settings.MyCompany.WorkItems
+								.OfType<DesignDocument>()
+								.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
+								.ToList();
+
+			designDocuments.ForEach(designDocument =>
+			{
+				designDocument.PromoteAction();
+			});
+		}
+
+		private static void ApplyAutoEndResearch()
+		{
+			var researchWorks = Settings.MyCompany.WorkItems
+								.OfType<ResearchWork>()
+								.Where(rw => rw.Finished)
+								.ToList();
+
+			researchWorks.ForEach(researchWork =>
+			{
+				GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
+				TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
+				if (tech != null)
+				{
+					LegalWork legalWork = new LegalWork(tech);
+					GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
+					GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+				}
+				researchWork.Kill(false);
+			});
+		}
+
+		private static void ApplyAutoEndPatent()
+		{
+			var legalWorks = Settings.MyCompany.WorkItems
+							   .OfType<LegalWork>()
+							   .Where(lw => lw.CurrentStage() == "Finished" &&
+									lw.Type == LegalWork.WorkType.Patent)
+							   .ToList();
+
+			legalWorks.ForEach(legalWork =>
+			{
+				legalWork.PatentNow();
+			});
+		}
+
+		private static void ApplyDisableFurnitureStealing()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
+		}
+
+		private static void ApplyAutoResearchStart()
+		{
+			var activeTechLevels = MarketSimulation.Active.TechLevels;
+			var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
+			var currentYear = TimeOfDay.Instance.Year;
+
+			if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
+			{
+				foreach (var activeTechLevel in activeTechLevels)
+				{
+					if (!Settings.IsResearching(activeTechLevel.Key))
+					{
+						int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
+						if (latestResearchYear < currentYear)
+						{
+							var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
+							researchWork.AddDevTeams(defaultResearchTeams);
+							Settings.MyCompany.AddWorkItem(researchWork);
+						}
+					}
+				}
+			}
+		}
+
+		private static void ApplyDigitalDistributionMonopol()
+		{
+			foreach (var company in Settings.simulation.Companies.Values.ToList())
+			{
+				if (company.Bankrupt && company.Distribution != null)
+				{
+					MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
+					HUD.Instance.digitalDistributionWindow.PlatformList.Items.Remove(company.Distribution);
+				}
+
+				if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
+					continue;
+
+				company.Distribution.SetCut(1f);
+				company.Distribution.SetAutoAcceptClients(false);
+				company.Distribution.AvailableBandwidth = 0f;
+				company.Distribution.ItemSales = 0f;
+				company.Distribution.ActualItemSales = 0f;
+				company.Distribution.LastLoad = 0f;
+				company.Distribution.MarketShare = 0f;
+				MarketSimulation.Active.ClosePlatform(company.Distribution);
+			}
+		}
+
+		private static void ApplyAutoAcceptHostingDeals()
+		{
+			var serverGroups = Settings.GetAllServerGroups().ToList();
+			var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
+
+			if (serverGroups.Count > 0 && serverDeals.Count > 0)
+			{
+				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
+				foreach (var serverGroup in serverGroups)
+				{
+					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
+						mostPowerfulServerGroup = serverGroup;
+				}
+
+				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
+				foreach (var serverDeal in serverDeals)
+				{
+					if (!activeServerDeals.Contains(serverDeal))
+					{
+						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
+						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
+					}
+				}
+			}
 		}
 
 		private static void LoadSpecializations()
