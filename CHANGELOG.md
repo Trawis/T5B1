@@ -30,6 +30,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   stock, Active users, and Add Money now reject malformed numeric input with
   an error instead of silently substituting a default value, and Days per
   month, Product price, and Active users reject out-of-range values.
+- Fixed the employee detail window's trainer controls (Trait, Demand,
+  Creativity, Inspiration, LeadSpec) not being reinstalled after a save
+  reload or scene transition recreated the detail window.
 
 ## [5.2.7] - 2026-09-10
 
