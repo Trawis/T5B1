@@ -14,10 +14,16 @@ namespace Trainer_v5
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
-		// Tracks the last-seen state of toggles whose upkeep runs on OnHourPassed instead of
-		// every frame, so a toggle that just got switched on can be applied immediately
-		// instead of waiting for the next hour tick.
+		// Tracks the last-seen state of toggles whose upkeep runs on OnHourPassed or on a
+		// minute change instead of every frame, so a toggle that just got switched on can be
+		// applied immediately instead of waiting for the next tick.
 		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
+
+		// TimeOfDay exposes no minute-passed event (only OnHourPassed/OnDayPassed/OnMonthPassed),
+		// but it does expose a public Minute field, so automation polling that shouldn't wait a
+		// full hour detects a minute change cheaply instead of scanning every frame. -1 forces a
+		// run the first time Update() executes after (re)activation.
+		private int _lastObservedMinute = -1;
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
@@ -126,26 +132,21 @@ namespace Trainer_v5
 			_timeEventsSubscribed = false;
 		}
 
+		// FullSatisfaction, NoSickness, and CleanRooms are NOT handled here: the game mutates
+		// JobSatisfaction, Room.GermCount, and Room.Smell/dirt every single rendered frame
+		// (Actor.UpdateNow / Room.Update in the game assembly), not on any hour boundary, so
+		// hourly enforcement here previously let them visibly drift between ticks (#157). They
+		// are enforced per-frame in Update() instead, guarded by their own toggle check.
+		//
+		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
+		// AutoAcceptHostingDeals are NOT handled here either: hourly polling could leave
+		// already-finished work sitting for up to an in-game hour before the trainer reacted, so
+		// they run on a minute-change cadence instead (see RunMinuteCadenceAutomation()).
 		private void OnHourPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
 			{
 				ApplyHostingDealTiming();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
-			{
-				ApplyAutoEndDesign();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
-			{
-				ApplyAutoEndResearch();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
-			{
-				ApplyAutoEndPatent();
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
@@ -170,11 +171,6 @@ namespace Trainer_v5
 				ApplyDisableFurnitureStealing();
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
-			{
-				ApplyAutoResearchStart();
-			}
-
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
 			{
 				ApplyDigitalDistributionMonopol();
@@ -186,34 +182,48 @@ namespace Trainer_v5
 				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
-			{
-				ApplyAutoAcceptHostingDeals();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
-			{
-				ApplyCleanRooms();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
-			{
-				ApplyNoSickness();
-			}
-
 			if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
 			{
 				ApplyNoMaintenance();
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
-			{
-				ApplyFullSatisfaction();
-			}
-
 			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
 			{
 				ApplyNoVacation();
+			}
+		}
+
+		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
+		// AutoAcceptHostingDeals only need to catch a state change (a finished design/research/
+		// patent, a newly eligible tech, a new deal) reasonably quickly, not on every rendered
+		// frame. TimeOfDay exposes no minute-passed event, so Update() detects a minute change
+		// via the public Minute field (see _lastObservedMinute) and runs this once per in-game
+		// minute instead of once per hour.
+		private void RunMinuteCadenceAutomation()
+		{
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+			{
+				ApplyAutoEndDesign();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
+			{
+				ApplyAutoEndResearch();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
+			{
+				ApplyAutoEndPatent();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
+			{
+				ApplyAutoResearchStart();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
+			{
+				ApplyAutoAcceptHostingDeals();
 			}
 		}
 
@@ -268,27 +278,14 @@ namespace Trainer_v5
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 			}
 
-			// These toggles are otherwise only enforced on OnHourPassed (or, for
-			// NoEducationCost, only once). Apply them the moment they're switched on so
-			// enabling mid-hour doesn't wait for the next hour tick.
-			if (ToggleJustEnabled("CleanRooms"))
-			{
-				ApplyCleanRooms();
-			}
-
-			if (ToggleJustEnabled("NoSickness"))
-			{
-				ApplyNoSickness();
-			}
-
+			// These toggles are otherwise only enforced on OnHourPassed, on a minute change, or
+			// (for NoEducationCost) only once. Apply them the moment they're switched on so
+			// enabling mid-tick doesn't wait for the next tick. CleanRooms, NoSickness, and
+			// FullSatisfaction are excluded here: they're enforced every frame below, so the
+			// very next frame after enabling already applies them.
 			if (ToggleJustEnabled("NoMaintenance"))
 			{
 				ApplyNoMaintenance();
-			}
-
-			if (ToggleJustEnabled("FullSatisfaction"))
-			{
-				ApplyFullSatisfaction();
 			}
 
 			if (ToggleJustEnabled("NoVacation"))
@@ -364,6 +361,25 @@ namespace Trainer_v5
 				ApplyAutoAcceptHostingDeals();
 			}
 
+			// TimeOfDay has no minute-passed event, so a change in its public Minute field is
+			// used to run automation polling roughly once per in-game minute instead of once per
+			// hour. The int cast also makes this correctly detect the hour-boundary rollover
+			// (Minute resets from just under 60 back down near 0).
+			int currentMinute = (int)TimeOfDay.Instance.Minute;
+			if (currentMinute != _lastObservedMinute)
+			{
+				_lastObservedMinute = currentMinute;
+				RunMinuteCadenceAutomation();
+			}
+
+			// FullSatisfaction, NoSickness, and CleanRooms enforce state the game changes every
+			// frame (JobSatisfaction, Room.GermCount, Room.Smell/dirt), so they're applied inside
+			// the existing per-frame room/actor loops below instead of on a coarser cadence. The
+			// toggle is read once here rather than per room/actor.
+			bool fullSatisfaction = Helpers.GetProperty(TrainerSettings, "FullSatisfaction");
+			bool noSickness = Helpers.GetProperty(TrainerSettings, "NoSickness");
+			bool cleanRooms = Helpers.GetProperty(TrainerSettings, "CleanRooms");
+
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
@@ -406,6 +422,16 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 
+				if (cleanRooms)
+				{
+					ApplyCleanRoomsToRoom(room);
+				}
+
+				if (noSickness)
+				{
+					ApplyNoSicknessToRoom(room);
+				}
+
 				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
 				{
 					room.Temperature = 21f;
@@ -426,6 +452,16 @@ namespace Trainer_v5
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
 				Employee employee = actor.employee;
+
+				if (fullSatisfaction)
+				{
+					ApplyFullSatisfactionToActor(actor);
+				}
+
+				if (noSickness)
+				{
+					ApplyNoSicknessToActor(actor);
+				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
 				{
@@ -551,42 +587,38 @@ namespace Trainer_v5
 		}
 
 		// The following Apply* methods hold logic that used to run every frame inside
-		// Update(). They now run on OnHourPassed (see above) and once immediately when
+		// Update(). Most now run on OnHourPassed (see above) and once immediately when
 		// their toggle is switched on (via ToggleJustEnabled), instead of every frame.
+		//
+		// ApplyCleanRoomsToRoom, ApplyNoSicknessToRoom/ToActor, and ApplyFullSatisfactionToActor
+		// are the exception: the game mutates the state they enforce every frame, so Update()
+		// calls them per room/actor every frame (see the room/actor loops above) instead of on a
+		// coarser cadence.
 
-		private static void ApplyCleanRooms()
+		private static void ApplyCleanRoomsToRoom(Room room)
 		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				Room room = Settings.sRoomManager.Rooms[i];
-				room.ClearDirt();
-				room.Smell = 0f;
-			}
+			room.ClearDirt();
+			room.Smell = 0f;
 		}
 
-		private static void ApplyNoSickness()
+		private static void ApplyNoSicknessToRoom(Room room)
 		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			room.GermCount = 0f;
+		}
+
+		private static void ApplyNoSicknessToActor(Actor actor)
+		{
+			TimeOfDay.Instance.Sick.Clear();
+
+			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
-				Settings.sRoomManager.Rooms[i].GermCount = 0f;
+				actor.SpecialState = Actor.HomeState.Default;
+				actor.WasSick = true;
 			}
 
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-
-				TimeOfDay.Instance.Sick.Clear();
-
-				if (actor.SpecialState == Actor.HomeState.Sick)
-				{
-					actor.SpecialState = Actor.HomeState.Default;
-					actor.WasSick = true;
-				}
-
-				actor.GermAdd = 0f;
-				actor.GermCount = 0f;
-				actor.SickDays = 0;
-			}
+			actor.GermAdd = 0f;
+			actor.GermCount = 0f;
+			actor.SickDays = 0;
 		}
 
 		private static void ApplyNoMaintenance()
@@ -622,25 +654,21 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void ApplyFullSatisfaction()
+		private static void ApplyFullSatisfactionToActor(Actor actor)
 		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			Employee employee = actor.employee;
+
+			employee.JobSatisfaction = 2f;
+			employee.ActiveComplaint = false;
+			foreach (var thought in employee.Thoughts.Values.ToList())
 			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-
-				employee.JobSatisfaction = 2f;
-				employee.ActiveComplaint = false;
-				foreach (var thought in employee.Thoughts.Values.ToList())
+				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
 				{
-					if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-					{
-						employee.Thoughts.Remove(thought.Thought);
-					}
+					employee.Thoughts.Remove(thought.Thought);
 				}
-
-				employee.SetMood("LoveWork", actor, 1f);
 			}
+
+			employee.SetMood("LoveWork", actor, 1f);
 		}
 
 		private static void ApplyNoVacation()
