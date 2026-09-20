@@ -112,10 +112,10 @@ callback performs the change (e.g. `IncreaseMoney`, `SetProductPrice`,
 `Notification`/`HUD.AddPopupMessage`.
 
 **Employee editing.** `DetailWindowTrainer` adds buttons to the game's employee
-detail window. Creativity editing clones the `Employee` (creativity is otherwise
-read-only), transfers state, and swaps the actor's employee reference. Trait and
-demand windows toggle flag enums directly; lead-spec and skill windows write
-skill/specialization values on the selected actors.
+detail window. Creativity and inspiration editing write directly to the
+`Employee`'s public `Creativity`/`Inspiration` fields on the existing object.
+Trait and demand windows toggle flag enums directly; lead-spec and skill
+windows write skill/specialization values on the selected actors.
 
 **Failure handling.** `Helpers.TryExecute` wraps risky actions in try/catch and
 routes exceptions to `Logger.LogException` and `Debug.LogException`. Several

@@ -59,54 +59,12 @@ namespace Trainer_v5
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
-					var skills = new float[5];
-					for(int i = 0; i < 5; i++) {
-						skills[i] = employee.GetSkillI(i);
-					}
-					
-					// clone employee with new creativity value
-					var newEmployee = new Employee(
-						currentTime: SDateTime.Now(), 
-						female: employee.Female,
-						name: employee.Name,
-						skills: skills,
-						creativity: val,
-						person: employee.PersonalityTraits,
-						traits: employee.Traits,
-						specs: employee.GetAllSpecializations(),
-						graph: GameSettings.Instance.Personalities,
-						style: employee.StyleGen,
-						forceBrain: employee.HiredFor
-					);
-					
-					// transfer properties
-					newEmployee.Salary = employee.Salary;
-					newEmployee.CreativityKnown = 1f;
-					newEmployee.MyEmployer = employee.MyEmployer;
-					newEmployee.BirthDate = employee.BirthDate;
-					newEmployee.Hired = employee.Hired;
-					newEmployee.Thoughts = employee.Thoughts;
-					newEmployee.JobSatisfaction = employee.JobSatisfaction;
-
-					// transfer lead specs
-					foreach (var kvp in employee.LeadSpecializationFix)
-					{
-						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
-					}
-					
-					var actor = employee.MyActor;
-					if (actor != null)
-					{
-						// update actor references
-						employee.MyActor = null;
-						actor.employee = newEmployee;
-						newEmployee.MyActor = actor;
-						
-						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == employee)
-						{
-							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
-						}
-					}
+					// Creativity is a plain public field on Employee, so it can be updated
+					// directly on the existing object instead of replacing it. This keeps
+					// the object identity intact for any other references the game holds
+					// (e.g. actor.employee) and preserves every other field automatically.
+					employee.Creativity = val;
+					employee.CreativityKnown = 1f;
 				},
 				min: 0,
 				max: 1);
