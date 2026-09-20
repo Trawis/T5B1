@@ -194,15 +194,15 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   configurations) on `windows-latest` with .NET 8 SDK; the toolchain still
   targets `net46`. `.github/workflows/ci.yml` still lists the retired
   `SWINCBETA`/`SWINCRELEASE` configurations as of this writing; those matrix
-  entries will fail until the workflow is updated to build only `Debug` and
-  `Release` (tracked separately).
+  entries will fail until the workflow is updated to build `Release`
+  (tracked separately).
 - **Local checks.** `dotnet format --verify-no-changes` for formatting;
   `dotnet build` for compilation. There is no automated test project, so
   `dotnet test` provides no coverage; behavior is validated by loading the mod
   in the game.
 - **CI/CD.**
-  - *CI* (`.github/workflows/ci.yml`): builds each supported configuration on
-    push/PR to `develop`; any configuration's compile failure fails the job.
+  - *CI* (`.github/workflows/ci.yml`): builds the `Release` configuration on
+    push/PR to `develop`; a compile failure fails the job.
   - *Nightly* (`.github/workflows/nightly.yml`): daily/manual; if `develop` had
     commits in the last 24h, builds a Release artifact and publishes a
     `v<version>-rc<run-number>` prerelease.

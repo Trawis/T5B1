@@ -8,13 +8,6 @@
 		<Prefer32Bit>false</Prefer32Bit>
 	</PropertyGroup>
 
-	<!--
-		T5B1 targets the current vendored Software Inc Beta 1 assemblies under
-		Trainer.Libraries/ directly. Debug and Release are the only supported
-		configurations; game compatibility is updated by refreshing those
-		assemblies, not by adding version-specific preprocessor symbols. See
-		docs/project/architecture.md.
-	-->
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>full</DebugType>
