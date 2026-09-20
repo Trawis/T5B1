@@ -8,13 +8,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
-- Hid the Max Market Share button and Auto Max Market Share toggle from the
-  Trainer Settings window and commented out their implementation: both called
-  `SoftwareProduct.MarketShare`, a member that does not exist on the currently
-  vendored `Assembly-CSharp.dll` (confirmed by inspecting the assembly's
-  metadata directly), which broke every CI build since the
-  `#if SWINCBETA1_7 || ...` compatibility guard around them was removed.
-  Re-enabling this once a verified mechanism exists is tracked in #150.
+- Hid the Max Market Share button and Auto Max Market Share toggle due to a
+  game compatibility issue; the implementation is kept, commented out, for
+  a future fix (#150).
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.
