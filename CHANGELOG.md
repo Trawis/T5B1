@@ -20,6 +20,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed trainer UI button teardown on returning to the main menu throwing
   when the trainer button and skill-change button did not share the same
   initialization state.
+- Fixed the LeadSpec window showing stale toggle state from the previously
+  edited employee instead of refreshing to match the selected employee.
 
 ## [5.2.7] - 2026-09-10
 
