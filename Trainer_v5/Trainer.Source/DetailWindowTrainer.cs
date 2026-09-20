@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
 using UnityEngine;
@@ -13,13 +12,6 @@ namespace Trainer_v5
 		// transitions, so a plain "installed once" flag would permanently skip
 		// re-installation on every DetailWindow after the first one.
 		private static DetailWindow _installedOn;
-
-		// Employee.Creativity is a public but read-only (initonly) field, so the C# compiler
-		// rejects a direct assignment from outside Employee's constructor. Reflection is not
-		// bound by that compile-time restriction, so it is the only way to change it in place
-		// without replacing the Employee object.
-		private static readonly FieldInfo CreativityField =
-			typeof(Employee).GetField("Creativity", BindingFlags.Public | BindingFlags.Instance);
 
 		public static void Reset()
 		{
@@ -57,6 +49,14 @@ namespace Trainer_v5
 			_installedOn = target;
 		}
 
+		// Employee.Creativity is a public but read-only (initonly) field: there is no
+		// get_Creativity/set_Creativity accessor, no other public method sets it, and the
+		// C# compiler rejects a direct assignment from outside Employee's own constructor.
+		// Reflection could bypass that at the CLR level, but reflection is not used in this
+		// codebase, so the only remaining way to change it is to construct a new Employee
+		// with the desired value and swap it in, copying over the state the constructor
+		// does not already set up. Object identity is not preserved as a result; see the
+		// PR description for the full evidence trail.
 		private static void SetCreativity()
 		{
 			var employee = CurrentEmployee;
@@ -67,12 +67,55 @@ namespace Trainer_v5
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
-					// Set the read-only field via reflection on the existing object instead
-					// of replacing it. This keeps the object identity intact for any other
-					// references the game holds (e.g. actor.employee) and preserves every
-					// other field automatically.
-					CreativityField.SetValue(employee, val);
-					employee.CreativityKnown = 1f;
+					var skills = new float[5];
+					for (int i = 0; i < 5; i++)
+					{
+						skills[i] = employee.GetSkillI(i);
+					}
+
+					// clone employee with new creativity value
+					var newEmployee = new Employee(
+						currentTime: SDateTime.Now(),
+						female: employee.Female,
+						name: employee.Name,
+						skills: skills,
+						creativity: val,
+						person: employee.PersonalityTraits,
+						traits: employee.Traits,
+						specs: employee.GetAllSpecializations(),
+						graph: GameSettings.Instance.Personalities,
+						style: employee.StyleGen,
+						forceBrain: employee.HiredFor
+					);
+
+					// transfer properties
+					newEmployee.Salary = employee.Salary;
+					newEmployee.CreativityKnown = 1f;
+					newEmployee.MyEmployer = employee.MyEmployer;
+					newEmployee.BirthDate = employee.BirthDate;
+					newEmployee.Hired = employee.Hired;
+					newEmployee.Thoughts = employee.Thoughts;
+					newEmployee.JobSatisfaction = employee.JobSatisfaction;
+
+					// transfer lead specs
+					foreach (var kvp in employee.LeadSpecializationFix)
+					{
+						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
+					}
+
+					var actor = employee.MyActor;
+					if (actor != null)
+					{
+						// update actor references
+						employee.MyActor = null;
+						actor.employee = newEmployee;
+						newEmployee.MyActor = actor;
+
+						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == employee)
+						{
+							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
+						}
+					}
 				},
 				min: 0,
 				max: 1);

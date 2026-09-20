@@ -114,10 +114,12 @@ callback performs the change (e.g. `IncreaseMoney`, `SetProductPrice`,
 **Employee editing.** `DetailWindowTrainer` adds buttons to the game's employee
 detail window. Inspiration editing writes directly to `Employee`'s public
 `Inspiration` field on the existing object. Creativity is a public but
-read-only (`initonly`) field, so it is instead set via reflection on the
-existing object, preserving its identity. Trait and demand windows toggle flag
-enums directly; lead-spec and skill windows write skill/specialization values
-on the selected actors.
+read-only (`initonly`) field with no public setter or other official method to
+change it, and this codebase does not use reflection, so creativity editing
+still clones the `Employee` with the new value and transfers state onto the
+clone, same as before. Trait and demand windows toggle flag enums directly;
+lead-spec and skill windows write skill/specialization values on the selected
+actors.
 
 **Failure handling.** `Helpers.TryExecute` wraps risky actions in try/catch and
 routes exceptions to `Logger.LogException` and `Debug.LogException`. Several
