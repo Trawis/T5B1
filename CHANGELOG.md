@@ -15,6 +15,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   the actual control type name.
 - Fixed the Trainer Settings window crashing on open when its close button
   is missing or duplicated; such cases are now logged instead.
+- Fixed Auto Accept Hosting Deals aborting the rest of the per-frame trainer
+  update loop when there were no server groups or deals to process.
 
 ## [5.2.7] - 2026-09-10
 

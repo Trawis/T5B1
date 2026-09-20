@@ -536,27 +536,25 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
 				var serverGroups = Settings.GetAllServerGroups().ToList();
-				if (serverGroups.Count == 0)
-					return;
-
-				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
-				foreach (var serverGroup in serverGroups)
-				{
-					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
-						mostPowerfulServerGroup = serverGroup;
-				}
-
 				var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
-				if (serverDeals.Count == 0)
-					return;
 
-				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
-				foreach (var serverDeal in serverDeals)
+				if (serverGroups.Count > 0 && serverDeals.Count > 0)
 				{
-					if (!activeServerDeals.Contains(serverDeal))
+					ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
+					foreach (var serverGroup in serverGroups)
 					{
-						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
-						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
+						if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
+							mostPowerfulServerGroup = serverGroup;
+					}
+
+					var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
+					foreach (var serverDeal in serverDeals)
+					{
+						if (!activeServerDeals.Contains(serverDeal))
+						{
+							HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
+							Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
+						}
 					}
 				}
 			}
