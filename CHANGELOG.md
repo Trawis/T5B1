@@ -13,6 +13,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   them until a lead designer is set.
 - Fixed generated UI control names using the literal suffix `_T` instead of
   the actual control type name.
+- Fixed the Trainer Settings window crashing on open when its close button
+  is missing or duplicated; such cases are now logged instead.
 
 ## [5.2.7] - 2026-09-10
 
