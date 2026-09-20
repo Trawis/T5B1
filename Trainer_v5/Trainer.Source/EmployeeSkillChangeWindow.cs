@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Utils = Trainer_v5.Utilities;
 
 namespace Trainer_v5
 {
@@ -31,44 +29,74 @@ namespace Trainer_v5
 			window.name = "EditEmployee";
 			window.MainPanel.name = "EditEmployeePanel";
 
-			var firstColumn = FirstColumn().ToArray();
-			var secondColumn = SecondColumn().ToArray();
+			var firstHeader = FirstColumnHeader();
+			var roleToggles = RoleToggles();
+			var firstFooter = FirstColumnFooter();
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN, firstColumn, window);
-			Utils.CreateGameObjects(Constants.SECOND_COLUMN, secondColumn, window);
+			var secondHeader = SecondColumnHeader();
+			var specToggles = SpecializationToggles();
+			var secondFooter = new GameObject[0];
 
-			var maxRows = Math.Max(firstColumn.Length, secondColumn.Length);
-			Utils.SetWindowSize(maxRows, Constants.X_EMPLOYEESKILLCHANGE_WINDOW, window);
+			var reservedRows = Math.Max(firstHeader.Length + firstFooter.Length, secondHeader.Length + secondFooter.Length);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows);
+
+			var firstColumnHeight = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.FIRST_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				firstHeader, roleToggles, firstFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+
+			var secondColumnHeight = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.SECOND_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				secondHeader, specToggles, secondFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+
+			window.MinSize = new Vector2(Constants.X_EMPLOYEESKILLCHANGE_WINDOW, Mathf.Max(firstColumnHeight, secondColumnHeight) + Constants.ELEMENT_HEIGHT);
 
 			return window;
 		}
 
-		private static IEnumerable<GameObject> FirstColumn()
+		private static GameObject[] FirstColumnHeader()
 		{
-			yield return UIFactory.Label("Roles").gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
-
-			var rolesList = Helpers.RolesList;
-			foreach (var role in rolesList)
+			return new[]
 			{
-				yield return UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key)).gameObject;
-			}
-
-			yield return UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
-			yield return UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject;
+				UIFactory.Label("Roles").gameObject,
+				UIFactory.EmptyBox().gameObject
+			};
 		}
 
-		private static IEnumerable<GameObject> SecondColumn()
+		private static GameObject[] RoleToggles()
 		{
-			yield return UIFactory.Label("Specializations").gameObject;
-			yield return UIFactory.EmptyBox().gameObject;
+			var rolesList = Helpers.RolesList;
+			return rolesList
+				.Select(role => UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key)).gameObject)
+				.ToArray();
+		}
 
-			var specs = Helpers.SpecializationsList;
-			foreach (var spec in specs)
+		private static GameObject[] FirstColumnFooter()
+		{
+			return new[]
 			{
-				yield return UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject;
-			}
+				UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject,
+				UIFactory.EmptyBox().gameObject,
+				UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject
+			};
+		}
+
+		private static GameObject[] SecondColumnHeader()
+		{
+			return new[]
+			{
+				UIFactory.Label("Specializations").gameObject,
+				UIFactory.EmptyBox().gameObject
+			};
+		}
+
+		private static GameObject[] SpecializationToggles()
+		{
+			var specs = Helpers.SpecializationsList;
+			return specs
+				.Select(spec => UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject)
+				.ToArray();
 		}
 
 		private static void SetBaseSkills()
