@@ -42,8 +42,15 @@ namespace Trainer_v5
 						if (Main.TrainerButton != null)
 						{
 							Destroy(Main.TrainerButton.gameObject);
-							Destroy(Main.SkillChangeButton.gameObject);
+							Main.TrainerButton = null;
 						}
+
+						if (Main.SkillChangeButton != null)
+						{
+							Destroy(Main.SkillChangeButton.gameObject);
+							Main.SkillChangeButton = null;
+						}
+
 						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
 						break;

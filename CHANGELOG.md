@@ -11,6 +11,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.
+- Fixed trainer UI button teardown on returning to the main menu throwing
+  when the trainer button and skill-change button did not share the same
+  initialization state.
 
 ## [5.2.7] - 2026-09-10
 
