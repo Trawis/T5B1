@@ -23,6 +23,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed repeated scene loads (e.g. loading a different save while already in
   game) stacking duplicate time-event subscriptions, which caused Lock Age to
   advance employee birth dates more than once per in-game month passed.
+- Fixed the LeadSpec window showing stale toggle state from the previously
+  edited employee instead of refreshing to match the selected employee.
 
 ## [5.2.7] - 2026-09-10
 
