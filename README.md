@@ -43,24 +43,19 @@ folder into the game's mod directory.
 dotnet build "Trainer v5 - Beta 1.sln"
 ```
 
-The solution defines `Debug`, `Release`, `SWINCBETA`, `SWINCBETA1_7`, and
-`SWINCRELEASE` configurations for game-version conditional compilation:
+The solution defines exactly two configurations, `Debug` and `Release`, and
+both target the current vendored Software Inc Beta 1 assemblies under
+`Trainer_v5/Trainer.Libraries/` directly - there are no version-specific
+preprocessor symbols or additional configurations to choose between.
+`Release` is the only configuration built by CI/CD; `Debug` is for local
+development and must be built locally.
 
-| Configuration  | Defined symbols                        | `Helpers.GetGameVersion()` |
-|----------------|-----------------------------------------|-----------------------------|
-| `Debug`        | `DEBUG;TRACE;SWINCBETA;SWINCBETA1_7`    | `1.7`                       |
-| `Release`      | `TRACE;SWINCBETA;SWINCBETA1_7`          | `1.7`                       |
-| `SWINCBETA1_7` | `DEBUG;TRACE;SWINCBETA;SWINCBETA1_7`    | `1.7`                       |
-| `SWINCBETA`    | `DEBUG;TRACE;SWINCBETA`                 | `UNKNOWN` (no sub-version pinned) |
-| `SWINCRELEASE` | `TRACE;SWINCRELEASE`                    | `UNKNOWN` (no non-beta release exists yet) |
-
-`Debug` and `Release` target the actively maintained *Software Inc.* Beta 1.7
-branch so both the CI build and the shipped/nightly builds include the
-current feature set (e.g. Max Market Share, which requires
-`SoftwareProduct.MarketShare`). Source branches also exist for
-`SWINCBETA1_8`/`1_9`/`1_10`, but no solution configuration currently targets
-them: there is no evidence those sub-versions are actually supported, so no
-build claims to target them.
+Old game-version-specific configurations (e.g. per-sub-version `SWINC*`
+configurations) are not maintained. T5B1 does not preserve backward
+compatibility with older Software Inc Beta 1 builds: game compatibility is
+updated by refreshing the vendored assemblies (see
+[`docs/project/architecture.md`](docs/project/architecture.md)), not by
+adding compatibility configurations or conditional code paths.
 
 ## Test
 

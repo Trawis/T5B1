@@ -143,26 +143,23 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 - **Runtime/target.** `Trainer_v5.csproj` targets `net46` with C# `LangVersion 6.0`
   to match the game's Unity runtime. Game/Unity references are marked
   `Private=False` (not copied) because the game supplies them at runtime.
-- **Build configurations / conditional compilation.** The solution defines
-  `Debug`, `Release`, `SWINCBETA`, `SWINCBETA1_7`, and `SWINCRELEASE`
-  configurations. Code adapts to game versions via preprocessor symbols
-  (`SWINCBETA1_7`/`1_8`/`1_9`/`1_10`, `DEBUG`), for example gating the
-  `MaxMarketShare` and `AutoMaxMarketShare` features, which require a game build
-  that exposes `SoftwareProduct.MarketShare`. `Helpers.GetGameVersion` maps these
-  symbols to a displayed version string, checking the most specific
-  point-version symbol first so that defining e.g. `SWINCBETA1_7` alone is
-  sufficient (it does not also require `SWINCBETA`).
-  `Debug` and `Release` both define `SWINCBETA;SWINCBETA1_7`, so the shipped
-  build and the CI build target the same, currently-maintained Beta 1.7
-  version and both include version-gated features like Max Market Share.
-  `SWINCBETA1_7` is kept as a separate, explicitly-named debug configuration
-  for developers who want to build against that sub-version specifically.
-  `SWINCBETA` and `SWINCRELEASE` (with no point-version symbol) are
-  channel-only builds that intentionally report `UNKNOWN` from
-  `Helpers.GetGameVersion`. Source branches also exist for
-  `SWINCBETA1_8`/`1_9`/`1_10`, but no solution configuration defines those
-  symbols: there is no vendored-library or release evidence that those
-  sub-versions are actually supported, so no build claims to target them.
+- **Build configurations.** The solution defines exactly two configurations,
+  `Debug` and `Release`, with no version-specific preprocessor symbols. Both
+  target the current vendored Software Inc Beta 1 assemblies under
+  `Trainer.Libraries/` directly, so code that depends on the game's API
+  (e.g. `MaxMarketShare`/`AutoMaxMarketShare`, which use
+  `SoftwareProduct.MarketShare`) compiles unconditionally rather than behind
+  a compatibility guard. `Helpers.GetGameVersion()` returns a constant
+  `"Beta 1"` string: there is no reliable way to read an exact Software Inc
+  build number from committed information, so it reports the current target
+  generically instead of inventing a version number.
+  Old game-version-specific configurations and preprocessor symbols
+  (`SWINCBETA`, `SWINCRELEASE`, `SWINCBETA1_6`/`1_7`/`1_8`/`1_9`/`1_10`) are
+  not maintained; T5B1 does not preserve backward compatibility with older
+  Software Inc Beta 1 builds. Game compatibility is updated by refreshing
+  the vendored assemblies under `Trainer.Libraries/` and fixing whatever
+  source incompatibilities that refresh introduces, not by adding
+  compatibility configurations or conditional code paths.
 - **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
@@ -173,9 +170,9 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 
 ## Cross-Cutting Concerns
 
-- **Compatibility.** Version-specific behavior is handled at compile time with
-  preprocessor guards rather than runtime detection; the shipped build targets a
-  specific game version. Backward-compatible save loading is handled by the
+- **Compatibility.** T5B1 targets the current vendored Software Inc Beta 1
+  build only; there are no compile-time compatibility guards for older game
+  versions. Backward-compatible save loading is handled by the
   serialize/deserialize fallback described above.
 - **Reliability.** `Helpers.TryExecute` and defensive null/collection checks
   (e.g. `IsGameReady`, `IsGameLoaded`) keep cheats from throwing into the game
@@ -192,18 +189,20 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
 
 ## Development and Validation
 
-- **Build.** `dotnet build "Trainer v5 - Beta 1.sln"` (CI builds every
-  intentionally supported configuration - `Debug`, `Release`, `SWINCBETA`,
-  and `SWINCRELEASE` - as a matrix job on `windows-latest` with .NET 8 SDK;
-  the toolchain still targets `net46`). `SWINCBETA1_7` is not built
-  separately since it defines the same symbols as `Debug`.
+- **Build.** `dotnet build "Trainer v5 - Beta 1.sln"` with `--configuration
+  Debug` or `--configuration Release` (the only two supported
+  configurations) on `windows-latest` with .NET 8 SDK; the toolchain still
+  targets `net46`. `.github/workflows/ci.yml` still lists the retired
+  `SWINCBETA`/`SWINCRELEASE` configurations as of this writing; those matrix
+  entries will fail until the workflow is updated to build `Release`
+  (tracked separately).
 - **Local checks.** `dotnet format --verify-no-changes` for formatting;
   `dotnet build` for compilation. There is no automated test project, so
   `dotnet test` provides no coverage; behavior is validated by loading the mod
   in the game.
 - **CI/CD.**
-  - *CI* (`.github/workflows/ci.yml`): builds each supported configuration on
-    push/PR to `develop`; any configuration's compile failure fails the job.
+  - *CI* (`.github/workflows/ci.yml`): builds the `Release` configuration on
+    push/PR to `develop`; a compile failure fails the job.
   - *Nightly* (`.github/workflows/nightly.yml`): daily/manual; if `develop` had
     commits in the last 24h, builds a Release artifact and publishes a
     `v<version>-rc<run-number>` prerelease.
