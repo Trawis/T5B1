@@ -83,7 +83,7 @@ namespace Trainer_v5
 
 		private static string NameOrDefault<T>(this string name, string text = null)
 		{
-			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + nameof(T);
+			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + typeof(T).Name;
 		}
 
 		private static string TextOrEmpty(this string text)
