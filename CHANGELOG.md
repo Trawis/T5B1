@@ -11,6 +11,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed Auto Design End repeatedly attempting to promote finished design
   documents that still need a lead designer assigned, instead of skipping
   them until a lead designer is set.
+- Fixed Auto Accept Hosting Deals aborting the rest of the per-frame trainer
+  update loop when there were no server groups or deals to process.
 
 ## [5.2.7] - 2026-09-10
 
