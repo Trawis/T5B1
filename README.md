@@ -74,8 +74,9 @@ button (or F1).
 
 - **Version source of truth:** `Helpers.Version` in
   `Trainer_v5/Trainer.Source/Helpers.cs`.
-- **Build configurations:** select a configuration to target a specific game
-  version via preprocessor symbols (see [Build](#build)).
+- **Build configurations:** `Debug` and `Release` both target whichever
+  Software Inc build is currently vendored under
+  `Trainer_v5/Trainer.Libraries/` (see [Build](#build)).
 - **Persistence:** trainer toggle and efficiency settings are saved into the
   game save file. No secrets or external configuration are required.
 
@@ -95,8 +96,10 @@ full feature list.
 ## Known Limitations
 
 - May not work with old saves; back up first.
-- Tightly coupled to specific game versions; game updates can break the build
-  and require preprocessor/version updates.
+- Tightly coupled to the vendored game assemblies; game updates can break the
+  build and require refreshing the assemblies under
+  `Trainer_v5/Trainer.Libraries/` (see
+  [`docs/project/architecture.md`](docs/project/architecture.md)).
 - No automated tests; behavior is validated by loading the mod in the game.
 
 ## Help and Contributing
