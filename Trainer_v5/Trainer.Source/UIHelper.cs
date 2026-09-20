@@ -11,7 +11,7 @@ namespace Trainer_v5
 		public static GameObject CreateLabel(string text = null, string name = null)
 		{
 			var control = WindowManager.SpawnLabel();
-			control.name = name.NameOrDefault<Text>(text);
+			control.name = name.NameOrDefault("Text", text);
 			control.text = text.TextOrEmpty();
 
 			return control.gameObject;
@@ -20,7 +20,7 @@ namespace Trainer_v5
 		public static GameObject CreateButton(string text, UnityAction action, string name = null)
 		{
 			var control = WindowManager.SpawnButton();
-			control.name = name.NameOrDefault<Button>(text);
+			control.name = name.NameOrDefault("Button", text);
 			control.GetComponentInChildren<Text>().text = text.TextOrEmpty();
 			control.onClick.AddListener(action);
 
@@ -30,7 +30,7 @@ namespace Trainer_v5
 		public static GameObject CreateInputBox(string text, UnityAction<string> action, string name = null)
 		{
 			var control = WindowManager.SpawnInputbox();
-			control.name = name.NameOrDefault<InputField>(text);
+			control.name = name.NameOrDefault("InputField", text);
 			control.text = text;
 			control.onValueChanged.AddListener(action);
 
@@ -40,7 +40,7 @@ namespace Trainer_v5
 		public static GameObject CreateToggle(string text, bool isOn, UnityAction<bool> action, string name = null)
 		{
 			var control = WindowManager.SpawnCheckbox();
-			control.name = name.NameOrDefault<Toggle>(text);
+			control.name = name.NameOrDefault("Toggle", text);
 			control.GetComponentInChildren<Text>().text = text;
 			control.isOn = isOn;
 			control.onValueChanged.AddListener(action);
@@ -51,7 +51,7 @@ namespace Trainer_v5
 		public static GUICombobox CreateComboBox(Dictionary<string, object> selectableItems, int selection, string name = null)
 		{
 			var comboBox = WindowManager.SpawnComboBox();
-			comboBox.name = name.NameOrDefault<GUICombobox>();
+			comboBox.name = name.NameOrDefault("GUICombobox");
 			comboBox.UpdateContent(selectableItems.Select(x => x.Key));
 			comboBox.UpdateSelection(selection);
 
@@ -179,9 +179,9 @@ namespace Trainer_v5
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
 		}
 
-		private static string NameOrDefault<T>(this string name, string text = null)
+		private static string NameOrDefault(this string name, string suffix, string text = null)
 		{
-			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + typeof(T).Name;
+			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + suffix;
 		}
 
 		private static string TextOrEmpty(this string text)
