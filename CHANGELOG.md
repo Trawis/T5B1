@@ -17,6 +17,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   is missing or duplicated; such cases are now logged instead.
 - Fixed Auto Accept Hosting Deals aborting the rest of the per-frame trainer
   update loop when there were no server groups or deals to process.
+- Fixed trainer UI button teardown on returning to the main menu throwing
+  when the trainer button and skill-change button did not share the same
+  initialization state.
 
 ## [5.2.7] - 2026-09-10
 
