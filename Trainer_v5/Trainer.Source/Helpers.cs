@@ -172,16 +172,19 @@ namespace Trainer_v5
 
 		public static string GetGameVersion()
 		{
-#if !SWINCBETA && !SWINCRELEASE
-			return "1.6";
-#elif SWINCBETA1_7
-			return "1.7";
-#elif SWINCBETA1_8
-			return "1.8";
+			// Check the most specific point-version symbol first: defining e.g.
+			// SWINCBETA1_7 alone (without SWINCBETA) must still report "1.7"
+			// rather than falling through to the "no version pinned" default.
+#if SWINCBETA1_10
+			return "1.10";
 #elif SWINCBETA1_9
 			return "1.9";
-#elif SWINCBETA1_10
-			return "1.10";
+#elif SWINCBETA1_8
+			return "1.8";
+#elif SWINCBETA1_7
+			return "1.7";
+#elif !SWINCBETA && !SWINCRELEASE
+			return "1.6";
 #else
 			return "UNKNOWN";
 #endif
