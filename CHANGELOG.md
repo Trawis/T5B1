@@ -20,6 +20,11 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed trainer UI button teardown on returning to the main menu throwing
   when the trainer button and skill-change button did not share the same
   initialization state.
+- Fixed Product stock accepting a negative number and silently wrapping it
+  into a stock of billions of copies; Days per month, Product price, Product
+  stock, Active users, and Add Money now reject malformed numeric input with
+  an error instead of silently substituting a default value, and Days per
+  month, Product price, and Active users reject out-of-range values.
 
 ## [5.2.7] - 2026-09-10
 
