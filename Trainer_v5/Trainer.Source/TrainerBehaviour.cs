@@ -898,7 +898,7 @@ namespace Trainer_v5
 
 		public static void MonthDays()
 		{
-			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, int.MaxValue);
+			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
 		}
 
 		#endregion
