@@ -928,21 +928,15 @@ namespace Trainer_v5
 
 		#region MonthDays
 
-		public static void MonthDaysAction(string input)
+		public static void MonthDaysAction(int i)
 		{
-			int i;
-			if (!int.TryParse(input, out i))
-			{
-				return;
-			}
-
 			GameSettings.DaysPerMonth = i;
 			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
 		}
 
 		public static void MonthDays()
 		{
-			WindowManager.SpawnInputDialog("How many days per month do you want?", "Days per month", "2", MonthDaysAction);
+			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
 		}
 
 		#endregion
@@ -1016,7 +1010,7 @@ namespace Trainer_v5
 
 		#region Set Product Price
 
-		public static void SetProductPriceAction(string input)
+		public static void SetProductPriceAction(float price)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -1026,20 +1020,20 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.Price = input.ConvertToFloatDef(50f);
+			Product.Price = price;
 			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductPrice()
 		{
-			WindowManager.SpawnInputDialog("Type product price:", "Product price", "50", SetProductPriceAction);
+			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
 		}
 
 		#endregion
 
 		#region Set Product Stock
 
-		public static void SetProductStockAction(string input)
+		public static void SetProductStockAction(uint stock)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -1049,20 +1043,20 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.PhysicalCopies = (uint)input.ConvertToIntDef(100000);
+			Product.PhysicalCopies = stock;
 			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductStock()
 		{
-			WindowManager.SpawnInputDialog("Type product stock:", "Product stock", "100000", SetProductStockAction);
+			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
 		}
 
 		#endregion
 
 		#region Add Active Users
 
-		public static void AddActiveUsersAction(string input)
+		public static void AddActiveUsersAction(int users)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -1072,13 +1066,13 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.Userbase = input.ConvertToIntDef(100000);
+			Product.Userbase = users;
 			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void AddActiveUsers()
 		{
-			WindowManager.SpawnInputDialog("Type product active users:", "Product active users", "100000", AddActiveUsersAction);
+			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
 		}
 
 		#endregion
@@ -1171,14 +1165,14 @@ namespace Trainer_v5
 
 		#region Increase Money
 
-		public static void IncreaseMoneyAction(string input)
+		public static void IncreaseMoneyAction(int amount)
 		{
-			Settings.MyCompany.MakeTransaction(input.ConvertToIntDef(100000), Company.TransactionCategory.Deals);
+			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 		public static void IncreaseMoney()
 		{
-			WindowManager.SpawnInputDialog("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
+			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
 		}
 
 		#endregion

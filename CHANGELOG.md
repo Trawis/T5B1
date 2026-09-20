@@ -25,6 +25,11 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   advance employee birth dates more than once per in-game month passed.
 - Fixed the LeadSpec window showing stale toggle state from the previously
   edited employee instead of refreshing to match the selected employee.
+- Fixed Product stock accepting a negative number and silently wrapping it
+  into a stock of billions of copies; Days per month, Product price, Product
+  stock, Active users, and Add Money now reject malformed numeric input with
+  an error instead of silently substituting a default value, and Days per
+  month, Product price, and Active users reject out-of-range values.
 
 ## [5.2.7] - 2026-09-10
 
