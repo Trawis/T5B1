@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-10
+**Last Updated**: 2026-09-20
 
 This document describes the verified current technical system. Proposed changes
 belong under `docs/project/designs/` until accepted or implemented.
@@ -19,8 +19,9 @@ continuously-enforced cheats (no needs, free employees, auto-finish work).
 Quality goals that most influence the design:
 
 - **Game compatibility**: the mod links against the game's own assemblies and
-  must keep working across *Software Inc.* Beta versions, which is handled with
-  compile-time conditional code paths.
+  must keep working against the current *Software Inc.* Beta 1 build, which is
+  handled by refreshing the vendored assemblies rather than compile-time
+  conditional code paths (see "Game Library Refresh" below).
 - **Non-destructive persistence**: trainer settings serialize into the save
   file and must round-trip without corrupting saves.
 - **Fail-soft behavior**: a cheat that throws must not crash the game; risky
@@ -163,7 +164,7 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   the vendored assemblies under `Trainer.Libraries/` and fixing whatever
   source incompatibilities that refresh introduces, not by adding
   compatibility configurations or conditional code paths.
-- **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
+- **Version source of truth.** `Helpers.Version` (currently `5.2.8`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
 - **Packaging / deployment.** The Release build produces `Trainer_v5.dll`, which
