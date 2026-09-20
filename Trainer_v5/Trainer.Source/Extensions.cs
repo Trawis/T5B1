@@ -12,6 +12,7 @@ namespace Trainer_v5
 			{
 				return value;
 			}
+			Helpers.LogUnregisteredKey("Get", key);
 			return null;
 		}
 
@@ -22,11 +23,17 @@ namespace Trainer_v5
 			{
 				return value;
 			}
+			Helpers.LogUnregisteredKey("Get", key);
 			return false;
 		}
 
 		public static void Set(this Dictionary<string, object> settings, string key, object value)
 		{
+			if (!settings.ContainsKey(key))
+			{
+				Helpers.LogUnregisteredKey("Set", key);
+				return;
+			}
 			settings[key] = value;
 		}
 
@@ -36,6 +43,10 @@ namespace Trainer_v5
 			if (settings.TryGetValue(key, out value))
 			{
 				settings[key] = !value;
+			}
+			else
+			{
+				Helpers.LogUnregisteredKey("Toggle", key);
 			}
 		}
 
