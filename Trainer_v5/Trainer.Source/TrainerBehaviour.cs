@@ -11,10 +11,21 @@ namespace Trainer_v5
 	public class TrainerBehaviour : ModBehaviour
 	{
 		private static bool _specializationsLoaded;
+		private bool _sceneEventsSubscribed;
+		private bool _timeEventsSubscribed;
+
+		// Used by ToggleJustEnabled to apply reduced-cadence toggles immediately on enable.
+		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
+
+		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
+		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
+
+		// Settings the game itself only ever sets once (ctor/new-game/save-load).
+		private bool _oneTimeSettingsApplied;
 
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
@@ -29,7 +40,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			SceneManager.sceneLoaded += OnLevelFinishedLoading;
+			SubscribeToSceneEvents();
 		}
 
 		private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
@@ -42,8 +53,15 @@ namespace Trainer_v5
 						if (Main.TrainerButton != null)
 						{
 							Destroy(Main.TrainerButton.gameObject);
-							Destroy(Main.SkillChangeButton.gameObject);
+							Main.TrainerButton = null;
 						}
+
+						if (Main.SkillChangeButton != null)
+						{
+							Destroy(Main.SkillChangeButton.gameObject);
+							Main.SkillChangeButton = null;
+						}
+
 						DetailWindowTrainer.Reset();
 						UnsubscribeFromEvents();
 						break;
@@ -62,32 +80,243 @@ namespace Trainer_v5
 			}
 		}
 
+		private void SubscribeToSceneEvents()
+		{
+			if (_sceneEventsSubscribed)
+			{
+				return;
+			}
+
+			SceneManager.sceneLoaded += OnLevelFinishedLoading;
+			_sceneEventsSubscribed = true;
+		}
+
+		private void UnsubscribeFromSceneEvents()
+		{
+			if (!_sceneEventsSubscribed)
+			{
+				return;
+			}
+
+			SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+			_sceneEventsSubscribed = false;
+		}
+
 		private void SubscribeToEvents()
 		{
+			if (_timeEventsSubscribed)
+			{
+				return;
+			}
+
 			TimeOfDay.OnHourPassed += OnHourPassed;
 			TimeOfDay.OnDayPassed += OnDayPassed;
 			TimeOfDay.OnMonthPassed += OnMonthPassed;
+			_minuteWatcher.OnMinutePassed += OnMinutePassed;
+			_minuteWatcher.Reset();
+
+			_timeEventsSubscribed = true;
 		}
 
 		private void UnsubscribeFromEvents()
 		{
+			if (!_timeEventsSubscribed)
+			{
+				return;
+			}
+
 			TimeOfDay.OnHourPassed -= OnHourPassed;
 			TimeOfDay.OnDayPassed -= OnDayPassed;
 			TimeOfDay.OnMonthPassed -= OnMonthPassed;
+			_minuteWatcher.OnMinutePassed -= OnMinutePassed;
+
+			_timeEventsSubscribed = false;
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
+			{
+				ApplyHostingDealTiming();
+			}
 
+			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
+			{
+				Settings.StaffSalaryDue = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoServerCost"))
+			{
+				Settings.ServerCost = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
+			{
+				Settings.ElectricityBill = 0f;
+				Settings.Waterbill = 0f;
+				Settings.Gasbill = 0f;
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			{
+				// Disabled, see #150
+				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
+			{
+				ApplyNoMaintenance();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
+			{
+				ApplyFreePrint();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
+			{
+				ApplyIncreasePrintSpeed();
+			}
 		}
 
+		private void OnMinutePassed(object obj, EventArgs args)
+		{
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+			{
+				ApplyAutoEndDesign();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
+			{
+				ApplyAutoEndResearch();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
+			{
+				ApplyAutoEndPatent();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
+			{
+				ApplyAutoResearchStart();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
+			{
+				ApplyAutoAcceptHostingDeals();
+			}
+
+			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
+			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, "FullRoomBrightness");
+			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill");
+			bool noWaterElectricity = Helpers.GetProperty(TrainerSettings, "NoWaterElectricity");
+			bool disableFires = Helpers.GetProperty(TrainerSettings, "DisableFires");
+
+			if (fullEnvironment || fullRoomBrightness)
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					Room room = Settings.sRoomManager.Rooms[i];
+
+					if (fullEnvironment)
+					{
+						ApplyFullEnvironmentToRoom(room);
+					}
+
+					if (fullRoomBrightness)
+					{
+						ApplyFullRoomBrightnessToRoom(room);
+					}
+				}
+			}
+
+			if (increaseBookshelfSkill || noWaterElectricity || disableFires)
+			{
+				foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+				{
+					if (increaseBookshelfSkill)
+					{
+						ApplyIncreaseBookshelfSkillToFurniture(furniture);
+					}
+
+					if (noWaterElectricity)
+					{
+						ApplyNoWaterElectricityToFurniture(furniture);
+					}
+
+					if (disableFires)
+					{
+						ApplyDisableFiresFireStarterToFurniture(furniture);
+					}
+				}
+			}
+
+			bool increaseWalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed");
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].WalkSpeed = increaseWalkSpeed ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
+			}
+
+			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
+			//Not working
+			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
+			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
+			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
+		}
+
+		private bool ToggleJustEnabled(string settingKey)
+		{
+			bool isEnabled = Helpers.GetProperty(TrainerSettings, settingKey);
+			bool wasEnabled;
+			_reducedCadenceToggleState.TryGetValue(settingKey, out wasEnabled);
+			_reducedCadenceToggleState[settingKey] = isEnabled;
+
+			return isEnabled && !wasEnabled;
+		}
+
+		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from
+		// TimeOfDay.UpdateDay despite the name), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
-
+			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
+			{
+				ApplyDigitalDistributionMonopol();
+			}
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
+			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
+			{
+				ApplyFreeEmployees();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
+			{
+				ApplyMoreCreativity();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+			{
+				ApplyDisableBurglars();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
+			{
+				ApplyDisableFireInspection();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
+			{
+				ApplyDisableFurnitureStealing();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
+			{
+				ApplyNoVacation();
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "LockAge"))
 			{
 				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
@@ -117,10 +346,177 @@ namespace Trainer_v5
 				ShowDiscordInvite(displayAsPopup: true);
 			}
 
-			if (_defaultEnvironmentISPCostFactor.IsZero())
+			if (!_oneTimeSettingsApplied)
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
+				GameSettings.MaxFloor = Constants.MAX_FLOOR;
+				_oneTimeSettingsApplied = true;
 			}
+
+			if (ToggleJustEnabled("NoMaintenance"))
+			{
+				ApplyNoMaintenance();
+			}
+
+			if (ToggleJustEnabled("NoVacation"))
+			{
+				ApplyNoVacation();
+			}
+
+			if (ToggleJustEnabled("MoreHostingDeals"))
+			{
+				ApplyHostingDealTiming();
+			}
+
+			if (ToggleJustEnabled("AutoEndDesign"))
+			{
+				ApplyAutoEndDesign();
+			}
+
+			if (ToggleJustEnabled("AutoEndResearch"))
+			{
+				ApplyAutoEndResearch();
+			}
+
+			if (ToggleJustEnabled("AutoEndPatent"))
+			{
+				ApplyAutoEndPatent();
+			}
+
+			if (ToggleJustEnabled("FreeStaff"))
+			{
+				Settings.StaffSalaryDue = 0f;
+			}
+
+			if (ToggleJustEnabled("NoServerCost"))
+			{
+				Settings.ServerCost = 0f;
+			}
+
+			if (ToggleJustEnabled("NoWaterElectricity"))
+			{
+				Settings.ElectricityBill = 0f;
+				Settings.Waterbill = 0f;
+				Settings.Gasbill = 0f;
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture);
+			}
+
+			if (ToggleJustEnabled("DisableFurnitureStealing"))
+			{
+				ApplyDisableFurnitureStealing();
+			}
+
+			if (ToggleJustEnabled("NoEducationCost"))
+			{
+				EducationWindow.EdCost = new[] { 0f, 0f, 0f };
+			}
+
+			if (ToggleJustEnabled("AutoResearchStart"))
+			{
+				ApplyAutoResearchStart();
+			}
+
+			if (ToggleJustEnabled("DigitalDistributionMonopol"))
+			{
+				ApplyDigitalDistributionMonopol();
+			}
+
+			if (ToggleJustEnabled("AutoMaxMarketShare"))
+			{
+				// Disabled, see #150
+				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			}
+
+			if (ToggleJustEnabled("AutoAcceptHostingDeals"))
+			{
+				ApplyAutoAcceptHostingDeals();
+			}
+
+			if (ToggleJustEnabled("FreeEmployees"))
+			{
+				ApplyFreeEmployees();
+			}
+
+			if (ToggleJustEnabled("MoreCreativity"))
+			{
+				ApplyMoreCreativity();
+			}
+
+			if (ToggleJustEnabled("DisableBurglars"))
+			{
+				ApplyDisableBurglars();
+			}
+
+			if (ToggleJustEnabled("DisableFireInspection"))
+			{
+				ApplyDisableFireInspection();
+			}
+
+			if (ToggleJustEnabled("FreePrint"))
+			{
+				ApplyFreePrint();
+			}
+
+			if (ToggleJustEnabled("IncreasePrintSpeed"))
+			{
+				ApplyIncreasePrintSpeed();
+			}
+
+			if (ToggleJustEnabled("FullEnvironment"))
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
+				}
+			}
+
+			if (ToggleJustEnabled("FullRoomBrightness"))
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
+				}
+			}
+
+			if (ToggleJustEnabled("IncreaseBookshelfSkill"))
+			{
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture);
+			}
+
+			if (ToggleJustEnabled("DisableFires"))
+			{
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
+			}
+
+			if (ToggleJustEnabled("IncreaseWalkSpeed"))
+			{
+				for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+				{
+					Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
+				}
+			}
+
+			if (ToggleJustEnabled("IncreaseCourierCapacity"))
+			{
+				AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
+				AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
+			}
+
+			if (ToggleJustEnabled("ReduceISPCost"))
+			{
+				Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f;
+			}
+
+			if (ToggleJustEnabled("ReduceExpansionCost"))
+			{
+				Settings.ExpansionCost = Constants.EXPANSION_COST_HALF;
+			}
+
+			_minuteWatcher.Poll();
+
+			bool fullSatisfaction = Helpers.GetProperty(TrainerSettings, "FullSatisfaction");
+			bool noSickness = Helpers.GetProperty(TrainerSettings, "NoSickness");
+			bool cleanRooms = Helpers.GetProperty(TrainerSettings, "CleanRooms");
 
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
@@ -132,62 +528,13 @@ namespace Trainer_v5
 					furniture.Noisiness = 0;
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
+				if (Helpers.GetProperty(TrainerSettings, "DisableFires") && furniture.Parent.IsOnFire)
 				{
-					furniture.Water = 0;
-					furniture.Wattage = 0;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "DisableFires"))
-				{
-					if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+					if (furniture.Parent.Temperature > 40f)
 					{
-						furniture.upg.FireStarter = 0.0f;
+						furniture.Parent.Temperature = 21f;
 					}
-					if (furniture.Parent.IsOnFire)
-					{
-						if (furniture.Parent.Temperature > 40f)
-						{
-							furniture.Parent.Temperature = 21f;
-						}
-						furniture.Parent.StopFire();
-					}
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill") && furniture.Type == "Bookshelf")
-				{
-					furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
-				}
-
-				//TODO: else 0.25
-				if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
-				{
-					switch (furniture.Type)
-					{
-						case "Chair":
-							if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
-							{
-								furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
-							}
-							goto case "Ventilation";
-						case "CCTV":
-						case "Computer":
-						case "Lamp":
-						case "Server":
-						case "Product Printer":
-						case "Radiator":
-						case "Sink":
-						case "Toilet":
-						case "Ventilation":
-							break;
-						default:
-							break;
-					}
-
-					if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
-					{
-						furniture.upg.RepairMe();
-					}
+					furniture.Parent.StopFire();
 				}
 			}
 
@@ -195,30 +542,19 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 
-				if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
+				if (cleanRooms)
 				{
-					room.ClearDirt();
-					room.Smell = 0f;
+					ApplyCleanRoomsToRoom(room);
+				}
+
+				if (noSickness)
+				{
+					ApplyNoSicknessToRoom(room);
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
 				{
 					room.Temperature = 21f;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
-				{
-					room.FurnEnvironment = Constants.ENV_FULL;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
-				{
-					room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
-				{
-					room.GermCount = 0f;
 				}
 			}
 
@@ -227,19 +563,14 @@ namespace Trainer_v5
 				Actor actor = Settings.sActorManager.Actors[i];
 				Employee employee = actor.employee;
 
-				if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
+				if (fullSatisfaction)
 				{
-					TimeOfDay.Instance.Sick.Clear();
+					ApplyFullSatisfactionToActor(actor);
+				}
 
-					if (actor.SpecialState == Actor.HomeState.Sick)
-					{
-						actor.SpecialState = Actor.HomeState.Default;
-						actor.WasSick = true;
-					}
-
-					actor.GermAdd = 0f;
-					actor.GermCount = 0f;
-					actor.SickDays = 0;
+				if (noSickness)
+				{
+					ApplyNoSicknessToActor(actor);
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
@@ -257,21 +588,6 @@ namespace Trainer_v5
 					actor.Effectiveness = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat();
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
-				{
-					employee.JobSatisfaction = 2f;
-					employee.ActiveComplaint = false;
-					foreach (var thought in employee.Thoughts.Values.ToList())
-					{
-						if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-						{
-							employee.Thoughts.Remove(thought.Thought);
-						}
-					}
-
-					employee.SetMood("LoveWork", actor, 1f);
-				}
-
 				if (Helpers.GetProperty(TrainerSettings, "NoNeeds"))
 				{
 					actor.NextSmell = 0f;
@@ -284,169 +600,15 @@ namespace Trainer_v5
 					employee.HadProperFood = true;
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
-				{
-					actor.NegotiateSalary = false;
-					employee.Salary = 0f;
-					employee.AskedFor = 0f;
-					employee.Demanded = 0f;
-					employee.UpfrontDemand = 0f;
-					employee.ChangeSalary(0f, 0f, actor, false);
-				}
-
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
 				{
 					actor.Noisiness = 0;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
-				{
-					actor.VacationMonth = SDateTime.NextMonth(24);
-					if (actor.SpecialState == Actor.HomeState.Vacation)
-						actor.SpecialState = Actor.HomeState.Default;
 				}
 
 				if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
 				{
 					employee.LastInpirationUse = new SDateTime(0);
 				}
-
-				if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
-				{
-					employee.RevealCreativity(1f);
-				}
-
-				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
-			{
-				int inGameHour = TimeOfDay.Instance.Hour;
-
-				if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
-				{
-					PushDeal();
-				}
-				else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
-				{
-					Helpers.DealIsPushed = false;
-				}
-
-				if (!Helpers.RewardIsGained && inGameHour == 12)
-				{
-					PushReward();
-				}
-				else if (inGameHour != 12 && Helpers.RewardIsGained)
-				{
-					Helpers.RewardIsGained = false;
-				}
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
-			{
-				foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-				{
-					burglar.Despawned = true;
-					Settings.sActorManager.RemoveFromAwaiting(burglar);
-				}
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
-			{
-				var designDocuments = Settings.MyCompany.WorkItems
-									.OfType<DesignDocument>()
-									.Where(d => d.HasFinished)
-									.ToList();
-
-				designDocuments.ForEach(designDocument =>
-				{
-					designDocument.PromoteAction();
-				});
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
-			{
-				var researchWorks = Settings.MyCompany.WorkItems
-									.OfType<ResearchWork>()
-									.Where(rw => rw.Finished)
-									.ToList();
-
-				researchWorks.ForEach(researchWork =>
-				{
-					GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
-					TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
-					if (tech != null)
-					{
-						LegalWork legalWork = new LegalWork(tech);
-						GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
-						GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
-					}
-					researchWork.Kill(false);
-				});
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
-			{
-				var legalWorks = Settings.MyCompany.WorkItems
-								   .OfType<LegalWork>()
-								   .Where(lw => lw.CurrentStage() == "Finished" &&
-										lw.Type == LegalWork.WorkType.Patent)
-								   .ToList();
-
-				legalWorks.ForEach(legalWork =>
-				{
-					legalWork.PatentNow();
-				});
-			}
-
-			//TODO: add printspeed and printprice when it's disabled (else)
-			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
-			{
-				Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
-			{
-				Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoEducationCost"))
-			{
-				EducationWindow.EdCost = new[] { 0f, 0f, 0f };
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
-			{
-				Settings.StaffSalaryDue = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoServerCost"))
-			{
-				Settings.ServerCost = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
-			{
-				Settings.ElectricityBill = 0f;
-				Settings.Waterbill = 0f;
-				Settings.Gasbill = 0f;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
-			{
-				Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
-			{
-				foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
-				{
-					fireInspector.Despawned = true;
-					Settings.sActorManager.RemoveFromAwaiting(fireInspector);
-				}
-
-				Settings.ActiveFireReport.Reset();
-				Settings.PassedFireInspection = true;
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "DisableForcePause"))
@@ -457,56 +619,6 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "DisableForceFreeze"))
 			{
 				GameSettings.FreezeGame = false;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
-			{
-				var activeTechLevels = MarketSimulation.Active.TechLevels;
-				var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
-				var currentYear = TimeOfDay.Instance.Year;
-
-				if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
-				{
-					foreach (var activeTechLevel in activeTechLevels)
-					{
-						if (!Settings.IsResearching(activeTechLevel.Key))
-						{
-							int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
-							if (latestResearchYear < currentYear)
-							{
-								var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
-								researchWork.AddDevTeams(defaultResearchTeams);
-								Settings.MyCompany.AddWorkItem(researchWork);
-							}
-						}
-					}
-				}
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
-			{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
-				foreach (var company in Settings.simulation.Companies.Values.ToList())
-				{
-					if (company.Bankrupt && company.Distribution != null)
-					{
-						MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
-						HUD.Instance.digitalDistributionWindow.PlatformList.Items.Remove(company.Distribution);
-					}
-
-					if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
-						continue;
-
-					company.Distribution.SetCut(1f);
-					company.Distribution.SetAutoAcceptClients(false);
-					company.Distribution.AvailableBandwidth = 0f;
-					company.Distribution.ItemSales = 0f;
-					company.Distribution.ActualItemSales = 0f;
-					company.Distribution.LastLoad = 0f;
-					company.Distribution.MarketShare = 0f;
-					MarketSimulation.Active.ClosePlatform(company.Distribution);
-				}
-#endif
 			}
 
 			/*
@@ -525,31 +637,323 @@ namespace Trainer_v5
 			  actor.ForgetfulETA += months;
 			}
 			 * */
+		}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+		private static void ApplyCleanRoomsToRoom(Room room)
+		{
+			room.ClearDirt();
+			room.Smell = 0f;
+		}
+
+		private static void ApplyNoSicknessToRoom(Room room)
+		{
+			room.GermCount = 0f;
+		}
+
+		private static void ApplyNoSicknessToActor(Actor actor)
+		{
+			TimeOfDay.Instance.Sick.Clear();
+
+			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
-				Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
-#endif
+				actor.SpecialState = Actor.HomeState.Default;
+				actor.WasSick = true;
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
-			{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
-				var serverGroups = Settings.GetAllServerGroups().ToList();
-				if (serverGroups.Count == 0)
-					return;
+			actor.GermAdd = 0f;
+			actor.GermCount = 0f;
+			actor.SickDays = 0;
+		}
 
+		private static void ApplyNoMaintenance()
+		{
+			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			{
+				switch (furniture.Type)
+				{
+					case "Chair":
+						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
+						{
+							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
+						}
+						goto case "Ventilation";
+					case "CCTV":
+					case "Computer":
+					case "Lamp":
+					case "Server":
+					case "Product Printer":
+					case "Radiator":
+					case "Sink":
+					case "Toilet":
+					case "Ventilation":
+						break;
+					default:
+						break;
+				}
+
+				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
+				{
+					furniture.upg.RepairMe();
+				}
+			}
+		}
+
+		private static void ApplyFullSatisfactionToActor(Actor actor)
+		{
+			Employee employee = actor.employee;
+
+			employee.JobSatisfaction = 2f;
+			employee.ActiveComplaint = false;
+			foreach (var thought in employee.Thoughts.Values.ToList())
+			{
+				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
+				{
+					employee.Thoughts.Remove(thought.Thought);
+				}
+			}
+
+			employee.SetMood("LoveWork", actor, 1f);
+		}
+
+		private static void ApplyNoVacation()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+
+				actor.VacationMonth = SDateTime.NextMonth(24);
+				if (actor.SpecialState == Actor.HomeState.Vacation)
+					actor.SpecialState = Actor.HomeState.Default;
+			}
+		}
+
+		private static void ApplyFullEnvironmentToRoom(Room room)
+		{
+			room.FurnEnvironment = Constants.ENV_FULL;
+		}
+
+		private static void ApplyFullRoomBrightnessToRoom(Room room)
+		{
+			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
+		}
+
+		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
+		{
+			if (furniture.Type == "Bookshelf")
+			{
+				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
+			}
+		}
+
+		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
+		{
+			furniture.Water = 0;
+			furniture.Wattage = 0;
+		}
+
+		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
+		{
+			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+			{
+				furniture.upg.FireStarter = 0.0f;
+			}
+		}
+
+		private static void ApplyFreeEmployees()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				Employee employee = actor.employee;
+
+				actor.NegotiateSalary = false;
+				employee.Salary = 0f;
+				employee.AskedFor = 0f;
+				employee.Demanded = 0f;
+				employee.UpfrontDemand = 0f;
+				employee.ChangeSalary(0f, 0f, actor, false);
+			}
+		}
+
+		private static void ApplyMoreCreativity()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
+			}
+		}
+
+		private static void ApplyDisableBurglars()
+		{
+			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
+			{
+				burglar.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(burglar);
+			}
+		}
+
+		private static void ApplyDisableFireInspection()
+		{
+			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
+			{
+				fireInspector.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
+			}
+
+			Settings.ActiveFireReport.Reset();
+			Settings.PassedFireInspection = true;
+		}
+
+		//TODO: add printspeed and printprice when it's disabled (else)
+		private static void ApplyFreePrint()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
+		}
+
+		private static void ApplyIncreasePrintSpeed()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
+		}
+
+		private static void ApplyHostingDealTiming()
+		{
+			int inGameHour = TimeOfDay.Instance.Hour;
+
+			if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
+			{
+				PushDeal();
+			}
+			else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
+			{
+				Helpers.DealIsPushed = false;
+			}
+
+			if (!Helpers.RewardIsGained && inGameHour == 12)
+			{
+				PushReward();
+			}
+			else if (inGameHour != 12 && Helpers.RewardIsGained)
+			{
+				Helpers.RewardIsGained = false;
+			}
+		}
+
+		private static void ApplyAutoEndDesign()
+		{
+			// PromoteAction() itself blocks on this precondition (staying HasFinished forever
+			// without it), so it must be mirrored here to avoid calling it on ineligible designs.
+			var designDocuments = Settings.MyCompany.WorkItems
+								.OfType<DesignDocument>()
+								.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
+								.ToList();
+
+			designDocuments.ForEach(designDocument =>
+			{
+				designDocument.PromoteAction();
+			});
+		}
+
+		private static void ApplyAutoEndResearch()
+		{
+			var researchWorks = Settings.MyCompany.WorkItems
+								.OfType<ResearchWork>()
+								.Where(rw => rw.Finished)
+								.ToList();
+
+			researchWorks.ForEach(researchWork =>
+			{
+				GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
+				TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
+				if (tech != null)
+				{
+					LegalWork legalWork = new LegalWork(tech);
+					GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
+					GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+				}
+				researchWork.Kill(false);
+			});
+		}
+
+		private static void ApplyAutoEndPatent()
+		{
+			var legalWorks = Settings.MyCompany.WorkItems
+							   .OfType<LegalWork>()
+							   .Where(lw => lw.CurrentStage() == "Finished" &&
+									lw.Type == LegalWork.WorkType.Patent)
+							   .ToList();
+
+			legalWorks.ForEach(legalWork =>
+			{
+				legalWork.PatentNow();
+			});
+		}
+
+		private static void ApplyDisableFurnitureStealing()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
+		}
+
+		private static void ApplyAutoResearchStart()
+		{
+			var activeTechLevels = MarketSimulation.Active.TechLevels;
+			var defaultResearchTeams = GameSettings.Instance.GetDefaultTeams("Research");
+			var currentYear = TimeOfDay.Instance.Year;
+
+			if (activeTechLevels.Count > 0 && defaultResearchTeams.Count > 0)
+			{
+				foreach (var activeTechLevel in activeTechLevels)
+				{
+					if (!Settings.IsResearching(activeTechLevel.Key))
+					{
+						int latestResearchYear = Settings.MyCompany.GetLatestResearch(activeTechLevel.Key, -1);
+						if (latestResearchYear < currentYear)
+						{
+							var researchWork = new ResearchWork(activeTechLevel.Key, currentYear);
+							researchWork.AddDevTeams(defaultResearchTeams);
+							Settings.MyCompany.AddWorkItem(researchWork);
+						}
+					}
+				}
+			}
+		}
+
+		private static void ApplyDigitalDistributionMonopol()
+		{
+			foreach (var company in Settings.simulation.Companies.Values.ToList())
+			{
+				if (company.Bankrupt && company.Distribution != null)
+				{
+					MarketSimulation.Active.DistributionPlatforms.Remove(company.Distribution);
+					HUD.Instance.digitalDistributionWindow.PlatformList.Items.Remove(company.Distribution);
+				}
+
+				if (company == Settings.MyCompany || company.Distribution == null || !company.Distribution.Open)
+					continue;
+
+				company.Distribution.SetCut(1f);
+				company.Distribution.SetAutoAcceptClients(false);
+				company.Distribution.AvailableBandwidth = 0f;
+				company.Distribution.ItemSales = 0f;
+				company.Distribution.ActualItemSales = 0f;
+				company.Distribution.LastLoad = 0f;
+				company.Distribution.MarketShare = 0f;
+				MarketSimulation.Active.ClosePlatform(company.Distribution);
+			}
+		}
+
+		private static void ApplyAutoAcceptHostingDeals()
+		{
+			var serverGroups = Settings.GetAllServerGroups().ToList();
+			var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
+
+			if (serverGroups.Count > 0 && serverDeals.Count > 0)
+			{
 				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
 				foreach (var serverGroup in serverGroups)
 				{
 					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
 						mostPowerfulServerGroup = serverGroup;
 				}
-
-				var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
-				if (serverDeals.Count == 0)
-					return;
 
 				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
 				foreach (var serverDeal in serverDeals)
@@ -560,16 +964,7 @@ namespace Trainer_v5
 						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 					}
 				}
-#endif
 			}
-
-			GameSettings.MaxFloor = Constants.MAX_FLOOR;
-			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
-			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
-			//Not working
-			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
-			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
-			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
 		}
 
 		private static void LoadSpecializations()
@@ -849,11 +1244,7 @@ namespace Trainer_v5
 
 				foreach (SoftwareType t in softwareTypes)
 				{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
-#else
-					actor.employee.LeadSpecialization[t] = 1f;
-#endif
 				}
 
 				foreach (Employee.EmployeeRole employeeRole in employeeRoles)
@@ -891,21 +1282,15 @@ namespace Trainer_v5
 
 		#region MonthDays
 
-		public static void MonthDaysAction(string input)
+		public static void MonthDaysAction(int i)
 		{
-			int i;
-			if (!int.TryParse(input, out i))
-			{
-				return;
-			}
-
 			GameSettings.DaysPerMonth = i;
 			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
 		}
 
 		public static void MonthDays()
 		{
-			WindowManager.SpawnInputDialog("How many days per month do you want?", "Days per month", "2", MonthDaysAction);
+			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
 		}
 
 		#endregion
@@ -979,7 +1364,7 @@ namespace Trainer_v5
 
 		#region Set Product Price
 
-		public static void SetProductPriceAction(string input)
+		public static void SetProductPriceAction(float price)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -989,20 +1374,20 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.Price = input.ConvertToFloatDef(50f);
+			Product.Price = price;
 			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductPrice()
 		{
-			WindowManager.SpawnInputDialog("Type product price:", "Product price", "50", SetProductPriceAction);
+			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
 		}
 
 		#endregion
 
 		#region Set Product Stock
 
-		public static void SetProductStockAction(string input)
+		public static void SetProductStockAction(uint stock)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -1012,20 +1397,20 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.PhysicalCopies = (uint)input.ConvertToIntDef(100000);
+			Product.PhysicalCopies = stock;
 			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void SetProductStock()
 		{
-			WindowManager.SpawnInputDialog("Type product stock:", "Product stock", "100000", SetProductStockAction);
+			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
 		}
 
 		#endregion
 
 		#region Add Active Users
 
-		public static void AddActiveUsersAction(string input)
+		public static void AddActiveUsersAction(int users)
 		{
 			SoftwareProduct Product =
 				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
@@ -1035,13 +1420,13 @@ namespace Trainer_v5
 				return;
 			}
 
-			Product.Userbase = input.ConvertToIntDef(100000);
+			Product.Userbase = users;
 			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		public static void AddActiveUsers()
 		{
-			WindowManager.SpawnInputDialog("Type product active users:", "Product active users", "100000", AddActiveUsersAction);
+			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
 		}
 
 		#endregion
@@ -1134,14 +1519,14 @@ namespace Trainer_v5
 
 		#region Increase Money
 
-		public static void IncreaseMoneyAction(string input)
+		public static void IncreaseMoneyAction(int amount)
 		{
-			Settings.MyCompany.MakeTransaction(input.ConvertToIntDef(100000), Company.TransactionCategory.Deals);
+			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 		public static void IncreaseMoney()
 		{
-			WindowManager.SpawnInputDialog("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
+			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
 		}
 
 		#endregion
@@ -1192,10 +1577,9 @@ namespace Trainer_v5
 
 		public static void MaxMarketShare()
 		{
-#if SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
-			Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
-			HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-#endif
+			// Disabled, see #150
+			//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
+			//HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		#endregion
@@ -1242,9 +1626,23 @@ namespace Trainer_v5
 
 		#region Overrides
 
-		public override void OnActivate() { /* Mandatory but not needed */ }
+		public override void OnActivate()
+		{
+			SubscribeToSceneEvents();
 
-		public override void OnDeactivate() { /* Mandatory but not needed */ }
+			// No fresh sceneLoaded event fires if we are reactivated while already
+			// in MainScene, so pick up the time-event subscriptions directly here.
+			if (SceneManager.GetActiveScene().name == "MainScene")
+			{
+				SubscribeToEvents();
+			}
+		}
+
+		public override void OnDeactivate()
+		{
+			UnsubscribeFromEvents();
+			UnsubscribeFromSceneEvents();
+		}
 
 		#endregion
 	}

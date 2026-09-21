@@ -1,220 +1,185 @@
 # Changelog
-Release notes for changes to the trainer
 
----
+All meaningful user-facing and developer-facing changes to the trainer are
+documented in this file.
 
-**5.2.6**
-25.05.2026. for Beta 1
-- Added Max Market Share button: instantly sets all company products to 100% market share
-- Added Auto Max Market Share toggle: keeps all company products at 100% market share continuously
+Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
+from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
----
+## [5.2.8] - 2026-09-21
 
-**5.2.5**
-16.01.2026. for Beta 1
-- Updated libraries
+- Fixed several toggle and automation timing bugs: Auto Design End no longer
+  repeatedly re-promotes design documents still missing a lead designer,
+  Auto Accept Hosting Deals no longer stalls other trainer updates when
+  idle, and toggles including Full Satisfaction, No Sickness, and Clean
+  Rooms now re-apply on the cadence that matches how often the game
+  actually changes their state, instead of drifting or snapping back.
+- Fixed generated UI control names showing `_T` instead of the actual
+  control type.
+- Removed Max Market Share due to a game compatibility issue.
+- Fixed the Trainer Settings window crashing on open when its close button
+  was missing or duplicated.
+- Fixed returning to the main menu crashing when the trainer and Skill
+  Change buttons had mismatched initialization state.
+- Fixed Lock Age advancing employee ages more than once per in-game month
+  after reloading a save.
+- Fixed the LeadSpec window showing stale data from the previously edited
+  employee.
+- Fixed Product stock, Days per month, Product price, and Active users
+  accepting invalid or out-of-range values.
+- Fixed employee detail window trainer controls (Trait, Demand, Creativity,
+  Inspiration, LeadSpec) not reappearing after a save reload.
 
----
+## [5.2.7] - 2026-09-10
 
-**5.2.5**
-08.10.2025. for Beta 1
-- Removed Reduce Box Price due to incompatibility
-- Updated libraries
+- Documentation restructured to the managed templates (README, CHANGELOG, and
+  the architecture overview).
+- Removed version-conditional compilation from the lead-specialization setters;
+  they now use a single code path.
+- Fixed Digital Distribution Monopol and Auto Accept Hosting Deals being
+  compiled out of Release builds; they are now included in released binaries.
 
----
- 
-**5.2.3**
-24.08.2025. for Beta 1
-- Updated libraries
+## [5.2.6] - 2026-05-25
 
----
+- Max Market Share button: instantly sets all company products to 100% market share.
+- Auto Max Market Share toggle: keeps all company products at 100% market share continuously.
 
-**5.2.2**
-23.12.2024. for Beta 1
-- Fix creativity modification in DetailWindowTrainer (muddxyii)
+## [5.2.5] - 2026-01-16
 
----
+- Updated libraries.
 
-**5.2.1**
-27.11.2024. for Beta 1
-- Updated libraries
-- Fixed broken features
+## [5.2.4] - 2025-10-08
 
----
+- Updated libraries.
+- Removed Reduce Box Price, due to incompatibility.
 
-**5.2.0**
-08.11.2024. for Beta 1
-- Updated libraries
-- Fixed broken features (muddxyii)
+## [5.2.3] - 2025-08-24
 
----
+- Updated libraries.
 
-**5.1.9**
-13.10.2024. for Beta 1
-- Updated libraries
-- Disable Stress toggle fixed (savisitor15)
+## [5.2.2] - 2024-12-23
 
----
+- Fixed Creativity modification in DetailWindowTrainer (muddxyii).
 
-**5.1.8**
-25.05.2024. for Beta 1
-- Updated libraries
-- UI logic refactor
-- Added confirmation for Max Reputation feature
-- Added experimental toggle
+## [5.2.1] - 2024-11-27
 
----
+- Updated libraries.
+- Fixed broken features.
 
-**5.1.7**
-23.10.2023. for Beta 1
-- Added experimental features column.
-- Removed deprecated features (non-fixable).
-- Added new loans.
-- Possible fix for NoSickness.
+## [5.2.0] - 2024-11-08
+
+- Updated libraries.
+- Fixed broken features (muddxyii).
+
+## [5.1.9] - 2024-10-13
+
+- Updated libraries.
+- Fixed Disable Stress toggle (savisitor15).
+
+## [5.1.8] - 2024-05-25
+
+- Confirmation for the Max Reputation feature.
+- Experimental toggle.
+- Updated libraries.
+- UI logic refactor.
+
+## [5.1.7] - 2023-10-23
+
+- Experimental features column.
+- New loans.
 - Disable Employee smell (NoNeeds upgraded).
-- Possible fix for FreeEmployees where employee try to negotitate salary even if it's zero.
+- Possible fix for NoSickness.
+- Possible fix for FreeEmployees where an employee tried to negotiate salary even when it was zero.
+- Removed deprecated features (non-fixable).
 
----
+## [5.1.6] - 2023-10-22
 
-**5.1.6**
+- Auto Accept Hosting Deals feature.
+- Display game version in the Trainer Settings window.
+- Remove the distribution platform if the simulated company is bankrupt.
+- Fixed Trainer Settings save on version increase.
+- Fixed duplicated Hosting Deals when More Hosting Deals is activated.
+- Fixed missing Hosting category when using the Max Reputation feature.
 
-22.10.2023. for Beta 1
-- Fixed Trainer Settings save on version increase
-- Display game version in Trainer Settings Window
-- Fixed duplicated Hosting Deals when More Hosting Deals is activated
-- Added Auto Accept Hosting Deals feature
-- Added missing Hosting category when using Max Reputation feature
-- Remove the distribution platform if the simulated company is bankrupt
+## [5.1.5] - 2023-10-21
 
----
+- Fixed not saving new toggles.
 
-**5.1.5**
+## [5.1.4] - 2023-10-16
 
-21.10.2023. for Beta 1
-- Fixed not saving new toggles
+- 8000% efficiency option.
+- Backward compatibility for Beta 1.6.
+- Trainer window: toggles rearranged.
+- Updated Discord invite link.
+- Fixed Disable Fire Inspection feature.
 
----
+## [5.1.3] - 2023-10-15
 
-**5.1.4**
+- Disable Fire Inspection feature.
+- Disable Force Pause feature.
+- Disable Force Freeze feature.
+- Auto Research Start feature.
+- Digital Distribution Monopol feature.
+- Dynamic loading of software types for More Hosting Deals.
 
-16.10.2023. for Beta 1
-- Fixed Disable Fire Inspection feature
-- Trainer Window: Toggles rearrange
-- Updated Discord invite link
-- Backward compatibility for Beta 1.6
-- Added 8000% efficiency option
+## [5.1.2] - 2023-10-14
 
----
+- Unlock and Claim all Rewards feature.
+- Updated libraries.
 
-**5.1.3**
+## [5.1.1] - 2023-09-11
 
-15.10.2023. for Beta 1
-- Added Disable Fire Inspection feature
-- Added Disable Force Pause feature
-- Added Disable Force Freeze feature
-- Added Auto Research Start feature
-- Dynamic loading of software types for More Hosting Deals
-- Added Digital Distribution Monopol feature
+- Added/updated localizations.
+- Fixed Max Skill of employees feature.
 
----
+## [5.1.0] - 2023-09-10
 
-**5.1.2**
+- Updated libraries.
 
-14.10.2023. for Beta 1
-- Updated libraries
-- Added Unlock and Claim all Rewards feature
+## [5.0.9] - 2023-05-20
 
----
+- Updated libraries.
+- Fixed compiler issues.
 
-**5.1.1**
+## [5.0.8] - 2023-05-18
 
-11.9.2023. for Beta 1
-- Fixed Max Skill of employees feature
-- Added/Updated localizations
+- Updated libraries.
 
----
+## [5.0.7] - 2023-04-15
 
-**5.1.0**
+- Updated libraries.
 
-10.9.2023. for Beta 1
-- Updated libraries
+## [5.0.6] - 2022-12-14
 
----
+- Employee Demand change, Employee Lead Spec change, Employee Trait change, Console (credits: jiandy666).
+- Inspiration Use (credits: progesor).
+- Updated libraries.
 
-**5.0.9**
+## [5.0.5] - 2022-10-15
 
-20.5.2023. for Beta 1
-- Updated libraries
-- Fixed compiler issues
+- Updated libraries.
 
----
+## [5.0.4] - 2022-09-17
 
-**5.0.8**
+- Updated libraries.
+- Typo fix.
 
-18.5.2023. for Beta 1
-- Updated libraries
+## [5.0.3] - 2022-07-28
 
----
+- Updated libraries.
+- Removed Auto Distribution Deals option, due to incompatibility.
 
-**5.0.7**
+## [5.0.2] - 2022-06-11
 
-15.4.2023. for Beta 1
-- Updated libraries
+- Updated libraries.
+- Various fixes.
 
----
+## [5.0.1] - 2022-04-02
 
-**5.0.6**
+- "Default" option for the efficiency dropdown(s).
+- New localizations: Croatian (Trawis), German (chaikobar), Korean (dragontalk), Spanish (jesustb).
+- Fixed Lock Age option.
 
-14.12.2022. for Beta 1
-- Updated libraries
-- Employee Demand change, Employee Lead Spec change Employee Trait change, Console - credits: jiandy666
-- Inspiration Use - credits: progesor
+## [5.0] - 2022-03-14
 
----
-
-**5.0.5**
-
-15.10.2022. for Beta 1
-- Updated libraries
-
----
-
-**5.0.4**
-
-17.09.2022. for Beta 1
-- Updated libraries
-- Typo fix
-
----
-
-**5.0.3**
-
-28.07.2022. for Beta 1
-- Updated libraries
-- Removed Auto Distribution Deals option due to incompatibility
-
----
-
-**5.0.2**
-
-11.06.2022. for Beta 1
-- Updated libraries
-- Various fixes
-
----
-
-**5.0.1**
-
-02.04.2022. for Beta 1
-- Added "Default" for efficiency dropdown(s)
-- Fixed Lock Age option
-- New localizations: Croatian (Trawis), German (chaikobar), Korean (dragontalk), Spanish (jesustb)
-
----
-
-**5.0**
-
-14.03.2022. for Beta 1
-- Initial version
-
----
+- Initial version.

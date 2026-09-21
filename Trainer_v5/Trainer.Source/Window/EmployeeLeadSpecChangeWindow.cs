@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Trainer.Source.Window
 {
-	public class EmployeeLeadSpecChangeWindow : MonoBehaviour
+	public class EmployeeLeadSpecChangeWindow
 	{
 		public static EmployeeLeadSpecChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeLeadSpecChangeWindow> _instance = new Lazy<EmployeeLeadSpecChangeWindow>(() => new EmployeeLeadSpecChangeWindow());
@@ -17,6 +17,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private Dictionary<string, SoftwareType> _softwareTypes;
 		private Dictionary<string, Toggle> _specToggles;
 		private Actor _actor;
+		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -41,6 +42,15 @@ namespace Trainer_v5.Trainer.Source.Window
 
 			var employee = _actor?.employee;
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {employee?.Name ?? "Nobody"}";
+
+			_isRefreshing = true;
+			foreach (var pair in _specToggles)
+			{
+				float value;
+				var isOn = employee != null && employee.LeadSpecializationFix.TryGetValue(pair.Key, out value) && value > 0f;
+				pair.Value.isOn = isOn;
+			}
+			_isRefreshing = false;
 		}
 
 		private void CreateWindow()
@@ -62,33 +72,37 @@ namespace Trainer_v5.Trainer.Source.Window
 			var typeKeys = softwareTypes.Keys.ToList();
 			int half = (typeKeys.Count + 1) / 2;
 
-			var col1 = new VerticalLayout
+			var col1Toggles = typeKeys.Take(half).Select(k => toggles[k].gameObject).ToArray();
+			var col2Toggles = typeKeys.Skip(half).Select(k => toggles[k].gameObject).ToArray();
+
+			var col1Header = new[] { UIFactory.Label("Lead Spec", WindowStyles.TitleStyle).gameObject };
+			var col1Footer = new[]
 			{
-				Gap = 2,
-				Components = LayoutHelper.EnumerableOf(
-					UIFactory.Label("Lead Spec", WindowStyles.TitleStyle),
-					typeKeys.Take(half).Select(k => (Component)toggles[k]).ToArray(),
-					UIFactory.Button("All",         () => self.ToggleAll(true)),
-					UIFactory.Button("None",        () => self.ToggleAll(false)),
-					UIFactory.Button("Set LeadSpec",() => self.SetLeadSpec())
-				).ToList()
+				UIFactory.Button("All",          () => self.ToggleAll(true)).gameObject,
+				UIFactory.Button("None",         () => self.ToggleAll(false)).gameObject,
+				UIFactory.Button("Set LeadSpec", () => self.SetLeadSpec()).gameObject
 			};
 
-			var col2 = new VerticalLayout
-			{
-				Gap = 2,
-				Components = LayoutHelper.EnumerableOf(
-					UIFactory.Label("", WindowStyles.TitleStyle),
-					typeKeys.Skip(half).Select(k => (Component)toggles[k]).ToArray()
-				).ToList()
-			};
+			var col2Header = new[] { UIFactory.Label("", WindowStyles.TitleStyle).gameObject };
+			var col2Footer = new GameObject[0];
 
-			const int colWidth = 160, padding = 4, colGap = 8;
-			window.Add(col1, new Rect(padding,                  padding, colWidth, 0));
-			window.Add(col2, new Rect(padding + colWidth + colGap, padding, colWidth, 0));
+			const int colWidth = 160, padding = 4, colGap = 8, gap = 2;
+
+			var reservedRows = Math.Max(col1Header.Length + col1Footer.Length, col2Header.Length + col2Footer.Length);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows);
+
+			var col1Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(padding, padding, colWidth, 0),
+				col1Header, col1Toggles, col1Footer,
+				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
+
+			var col2Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(padding + colWidth + colGap, padding, colWidth, 0),
+				col2Header, col2Toggles, col2Footer,
+				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
 
 			int totalWidth  = padding * 2 + colWidth * 2 + colGap;
-			int totalHeight = new[] { col1.PreferHeight, col2.PreferHeight }.Max() + padding * 2;
+			int totalHeight = Mathf.Max(col1Height, col2Height) + padding;
 			window.SetMinSize(totalWidth, totalHeight);
 
 			_window      = window;
@@ -98,6 +112,9 @@ namespace Trainer_v5.Trainer.Source.Window
 
 		private void OnToggle(string key, bool isOn)
 		{
+			if (_isRefreshing)
+				return;
+
 			_specToggles[key].isOn = isOn;
 		}
 
@@ -134,11 +151,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				{
 					foreach (var type in selectTypes)
 					{
-#if DEBUG || SWINCBETA1_7 || SWINCBETA1_8 || SWINCBETA1_9 || SWINCBETA1_10
 						employee.LeadSpecializationFix[type.ToString()] = val;
-#else
-						employee.LeadSpecialization[type] = val;
-#endif
 					}
 				},
 				min: 0, max: 1

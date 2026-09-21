@@ -21,24 +21,6 @@
 		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_7|AnyCPU'">
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA1_6|AnyCPU'">
-		<DebugSymbols>true</DebugSymbols>
-		<DefineConstants>DEBUG;TRACE</DefineConstants>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCBETA|AnyCPU'">
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SWINCRELEASE|AnyCPU'">
-	</PropertyGroup>
-
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
 			<HintPath>Trainer.Libraries\Assembly-CSharp.dll</HintPath>

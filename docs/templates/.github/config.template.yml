@@ -1,0 +1,8 @@
+# repo-seed-template:start
+# Document role: Managed project-file template
+# Template source: docs/templates/.github/config.template.yml
+# Scaffold destination: .github/ISSUE_TEMPLATE/config.yml
+# Scaffold behavior: The live file is project-owned and never overwritten by sync
+# repo-seed-template:end
+
+blank_issues_enabled: false

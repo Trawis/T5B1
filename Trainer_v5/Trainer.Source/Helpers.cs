@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.2.6";
+		public static string Version => "5.2.8";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -94,6 +94,26 @@ namespace Trainer_v5
 
 		#region methods
 
+		// Keys reported as unregistered already, so a typo'd key hit every frame
+		// doesn't flood the console. Shared with Extensions so all the property
+		// accessors dedupe against the same set.
+		private static readonly HashSet<string> _loggedUnregisteredKeys = new HashSet<string>();
+
+		// A missing key here means the caller asked for a key that was never added
+		// to the dictionary it's operating on, which happens when code references a
+		// setting name that doesn't exist (e.g. a typo). It is distinct from a
+		// registered key that is simply absent from an old save's serialized data -
+		// that case never reaches these accessors, since save deserialization only
+		// looks up keys it already enumerated from the live settings dictionary.
+		internal static void LogUnregisteredKey(string source, string key)
+		{
+			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
+			if (_loggedUnregisteredKeys.Add(message))
+			{
+				message.Log();
+			}
+		}
+
 		public static bool GetProperty(Dictionary<string, bool> properties, string key)
 		{
 			bool value;
@@ -101,6 +121,7 @@ namespace Trainer_v5
 			{
 				return value;
 			}
+			LogUnregisteredKey("GetProperty", key);
 			return false;
 		}
 
@@ -111,16 +132,27 @@ namespace Trainer_v5
 			{
 				return value;
 			}
+			LogUnregisteredKey("GetProperty", key);
 			return null;
 		}
 
 		public static void SetProperty(Dictionary<string, bool> properties, string key, bool value)
 		{
+			if (!properties.ContainsKey(key))
+			{
+				LogUnregisteredKey("SetProperty", key);
+				return;
+			}
 			properties[key] = value;
 		}
 
 		public static void SetProperty(Dictionary<string, object> properties, string key, object value)
 		{
+			if (!properties.ContainsKey(key))
+			{
+				LogUnregisteredKey("SetProperty", key);
+				return;
+			}
 			properties[key] = value;
 		}
 
@@ -170,21 +202,10 @@ namespace Trainer_v5
 
 		#endregion
 
-		public static string GetGameVersion()
-		{
-#if !SWINCBETA && !SWINCRELEASE
-			return "1.6";
-#elif SWINCBETA1_7
-			return "1.7";
-#elif SWINCBETA1_8
-			return "1.8";
-#elif SWINCBETA1_9
-			return "1.9";
-#elif SWINCBETA1_10
-			return "1.10";
-#else
-			return "UNKNOWN";
-#endif
-		}
+		// T5B1 targets whichever Software Inc Beta 1 build the assemblies under
+		// Trainer.Libraries/ were vendored from; there is no reliable way to
+		// read an exact build number from committed information, so this
+		// reports the current target generically instead of guessing one.
+		public static string GetGameVersion() => "Beta 1";
 	}
 }

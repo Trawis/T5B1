@@ -1,0 +1,12 @@
+# repo-seed-template:start
+# Document role: Managed project-file template
+# Template source: docs/templates/gitignore.template
+# Scaffold destination: .gitignore
+# Scaffold behavior: The live file is project-owned and never overwritten by sync
+# repo-seed-template:end
+
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

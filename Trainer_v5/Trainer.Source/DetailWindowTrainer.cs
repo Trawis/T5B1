@@ -7,19 +7,23 @@ namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
 	{
-		private static bool _installed;
+		// Tracks the specific DetailWindow instance the trainer controls were injected into.
+		// The game destroys and recreates DetailWindow on save reloads and some scene
+		// transitions, so a plain "installed once" flag would permanently skip
+		// re-installation on every DetailWindow after the first one.
+		private static DetailWindow _installedOn;
 
 		public static void Reset()
 		{
-			_installed = false;
+			_installedOn = null;
 		}
 
 		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		public static void Install()
 		{
-			if (_installed) return;
-			_installed = true;
+			var target = HUD.Instance?.DetailWindow;
+			if (target == null || target == _installedOn) return;
 
 			var components = new List<Component>
 			{
@@ -38,6 +42,11 @@ namespace Trainer_v5
 				const int y = 0 - spacing - height;
 				Utilities.AddElementToElement(components[i].gameObject, "DetailWindow", new Rect(x, y, width, height));
 			}
+
+			// Only mark this instance as installed once the loop above completes
+			// successfully, so a mid-loop exception leaves retry possible instead of
+			// permanently blocking installation.
+			_installedOn = target;
 		}
 
 		private static void SetCreativity()
