@@ -29,6 +29,12 @@ namespace Trainer_v5
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
 
+		// Guards a block of settings that only need to be (re)applied once per game load rather
+		// than every frame or on any recurring tick, because the game itself only ever sets them
+		// once too (a constructor, or new-game-start/save-load) -- see the follow-up audit to
+		// #157 for the evidence behind each one.
+		private bool _oneTimeSettingsApplied;
+
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
 		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
@@ -196,6 +202,42 @@ namespace Trainer_v5
 			{
 				ApplyNoVacation();
 			}
+
+			// FreeEmployees, MoreCreativity, DisableBurglars, DisableFireInspection, FreePrint,
+			// and IncreasePrintSpeed were previously per-frame, but the follow-up audit to #157
+			// found the game only ever mutates the state they touch monthly, on rare/explicit
+			// events, or (for burglars/fire-inspectors) can't act on a new spawn faster than the
+			// game's own once-per-in-game-minute actor-activation tick -- hourly is a large
+			// safety margin for all of them.
+			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
+			{
+				ApplyFreeEmployees();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
+			{
+				ApplyMoreCreativity();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+			{
+				ApplyDisableBurglars();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
+			{
+				ApplyDisableFireInspection();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
+			{
+				ApplyFreePrint();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
+			{
+				ApplyIncreasePrintSpeed();
+			}
 		}
 
 		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
@@ -229,6 +271,82 @@ namespace Trainer_v5
 			{
 				ApplyAutoAcceptHostingDeals();
 			}
+
+			// FullEnvironment, FullRoomBrightness, IncreaseBookshelfSkill, and the furniture-level
+			// part of NoWaterElectricity were previously per-frame, but the follow-up audit to
+			// #157 found the game only recomputes Room.FurnEnvironment/IndirectLighting and
+			// Furniture.AuraValues when a room's DirtyStateVariables flag is set (furniture
+			// placed/removed, room reshaped) -- a discrete event, not a continuous per-frame
+			// mutation like Room.Smell/GermCount. Furniture.Water/Wattage are likewise only read
+			// by the game at discrete RefreshUsage() trigger points (placement/destroy/monthly/
+			// ownership-change), never written continuously. DisableFires' FireStarter reset is
+			// the same story: FireStarter is only read as an ignition-probability multiplier when
+			// furniture just broke, and is never written by the game at all.
+			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
+			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, "FullRoomBrightness");
+			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill");
+			bool noWaterElectricity = Helpers.GetProperty(TrainerSettings, "NoWaterElectricity");
+			bool disableFires = Helpers.GetProperty(TrainerSettings, "DisableFires");
+
+			if (fullEnvironment || fullRoomBrightness)
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					Room room = Settings.sRoomManager.Rooms[i];
+
+					if (fullEnvironment)
+					{
+						ApplyFullEnvironmentToRoom(room);
+					}
+
+					if (fullRoomBrightness)
+					{
+						ApplyFullRoomBrightnessToRoom(room);
+					}
+				}
+			}
+
+			if (increaseBookshelfSkill || noWaterElectricity || disableFires)
+			{
+				foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+				{
+					if (increaseBookshelfSkill)
+					{
+						ApplyIncreaseBookshelfSkillToFurniture(furniture);
+					}
+
+					if (noWaterElectricity)
+					{
+						ApplyNoWaterElectricityToFurniture(furniture);
+					}
+
+					if (disableFires)
+					{
+						ApplyDisableFiresFireStarterToFurniture(furniture);
+					}
+				}
+			}
+
+			// WalkSpeed is set once at actor construction and never touched again by the game, so
+			// a minute cadence keeps a newly-spawned/hired actor from lagging noticeably behind
+			// the toggle's current state without paying a per-frame cost for every actor.
+			bool increaseWalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed");
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].WalkSpeed = increaseWalkSpeed ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
+			}
+
+			// MaxBoxes/MaxBoxCarry, ISPCostFactor, and ExpansionCost are all otherwise static
+			// (game-assigned once, in a constructor or on new-game-start/save-load) -- unlike
+			// GameSettings.MaxFloor (see the one-time settings block in Update()), these three
+			// still need periodic reapplication because toggling them off must also revert the
+			// value, and only re-running the same assignment (on or off) achieves that.
+			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
+			//Not working
+			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
+			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
+			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
 		}
 
 		private bool ToggleJustEnabled(string settingKey)
@@ -277,9 +395,17 @@ namespace Trainer_v5
 				ShowDiscordInvite(displayAsPopup: true);
 			}
 
-			if (_defaultEnvironmentISPCostFactor.IsZero())
+			// GameSettings.MaxFloor is set once by the game itself (its own static constructor)
+			// and never touched again during play, so it only needs to be (re)applied once here
+			// too -- unlike AI.MaxBoxes/MaxBoxCarry, ISPCostFactor, and ExpansionCost (see
+			// OnMinutePassed), which still need periodic reapplication so toggling them off also
+			// reverts the value. This same guard also captures the environment's default ISP cost
+			// factor once, which ReduceISPCost's cadence logic depends on.
+			if (!_oneTimeSettingsApplied)
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
+				GameSettings.MaxFloor = Constants.MAX_FLOOR;
+				_oneTimeSettingsApplied = true;
 			}
 
 			// These toggles are otherwise only enforced on OnHourPassed, on a minute change, or
@@ -332,6 +458,7 @@ namespace Trainer_v5
 				Settings.ElectricityBill = 0f;
 				Settings.Waterbill = 0f;
 				Settings.Gasbill = 0f;
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture);
 			}
 
 			if (ToggleJustEnabled("DisableFurnitureStealing"))
@@ -365,6 +492,86 @@ namespace Trainer_v5
 				ApplyAutoAcceptHostingDeals();
 			}
 
+			if (ToggleJustEnabled("FreeEmployees"))
+			{
+				ApplyFreeEmployees();
+			}
+
+			if (ToggleJustEnabled("MoreCreativity"))
+			{
+				ApplyMoreCreativity();
+			}
+
+			if (ToggleJustEnabled("DisableBurglars"))
+			{
+				ApplyDisableBurglars();
+			}
+
+			if (ToggleJustEnabled("DisableFireInspection"))
+			{
+				ApplyDisableFireInspection();
+			}
+
+			if (ToggleJustEnabled("FreePrint"))
+			{
+				ApplyFreePrint();
+			}
+
+			if (ToggleJustEnabled("IncreasePrintSpeed"))
+			{
+				ApplyIncreasePrintSpeed();
+			}
+
+			if (ToggleJustEnabled("FullEnvironment"))
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
+				}
+			}
+
+			if (ToggleJustEnabled("FullRoomBrightness"))
+			{
+				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				{
+					ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
+				}
+			}
+
+			if (ToggleJustEnabled("IncreaseBookshelfSkill"))
+			{
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture);
+			}
+
+			if (ToggleJustEnabled("DisableFires"))
+			{
+				Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
+			}
+
+			if (ToggleJustEnabled("IncreaseWalkSpeed"))
+			{
+				for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+				{
+					Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
+				}
+			}
+
+			if (ToggleJustEnabled("IncreaseCourierCapacity"))
+			{
+				AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
+				AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
+			}
+
+			if (ToggleJustEnabled("ReduceISPCost"))
+			{
+				Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f;
+			}
+
+			if (ToggleJustEnabled("ReduceExpansionCost"))
+			{
+				Settings.ExpansionCost = Constants.EXPANSION_COST_HALF;
+			}
+
 			_minuteWatcher.Poll();
 
 			// FullSatisfaction, NoSickness, and CleanRooms enforce state the game changes every
@@ -375,6 +582,11 @@ namespace Trainer_v5
 			bool noSickness = Helpers.GetProperty(TrainerSettings, "NoSickness");
 			bool cleanRooms = Helpers.GetProperty(TrainerSettings, "CleanRooms");
 
+			// NoWaterElectricity's furniture-level Water/Wattage reset, DisableFires' FireStarter
+			// reset, and IncreaseBookshelfSkill moved to OnMinutePassed (see there for why); the
+			// IsOnFire/StopFire extinguish logic below is the one part of DisableFires that stays
+			// per-frame, since the game mutates Burn/Temperature every frame while a fire is
+			// active.
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
@@ -385,34 +597,17 @@ namespace Trainer_v5
 					furniture.Noisiness = 0;
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
+				if (Helpers.GetProperty(TrainerSettings, "DisableFires") && furniture.Parent.IsOnFire)
 				{
-					furniture.Water = 0;
-					furniture.Wattage = 0;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "DisableFires"))
-				{
-					if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+					if (furniture.Parent.Temperature > 40f)
 					{
-						furniture.upg.FireStarter = 0.0f;
+						furniture.Parent.Temperature = 21f;
 					}
-					if (furniture.Parent.IsOnFire)
-					{
-						if (furniture.Parent.Temperature > 40f)
-						{
-							furniture.Parent.Temperature = 21f;
-						}
-						furniture.Parent.StopFire();
-					}
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill") && furniture.Type == "Bookshelf")
-				{
-					furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
+					furniture.Parent.StopFire();
 				}
 			}
 
+			// FullEnvironment and FullRoomBrightness moved to OnMinutePassed (see there for why).
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
@@ -430,16 +625,6 @@ namespace Trainer_v5
 				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
 				{
 					room.Temperature = 21f;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
-				{
-					room.FurnEnvironment = Constants.ENV_FULL;
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
-				{
-					room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 				}
 			}
 
@@ -485,16 +670,6 @@ namespace Trainer_v5
 					employee.HadProperFood = true;
 				}
 
-				if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
-				{
-					actor.NegotiateSalary = false;
-					employee.Salary = 0f;
-					employee.AskedFor = 0f;
-					employee.Demanded = 0f;
-					employee.UpfrontDemand = 0f;
-					employee.ChangeSalary(0f, 0f, actor, false);
-				}
-
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
 				{
 					actor.Noisiness = 0;
@@ -504,45 +679,6 @@ namespace Trainer_v5
 				{
 					employee.LastInpirationUse = new SDateTime(0);
 				}
-
-				if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
-				{
-					employee.RevealCreativity(1f);
-				}
-
-				actor.WalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed") ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
-			{
-				foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-				{
-					burglar.Despawned = true;
-					Settings.sActorManager.RemoveFromAwaiting(burglar);
-				}
-			}
-
-			//TODO: add printspeed and printprice when it's disabled (else)
-			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
-			{
-				Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
-			{
-				Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
-			{
-				foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
-				{
-					fireInspector.Despawned = true;
-					Settings.sActorManager.RemoveFromAwaiting(fireInspector);
-				}
-
-				Settings.ActiveFireReport.Reset();
-				Settings.PassedFireInspection = true;
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "DisableForcePause"))
@@ -571,14 +707,6 @@ namespace Trainer_v5
 			  actor.ForgetfulETA += months;
 			}
 			 * */
-
-			GameSettings.MaxFloor = Constants.MAX_FLOOR;
-			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
-			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
-			//Not working
-			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
-			Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor;
-			Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST;
 		}
 
 		// The following Apply* methods hold logic that used to run every frame inside
@@ -676,6 +804,103 @@ namespace Trainer_v5
 				if (actor.SpecialState == Actor.HomeState.Vacation)
 					actor.SpecialState = Actor.HomeState.Default;
 			}
+		}
+
+		// The following Apply*ToRoom/ToFurniture methods are called from OnMinutePassed's
+		// room/furniture loops (see there for the evidence behind the minute cadence) and from
+		// ToggleJustEnabled's immediate-apply-on-enable calls.
+
+		private static void ApplyFullEnvironmentToRoom(Room room)
+		{
+			room.FurnEnvironment = Constants.ENV_FULL;
+		}
+
+		private static void ApplyFullRoomBrightnessToRoom(Room room)
+		{
+			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
+		}
+
+		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
+		{
+			if (furniture.Type == "Bookshelf")
+			{
+				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
+			}
+		}
+
+		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
+		{
+			furniture.Water = 0;
+			furniture.Wattage = 0;
+		}
+
+		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
+		{
+			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+			{
+				furniture.upg.FireStarter = 0.0f;
+			}
+		}
+
+		// The following Apply* methods hold logic that used to run every frame inside Update().
+		// They now run on OnHourPassed and once immediately when their toggle is switched on (via
+		// ToggleJustEnabled), instead of every frame -- see OnHourPassed for the evidence behind
+		// the hourly cadence.
+
+		private static void ApplyFreeEmployees()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				Employee employee = actor.employee;
+
+				actor.NegotiateSalary = false;
+				employee.Salary = 0f;
+				employee.AskedFor = 0f;
+				employee.Demanded = 0f;
+				employee.UpfrontDemand = 0f;
+				employee.ChangeSalary(0f, 0f, actor, false);
+			}
+		}
+
+		private static void ApplyMoreCreativity()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
+			}
+		}
+
+		private static void ApplyDisableBurglars()
+		{
+			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
+			{
+				burglar.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(burglar);
+			}
+		}
+
+		private static void ApplyDisableFireInspection()
+		{
+			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
+			{
+				fireInspector.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
+			}
+
+			Settings.ActiveFireReport.Reset();
+			Settings.PassedFireInspection = true;
+		}
+
+		//TODO: add printspeed and printprice when it's disabled (else)
+		private static void ApplyFreePrint()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
+		}
+
+		private static void ApplyIncreasePrintSpeed()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
 		}
 
 		private static void ApplyHostingDealTiming()
