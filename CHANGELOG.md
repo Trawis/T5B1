@@ -8,8 +8,12 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
-## [5.2.8] - 2026-09-20
+## [5.2.8] - 2026-09-21
 
+- Fixed Full Satisfaction, No Sickness, Clean Rooms, and several other
+  toggles drifting and only correcting once an in-game hour; each toggle now
+  re-applies on the cadence that matches how often the game itself changes
+  the underlying state.
 - Fixed generated UI control names showing `_T` instead of the actual
   control type.
 - Removed Max Market Share due to a game compatibility issue.
