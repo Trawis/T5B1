@@ -19,11 +19,11 @@ namespace Trainer_v5
 		// applied immediately instead of waiting for the next tick.
 		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
 
-		// TimeOfDay exposes no minute-passed event (only OnHourPassed/OnDayPassed/OnMonthPassed),
-		// but it does expose a public Minute field, so automation polling that shouldn't wait a
-		// full hour detects a minute change cheaply instead of scanning every frame. -1 forces a
-		// run the first time Update() executes after (re)activation.
-		private int _lastObservedMinute = -1;
+		// Raises OnMinutePassed when TimeOfDay's in-game minute changes, since TimeOfDay itself
+		// exposes no such event. Polled once per Update() (see below) and subscribed/unsubscribed
+		// alongside the native hour/day/month events so automation polling that shouldn't wait a
+		// full hour has an event-driven handler to hook, instead of scanning every frame.
+		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
@@ -114,6 +114,10 @@ namespace Trainer_v5
 			TimeOfDay.OnHourPassed += OnHourPassed;
 			TimeOfDay.OnDayPassed += OnDayPassed;
 			TimeOfDay.OnMonthPassed += OnMonthPassed;
+			_minuteWatcher.OnMinutePassed += OnMinutePassed;
+			// A fresh subscription (scene load, save reload, trainer reactivate) should always
+			// get an immediate catch-up run rather than waiting for the minute to next change.
+			_minuteWatcher.Reset();
 
 			_timeEventsSubscribed = true;
 		}
@@ -128,6 +132,7 @@ namespace Trainer_v5
 			TimeOfDay.OnHourPassed -= OnHourPassed;
 			TimeOfDay.OnDayPassed -= OnDayPassed;
 			TimeOfDay.OnMonthPassed -= OnMonthPassed;
+			_minuteWatcher.OnMinutePassed -= OnMinutePassed;
 
 			_timeEventsSubscribed = false;
 		}
@@ -141,7 +146,7 @@ namespace Trainer_v5
 		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
 		// AutoAcceptHostingDeals are NOT handled here either: hourly polling could leave
 		// already-finished work sitting for up to an in-game hour before the trainer reacted, so
-		// they run on a minute-change cadence instead (see RunMinuteCadenceAutomation()).
+		// they run on a minute-change cadence instead (see OnMinutePassed() below).
 		private void OnHourPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -196,10 +201,9 @@ namespace Trainer_v5
 		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
 		// AutoAcceptHostingDeals only need to catch a state change (a finished design/research/
 		// patent, a newly eligible tech, a new deal) reasonably quickly, not on every rendered
-		// frame. TimeOfDay exposes no minute-passed event, so Update() detects a minute change
-		// via the public Minute field (see _lastObservedMinute) and runs this once per in-game
-		// minute instead of once per hour.
-		private void RunMinuteCadenceAutomation()
+		// frame. TimeOfDay exposes no minute-passed event, so this runs off _minuteWatcher's
+		// synthetic OnMinutePassed event (see GameMinuteWatcher) instead of OnHourPassed.
+		private void OnMinutePassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
@@ -361,16 +365,7 @@ namespace Trainer_v5
 				ApplyAutoAcceptHostingDeals();
 			}
 
-			// TimeOfDay has no minute-passed event, so a change in its public Minute field is
-			// used to run automation polling roughly once per in-game minute instead of once per
-			// hour. The int cast also makes this correctly detect the hour-boundary rollover
-			// (Minute resets from just under 60 back down near 0).
-			int currentMinute = (int)TimeOfDay.Instance.Minute;
-			if (currentMinute != _lastObservedMinute)
-			{
-				_lastObservedMinute = currentMinute;
-				RunMinuteCadenceAutomation();
-			}
+			_minuteWatcher.Poll();
 
 			// FullSatisfaction, NoSickness, and CleanRooms enforce state the game changes every
 			// frame (JobSatisfaction, Room.GermCount, Room.Smell/dirt), so they're applied inside
