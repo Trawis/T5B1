@@ -6,23 +6,19 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## Unreleased
-
 ## [5.2.8] - 2026-09-21
 
-- Fixed Full Satisfaction, No Sickness, Clean Rooms, and several other
-  toggles drifting and only correcting once an in-game hour; each toggle now
-  re-applies on the cadence that matches how often the game itself changes
-  the underlying state.
+- Fixed several toggle and automation timing bugs: Auto Design End no longer
+  repeatedly re-promotes design documents still missing a lead designer,
+  Auto Accept Hosting Deals no longer stalls other trainer updates when
+  idle, and toggles including Full Satisfaction, No Sickness, and Clean
+  Rooms now re-apply on the cadence that matches how often the game
+  actually changes their state, instead of drifting or snapping back.
 - Fixed generated UI control names showing `_T` instead of the actual
   control type.
 - Removed Max Market Share due to a game compatibility issue.
-- Fixed Auto Design End repeatedly re-promoting design documents that still
-  need a lead designer assigned.
 - Fixed the Trainer Settings window crashing on open when its close button
   was missing or duplicated.
-- Fixed Auto Accept Hosting Deals stopping other trainer updates when there
-  were no deals to process.
 - Fixed returning to the main menu crashing when the trainer and Skill
   Change buttons had mismatched initialization state.
 - Fixed Lock Age advancing employee ages more than once per in-game month
