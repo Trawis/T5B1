@@ -143,16 +143,10 @@ namespace Trainer_v5
 			_timeEventsSubscribed = false;
 		}
 
-		// FullSatisfaction, NoSickness, and CleanRooms are NOT handled here: the game mutates
-		// JobSatisfaction, Room.GermCount, and Room.Smell/dirt every single rendered frame
-		// (Actor.UpdateNow / Room.Update in the game assembly), not on any hour boundary, so
-		// hourly enforcement here previously let them visibly drift between ticks (#157). They
-		// are enforced per-frame in Update() instead, guarded by their own toggle check.
-		//
-		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
-		// AutoAcceptHostingDeals are NOT handled here either: hourly polling could leave
-		// already-finished work sitting for up to an in-game hour before the trainer reacted, so
-		// they run on a minute-change cadence instead (see OnMinutePassed() below).
+		// FullSatisfaction/NoSickness/CleanRooms run per-frame (Update()); AutoEnd*/AutoResearchStart/
+		// AutoAcceptHostingDeals run on OnMinutePassed; FreeEmployees/MoreCreativity/DisableBurglars/
+		// DisableFireInspection/DisableFurnitureStealing/NoVacation run on OnMonthPassed;
+		// DigitalDistributionMonopol runs on OnDayPassed -- see those for why.
 		private void OnHourPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -177,16 +171,6 @@ namespace Trainer_v5
 				Settings.Gasbill = 0f;
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
-			{
-				ApplyDisableFurnitureStealing();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
-			{
-				ApplyDigitalDistributionMonopol();
-			}
-
 			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
 			{
 				// Disabled, see #150
@@ -196,37 +180,6 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
 			{
 				ApplyNoMaintenance();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
-			{
-				ApplyNoVacation();
-			}
-
-			// FreeEmployees, MoreCreativity, DisableBurglars, DisableFireInspection, FreePrint,
-			// and IncreasePrintSpeed were previously per-frame, but the follow-up audit to #157
-			// found the game only ever mutates the state they touch monthly, on rare/explicit
-			// events, or (for burglars/fire-inspectors) can't act on a new spawn faster than the
-			// game's own once-per-in-game-minute actor-activation tick -- hourly is a large
-			// safety margin for all of them.
-			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
-			{
-				ApplyFreeEmployees();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
-			{
-				ApplyMoreCreativity();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
-			{
-				ApplyDisableBurglars();
-			}
-
-			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
-			{
-				ApplyDisableFireInspection();
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
@@ -359,13 +312,57 @@ namespace Trainer_v5
 			return isEnabled && !wasEnabled;
 		}
 
+		// DigitalDistributionMonopol: Company.Bankrupt is (re)computed inside
+		// MarketSimulation.SimulateMonth, which despite the name is called from
+		// TimeOfDay.UpdateDay -- daily, not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
-
+			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
+			{
+				ApplyDigitalDistributionMonopol();
+			}
 		}
 
+		// FreeEmployees/MoreCreativity: only mutated by the real TimeOfDay.UpdateMonth (salary
+		// negotiation, lead-project completion) or explicit UI actions.
+		// DisableBurglars/DisableFireInspection: burglar spawn is in UpdateMonth; fire-inspector
+		// spawn is gated to once/year -- monthly still gives ~12x margin.
+		// DisableFurnitureStealing: CanSteal is only read via GetBurglarWorth(), itself only
+		// called from UpdateMonth's burglar-spawn check.
+		// NoVacation: VacationMonth is set 24 months out; monthly reassertion is still a huge
+		// margin.
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
+			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
+			{
+				ApplyFreeEmployees();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
+			{
+				ApplyMoreCreativity();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+			{
+				ApplyDisableBurglars();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
+			{
+				ApplyDisableFireInspection();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
+			{
+				ApplyDisableFurnitureStealing();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
+			{
+				ApplyNoVacation();
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "LockAge"))
 			{
 				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
@@ -408,11 +405,10 @@ namespace Trainer_v5
 				_oneTimeSettingsApplied = true;
 			}
 
-			// These toggles are otherwise only enforced on OnHourPassed, on a minute change, or
-			// (for NoEducationCost) only once. Apply them the moment they're switched on so
-			// enabling mid-tick doesn't wait for the next tick. CleanRooms, NoSickness, and
-			// FullSatisfaction are excluded here: they're enforced every frame below, so the
-			// very next frame after enabling already applies them.
+			// Immediate-apply-on-enable for toggles whose periodic enforcement is otherwise
+			// hourly/daily/monthly/minute-based (or, for NoEducationCost, once-only). CleanRooms/
+			// NoSickness/FullSatisfaction are excluded: per-frame enforcement below already
+			// applies them next frame.
 			if (ToggleJustEnabled("NoMaintenance"))
 			{
 				ApplyNoMaintenance();
