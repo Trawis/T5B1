@@ -14,25 +14,17 @@ namespace Trainer_v5
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
-		// Tracks the last-seen state of toggles whose upkeep runs on OnHourPassed or on a
-		// minute change instead of every frame, so a toggle that just got switched on can be
-		// applied immediately instead of waiting for the next tick.
+		// Used by ToggleJustEnabled to apply reduced-cadence toggles immediately on enable.
 		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
 
-		// Raises OnMinutePassed when TimeOfDay's in-game minute changes, since TimeOfDay itself
-		// exposes no such event. Polled once per Update() (see below) and subscribed/unsubscribed
-		// alongside the native hour/day/month events so automation polling that shouldn't wait a
-		// full hour has an event-driven handler to hook, instead of scanning every frame.
+		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		private float _defaultEnvironmentISPCostFactor;
 
-		// Guards a block of settings that only need to be (re)applied once per game load rather
-		// than every frame or on any recurring tick, because the game itself only ever sets them
-		// once too (a constructor, or new-game-start/save-load) -- see the follow-up audit to
-		// #157 for the evidence behind each one.
+		// Settings the game itself only ever sets once (ctor/new-game/save-load).
 		private bool _oneTimeSettingsApplied;
 
 		private static GameSettings Settings => GameSettings.Instance;
@@ -121,8 +113,6 @@ namespace Trainer_v5
 			TimeOfDay.OnDayPassed += OnDayPassed;
 			TimeOfDay.OnMonthPassed += OnMonthPassed;
 			_minuteWatcher.OnMinutePassed += OnMinutePassed;
-			// A fresh subscription (scene load, save reload, trainer reactivate) should always
-			// get an immediate catch-up run rather than waiting for the minute to next change.
 			_minuteWatcher.Reset();
 
 			_timeEventsSubscribed = true;
@@ -143,10 +133,6 @@ namespace Trainer_v5
 			_timeEventsSubscribed = false;
 		}
 
-		// FullSatisfaction/NoSickness/CleanRooms run per-frame (Update()); AutoEnd*/AutoResearchStart/
-		// AutoAcceptHostingDeals run on OnMinutePassed; FreeEmployees/MoreCreativity/DisableBurglars/
-		// DisableFireInspection/DisableFurnitureStealing/NoVacation run on OnMonthPassed;
-		// DigitalDistributionMonopol runs on OnDayPassed -- see those for why.
 		private void OnHourPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
@@ -193,11 +179,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// AutoEndDesign, AutoEndResearch, AutoEndPatent, AutoResearchStart, and
-		// AutoAcceptHostingDeals only need to catch a state change (a finished design/research/
-		// patent, a newly eligible tech, a new deal) reasonably quickly, not on every rendered
-		// frame. TimeOfDay exposes no minute-passed event, so this runs off _minuteWatcher's
-		// synthetic OnMinutePassed event (see GameMinuteWatcher) instead of OnHourPassed.
 		private void OnMinutePassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
@@ -225,16 +206,6 @@ namespace Trainer_v5
 				ApplyAutoAcceptHostingDeals();
 			}
 
-			// FullEnvironment, FullRoomBrightness, IncreaseBookshelfSkill, and the furniture-level
-			// part of NoWaterElectricity were previously per-frame, but the follow-up audit to
-			// #157 found the game only recomputes Room.FurnEnvironment/IndirectLighting and
-			// Furniture.AuraValues when a room's DirtyStateVariables flag is set (furniture
-			// placed/removed, room reshaped) -- a discrete event, not a continuous per-frame
-			// mutation like Room.Smell/GermCount. Furniture.Water/Wattage are likewise only read
-			// by the game at discrete RefreshUsage() trigger points (placement/destroy/monthly/
-			// ownership-change), never written continuously. DisableFires' FireStarter reset is
-			// the same story: FireStarter is only read as an ignition-probability multiplier when
-			// furniture just broke, and is never written by the game at all.
 			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
 			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, "FullRoomBrightness");
 			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill");
@@ -280,20 +251,12 @@ namespace Trainer_v5
 				}
 			}
 
-			// WalkSpeed is set once at actor construction and never touched again by the game, so
-			// a minute cadence keeps a newly-spawned/hired actor from lagging noticeably behind
-			// the toggle's current state without paying a per-frame cost for every actor.
 			bool increaseWalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed");
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Settings.sActorManager.Actors[i].WalkSpeed = increaseWalkSpeed ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
 			}
 
-			// MaxBoxes/MaxBoxCarry, ISPCostFactor, and ExpansionCost are all otherwise static
-			// (game-assigned once, in a constructor or on new-game-start/save-load) -- unlike
-			// GameSettings.MaxFloor (see the one-time settings block in Update()), these three
-			// still need periodic reapplication because toggling them off must also revert the
-			// value, and only re-running the same assignment (on or off) achieves that.
 			AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
 			AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
 			//Not working
@@ -312,9 +275,8 @@ namespace Trainer_v5
 			return isEnabled && !wasEnabled;
 		}
 
-		// DigitalDistributionMonopol: Company.Bankrupt is (re)computed inside
-		// MarketSimulation.SimulateMonth, which despite the name is called from
-		// TimeOfDay.UpdateDay -- daily, not monthly.
+		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from
+		// TimeOfDay.UpdateDay despite the name), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
@@ -323,14 +285,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// FreeEmployees/MoreCreativity: only mutated by the real TimeOfDay.UpdateMonth (salary
-		// negotiation, lead-project completion) or explicit UI actions.
-		// DisableBurglars/DisableFireInspection: burglar spawn is in UpdateMonth; fire-inspector
-		// spawn is gated to once/year -- monthly still gives ~12x margin.
-		// DisableFurnitureStealing: CanSteal is only read via GetBurglarWorth(), itself only
-		// called from UpdateMonth's burglar-spawn check.
-		// NoVacation: VacationMonth is set 24 months out; monthly reassertion is still a huge
-		// margin.
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
@@ -392,12 +346,6 @@ namespace Trainer_v5
 				ShowDiscordInvite(displayAsPopup: true);
 			}
 
-			// GameSettings.MaxFloor is set once by the game itself (its own static constructor)
-			// and never touched again during play, so it only needs to be (re)applied once here
-			// too -- unlike AI.MaxBoxes/MaxBoxCarry, ISPCostFactor, and ExpansionCost (see
-			// OnMinutePassed), which still need periodic reapplication so toggling them off also
-			// reverts the value. This same guard also captures the environment's default ISP cost
-			// factor once, which ReduceISPCost's cadence logic depends on.
 			if (!_oneTimeSettingsApplied)
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
@@ -405,10 +353,6 @@ namespace Trainer_v5
 				_oneTimeSettingsApplied = true;
 			}
 
-			// Immediate-apply-on-enable for toggles whose periodic enforcement is otherwise
-			// hourly/daily/monthly/minute-based (or, for NoEducationCost, once-only). CleanRooms/
-			// NoSickness/FullSatisfaction are excluded: per-frame enforcement below already
-			// applies them next frame.
 			if (ToggleJustEnabled("NoMaintenance"))
 			{
 				ApplyNoMaintenance();
@@ -570,19 +514,10 @@ namespace Trainer_v5
 
 			_minuteWatcher.Poll();
 
-			// FullSatisfaction, NoSickness, and CleanRooms enforce state the game changes every
-			// frame (JobSatisfaction, Room.GermCount, Room.Smell/dirt), so they're applied inside
-			// the existing per-frame room/actor loops below instead of on a coarser cadence. The
-			// toggle is read once here rather than per room/actor.
 			bool fullSatisfaction = Helpers.GetProperty(TrainerSettings, "FullSatisfaction");
 			bool noSickness = Helpers.GetProperty(TrainerSettings, "NoSickness");
 			bool cleanRooms = Helpers.GetProperty(TrainerSettings, "CleanRooms");
 
-			// NoWaterElectricity's furniture-level Water/Wattage reset, DisableFires' FireStarter
-			// reset, and IncreaseBookshelfSkill moved to OnMinutePassed (see there for why); the
-			// IsOnFire/StopFire extinguish logic below is the one part of DisableFires that stays
-			// per-frame, since the game mutates Burn/Temperature every frame while a fire is
-			// active.
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
 				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
@@ -603,7 +538,6 @@ namespace Trainer_v5
 				}
 			}
 
-			// FullEnvironment and FullRoomBrightness moved to OnMinutePassed (see there for why).
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
@@ -705,15 +639,6 @@ namespace Trainer_v5
 			 * */
 		}
 
-		// The following Apply* methods hold logic that used to run every frame inside
-		// Update(). Most now run on OnHourPassed (see above) and once immediately when
-		// their toggle is switched on (via ToggleJustEnabled), instead of every frame.
-		//
-		// ApplyCleanRoomsToRoom, ApplyNoSicknessToRoom/ToActor, and ApplyFullSatisfactionToActor
-		// are the exception: the game mutates the state they enforce every frame, so Update()
-		// calls them per room/actor every frame (see the room/actor loops above) instead of on a
-		// coarser cadence.
-
 		private static void ApplyCleanRoomsToRoom(Room room)
 		{
 			room.ClearDirt();
@@ -802,10 +727,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The following Apply*ToRoom/ToFurniture methods are called from OnMinutePassed's
-		// room/furniture loops (see there for the evidence behind the minute cadence) and from
-		// ToggleJustEnabled's immediate-apply-on-enable calls.
-
 		private static void ApplyFullEnvironmentToRoom(Room room)
 		{
 			room.FurnEnvironment = Constants.ENV_FULL;
@@ -837,11 +758,6 @@ namespace Trainer_v5
 				furniture.upg.FireStarter = 0.0f;
 			}
 		}
-
-		// The following Apply* methods hold logic that used to run every frame inside Update().
-		// They now run on OnHourPassed and once immediately when their toggle is switched on (via
-		// ToggleJustEnabled), instead of every frame -- see OnHourPassed for the evidence behind
-		// the hourly cadence.
 
 		private static void ApplyFreeEmployees()
 		{
