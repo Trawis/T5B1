@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-10
+**Last Updated**: 2026-09-21
 
 This document describes the verified current technical system. Proposed changes
 belong under `docs/project/designs/` until accepted or implemented.
@@ -19,8 +19,9 @@ continuously-enforced cheats (no needs, free employees, auto-finish work).
 Quality goals that most influence the design:
 
 - **Game compatibility**: the mod links against the game's own assemblies and
-  must keep working across *Software Inc.* Beta versions, which is handled with
-  compile-time conditional code paths.
+  must keep working against the current *Software Inc.* Beta 1 build, which is
+  handled by refreshing the vendored assemblies rather than compile-time
+  conditional code paths (see "Game Library Refresh" below).
 - **Non-destructive persistence**: trainer settings serialize into the save
   file and must round-trip without corrupting saves.
 - **Fail-soft behavior**: a cheat that throws must not crash the game; risky
@@ -53,7 +54,11 @@ Source lives under `Trainer_v5/Trainer.Source/`. All types share the
 - `Main` (`ModMeta`): mod entry metadata, toolbar button creation, and settings
   serialization through `WriteDictionary`.
 - `TrainerBehaviour` (`ModBehaviour`): runtime driver for scene/time events,
-  per-frame toggle enforcement, and one-shot trainer actions.
+  toggle enforcement across per-frame and time-scaled cadences, and one-shot
+  trainer actions.
+- `GameMinuteWatcher`: raises a minute-change event from polling
+  `TimeOfDay.Instance.Minute`, since the game exposes no native minute-passed
+  event; used to drive minute-cadence toggle enforcement.
 - `Helpers`: central static state for versioning, settings dictionaries, role
   and specialization lists, efficiency options, property helpers, and game
   version detection.
@@ -96,15 +101,28 @@ and each button to a `TrainerBehaviour` static method.
 
 **Per-frame enforcement.** `TrainerBehaviour.Update` runs every frame while the
 game is loaded. It hotkeys F1/F2 to open/close the window, lazily loads employee
-specializations once a company exists, then iterates furniture, rooms, and actors
-applying whichever toggles are active (e.g. `NoStress`, `NoNeeds`,
-`FreeEmployees`, `CleanRooms`, `FullEnvironment`), plus company-wide effects
-(auto-finish design/research/patent, free print, no server cost, reduced ISP
-cost, expansion cost). Toggles read their state through
+specializations once a company exists, applies one-time settings and
+just-enabled toggles immediately, polls `GameMinuteWatcher`, then enforces the
+toggles whose underlying game state changes continuously every frame (e.g.
+`NoStress`, `NoNeeds`, `NoiseReduction`, `TemperatureLock`, `FullSatisfaction`,
+`NoSickness`, `CleanRooms`). Toggles read their state through
 `Helpers.GetProperty(TrainerSettings, "<Key>")`.
 
-**Time events.** `OnMonthPassed` advances employee birth dates when `LockAge` is
-on (keeping ages fixed). `OnHourPassed`/`OnDayPassed` are currently no-ops.
+**Time-scaled enforcement.** Toggles whose underlying game state only changes
+on a coarser cadence are enforced at a matching interval instead of every
+frame, so they neither drift between updates nor scan every frame for nothing:
+`OnMinutePassed` (raised by `GameMinuteWatcher`) drives `AutoEndDesign`,
+`AutoEndResearch`, `AutoEndPatent`, `AutoResearchStart`,
+`AutoAcceptHostingDeals`, `FullEnvironment`, `FullRoomBrightness`,
+`IncreaseBookshelfSkill`, `IncreaseWalkSpeed`, `IncreaseCourierCapacity`,
+`ReduceISPCost`, and `ReduceExpansionCost`; `OnHourPassed` drives `FreeStaff`,
+`NoServerCost`, `NoWaterElectricity`, `NoMaintenance`, `FreePrint`,
+`IncreasePrintSpeed`, and hosting-deal timing; `OnDayPassed` drives
+`DigitalDistributionMonopol` (`Company.Bankrupt` is recomputed daily despite
+`MarketSimulation.SimulateMonth`'s name); `OnMonthPassed` drives
+`FreeEmployees`, `MoreCreativity`, `DisableBurglars`, `DisableFireInspection`,
+`DisableFurnitureStealing`, `NoVacation`, and `LockAge` (advancing employee
+birth dates to keep ages fixed).
 
 **One-shot actions.** Buttons that need input open a game input dialog whose
 callback performs the change (e.g. `IncreaseMoney`, `SetProductPrice`,
@@ -163,7 +181,7 @@ partially-working or version-specific features are guarded (see Cross-Cutting).
   the vendored assemblies under `Trainer.Libraries/` and fixing whatever
   source incompatibilities that refresh introduces, not by adding
   compatibility configurations or conditional code paths.
-- **Version source of truth.** `Helpers.Version` (currently `5.2.7`) is the
+- **Version source of truth.** `Helpers.Version` (currently `5.2.8`) is the
   single semantic version; the release and nightly workflows parse it from
   `Helpers.cs`.
 - **Packaging / deployment.** The Release build produces `Trainer_v5.dll`, which

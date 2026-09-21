@@ -6,37 +6,29 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## Unreleased
+## [5.2.8] - 2026-09-21
 
-- Replaced the reflection-based generic type-name lookup used to build
-  fallback UI control names with an explicit suffix passed by each caller,
-  removing a runtime reflection lookup from every UI control creation.
+- Fixed several toggle and automation timing bugs: Auto Design End no longer
+  repeatedly re-promotes design documents still missing a lead designer,
+  Auto Accept Hosting Deals no longer stalls other trainer updates when
+  idle, and toggles including Full Satisfaction, No Sickness, and Clean
+  Rooms now re-apply on the cadence that matches how often the game
+  actually changes their state, instead of drifting or snapping back.
+- Fixed generated UI control names showing `_T` instead of the actual
+  control type.
 - Removed Max Market Share due to a game compatibility issue.
-- Fixed Auto Design End repeatedly attempting to promote finished design
-  documents that still need a lead designer assigned, instead of skipping
-  them until a lead designer is set.
-- Fixed generated UI control names using the literal suffix `_T` instead of
-  the actual control type name.
 - Fixed the Trainer Settings window crashing on open when its close button
-  is missing or duplicated; such cases are now logged instead.
-- Fixed Auto Accept Hosting Deals aborting the rest of the per-frame trainer
-  update loop when there were no server groups or deals to process.
-- Fixed trainer UI button teardown on returning to the main menu throwing
-  when the trainer button and skill-change button did not share the same
-  initialization state.
-- Fixed repeated scene loads (e.g. loading a different save while already in
-  game) stacking duplicate time-event subscriptions, which caused Lock Age to
-  advance employee birth dates more than once per in-game month passed.
-- Fixed the LeadSpec window showing stale toggle state from the previously
-  edited employee instead of refreshing to match the selected employee.
-- Fixed Product stock accepting a negative number and silently wrapping it
-  into a stock of billions of copies; Days per month, Product price, Product
-  stock, Active users, and Add Money now reject malformed numeric input with
-  an error instead of silently substituting a default value, and Days per
-  month, Product price, and Active users reject out-of-range values.
-- Fixed the employee detail window's trainer controls (Trait, Demand,
-  Creativity, Inspiration, LeadSpec) not being reinstalled after a save
-  reload or scene transition recreated the detail window.
+  was missing or duplicated.
+- Fixed returning to the main menu crashing when the trainer and Skill
+  Change buttons had mismatched initialization state.
+- Fixed Lock Age advancing employee ages more than once per in-game month
+  after reloading a save.
+- Fixed the LeadSpec window showing stale data from the previously edited
+  employee.
+- Fixed Product stock, Days per month, Product price, and Active users
+  accepting invalid or out-of-range values.
+- Fixed employee detail window trainer controls (Trait, Demand, Creativity,
+  Inspiration, LeadSpec) not reappearing after a save reload.
 
 ## [5.2.7] - 2026-09-10
 
