@@ -69,6 +69,7 @@ namespace Trainer_v5
 			#region column1
 
 			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
+			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), TrainerBehaviour.AddAIFunds));
 			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));

@@ -2,6 +2,7 @@
 ProductName							"Naziv proizvoda"
 #Buttons		
 AddMoney							"Dodaj novac"
+AddAIFunds							"Dodaj AI novac"
 MaxReputation						"Dodaj reputaciju"
 SetProductPrice						"Postavi cijenu proizvoda"
 SetProductStock						"Postavi zalihu proizvoda"

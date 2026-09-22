@@ -1531,6 +1531,42 @@ namespace Trainer_v5
 
 		#endregion
 
+		#region Add AI Company Funds
+
+		public static void AddAIFundsAction(string input)
+		{
+			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
+				.Where(company => company.Name == input && company != Settings.MyCompany)
+				.ToList();
+
+			if (matches.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			if (matches.Count > 1)
+			{
+				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			SimulatedCompany company = matches[0];
+			InputHelper.RequestInt("How much money do you want to add to " + company.Name + "?", "Add AI Funds", "100000",
+				amount =>
+				{
+					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
+					HUD.Instance.AddPopupMessage("Trainer: Money has been added to " + company.Name + "!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+				}, 0, int.MaxValue);
+		}
+
+		public static void AddAIFunds()
+		{
+			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
+		}
+
+		#endregion
+
 		#region Add Rep
 
 		public static void MaxReputation()

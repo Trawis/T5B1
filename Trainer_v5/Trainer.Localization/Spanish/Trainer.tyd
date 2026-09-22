@@ -2,6 +2,7 @@
 ProductName							"Nombre del producto aquí"
 #Buttons		
 AddMoney							"Agregar dinero"
+AddAIFunds							"Agregar dinero IA"
 MaxReputation						"Reputación máxima"
 SetProductPrice						"Establecer precio del producto"
 SetProductStock						"Establecer stock de productos"
