@@ -23,6 +23,7 @@ Button features are applied once when clicked.
 | Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
 | AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
+| Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Set Product Price      | Product Name, Amount   | Sets the price of the exact-matching product (player or AI company) |
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
