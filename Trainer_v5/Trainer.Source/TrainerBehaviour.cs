@@ -350,6 +350,15 @@ namespace Trainer_v5
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
+
+				// Cheats.* are plain static fields with no save-file backing, so they reset to
+				// false on every game process start regardless of what the trainer's own
+				// (persisted) settings say. Re-push them once per load so a setting that was
+				// enabled before a restart takes effect again.
+				ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights"));
+				ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings"));
+				ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries"));
+
 				_oneTimeSettingsApplied = true;
 			}
 
@@ -1286,6 +1295,46 @@ namespace Trainer_v5
 			HUD.Instance.UpdateFurnitureButtons();
 			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
+
+		#region Native Cheat Flags
+
+		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow),
+		// Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon),
+		// and Cheats.InfiniteSubs (read in CompanyDetailWindow.TakeOverSub's subsidiary-count
+		// gate) are all consulted directly by the game whenever relevant, so the trainer binds
+		// the native flag the moment the setting changes instead of polling for it every frame.
+		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
+		// intentionally left unexposed - setting it would have no observable effect.
+
+		public static void ApplyForceLights(bool enabled)
+		{
+			Cheats.ForceLights = enabled;
+		}
+
+		public static void ApplyShowRoomCeilings(bool enabled)
+		{
+			Cheats.CeilingMeshes = enabled;
+
+			// Mirrors CameraScript.RefreshFlyMode, the only other place the game itself flips
+			// this flag: marking every room dirty forces outer/inner meshes (the ceiling mesh
+			// included) to regenerate, so already-built rooms reflect the change immediately
+			// instead of only rooms built or modified afterward.
+			if (Helpers.IsGameLoaded)
+			{
+				foreach (Room room in Settings.sRoomManager.Rooms)
+				{
+					room.DirtyOuterMesh = true;
+					room.DirtyInnerMesh = true;
+				}
+			}
+		}
+
+		public static void ApplyUnlimitedSubsidiaries(bool enabled)
+		{
+			Cheats.InfiniteSubs = enabled;
+		}
+
+		#endregion
 
 		#region MonthDays
 

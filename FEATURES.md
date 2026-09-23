@@ -97,6 +97,9 @@ Toggle features stay active for as long as they are enabled.
 | Auto Accept Hosting Deals   | Automatically accepts available server deals                 |
 | More Inspiration            | Inspiration can be used without cooldown                     |
 | More Creativity             | Reveals full creativity for employees                        |
+| Force Lights                | Building and street lights stay on regardless of time of day |
+| Show Room Ceilings          | Rooms render a ceiling mesh instead of being open from above |
+| Unlimited Subsidiaries      | Removes the limit on how many companies you can take over as subsidiaries |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
 ---

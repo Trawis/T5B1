@@ -116,6 +116,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get("DigitalDistributionMonopol"), a => settings.Toggle("DigitalDistributionMonopol")));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get("DisableFireInspection"), a => settings.Toggle("DisableFireInspection")));
 			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get("AutoMaxMarketShare"), a => settings.Toggle("AutoMaxMarketShare")));
+			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get("UnlimitedSubsidiaries"), a => { settings.Toggle("UnlimitedSubsidiaries"); TrainerBehaviour.ApplyUnlimitedSubsidiaries(settings.Get("UnlimitedSubsidiaries")); }));
 
 			#endregion
 
@@ -142,6 +143,8 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get("AutoEndPatent"), a => settings.Toggle("AutoEndPatent")));
 			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get("IncreaseWalkSpeed"), a => settings.Toggle("IncreaseWalkSpeed")));
 			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get("DisableFurnitureStealing"), a => settings.Toggle("DisableFurnitureStealing")));
+			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get("ForceLights"), a => { settings.Toggle("ForceLights"); TrainerBehaviour.ApplyForceLights(settings.Get("ForceLights")); }));
+			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get("ShowRoomCeilings"), a => { settings.Toggle("ShowRoomCeilings"); TrainerBehaviour.ApplyShowRoomCeilings(settings.Get("ShowRoomCeilings")); }));
 
 			#endregion
 
