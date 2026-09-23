@@ -1314,16 +1314,16 @@ namespace Trainer_v5
 
 		public static void FixBugsAction(string input)
 		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
-					(item as SoftwareAlpha).Name == input && (item as SoftwareAlpha).InBeta);
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && item.InBeta);
 
 			if (WorkItem == null)
 			{
 				return;
 			}
 
-		  ((SoftwareAlpha)WorkItem).FixedBugs = ((SoftwareAlpha)WorkItem).MaxBugs;
+			WorkItem.FixedBugs = WorkItem.MaxBugs;
 		}
 
 		public static void FixBugs()
@@ -1337,22 +1337,20 @@ namespace Trainer_v5
 
 		public static void MaxFollowersAction(string input)
 		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
-					(item as SoftwareAlpha).Name == input && !(item as SoftwareAlpha).Paused);
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && !item.Paused);
 
 			if (WorkItem == null)
 			{
 				return;
 			}
 
-			SoftwareAlpha alpha = (SoftwareAlpha)WorkItem;
+			WorkItem.MaxFollowers += 1000000000;
+			WorkItem.ReEvaluateMaxFollowers();
 
-			alpha.MaxFollowers += 1000000000;
-			alpha.ReEvaluateMaxFollowers();
-
-			alpha.FollowerChange += 1000000000f;
-			alpha.Followers += 1000000000f;
+			WorkItem.FollowerChange += 1000000000f;
+			WorkItem.Followers += 1000000000f;
 		}
 
 		public static void MaxFollowers()
