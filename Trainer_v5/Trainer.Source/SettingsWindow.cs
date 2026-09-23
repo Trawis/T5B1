@@ -97,6 +97,7 @@ namespace Trainer_v5
 
 			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
 			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
+			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());

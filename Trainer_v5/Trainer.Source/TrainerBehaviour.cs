@@ -853,6 +853,24 @@ namespace Trainer_v5
 			});
 		}
 
+		// Verified against ResearchWork.FinishNow() in the vendored assembly: this is the same
+		// AddResearch + AddTechLevel + (conditional) LegalWork + Kill(false) sequence the game
+		// itself runs to finalize a completed research work item, minus the player-facing patent
+		// confirmation dialog. Kill(false) removes the item from Company.WorkItems immediately,
+		// so a work item can never reach this method twice.
+		private static void CompleteResearchWork(ResearchWork researchWork)
+		{
+			Settings.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
+			TechLevel tech = Settings.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
+			if (tech != null)
+			{
+				LegalWork legalWork = new LegalWork(tech);
+				Settings.MyCompany.WorkItems.Add(legalWork);
+				Settings.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+			}
+			researchWork.Kill(false);
+		}
+
 		private static void ApplyAutoEndResearch()
 		{
 			var researchWorks = Settings.MyCompany.WorkItems
@@ -860,18 +878,7 @@ namespace Trainer_v5
 								.Where(rw => rw.Finished)
 								.ToList();
 
-			researchWorks.ForEach(researchWork =>
-			{
-				GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
-				TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
-				if (tech != null)
-				{
-					LegalWork legalWork = new LegalWork(tech);
-					GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
-					GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
-				}
-				researchWork.Kill(false);
-			});
+			researchWorks.ForEach(CompleteResearchWork);
 		}
 
 		private static void ApplyAutoEndPatent()
@@ -1356,6 +1363,33 @@ namespace Trainer_v5
 		public static void MaxFollowers()
 		{
 			WindowManager.SpawnInputDialog("Type product name:", "Max Followers", "", MaxFollowersAction);
+		}
+
+		#endregion
+
+		#region Instant Research
+
+		public static void InstantResearch()
+		{
+			var eligibleResearch = Settings.MyCompany.WorkItems
+								.OfType<ResearchWork>()
+								.Where(rw => !rw.Finished)
+								.ToList();
+
+			if (eligibleResearch.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active research to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			eligibleResearch.ForEach(researchWork =>
+			{
+				researchWork.Progress = researchWork.Max;
+				researchWork.Finished = true;
+				CompleteResearchWork(researchWork);
+			});
+
+			HUD.Instance.AddPopupMessage("Trainer: Research completed instantly!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		#endregion
