@@ -3,7 +3,9 @@ List of features in the trainer
 
 Open the trainer with the **Trainer** button (or F1; F2 closes it). Product
 actions read the product name from the *Product Name Here* input box at the top
-of the first column.
+of the first column. Product name matching is exact and looks across every
+company (player and AI); if more than one product shares that name, the
+action reports the conflict instead of guessing which one to change.
 
 ---
 
@@ -21,9 +23,9 @@ Button features are applied once when clicked.
 | Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
 | AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
-| Set Product Price      | Product Name, Amount   | Sets the product's price                                    |
-| Set Product Stock      | Product Name, Amount   | Sets the product's physical stock                           |
-| Set Active Users       | Product Name, Amount   | Sets the product's active users                             |
+| Set Product Price      | Product Name, Amount   | Sets the price of the exact-matching product (player or AI company) |
+| Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
+| Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
 | Max Market Share       | None                   | Sets market share to 100% for all your products             |
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |

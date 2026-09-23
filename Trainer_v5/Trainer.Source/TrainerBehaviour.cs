@@ -1360,15 +1360,46 @@ namespace Trainer_v5
 
 		#endregion
 
+		#region Product Lookup
+
+		// Shared by SetProductPriceAction, SetProductStockAction, and AddActiveUsersAction so
+		// player and AI-company products can both be targeted without duplicating the lookup,
+		// and without silently picking a product when the entered name isn't unique.
+		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
+		{
+			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)
+				.Where(product => product.Name == name)
+				.ToList();
+
+			if (matches.Count == 0)
+			{
+				errorMessage = "Trainer: Product " + name + " not found!";
+				return null;
+			}
+
+			if (matches.Count > 1)
+			{
+				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
+				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
+				return null;
+			}
+
+			errorMessage = null;
+			return matches[0];
+		}
+
+		#endregion
+
 		#region Set Product Price
 
 		public static void SetProductPriceAction(float price)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -1387,11 +1418,12 @@ namespace Trainer_v5
 
 		public static void SetProductStockAction(uint stock)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -1410,11 +1442,12 @@ namespace Trainer_v5
 
 		public static void AddActiveUsersAction(int users)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
