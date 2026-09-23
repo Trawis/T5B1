@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-21
+**Last Updated**: 2026-09-23
 
 This document describes the verified current technical system. Proposed changes
 belong under `docs/project/designs/` until accepted or implemented.
@@ -294,6 +294,22 @@ Record significant future changes there and summarize the resulting state here.
   build; compatibility is maintained by refreshing the vendored assemblies
   under `Trainer.Libraries/` (see "Game Library Refresh" below).
 - No automated tests exist; regressions are caught only by in-game testing.
+- **`Company.InfiniteMoney()` was investigated and intentionally not exposed**
+  (#103). Decompilation shows its entire body is `this._money =
+  double.PositiveInfinity;` - a direct write to the protected `_money` field
+  that bypasses `MakeTransaction`/cashflow/tax accounting entirely, with no
+  public counterpart to set a finite balance afterward (`Company` exposes
+  `get_Money` but no setter other than this method). Its only caller in the
+  assembly is `GameSettings.Start()`, gated by `if (this.EditMode)`: it exists
+  to give the in-game office/level editor an unconstrained budget, not as a
+  general gameplay cheat. Setting a company's money to actual IEEE-754
+  infinity is a one-way operation that risks turning into `NaN` wherever the
+  game later does ratio/percentage/subtraction math against `Money` (share
+  valuation, tax reports, dividends), which would silently corrupt company
+  state in ways a normal large-but-finite cheat (as the trainer's other
+  "max"-style actions already use) does not. `Add Money` and `Add AI Funds`
+  remain the trainer's money cheats; this method is deliberately left
+  unexposed.
 
 ## Detailed Documentation
 
