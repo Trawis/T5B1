@@ -2,6 +2,7 @@
 ProductName							"Produktname eingeben"
 #Buttons		
 AddMoney							"Geld hinzufügen"
+AddAIFunds							"KI-Geld hinzufügen"
 MaxReputation						"Max Reputation"
 SetProductPrice						"Produktpreis festlegen"
 SetProductStock						"Produktmenge festlegen"

@@ -14,6 +14,7 @@ Button features are applied once when clicked.
 |  Feature               | Parameters             | Description                                                 |
 |:----------------------:|:----------------------:|:-----------------------------------------------------------:|
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
+| Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
 | Max Followers          | Product Name           | Maxes followers for the specified product in development    |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |

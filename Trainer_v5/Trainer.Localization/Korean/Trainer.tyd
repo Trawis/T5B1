@@ -2,6 +2,7 @@
 ProductName							"제품 이름 입력"
 #Buttons		
 AddMoney							"현금 추가"
+AddAIFunds							"AI 현금 추가"
 MaxReputation						"비즈니스 등급 최대로"
 SetProductPrice						"제품 가격 설정"
 SetProductStock						"제품 재고 설정"

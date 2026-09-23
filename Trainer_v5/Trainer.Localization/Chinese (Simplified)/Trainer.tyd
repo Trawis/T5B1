@@ -2,6 +2,7 @@
 ProductName							"输入产品名称"
 #Buttons		
 AddMoney							"加钱"
+AddAIFunds							"给AI公司加钱"
 MaxReputation						"最高声望"
 SetProductPrice						"设置产品价格"
 SetProductStock						"设置产品库存"

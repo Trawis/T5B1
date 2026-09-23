@@ -2,6 +2,7 @@
 ProductName							"Product Name Here"
 #Buttons		
 AddMoney							"Add Money"
+AddAIFunds							"Add AI Funds"
 MaxReputation						"Max Reputation"
 SetProductPrice						"Set Product Price"
 SetProductStock						"Set Product Stock"
