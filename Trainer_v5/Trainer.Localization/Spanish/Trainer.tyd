@@ -56,6 +56,9 @@ NoServerCost						"Sin costo de servidor"
 ReduceExpansionCost					"Reducir el costo de expansión"
 ReduceBoxPrice						"Reducir el precio de la caja"
 AutoMaxMarketShare					"Cuota de mercado máxima automática"
+ForceLights							"Forzar luces"
+ShowRoomCeilings					"Mostrar techos de habitaciones"
+UnlimitedSubsidiaries				"Subsidiarias ilimitadas"
 
 
 

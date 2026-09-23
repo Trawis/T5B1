@@ -75,6 +75,9 @@ namespace Trainer_v5
 			{"AutoAcceptHostingDeals", false},
 			{"AutoMaxMarketShare", false},
 			{"Experimental", false},
+			{"ForceLights", false},
+			{"ShowRoomCeilings", false},
+			{"UnlimitedSubsidiaries", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
