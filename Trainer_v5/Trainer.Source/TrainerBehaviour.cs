@@ -1536,7 +1536,7 @@ namespace Trainer_v5
 		public static void AddAIFundsAction(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
-				.Where(company => company.Name == input && company != Settings.MyCompany)
+				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
 				.ToList();
 
 			if (matches.Count == 0)
