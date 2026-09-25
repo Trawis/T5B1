@@ -61,6 +61,7 @@ namespace Trainer_v5
 			{"NoEducationCost", false},
 			{"IncreaseWalkSpeed", false},
 			{"AutoEndDesign", false},
+			{"AutoContractProgression", false},
 			{"AutoEndResearch", false},
 			{"AutoEndPatent", false},
 			{"ReduceBoxPrice", false},

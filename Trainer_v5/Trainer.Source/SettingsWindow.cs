@@ -141,6 +141,7 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateToggle("NoEducationCost".LocDef("No Education Cost"), settings.Get("NoEducationCost"), a => settings.Toggle("NoEducationCost")));
 			column3.Add(UIHelper.CreateToggle("DisableFires".LocDef("Disable Fires"), settings.Get("DisableFires"), a => settings.Toggle("DisableFires")));
 			column3.Add(UIHelper.CreateToggle("AutoDesignEnd".LocDef("Auto Design End"), settings.Get("AutoEndDesign"), a => settings.Toggle("AutoEndDesign")));
+			column3.Add(UIHelper.CreateToggle("AutoContractProgression".LocDef("Auto Contract Progression"), settings.Get("AutoContractProgression"), a => settings.Toggle("AutoContractProgression")));
 			column3.Add(UIHelper.CreateToggle("AutoResearchEnd".LocDef("Auto Research End"), settings.Get("AutoEndResearch"), a => settings.Toggle("AutoEndResearch")));
 			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get("AutoEndPatent"), a => settings.Toggle("AutoEndPatent")));
 			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get("IncreaseWalkSpeed"), a => settings.Toggle("IncreaseWalkSpeed")));

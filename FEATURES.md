@@ -81,6 +81,7 @@ Toggle features stay active for as long as they are enabled.
 | No Education Cost           | Education is free                                            |
 | Disable Fires               | Prevents and extinguishes fires                              |
 | Auto Design End             | Automatically promotes finished design documents             |
+| Auto Contract Progression   | Automatically promotes contract work once its design/development is finished; QA, bug-fixing, and release stay manual |
 | Auto Research End           | Automatically finishes research and files patents            |
 | Auto Patent End             | Automatically completes finished patents                     |
 | Increase Walk Speed         | Employees walk faster                                        |
