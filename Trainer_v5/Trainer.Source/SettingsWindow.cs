@@ -99,6 +99,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
 			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
 			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
+			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
@@ -178,6 +179,7 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("NoMissedSupportTickets".LocDef("No Missed Support Tickets"), settings.Get("NoMissedSupportTickets"), a => settings.Toggle("NoMissedSupportTickets")));
 			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get("NoInsuranceCost"), a => settings.Toggle("NoInsuranceCost")));
 			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get("NoLoanInterest"), a => settings.Toggle("NoLoanInterest")));
+			column4.Add(UIHelper.CreateToggle("FreeMarketing".LocDef("Free Marketing"), settings.Get("FreeMarketing"), a => settings.Toggle("FreeMarketing")));
 
 			#endregion
 

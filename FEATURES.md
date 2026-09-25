@@ -25,6 +25,7 @@ Button features are applied once when clicked.
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
+| Instant Marketing      | None                   | Immediately completes your active press release campaigns (other campaign types run continuously and have no completion to force) |
 | Set Product Price      | Product Name, Amount   | Sets the price of the exact-matching product (player or AI company) |
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
@@ -105,6 +106,7 @@ Toggle features stay active for as long as they are enabled.
 | No Missed Support Tickets   | Your support tickets never age out and count as missed        |
 | No Insurance Cost           | Refunds your daily content insurance bill; coverage and rates are unaffected |
 | No Loan Interest            | Refunds the interest portion of your monthly loan payments; principal repayment continues normally |
+| Free Marketing               | Refunds your daily budget-based marketing spend; press releases and follower campaigns are unaffected |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
 ---

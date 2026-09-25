@@ -12,6 +12,7 @@ FixBugs								"Corregir errores"
 InstantResearch							"Completar investigación al instante"
 InstantPorting							"Completar portación al instante"
 AutoPorting							"Portación automática"
+InstantMarketing							"Completar marketing al instante"
 TakeoverCompany						"Compañía de adquisición"
 SubsidiaryCompany					"Empresa filial"
 Bankrupt							"Arruinado"
@@ -64,6 +65,7 @@ UnlimitedSubsidiaries				"Subsidiarias ilimitadas"
 NoMissedSupportTickets				"Sin tickets de soporte perdidos"
 NoInsuranceCost						"Sin costo de seguro"
 NoLoanInterest						"Sin interés de préstamo"
+FreeMarketing						"Marketing gratuito"
 
 
 
