@@ -43,4 +43,6 @@ This repository uses strict Git Flow:
 
 Do not create other task-branch families. Release and hotfix changes must be brought back to `develop` after merging. Every task branch must create or propose a pull request; never auto-merge or approve your own pull request.
 
+Merging `main` back into `develop` after a release or hotfix must also go through a pull request (e.g. a short-lived `chore/merge-back-<version>` branch carrying the merge commit), never a direct push to `develop`, even if the push would succeed by bypassing branch protection.
+
 Before branch or pull-request work, fetch and prune remotes, inspect the working tree and current branch, and check existing branches and pull requests to avoid duplicate work.
