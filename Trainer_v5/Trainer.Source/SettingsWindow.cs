@@ -100,6 +100,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
 			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
 			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
+			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
@@ -181,6 +182,8 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get("NoInsuranceCost"), a => settings.Toggle("NoInsuranceCost")));
 			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get("NoLoanInterest"), a => settings.Toggle("NoLoanInterest")));
 			column4.Add(UIHelper.CreateToggle("FreeMarketing".LocDef("Free Marketing"), settings.Get("FreeMarketing"), a => settings.Toggle("FreeMarketing")));
+			column4.Add(UIHelper.CreateToggle("NoOffshoreHeat".LocDef("No Offshore Heat"), settings.Get("NoOffshoreHeat"), a => settings.Toggle("NoOffshoreHeat")));
+			column4.Add(UIHelper.CreateToggle("NoFounderDividends".LocDef("No Founder Dividends"), settings.Get("NoFounderDividends"), a => settings.Toggle("NoFounderDividends")));
 
 			#endregion
 

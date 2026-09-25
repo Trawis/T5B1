@@ -13,6 +13,7 @@ InstantResearch							"Completar investigación al instante"
 InstantPorting							"Completar portación al instante"
 AutoPorting							"Portación automática"
 InstantMarketing							"Completar marketing al instante"
+TransferOffshoreFunds						"Transferir fondos offshore"
 TakeoverCompany						"Compañía de adquisición"
 SubsidiaryCompany					"Empresa filial"
 Bankrupt							"Arruinado"
@@ -67,6 +68,8 @@ NoMissedSupportTickets				"Sin tickets de soporte perdidos"
 NoInsuranceCost						"Sin costo de seguro"
 NoLoanInterest						"Sin interés de préstamo"
 FreeMarketing						"Marketing gratuito"
+NoOffshoreHeat						"Sin atención offshore"
+NoFounderDividends					"Sin dividendos de fundador"
 
 
 
