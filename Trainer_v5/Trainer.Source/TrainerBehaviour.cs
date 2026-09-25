@@ -211,6 +211,11 @@ namespace Trainer_v5
 				ApplyAutoAcceptHostingDeals();
 			}
 
+			if (Helpers.GetProperty(TrainerSettings, "AutoPorting"))
+			{
+				ApplyAutoPorting();
+			}
+
 			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
 			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, "FullRoomBrightness");
 			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill");
@@ -969,6 +974,53 @@ namespace Trainer_v5
 					}
 				}
 			}
+		}
+
+		// Mirrors what SoftwarePort.DoWork itself does once Progress reaches Goal; RefreshCurrent() advances to the next OS or kills the work item once all are ported.
+		private static bool AdvanceSoftwarePort(SoftwarePort port)
+		{
+			if (port.Current == null || port.Product == null || port.Product.DevCompany != Settings.MyCompany)
+			{
+				return false;
+			}
+
+			port.Current.Progress = port.Current.Goal;
+			port.Current.Finished = true;
+			port.RefreshCurrent();
+			return true;
+		}
+
+		private static void ApplyAutoPorting()
+		{
+			foreach (SoftwarePort port in Settings.MyCompany.WorkItems.OfType<SoftwarePort>().ToList())
+			{
+				AdvanceSoftwarePort(port);
+			}
+		}
+
+		public static void InstantPorting()
+		{
+			var ports = Settings.MyCompany.WorkItems.OfType<SoftwarePort>().ToList();
+
+			if (ports.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active porting work to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			foreach (SoftwarePort port in ports)
+			{
+				// Bounded by OSs.Count so a port stuck waiting on something else is left alone rather than looped on.
+				for (int i = 0; i < port.OSs.Count; i++)
+				{
+					if (!AdvanceSoftwarePort(port))
+					{
+						break;
+					}
+				}
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		private static void ApplyDigitalDistributionMonopol()
