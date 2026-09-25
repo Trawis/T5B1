@@ -909,13 +909,7 @@ namespace Trainer_v5
 			});
 		}
 
-		// SupportWork.Simulate (run hourly by TimeOfDay.UpdateHour for the player's own
-		// WorkItems only) counts a ticket as missed - incrementing Missed, and applying an
-		// immediate fan/distribution penalty in the same call - once that ticket's age exceeds
-		// a fixed ~2-month threshold. Ticket resolution (SupportWork.DoWorkSub) removes the
-		// oldest ticket via its own skill-driven timer and never reads ticket age, so keeping
-		// every queued ticket's timestamp refreshed to "now" prevents the age threshold from
-		// ever being crossed without touching Missed, the penalty, or resolution at all.
+		// Simulate() misses a ticket once its stored timestamp ages past ~2 months; refreshing it here keeps that check from ever tripping.
 		private static void ApplyNoMissedSupportTickets()
 		{
 			foreach (SupportWork supportWork in Settings.MyCompany.WorkItems.OfType<SupportWork>())
