@@ -185,7 +185,12 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void TryExecute(Action action)
+		// Last failure time per feature, so a feature failing every frame logs once per interval instead of flooding.
+		private static readonly Dictionary<string, float> _featureFailureLogTimes = new Dictionary<string, float>();
+		private const float FeatureFailureLogIntervalSeconds = 60f;
+
+		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. See #123.
+		public static void TryExecute(string featureId, Action action)
 		{
 			try
 			{
@@ -193,8 +198,14 @@ namespace Trainer_v5
 			}
 			catch (Exception ex)
 			{
-				ex.LogException();
-				UnityEngine.Debug.LogException(ex);
+				float now = UnityEngine.Time.realtimeSinceStartup;
+				float lastLogged;
+				if (!_featureFailureLogTimes.TryGetValue(featureId, out lastLogged) || now - lastLogged >= FeatureFailureLogIntervalSeconds)
+				{
+					_featureFailureLogTimes[featureId] = now;
+					ex.LogException(featureId);
+					UnityEngine.Debug.LogException(ex);
+				}
 			}
 		}
 
