@@ -168,6 +168,11 @@ namespace Trainer_v5
 				ApplyNoMaintenance();
 			}
 
+			if (Helpers.GetProperty(TrainerSettings, "NoMissedSupportTickets"))
+			{
+				ApplyNoMissedSupportTickets();
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
 			{
 				ApplyFreePrint();
@@ -902,6 +907,18 @@ namespace Trainer_v5
 			{
 				legalWork.PatentNow();
 			});
+		}
+
+		// Simulate() misses a ticket once its stored timestamp ages past ~2 months; refreshing it here keeps that check from ever tripping.
+		private static void ApplyNoMissedSupportTickets()
+		{
+			foreach (SupportWork supportWork in Settings.MyCompany.WorkItems.OfType<SupportWork>())
+			{
+				for (int i = 0; i < supportWork.Tickets.Count; i++)
+				{
+					supportWork.Tickets[i] = SDateTime.Now();
+				}
+			}
 		}
 
 		private static void ApplyDisableFurnitureStealing()

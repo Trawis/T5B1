@@ -100,6 +100,7 @@ Toggle features stay active for as long as they are enabled.
 | Force Lights                | Building and street lights stay on regardless of time of day |
 | Show Room Ceilings          | Rooms render a ceiling mesh instead of being open from above |
 | Unlimited Subsidiaries      | Removes the limit on how many companies you can take over as subsidiaries |
+| No Missed Support Tickets   | Your support tickets never age out and count as missed        |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
 ---
