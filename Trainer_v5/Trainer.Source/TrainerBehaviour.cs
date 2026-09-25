@@ -331,6 +331,11 @@ namespace Trainer_v5
 			{
 				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoLoanInterest"))
+			{
+				ApplyNoLoanInterest();
+			}
 		}
 
 		private void Update()
@@ -743,6 +748,17 @@ namespace Trainer_v5
 				actor.VacationMonth = SDateTime.NextMonth(24);
 				if (actor.SpecialState == Actor.HomeState.Vacation)
 					actor.SpecialState = Actor.HomeState.Default;
+			}
+		}
+
+		// GameSettings.PaybackLoan charges Monthly (principal + MonthlyInterest) per loan, then removes paid-off loans, before OnMonthPassed fires.
+		// Refunding the still-outstanding loans' MonthlyInterest here needs no captured baseline: Loan fields are never modified after creation.
+		private static void ApplyNoLoanInterest()
+		{
+			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
+			if (totalInterest > 0f)
+			{
+				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
 			}
 		}
 

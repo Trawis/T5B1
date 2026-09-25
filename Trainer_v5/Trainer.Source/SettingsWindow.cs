@@ -175,6 +175,7 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
 			column4.Add(UIHelper.CreateToggle("NoMissedSupportTickets".LocDef("No Missed Support Tickets"), settings.Get("NoMissedSupportTickets"), a => settings.Toggle("NoMissedSupportTickets")));
 			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get("NoInsuranceCost"), a => settings.Toggle("NoInsuranceCost")));
+			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get("NoLoanInterest"), a => settings.Toggle("NoLoanInterest")));
 
 			#endregion
 
