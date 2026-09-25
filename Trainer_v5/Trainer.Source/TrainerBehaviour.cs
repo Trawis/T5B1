@@ -351,6 +351,11 @@ namespace Trainer_v5
 			{
 				ApplyNoLoanInterest();
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoFounderDividends"))
+			{
+				ApplyNoFounderDividends();
+			}
 		}
 
 		private void Update()
@@ -665,6 +670,12 @@ namespace Trainer_v5
 				GameSettings.FreezeGame = false;
 			}
 
+			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
+			if (Helpers.GetProperty(TrainerSettings, "NoOffshoreHeat"))
+			{
+				Settings.Heat = 0f;
+			}
+
 			/*
 			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
 			{
@@ -780,6 +791,33 @@ namespace Trainer_v5
 			{
 				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
 			}
+		}
+
+		// PayDividends (paid monthly, despite being called from something named EndDay) records each payout in NewStock[i].Payout.
+		private static void ApplyNoFounderDividends()
+		{
+			foreach (NewStock stock in Settings.MyCompany.NewStock)
+			{
+				if (stock.Buyer is FounderShareHolder && stock.Payout > 0f)
+				{
+					Settings.MyCompany.MakeTransaction(stock.Payout, Company.TransactionCategory.Dividends);
+				}
+			}
+		}
+
+		public static void TransferOffshoreFunds()
+		{
+			double amount = Settings.OffshoreAccount;
+			if (amount <= 0.0)
+			{
+				WindowManager.SpawnDialog("Trainer: No offshore funds to transfer!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			// No dedicated transfer method exists; mirrors how the game's own funnel flow touches this field directly.
+			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
+			Settings.OffshoreAccount = 0.0;
+			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		private static void ApplyFullEnvironmentToRoom(Room room)
