@@ -670,10 +670,7 @@ namespace Trainer_v5
 				GameSettings.FreezeGame = false;
 			}
 
-			// Heat is only ever added synchronously inside GameSettings.AddHeat (offshore actions,
-			// funneling), which checks against MaxHeat and triggers an audit in that same call, so
-			// there is no earlier public hook to block the addition itself. Clearing every frame is
-			// the tightest reactive window available without patching AddHeat.
+			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
 			if (Helpers.GetProperty(TrainerSettings, "NoOffshoreHeat"))
 			{
 				Settings.Heat = 0f;
@@ -796,10 +793,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// Company.PayDividends (called from TimeOfDay.UpdateMonth via MarketSimulation.EndDay, despite
-		// the name) records each shareholder's payout in NewStock[i].Payout before this fires, so the
-		// exact founder-only amount just paid can be refunded without touching Difficulty.FounderDividend
-		// (which would also affect AI companies) or any founder/ownership state.
+		// PayDividends (paid monthly, despite being called from something named EndDay) records each payout in NewStock[i].Payout.
 		private static void ApplyNoFounderDividends()
 		{
 			foreach (NewStock stock in Settings.MyCompany.NewStock)
@@ -820,9 +814,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			// Mirrors what AccountingWindow's own funnel flow does to this field directly (there is no
-			// dedicated transfer method); MakeTransaction is used for the company side so cashflow/reports
-			// stay consistent, same as every other trainer money addition.
+			// No dedicated transfer method exists; mirrors how the game's own funnel flow touches this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
 			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
