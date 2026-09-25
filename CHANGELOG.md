@@ -6,6 +6,25 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.2.9] - 2026-09-25
+
+- Instant Research button: immediately completes all currently active,
+  unfinished research.
+- Add AI Funds button: adds money to a named AI (competitor) company.
+- Set Product Price, Set Product Stock, and Add Active Users can now target
+  any exact-name product across every company, not only the player's own.
+- Force Lights, Show Room Ceilings, and Unlimited Subsidiaries toggles.
+- No Missed Support Tickets, No Insurance Cost, and No Loan Interest toggles.
+- Instant Porting button and Auto Porting toggle for porting work.
+- Instant Marketing button (completes active press release campaigns) and
+  Free Marketing toggle (refunds daily budget-based marketing spend).
+- Auto Contract Progression toggle: automatically promotes contract work
+  once its design/development is finished.
+- No Offshore Heat and No Founder Dividends toggles, and a Transfer
+  Offshore Funds button.
+- Optimize Team Assignments button: reassigns single-team design, marketing,
+  and porting work to whichever existing team best matches the role it needs.
+
 ## [5.2.8] - 2026-09-21
 
 - Fixed several toggle and automation timing bugs: Auto Design End no longer
