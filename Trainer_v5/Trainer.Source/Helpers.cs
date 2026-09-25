@@ -78,6 +78,7 @@ namespace Trainer_v5
 			{"ForceLights", false},
 			{"ShowRoomCeilings", false},
 			{"UnlimitedSubsidiaries", false},
+			{"NoMissedSupportTickets", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
