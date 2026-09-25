@@ -26,6 +26,9 @@ namespace Trainer_v5
 
 		// Settings the game itself only ever sets once (ctor/new-game/save-load).
 		private bool _oneTimeSettingsApplied;
+		private bool _forceLightsApplied;
+		private bool _showRoomCeilingsApplied;
+		private bool _unlimitedSubsidiariesApplied;
 
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
@@ -230,43 +233,41 @@ namespace Trainer_v5
 			bool noWaterElectricity = Helpers.GetProperty(TrainerSettings, "NoWaterElectricity");
 			bool disableFires = Helpers.GetProperty(TrainerSettings, "DisableFires");
 
-			if (fullEnvironment || fullRoomBrightness)
+			if (fullEnvironment)
 			{
-				for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				Helpers.TryExecute("FullEnvironment", () =>
 				{
-					Room room = Settings.sRoomManager.Rooms[i];
-
-					if (fullEnvironment)
+					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 					{
-						Helpers.TryExecute("FullEnvironment", () => ApplyFullEnvironmentToRoom(room));
+						ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
 					}
-
-					if (fullRoomBrightness)
-					{
-						Helpers.TryExecute("FullRoomBrightness", () => ApplyFullRoomBrightnessToRoom(room));
-					}
-				}
+				});
 			}
 
-			if (increaseBookshelfSkill || noWaterElectricity || disableFires)
+			if (fullRoomBrightness)
 			{
-				foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+				Helpers.TryExecute("FullRoomBrightness", () =>
 				{
-					if (increaseBookshelfSkill)
+					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 					{
-						Helpers.TryExecute("IncreaseBookshelfSkill", () => ApplyIncreaseBookshelfSkillToFurniture(furniture));
+						ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
 					}
+				});
+			}
 
-					if (noWaterElectricity)
-					{
-						Helpers.TryExecute("NoWaterElectricity", () => ApplyNoWaterElectricityToFurniture(furniture));
-					}
+			if (increaseBookshelfSkill)
+			{
+				Helpers.TryExecute("IncreaseBookshelfSkill", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture));
+			}
 
-					if (disableFires)
-					{
-						Helpers.TryExecute("DisableFires", () => ApplyDisableFiresFireStarterToFurniture(furniture));
-					}
-				}
+			if (noWaterElectricity)
+			{
+				Helpers.TryExecute("NoWaterElectricity", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture));
+			}
+
+			if (disableFires)
+			{
+				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
 			}
 
 			bool increaseWalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed");
@@ -397,16 +398,26 @@ namespace Trainer_v5
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
-
-				// Cheats.* are plain static fields with no save-file backing, so they reset to
-				// false on every game process start regardless of what the trainer's own
-				// (persisted) settings say. Re-push them once per load so a setting that was
-				// enabled before a restart takes effect again.
-				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
-				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
-				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
-
 				_oneTimeSettingsApplied = true;
+			}
+
+			// Cheats.* are plain static fields with no save-file backing, so they reset to false on every game
+			// process start regardless of what the trainer's own (persisted) settings say. Re-push them once per
+			// load so a setting that was enabled before a restart takes effect again; each is tracked independently
+			// so a transient failure in one only retries that one, without losing or re-running the others.
+			if (!_forceLightsApplied)
+			{
+				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
+			}
+
+			if (!_showRoomCeilingsApplied)
+			{
+				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
+			}
+
+			if (!_unlimitedSubsidiariesApplied)
+			{
+				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
 			}
 
 			if (ToggleJustEnabled("NoMaintenance"))
@@ -593,87 +604,156 @@ namespace Trainer_v5
 			bool fullSatisfaction = Helpers.GetProperty(TrainerSettings, "FullSatisfaction");
 			bool noSickness = Helpers.GetProperty(TrainerSettings, "NoSickness");
 			bool cleanRooms = Helpers.GetProperty(TrainerSettings, "CleanRooms");
+			bool noiseReduction = Helpers.GetProperty(TrainerSettings, "NoiseReduction");
+			bool disableFires = Helpers.GetProperty(TrainerSettings, "DisableFires");
+			bool temperatureLock = Helpers.GetProperty(TrainerSettings, "TemperatureLock");
+			bool noStress = Helpers.GetProperty(TrainerSettings, "NoStress");
+			object leadEfficiencyStoreValue = Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore");
+			object efficiencyStoreValue = Helpers.GetProperty(StoresSettings, "EfficiencyStore");
+			bool noNeeds = Helpers.GetProperty(TrainerSettings, "NoNeeds");
+			bool moreInspiration = Helpers.GetProperty(TrainerSettings, "MoreInspiration");
 
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			// Each feature wraps its own full traversal of the relevant collection, rather than TryExecute per
+			// item, to avoid a per-object closure allocation every frame. One bad object can abort that feature's
+			// remaining work for this frame, but unrelated features and the next frame's retry are unaffected.
+			if (noiseReduction)
 			{
-				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
+				Helpers.TryExecute("NoiseReduction", () =>
 				{
-					Helpers.TryExecute("NoiseReduction", () =>
+					foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 					{
 						furniture.ActorNoise = 0f;
 						furniture.EnvironmentNoise = 0f;
 						furniture.FinalNoise = 0f;
 						furniture.Noisiness = 0;
-					});
-				}
+					}
+				});
+			}
 
-				if (Helpers.GetProperty(TrainerSettings, "DisableFires") && furniture.Parent.IsOnFire)
+			if (disableFires)
+			{
+				Helpers.TryExecute("DisableFires", () =>
 				{
-					Helpers.TryExecute("DisableFires", () =>
+					foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 					{
+						if (!furniture.Parent.IsOnFire)
+						{
+							continue;
+						}
+
 						if (furniture.Parent.Temperature > 40f)
 						{
 							furniture.Parent.Temperature = 21f;
 						}
 						furniture.Parent.StopFire();
-					});
-				}
+					}
+				});
 			}
 
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			if (cleanRooms)
 			{
-				Room room = Settings.sRoomManager.Rooms[i];
-
-				if (cleanRooms)
+				Helpers.TryExecute("CleanRooms", () =>
 				{
-					Helpers.TryExecute("CleanRooms", () => ApplyCleanRoomsToRoom(room));
-				}
-
-				if (noSickness)
-				{
-					Helpers.TryExecute("NoSickness", () => ApplyNoSicknessToRoom(room));
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
-				{
-					Helpers.TryExecute("TemperatureLock", () => room.Temperature = 21f);
-				}
-			}
-
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-
-				if (fullSatisfaction)
-				{
-					Helpers.TryExecute("FullSatisfaction", () => ApplyFullSatisfactionToActor(actor));
-				}
-
-				if (noSickness)
-				{
-					Helpers.TryExecute("NoSickness", () => ApplyNoSicknessToActor(actor));
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "NoStress"))
-				{
-					Helpers.TryExecute("NoStress", () => employee.Stress = 1f);
-				}
-
-				if (employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore") != null)
-				{
-					Helpers.TryExecute("LeadEfficiencyStore", () => actor.Effectiveness = Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore").MakeFloat());
-				}
-
-				if (!employee.RoleString.Contains("Lead") && Helpers.GetProperty(StoresSettings, "EfficiencyStore") != null)
-				{
-					Helpers.TryExecute("EfficiencyStore", () => actor.Effectiveness = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat());
-				}
-
-				if (Helpers.GetProperty(TrainerSettings, "NoNeeds"))
-				{
-					Helpers.TryExecute("NoNeeds", () =>
+					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
 					{
+						ApplyCleanRoomsToRoom(Settings.sRoomManager.Rooms[i]);
+					}
+				});
+			}
+
+			if (noSickness)
+			{
+				Helpers.TryExecute("NoSickness", () =>
+				{
+					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+					{
+						ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
+					}
+				});
+			}
+
+			if (temperatureLock)
+			{
+				Helpers.TryExecute("TemperatureLock", () =>
+				{
+					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+					{
+						Settings.sRoomManager.Rooms[i].Temperature = 21f;
+					}
+				});
+			}
+
+			if (fullSatisfaction)
+			{
+				Helpers.TryExecute("FullSatisfaction", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						ApplyFullSatisfactionToActor(Settings.sActorManager.Actors[i]);
+					}
+				});
+			}
+
+			if (noSickness)
+			{
+				Helpers.TryExecute("NoSickness", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						ApplyNoSicknessToActor(Settings.sActorManager.Actors[i]);
+					}
+				});
+			}
+
+			if (noStress)
+			{
+				Helpers.TryExecute("NoStress", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Settings.sActorManager.Actors[i].employee.Stress = 1f;
+					}
+				});
+			}
+
+			if (leadEfficiencyStoreValue != null)
+			{
+				Helpers.TryExecute("LeadEfficiencyStore", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Actor actor = Settings.sActorManager.Actors[i];
+						if (actor.employee.RoleString.Contains("Lead"))
+						{
+							actor.Effectiveness = leadEfficiencyStoreValue.MakeFloat();
+						}
+					}
+				});
+			}
+
+			if (efficiencyStoreValue != null)
+			{
+				Helpers.TryExecute("EfficiencyStore", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Actor actor = Settings.sActorManager.Actors[i];
+						if (!actor.employee.RoleString.Contains("Lead"))
+						{
+							actor.Effectiveness = efficiencyStoreValue.MakeFloat();
+						}
+					}
+				});
+			}
+
+			if (noNeeds)
+			{
+				Helpers.TryExecute("NoNeeds", () =>
+				{
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Actor actor = Settings.sActorManager.Actors[i];
+						Employee employee = actor.employee;
 						actor.NextSmell = 0f;
 						employee.Bladder = 1f;
 						employee.Hunger = 1f;
@@ -682,18 +762,30 @@ namespace Trainer_v5
 						employee.Posture = 1f;
 						employee.ActiveComplaint = false;
 						employee.HadProperFood = true;
-					});
-				}
+					}
+				});
+			}
 
-				if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
+			if (noiseReduction)
+			{
+				Helpers.TryExecute("NoiseReduction", () =>
 				{
-					Helpers.TryExecute("NoiseReduction", () => actor.Noisiness = 0);
-				}
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Settings.sActorManager.Actors[i].Noisiness = 0;
+					}
+				});
+			}
 
-				if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
+			if (moreInspiration)
+			{
+				Helpers.TryExecute("MoreInspiration", () =>
 				{
-					Helpers.TryExecute("MoreInspiration", () => employee.LastInpirationUse = new SDateTime(0));
-				}
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Settings.sActorManager.Actors[i].employee.LastInpirationUse = new SDateTime(0);
+					}
+				});
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "DisableForcePause"))
