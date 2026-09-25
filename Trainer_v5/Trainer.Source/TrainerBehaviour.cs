@@ -969,6 +969,90 @@ namespace Trainer_v5
 			});
 		}
 
+		// The RoleBit each type's own GetBoostRole checks; other WorkItem types have no single verified preference and are left alone.
+		private static Employee.RoleBit? GetOptimizerRoleBit(WorkItem item)
+		{
+			if (item is DesignDocument)
+			{
+				return Employee.RoleBit.Designer;
+			}
+
+			if (item is MarketingPlan)
+			{
+				return Employee.RoleBit.Service;
+			}
+
+			if (item is SoftwarePort)
+			{
+				return Employee.RoleBit.Programmer;
+			}
+
+			return null;
+		}
+
+		private static int ScoreTeamForRole(Team team, Employee.RoleBit roleBit)
+		{
+			return team.GetEmployeesDirect().Count(actor => actor.employee.IsRole(roleBit, false));
+		}
+
+		public static void OptimizeTeamAssignments()
+		{
+			int reassigned = 0;
+
+			foreach (WorkItem item in Settings.MyCompany.WorkItems.ToList())
+			{
+				if (item.AutoDev || item.DevTeams.Count != 1)
+				{
+					continue;
+				}
+
+				Employee.RoleBit? roleBit = GetOptimizerRoleBit(item);
+				if (roleBit == null)
+				{
+					continue;
+				}
+
+				DesignDocument designDocument = item as DesignDocument;
+				if (designDocument != null && designDocument.NeedsLead() && designDocument.LeadWork != null)
+				{
+					continue;
+				}
+
+				Team currentTeam = GameSettings.GetTeam(item.DevTeams.First());
+				if (currentTeam == null)
+				{
+					continue;
+				}
+
+				Team bestTeam = currentTeam;
+				int bestScore = ScoreTeamForRole(currentTeam, roleBit.Value);
+
+				foreach (Team team in Settings.sActorManager.Teams.Values)
+				{
+					int score = ScoreTeamForRole(team, roleBit.Value);
+					if (score > bestScore)
+					{
+						bestScore = score;
+						bestTeam = team;
+					}
+				}
+
+				if (bestTeam != currentTeam)
+				{
+					item.SetDevTeams(new List<string> { bestTeam.Name });
+					reassigned++;
+				}
+			}
+
+			if (reassigned == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: All eligible work is already assigned to its best available team!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Team assignments optimized!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
 		// Verified against ResearchWork.FinishNow() in the vendored assembly: this is the same
 		// AddResearch + AddTechLevel + (conditional) LegalWork + Kill(false) sequence the game
 		// itself runs to finalize a completed research work item, minus the player-facing patent

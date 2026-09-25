@@ -27,6 +27,7 @@ Button features are applied once when clicked.
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
 | Instant Marketing      | None                   | Immediately completes your active press release campaigns (other campaign types run continuously and have no completion to force) |
 | Transfer Offshore Funds | None                  | Moves your entire offshore account balance into your company's main balance |
+| Optimize Team Assignments | None                 | Reassigns single-team design documents, marketing campaigns, and porting work to whichever of your existing teams best matches the relevant role; leaves multi-team, lead-committed, and AI-managed work untouched |
 | Set Product Price      | Product Name, Amount   | Sets the price of the exact-matching product (player or AI company) |
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
