@@ -82,6 +82,7 @@ namespace Trainer_v5
 			{"NoInsuranceCost", false},
 			{"NoLoanInterest", false},
 			{"AutoPorting", false},
+			{"FreeMarketing", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>

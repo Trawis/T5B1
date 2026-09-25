@@ -298,6 +298,11 @@ namespace Trainer_v5
 			{
 				ApplyNoInsuranceCost();
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FreeMarketing"))
+			{
+				ApplyFreeMarketing();
+			}
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
@@ -1021,6 +1026,59 @@ namespace Trainer_v5
 			}
 
 			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
+		{
+			MarketingPlan.PressOption.Text,
+			MarketingPlan.PressOption.Image,
+			MarketingPlan.PressOption.Video,
+		};
+
+		// Only PressRelease has a completable Progress array; PostMarket/Hype campaigns run perpetually with no finish state to force.
+		private static void CompletePressRelease(MarketingPlan plan)
+		{
+			for (int i = 0; i < PressReleaseOptions.Length; i++)
+			{
+				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
+				{
+					plan.Progress[i] = 1f;
+				}
+			}
+
+			plan.StopMarketing();
+		}
+
+		public static void InstantMarketing()
+		{
+			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
+				.Where(plan => plan.Type == MarketingPlan.TaskType.PressRelease)
+				.ToList();
+
+			if (plans.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active press release campaigns to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			foreach (MarketingPlan plan in plans)
+			{
+				CompletePressRelease(plan);
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Press release campaigns have been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		// MarketingPlan.AddEffect bills Spent to the Marketing category daily for PostMarket campaigns then moves it into LastSpent and zeroes Spent; refunding that settled amount needs no captured baseline.
+		private static void ApplyFreeMarketing()
+		{
+			foreach (MarketingPlan plan in Settings.MyCompany.WorkItems.OfType<MarketingPlan>())
+			{
+				if (plan.Type == MarketingPlan.TaskType.PostMarket && plan.LastSpent > 0f)
+				{
+					Settings.MyCompany.MakeTransaction(plan.LastSpent, Company.TransactionCategory.Marketing);
+				}
+			}
 		}
 
 		private static void ApplyDigitalDistributionMonopol()
