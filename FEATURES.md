@@ -102,6 +102,7 @@ Toggle features stay active for as long as they are enabled.
 | Unlimited Subsidiaries      | Removes the limit on how many companies you can take over as subsidiaries |
 | No Missed Support Tickets   | Your support tickets never age out and count as missed        |
 | No Insurance Cost           | Refunds your daily content insurance bill; coverage and rates are unaffected |
+| No Loan Interest            | Refunds the interest portion of your monthly loan payments; principal repayment continues normally |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
 ---

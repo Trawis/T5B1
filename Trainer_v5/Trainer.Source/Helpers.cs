@@ -80,6 +80,7 @@ namespace Trainer_v5
 			{"UnlimitedSubsidiaries", false},
 			{"NoMissedSupportTickets", false},
 			{"NoInsuranceCost", false},
+			{"NoLoanInterest", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
