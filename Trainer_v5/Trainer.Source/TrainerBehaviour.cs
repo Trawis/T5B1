@@ -191,6 +191,11 @@ namespace Trainer_v5
 				ApplyAutoEndDesign();
 			}
 
+			if (Helpers.GetProperty(TrainerSettings, "AutoContractProgression"))
+			{
+				ApplyAutoContractProgression();
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
 			{
 				ApplyAutoEndResearch();
@@ -405,6 +410,11 @@ namespace Trainer_v5
 			if (ToggleJustEnabled("AutoEndDesign"))
 			{
 				ApplyAutoEndDesign();
+			}
+
+			if (ToggleJustEnabled("AutoContractProgression"))
+			{
+				ApplyAutoContractProgression();
 			}
 
 			if (ToggleJustEnabled("AutoEndResearch"))
@@ -893,6 +903,29 @@ namespace Trainer_v5
 								.ToList();
 
 			designDocuments.ForEach(designDocument =>
+			{
+				designDocument.PromoteAction();
+			});
+		}
+
+		// WorkItem.contract is set on the DesignDocument the game creates for accepted contract work
+		// (ContractWork.GenerateWorkItem -> DesignDocument.CreateWork), so it identifies contract work
+		// without guessing from names. HasFinished already means "required code/art units satisfied for
+		// every design iteration" (verified in DesignDocument.DoWork: it only flips true once AllDone()
+		// passes for the current iteration and either Parent is set or the iteration cap is reached), so
+		// PromoteAction() is called with the exact same precondition as ApplyAutoEndDesign(). PromoteAction
+		// itself only replaces the DesignDocument with the next-phase WorkItem (QA/bug-fixing/release stay
+		// untouched, and normal/manual control over that new item is unaffected). Running after
+		// ApplyAutoEndDesign() in OnMinutePassed means anything it already promoted (and Kill()ed out of
+		// WorkItems) is gone from this query, so the two toggles can never double-promote the same item.
+		private static void ApplyAutoContractProgression()
+		{
+			var contractDesigns = Settings.MyCompany.WorkItems
+								.OfType<DesignDocument>()
+								.Where(d => d.contract != null && d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
+								.ToList();
+
+			contractDesigns.ForEach(designDocument =>
 			{
 				designDocument.PromoteAction();
 			});
