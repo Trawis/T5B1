@@ -288,6 +288,11 @@ namespace Trainer_v5
 			{
 				ApplyDigitalDistributionMonopol();
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoInsuranceCost"))
+			{
+				ApplyNoInsuranceCost();
+			}
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
@@ -972,6 +977,18 @@ namespace Trainer_v5
 				company.Distribution.MarketShare = 0f;
 				MarketSimulation.Active.ClosePlatform(company.Distribution);
 			}
+		}
+
+		// Refunds the daily insurance bill TimeOfDay.UpdateDay already charged this tick, leaving CurrentRate/coverage untouched.
+		private static void ApplyNoInsuranceCost()
+		{
+			if (!Settings.PassedFireInspection)
+			{
+				return;
+			}
+
+			float dailyBill = Settings.Insurance.GetContentBill(true) / GameSettings.DaysPerMonth;
+			Settings.MyCompany.MakeTransaction(dailyBill, Company.TransactionCategory.Bills);
 		}
 
 		private static void ApplyAutoAcceptHostingDeals()
