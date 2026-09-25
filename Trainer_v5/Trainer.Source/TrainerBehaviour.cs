@@ -168,6 +168,11 @@ namespace Trainer_v5
 				ApplyNoMaintenance();
 			}
 
+			if (Helpers.GetProperty(TrainerSettings, "NoMissedSupportTickets"))
+			{
+				ApplyNoMissedSupportTickets();
+			}
+
 			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
 			{
 				ApplyFreePrint();
@@ -184,6 +189,11 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
 			{
 				ApplyAutoEndDesign();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoContractProgression"))
+			{
+				ApplyAutoContractProgression();
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
@@ -204,6 +214,11 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
 			{
 				ApplyAutoAcceptHostingDeals();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "AutoPorting"))
+			{
+				ApplyAutoPorting();
 			}
 
 			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
@@ -283,6 +298,16 @@ namespace Trainer_v5
 			{
 				ApplyDigitalDistributionMonopol();
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoInsuranceCost"))
+			{
+				ApplyNoInsuranceCost();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "FreeMarketing"))
+			{
+				ApplyFreeMarketing();
+			}
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
@@ -321,6 +346,16 @@ namespace Trainer_v5
 			{
 				Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoLoanInterest"))
+			{
+				ApplyNoLoanInterest();
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "NoFounderDividends"))
+			{
+				ApplyNoFounderDividends();
+			}
 		}
 
 		private void Update()
@@ -350,6 +385,15 @@ namespace Trainer_v5
 			{
 				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
+
+				// Cheats.* are plain static fields with no save-file backing, so they reset to
+				// false on every game process start regardless of what the trainer's own
+				// (persisted) settings say. Re-push them once per load so a setting that was
+				// enabled before a restart takes effect again.
+				ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights"));
+				ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings"));
+				ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries"));
+
 				_oneTimeSettingsApplied = true;
 			}
 
@@ -371,6 +415,11 @@ namespace Trainer_v5
 			if (ToggleJustEnabled("AutoEndDesign"))
 			{
 				ApplyAutoEndDesign();
+			}
+
+			if (ToggleJustEnabled("AutoContractProgression"))
+			{
+				ApplyAutoContractProgression();
 			}
 
 			if (ToggleJustEnabled("AutoEndResearch"))
@@ -621,6 +670,12 @@ namespace Trainer_v5
 				GameSettings.FreezeGame = false;
 			}
 
+			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
+			if (Helpers.GetProperty(TrainerSettings, "NoOffshoreHeat"))
+			{
+				Settings.Heat = 0f;
+			}
+
 			/*
 			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
 			{
@@ -725,6 +780,44 @@ namespace Trainer_v5
 				if (actor.SpecialState == Actor.HomeState.Vacation)
 					actor.SpecialState = Actor.HomeState.Default;
 			}
+		}
+
+		// GameSettings.PaybackLoan charges Monthly (principal + MonthlyInterest) per loan, then removes paid-off loans, before OnMonthPassed fires.
+		// Refunding the still-outstanding loans' MonthlyInterest here needs no captured baseline: Loan fields are never modified after creation.
+		private static void ApplyNoLoanInterest()
+		{
+			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
+			if (totalInterest > 0f)
+			{
+				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
+			}
+		}
+
+		// PayDividends (paid monthly, despite being called from something named EndDay) records each payout in NewStock[i].Payout.
+		private static void ApplyNoFounderDividends()
+		{
+			foreach (NewStock stock in Settings.MyCompany.NewStock)
+			{
+				if (stock.Buyer is FounderShareHolder && stock.Payout > 0f)
+				{
+					Settings.MyCompany.MakeTransaction(stock.Payout, Company.TransactionCategory.Dividends);
+				}
+			}
+		}
+
+		public static void TransferOffshoreFunds()
+		{
+			double amount = Settings.OffshoreAccount;
+			if (amount <= 0.0)
+			{
+				WindowManager.SpawnDialog("Trainer: No offshore funds to transfer!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			// No dedicated transfer method exists; mirrors how the game's own funnel flow touches this field directly.
+			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
+			Settings.OffshoreAccount = 0.0;
+			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		private static void ApplyFullEnvironmentToRoom(Room room)
@@ -853,6 +946,131 @@ namespace Trainer_v5
 			});
 		}
 
+		// WorkItem.contract is set on the DesignDocument the game creates for accepted contract work
+		// (ContractWork.GenerateWorkItem -> DesignDocument.CreateWork), so it identifies contract work
+		// without guessing from names. HasFinished already means "required code/art units satisfied for
+		// every design iteration" (verified in DesignDocument.DoWork: it only flips true once AllDone()
+		// passes for the current iteration and either Parent is set or the iteration cap is reached), so
+		// PromoteAction() is called with the exact same precondition as ApplyAutoEndDesign(). PromoteAction
+		// itself only replaces the DesignDocument with the next-phase WorkItem (QA/bug-fixing/release stay
+		// untouched, and normal/manual control over that new item is unaffected). Running after
+		// ApplyAutoEndDesign() in OnMinutePassed means anything it already promoted (and Kill()ed out of
+		// WorkItems) is gone from this query, so the two toggles can never double-promote the same item.
+		private static void ApplyAutoContractProgression()
+		{
+			var contractDesigns = Settings.MyCompany.WorkItems
+								.OfType<DesignDocument>()
+								.Where(d => d.contract != null && d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
+								.ToList();
+
+			contractDesigns.ForEach(designDocument =>
+			{
+				designDocument.PromoteAction();
+			});
+		}
+
+		// The RoleBit each type's own GetBoostRole checks; other WorkItem types have no single verified preference and are left alone.
+		private static Employee.RoleBit? GetOptimizerRoleBit(WorkItem item)
+		{
+			if (item is DesignDocument)
+			{
+				return Employee.RoleBit.Designer;
+			}
+
+			if (item is MarketingPlan)
+			{
+				return Employee.RoleBit.Service;
+			}
+
+			if (item is SoftwarePort)
+			{
+				return Employee.RoleBit.Programmer;
+			}
+
+			return null;
+		}
+
+		private static int ScoreTeamForRole(Team team, Employee.RoleBit roleBit)
+		{
+			return team.GetEmployeesDirect().Count(actor => actor.employee.IsRole(roleBit, false));
+		}
+
+		public static void OptimizeTeamAssignments()
+		{
+			int reassigned = 0;
+
+			foreach (WorkItem item in Settings.MyCompany.WorkItems.ToList())
+			{
+				if (item.AutoDev || item.DevTeams.Count != 1)
+				{
+					continue;
+				}
+
+				Employee.RoleBit? roleBit = GetOptimizerRoleBit(item);
+				if (roleBit == null)
+				{
+					continue;
+				}
+
+				DesignDocument designDocument = item as DesignDocument;
+				if (designDocument != null && designDocument.NeedsLead() && designDocument.LeadWork != null)
+				{
+					continue;
+				}
+
+				Team currentTeam = GameSettings.GetTeam(item.DevTeams.First());
+				if (currentTeam == null)
+				{
+					continue;
+				}
+
+				Team bestTeam = currentTeam;
+				int bestScore = ScoreTeamForRole(currentTeam, roleBit.Value);
+
+				foreach (Team team in Settings.sActorManager.Teams.Values)
+				{
+					int score = ScoreTeamForRole(team, roleBit.Value);
+					if (score > bestScore)
+					{
+						bestScore = score;
+						bestTeam = team;
+					}
+				}
+
+				if (bestTeam != currentTeam)
+				{
+					item.SetDevTeams(new List<string> { bestTeam.Name });
+					reassigned++;
+				}
+			}
+
+			if (reassigned == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: All eligible work is already assigned to its best available team!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Team assignments optimized!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		// Verified against ResearchWork.FinishNow() in the vendored assembly: this is the same
+		// AddResearch + AddTechLevel + (conditional) LegalWork + Kill(false) sequence the game
+		// itself runs to finalize a completed research work item, minus the player-facing patent
+		// confirmation dialog. Kill(false) removes the item from Company.WorkItems immediately,
+		// so a work item can never reach this method twice.
+		private static void CompleteResearchWork(ResearchWork researchWork)
+		{
+			Settings.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
+			TechLevel tech = Settings.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
+			if (tech != null)
+			{
+				LegalWork legalWork = new LegalWork(tech);
+				Settings.MyCompany.WorkItems.Add(legalWork);
+				Settings.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+			}
+			researchWork.Kill(false);
+		}
+
 		private static void ApplyAutoEndResearch()
 		{
 			var researchWorks = Settings.MyCompany.WorkItems
@@ -860,18 +1078,7 @@ namespace Trainer_v5
 								.Where(rw => rw.Finished)
 								.ToList();
 
-			researchWorks.ForEach(researchWork =>
-			{
-				GameSettings.Instance.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
-				TechLevel tech = GameSettings.Instance.simulation.AddTechLevel(researchWork.Spec, researchWork.Year, SDateTime.Now(), true);
-				if (tech != null)
-				{
-					LegalWork legalWork = new LegalWork(tech);
-					GameSettings.Instance.MyCompany.WorkItems.Add(legalWork);
-					GameSettings.Instance.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
-				}
-				researchWork.Kill(false);
-			});
+			researchWorks.ForEach(CompleteResearchWork);
 		}
 
 		private static void ApplyAutoEndPatent()
@@ -886,6 +1093,18 @@ namespace Trainer_v5
 			{
 				legalWork.PatentNow();
 			});
+		}
+
+		// Simulate() misses a ticket once its stored timestamp ages past ~2 months; refreshing it here keeps that check from ever tripping.
+		private static void ApplyNoMissedSupportTickets()
+		{
+			foreach (SupportWork supportWork in Settings.MyCompany.WorkItems.OfType<SupportWork>())
+			{
+				for (int i = 0; i < supportWork.Tickets.Count; i++)
+				{
+					supportWork.Tickets[i] = SDateTime.Now();
+				}
+			}
 		}
 
 		private static void ApplyDisableFurnitureStealing()
@@ -917,6 +1136,106 @@ namespace Trainer_v5
 			}
 		}
 
+		// Mirrors what SoftwarePort.DoWork itself does once Progress reaches Goal; RefreshCurrent() advances to the next OS or kills the work item once all are ported.
+		private static bool AdvanceSoftwarePort(SoftwarePort port)
+		{
+			if (port.Current == null || port.Product == null || port.Product.DevCompany != Settings.MyCompany)
+			{
+				return false;
+			}
+
+			port.Current.Progress = port.Current.Goal;
+			port.Current.Finished = true;
+			port.RefreshCurrent();
+			return true;
+		}
+
+		private static void ApplyAutoPorting()
+		{
+			foreach (SoftwarePort port in Settings.MyCompany.WorkItems.OfType<SoftwarePort>().ToList())
+			{
+				AdvanceSoftwarePort(port);
+			}
+		}
+
+		public static void InstantPorting()
+		{
+			var ports = Settings.MyCompany.WorkItems.OfType<SoftwarePort>().ToList();
+
+			if (ports.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active porting work to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			foreach (SoftwarePort port in ports)
+			{
+				// Bounded by OSs.Count so a port stuck waiting on something else is left alone rather than looped on.
+				for (int i = 0; i < port.OSs.Count; i++)
+				{
+					if (!AdvanceSoftwarePort(port))
+					{
+						break;
+					}
+				}
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
+		{
+			MarketingPlan.PressOption.Text,
+			MarketingPlan.PressOption.Image,
+			MarketingPlan.PressOption.Video,
+		};
+
+		// Only PressRelease has a completable Progress array; PostMarket/Hype campaigns run perpetually with no finish state to force.
+		private static void CompletePressRelease(MarketingPlan plan)
+		{
+			for (int i = 0; i < PressReleaseOptions.Length; i++)
+			{
+				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
+				{
+					plan.Progress[i] = 1f;
+				}
+			}
+
+			plan.StopMarketing();
+		}
+
+		public static void InstantMarketing()
+		{
+			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
+				.Where(plan => plan.Type == MarketingPlan.TaskType.PressRelease)
+				.ToList();
+
+			if (plans.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active press release campaigns to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			foreach (MarketingPlan plan in plans)
+			{
+				CompletePressRelease(plan);
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Press release campaigns have been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		// MarketingPlan.AddEffect bills Spent to the Marketing category daily for PostMarket campaigns then moves it into LastSpent and zeroes Spent; refunding that settled amount needs no captured baseline.
+		private static void ApplyFreeMarketing()
+		{
+			foreach (MarketingPlan plan in Settings.MyCompany.WorkItems.OfType<MarketingPlan>())
+			{
+				if (plan.Type == MarketingPlan.TaskType.PostMarket && plan.LastSpent > 0f)
+				{
+					Settings.MyCompany.MakeTransaction(plan.LastSpent, Company.TransactionCategory.Marketing);
+				}
+			}
+		}
+
 		private static void ApplyDigitalDistributionMonopol()
 		{
 			foreach (var company in Settings.simulation.Companies.Values.ToList())
@@ -939,6 +1258,18 @@ namespace Trainer_v5
 				company.Distribution.MarketShare = 0f;
 				MarketSimulation.Active.ClosePlatform(company.Distribution);
 			}
+		}
+
+		// Refunds the daily insurance bill TimeOfDay.UpdateDay already charged this tick, leaving CurrentRate/coverage untouched.
+		private static void ApplyNoInsuranceCost()
+		{
+			if (!Settings.PassedFireInspection)
+			{
+				return;
+			}
+
+			float dailyBill = Settings.Insurance.GetContentBill(true) / GameSettings.DaysPerMonth;
+			Settings.MyCompany.MakeTransaction(dailyBill, Company.TransactionCategory.Bills);
 		}
 
 		private static void ApplyAutoAcceptHostingDeals()
@@ -1280,6 +1611,46 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
+		#region Native Cheat Flags
+
+		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow),
+		// Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon),
+		// and Cheats.InfiniteSubs (read in CompanyDetailWindow.TakeOverSub's subsidiary-count
+		// gate) are all consulted directly by the game whenever relevant, so the trainer binds
+		// the native flag the moment the setting changes instead of polling for it every frame.
+		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
+		// intentionally left unexposed - setting it would have no observable effect.
+
+		public static void ApplyForceLights(bool enabled)
+		{
+			Cheats.ForceLights = enabled;
+		}
+
+		public static void ApplyShowRoomCeilings(bool enabled)
+		{
+			Cheats.CeilingMeshes = enabled;
+
+			// Mirrors CameraScript.RefreshFlyMode, the only other place the game itself flips
+			// this flag: marking every room dirty forces outer/inner meshes (the ceiling mesh
+			// included) to regenerate, so already-built rooms reflect the change immediately
+			// instead of only rooms built or modified afterward.
+			if (Helpers.IsGameLoaded)
+			{
+				foreach (Room room in Settings.sRoomManager.Rooms)
+				{
+					room.DirtyOuterMesh = true;
+					room.DirtyInnerMesh = true;
+				}
+			}
+		}
+
+		public static void ApplyUnlimitedSubsidiaries(bool enabled)
+		{
+			Cheats.InfiniteSubs = enabled;
+		}
+
+		#endregion
+
 		#region MonthDays
 
 		public static void MonthDaysAction(int i)
@@ -1314,16 +1685,16 @@ namespace Trainer_v5
 
 		public static void FixBugsAction(string input)
 		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
-					(item as SoftwareAlpha).Name == input && (item as SoftwareAlpha).InBeta);
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && item.InBeta);
 
 			if (WorkItem == null)
 			{
 				return;
 			}
 
-		  ((SoftwareAlpha)WorkItem).FixedBugs = ((SoftwareAlpha)WorkItem).MaxBugs;
+			WorkItem.FixedBugs = WorkItem.MaxBugs;
 		}
 
 		public static void FixBugs()
@@ -1337,22 +1708,20 @@ namespace Trainer_v5
 
 		public static void MaxFollowersAction(string input)
 		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.Where(item => item.GetType() == typeof(SoftwareAlpha)).FirstOrDefault(item =>
-					(item as SoftwareAlpha).Name == input && !(item as SoftwareAlpha).Paused);
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && !item.Paused);
 
 			if (WorkItem == null)
 			{
 				return;
 			}
 
-			SoftwareAlpha alpha = (SoftwareAlpha)WorkItem;
+			WorkItem.MaxFollowers += 1000000000;
+			WorkItem.ReEvaluateMaxFollowers();
 
-			alpha.MaxFollowers += 1000000000;
-			alpha.ReEvaluateMaxFollowers();
-
-			alpha.FollowerChange += 1000000000f;
-			alpha.Followers += 1000000000f;
+			WorkItem.FollowerChange += 1000000000f;
+			WorkItem.Followers += 1000000000f;
 		}
 
 		public static void MaxFollowers()
@@ -1362,15 +1731,73 @@ namespace Trainer_v5
 
 		#endregion
 
+		#region Instant Research
+
+		public static void InstantResearch()
+		{
+			var eligibleResearch = Settings.MyCompany.WorkItems
+								.OfType<ResearchWork>()
+								.Where(rw => !rw.Finished)
+								.ToList();
+
+			if (eligibleResearch.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active research to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			eligibleResearch.ForEach(researchWork =>
+			{
+				researchWork.Progress = researchWork.Max;
+				researchWork.Finished = true;
+				CompleteResearchWork(researchWork);
+			});
+
+			HUD.Instance.AddPopupMessage("Trainer: Research completed instantly!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		#endregion
+
+		#region Product Lookup
+
+		// Shared by SetProductPriceAction, SetProductStockAction, and AddActiveUsersAction so
+		// player and AI-company products can both be targeted without duplicating the lookup,
+		// and without silently picking a product when the entered name isn't unique.
+		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
+		{
+			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)
+				.Where(product => product.Name == name)
+				.ToList();
+
+			if (matches.Count == 0)
+			{
+				errorMessage = "Trainer: Product " + name + " not found!";
+				return null;
+			}
+
+			if (matches.Count > 1)
+			{
+				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
+				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
+				return null;
+			}
+
+			errorMessage = null;
+			return matches[0];
+		}
+
+		#endregion
+
 		#region Set Product Price
 
 		public static void SetProductPriceAction(float price)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -1389,11 +1816,12 @@ namespace Trainer_v5
 
 		public static void SetProductStockAction(uint stock)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -1412,11 +1840,12 @@ namespace Trainer_v5
 
 		public static void AddActiveUsersAction(int users)
 		{
-			SoftwareProduct Product =
-				Settings.MyCompany.Products.FirstOrDefault(product => product.Name == Helpers.ProductPriceName);
+			string error;
+			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
 
 			if (Product == null)
 			{
+				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -1527,6 +1956,42 @@ namespace Trainer_v5
 		public static void IncreaseMoney()
 		{
 			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
+		}
+
+		#endregion
+
+		#region Add AI Company Funds
+
+		public static void AddAIFundsAction(string input)
+		{
+			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
+				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
+				.ToList();
+
+			if (matches.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			if (matches.Count > 1)
+			{
+				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			SimulatedCompany company = matches[0];
+			InputHelper.RequestInt("How much money do you want to add to " + company.Name + "?", "Add AI Funds", "100000",
+				amount =>
+				{
+					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
+					HUD.Instance.AddPopupMessage("Trainer: Money has been added to " + company.Name + "!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+				}, 0, int.MaxValue);
+		}
+
+		public static void AddAIFunds()
+		{
+			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
 		}
 
 		#endregion

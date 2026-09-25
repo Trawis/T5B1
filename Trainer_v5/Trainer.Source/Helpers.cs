@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.2.8";
+		public static string Version => "5.2.9";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -61,6 +61,7 @@ namespace Trainer_v5
 			{"NoEducationCost", false},
 			{"IncreaseWalkSpeed", false},
 			{"AutoEndDesign", false},
+			{"AutoContractProgression", false},
 			{"AutoEndResearch", false},
 			{"AutoEndPatent", false},
 			{"ReduceBoxPrice", false},
@@ -75,6 +76,16 @@ namespace Trainer_v5
 			{"AutoAcceptHostingDeals", false},
 			{"AutoMaxMarketShare", false},
 			{"Experimental", false},
+			{"ForceLights", false},
+			{"ShowRoomCeilings", false},
+			{"UnlimitedSubsidiaries", false},
+			{"NoMissedSupportTickets", false},
+			{"NoInsuranceCost", false},
+			{"NoLoanInterest", false},
+			{"AutoPorting", false},
+			{"FreeMarketing", false},
+			{"NoOffshoreHeat", false},
+			{"NoFounderDividends", false},
 		};
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>

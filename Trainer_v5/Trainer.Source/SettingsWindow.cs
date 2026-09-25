@@ -69,6 +69,7 @@ namespace Trainer_v5
 			#region column1
 
 			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
+			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), TrainerBehaviour.AddAIFunds));
 			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
@@ -96,6 +97,11 @@ namespace Trainer_v5
 
 			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
 			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
+			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
+			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
+			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
+			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
+			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), TrainerBehaviour.OptimizeTeamAssignments));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
@@ -114,6 +120,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get("DigitalDistributionMonopol"), a => settings.Toggle("DigitalDistributionMonopol")));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get("DisableFireInspection"), a => settings.Toggle("DisableFireInspection")));
 			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get("AutoMaxMarketShare"), a => settings.Toggle("AutoMaxMarketShare")));
+			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get("UnlimitedSubsidiaries"), a => { settings.Toggle("UnlimitedSubsidiaries"); TrainerBehaviour.ApplyUnlimitedSubsidiaries(settings.Get("UnlimitedSubsidiaries")); }));
 
 			#endregion
 
@@ -136,10 +143,13 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateToggle("NoEducationCost".LocDef("No Education Cost"), settings.Get("NoEducationCost"), a => settings.Toggle("NoEducationCost")));
 			column3.Add(UIHelper.CreateToggle("DisableFires".LocDef("Disable Fires"), settings.Get("DisableFires"), a => settings.Toggle("DisableFires")));
 			column3.Add(UIHelper.CreateToggle("AutoDesignEnd".LocDef("Auto Design End"), settings.Get("AutoEndDesign"), a => settings.Toggle("AutoEndDesign")));
+			column3.Add(UIHelper.CreateToggle("AutoContractProgression".LocDef("Auto Contract Progression"), settings.Get("AutoContractProgression"), a => settings.Toggle("AutoContractProgression")));
 			column3.Add(UIHelper.CreateToggle("AutoResearchEnd".LocDef("Auto Research End"), settings.Get("AutoEndResearch"), a => settings.Toggle("AutoEndResearch")));
 			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get("AutoEndPatent"), a => settings.Toggle("AutoEndPatent")));
 			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get("IncreaseWalkSpeed"), a => settings.Toggle("IncreaseWalkSpeed")));
 			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get("DisableFurnitureStealing"), a => settings.Toggle("DisableFurnitureStealing")));
+			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get("ForceLights"), a => { settings.Toggle("ForceLights"); TrainerBehaviour.ApplyForceLights(settings.Get("ForceLights")); }));
+			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get("ShowRoomCeilings"), a => { settings.Toggle("ShowRoomCeilings"); TrainerBehaviour.ApplyShowRoomCeilings(settings.Get("ShowRoomCeilings")); }));
 
 			#endregion
 
@@ -166,8 +176,15 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get("DisableForcePause"), a => settings.Toggle("DisableForcePause")));
 			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get("DisableForceFreeze"), a => settings.Toggle("DisableForceFreeze")));
 			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get("AutoAcceptHostingDeals"), a => settings.Toggle("AutoAcceptHostingDeals")));
+			column4.Add(UIHelper.CreateToggle("AutoPorting".LocDef("Auto Porting"), settings.Get("AutoPorting"), a => settings.Toggle("AutoPorting")));
 			column4.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
 			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
+			column4.Add(UIHelper.CreateToggle("NoMissedSupportTickets".LocDef("No Missed Support Tickets"), settings.Get("NoMissedSupportTickets"), a => settings.Toggle("NoMissedSupportTickets")));
+			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get("NoInsuranceCost"), a => settings.Toggle("NoInsuranceCost")));
+			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get("NoLoanInterest"), a => settings.Toggle("NoLoanInterest")));
+			column4.Add(UIHelper.CreateToggle("FreeMarketing".LocDef("Free Marketing"), settings.Get("FreeMarketing"), a => settings.Toggle("FreeMarketing")));
+			column4.Add(UIHelper.CreateToggle("NoOffshoreHeat".LocDef("No Offshore Heat"), settings.Get("NoOffshoreHeat"), a => settings.Toggle("NoOffshoreHeat")));
+			column4.Add(UIHelper.CreateToggle("NoFounderDividends".LocDef("No Founder Dividends"), settings.Get("NoFounderDividends"), a => settings.Toggle("NoFounderDividends")));
 
 			#endregion
 

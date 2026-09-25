@@ -3,7 +3,9 @@ List of features in the trainer
 
 Open the trainer with the **Trainer** button (or F1; F2 closes it). Product
 actions read the product name from the *Product Name Here* input box at the top
-of the first column.
+of the first column. Product name matching is exact and looks across every
+company (player and AI); if more than one product shares that name, the
+action reports the conflict instead of guessing which one to change.
 
 ---
 
@@ -14,15 +16,21 @@ Button features are applied once when clicked.
 |  Feature               | Parameters             | Description                                                 |
 |:----------------------:|:----------------------:|:-----------------------------------------------------------:|
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
+| Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
 | Max Followers          | Product Name           | Maxes followers for the specified product in development    |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
 | Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
 | AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
-| Set Product Price      | Product Name, Amount   | Sets the product's price                                    |
-| Set Product Stock      | Product Name, Amount   | Sets the product's physical stock                           |
-| Set Active Users       | Product Name, Amount   | Sets the product's active users                             |
+| Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
+| Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
+| Instant Marketing      | None                   | Immediately completes your active press release campaigns (other campaign types run continuously and have no completion to force) |
+| Transfer Offshore Funds | None                  | Moves your entire offshore account balance into your company's main balance |
+| Optimize Team Assignments | None                 | Reassigns single-team design documents, marketing campaigns, and porting work to whichever of your existing teams best matches the relevant role; leaves multi-team, lead-committed, and AI-managed work untouched |
+| Set Product Price      | Product Name, Amount   | Sets the price of the exact-matching product (player or AI company) |
+| Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
+| Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
 | Max Market Share       | None                   | Sets market share to 100% for all your products             |
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
@@ -75,6 +83,7 @@ Toggle features stay active for as long as they are enabled.
 | No Education Cost           | Education is free                                            |
 | Disable Fires               | Prevents and extinguishes fires                              |
 | Auto Design End             | Automatically promotes finished design documents             |
+| Auto Contract Progression   | Automatically promotes contract work once its design/development is finished; QA, bug-fixing, and release stay manual |
 | Auto Research End           | Automatically finishes research and files patents            |
 | Auto Patent End             | Automatically completes finished patents                     |
 | Increase Walk Speed         | Employees walk faster                                        |
@@ -91,8 +100,18 @@ Toggle features stay active for as long as they are enabled.
 | Disable Force Pause         | Prevents the game from force-pausing                         |
 | Disable Force Freeze        | Prevents the game from force-freezing                        |
 | Auto Accept Hosting Deals   | Automatically accepts available server deals                 |
+| Auto Porting                | Automatically advances your active porting work toward completion |
 | More Inspiration            | Inspiration can be used without cooldown                     |
 | More Creativity             | Reveals full creativity for employees                        |
+| Force Lights                | Building and street lights stay on regardless of time of day |
+| Show Room Ceilings          | Rooms render a ceiling mesh instead of being open from above |
+| Unlimited Subsidiaries      | Removes the limit on how many companies you can take over as subsidiaries |
+| No Missed Support Tickets   | Your support tickets never age out and count as missed        |
+| No Insurance Cost           | Refunds your daily content insurance bill; coverage and rates are unaffected |
+| No Loan Interest            | Refunds the interest portion of your monthly loan payments; principal repayment continues normally |
+| Free Marketing               | Refunds your daily budget-based marketing spend; press releases and follower campaigns are unaffected |
+| No Offshore Heat             | Clears offshore account heat every frame, preventing it from reaching the audit threshold |
+| No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
 ---
