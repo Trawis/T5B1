@@ -6,6 +6,8 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.0] - 2026-09-28
+
 ## [5.2.9] - 2026-09-25
 
 - Instant Research button: immediately completes all currently active,
