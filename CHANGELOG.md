@@ -8,10 +8,6 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## [5.3.0] - 2026-09-28
 
-- Release merge-back into `develop` now requires a pull request from a
-  short-lived `feature/merge-back-<version>` branch instead of a direct
-  push.
-
 ## [5.2.9] - 2026-09-25
 
 - Instant Research button: immediately completes all currently active,
