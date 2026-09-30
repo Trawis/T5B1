@@ -14,7 +14,6 @@ namespace Trainer_v5
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
-		// Used by ToggleJustEnabled to apply reduced-cadence toggles immediately on enable.
 		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
 
 		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
@@ -22,7 +21,32 @@ namespace Trainer_v5
 
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
+
 		private float _defaultEnvironmentISPCostFactor;
+
+		private void RestoreReduceISPCost()
+		{
+			Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor;
+		}
+
+		private static void RestoreIncreaseWalkSpeed()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_DEFAULT;
+			}
+		}
+
+		private static void RestoreIncreaseCourierCapacity()
+		{
+			AI.MaxBoxes = Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
+		}
+
+		private static void RestoreReduceExpansionCost()
+		{
+			Settings.ExpansionCost = Constants.EXPANSION_COST;
+		}
 
 		// Settings the game itself only ever sets once (ctor/new-game/save-load).
 		private bool _oneTimeSettingsApplied;
@@ -73,6 +97,9 @@ namespace Trainer_v5
 						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
+
+						// Re-capture the ISP baseline on every load, not just once per process.
+						_oneTimeSettingsApplied = false;
 						break;
 					case "Customization":
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
@@ -280,24 +307,38 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
 			}
 
-			bool increaseWalkSpeed = Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed");
-			Helpers.TryExecute("IncreaseWalkSpeed", () =>
+			if (Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed"))
 			{
-				for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+				Helpers.TryExecute("IncreaseWalkSpeed", () =>
 				{
-					Settings.sActorManager.Actors[i].WalkSpeed = increaseWalkSpeed ? Constants.WALK_SPEED_BOOSTED : Constants.WALK_SPEED_DEFAULT;
-				}
-			});
+					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+					{
+						Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
+					}
+				});
+			}
 
-			Helpers.TryExecute("IncreaseCourierCapacity", () =>
+			if (Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity"))
 			{
-				AI.MaxBoxes = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_BOXES_BOOSTED : Constants.MAX_BOXES_DEFAULT;
-				AI.MaxBoxCarry = Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity") ? Constants.MAX_CARRY_BOOSTED : Constants.MAX_CARRY_DEFAULT;
-			});
+				Helpers.TryExecute("IncreaseCourierCapacity", () =>
+				{
+					AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
+					AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
+				});
+			}
+
 			//Not working
 			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
-			Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = Helpers.GetProperty(TrainerSettings, "ReduceISPCost") ? _defaultEnvironmentISPCostFactor / 2f : _defaultEnvironmentISPCostFactor);
-			Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost") ? Constants.EXPANSION_COST_HALF : Constants.EXPANSION_COST);
+
+			if (Helpers.GetProperty(TrainerSettings, "ReduceISPCost"))
+			{
+				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f);
+			}
+
+			if (Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost"))
+			{
+				Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
+			}
 		}
 
 		private bool ToggleJustEnabled(string settingKey)
@@ -308,6 +349,27 @@ namespace Trainer_v5
 			_reducedCadenceToggleState[settingKey] = isEnabled;
 
 			return isEnabled && !wasEnabled;
+		}
+
+		private enum ToggleTransition
+		{
+			Unchanged,
+			JustEnabled,
+			JustDisabled
+		}
+
+		private ToggleTransition GetToggleTransition(string settingKey)
+		{
+			bool isEnabled = Helpers.GetProperty(TrainerSettings, settingKey);
+			bool wasEnabled;
+			_reducedCadenceToggleState.TryGetValue(settingKey, out wasEnabled);
+			_reducedCadenceToggleState[settingKey] = isEnabled;
+
+			if (isEnabled == wasEnabled)
+			{
+				return ToggleTransition.Unchanged;
+			}
+			return isEnabled ? ToggleTransition.JustEnabled : ToggleTransition.JustDisabled;
 		}
 
 		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from
@@ -430,6 +492,21 @@ namespace Trainer_v5
 				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
 			}
 
+			if (GetToggleTransition("ForceLights") != ToggleTransition.Unchanged)
+			{
+				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
+			}
+
+			if (GetToggleTransition("ShowRoomCeilings") != ToggleTransition.Unchanged)
+			{
+				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
+			}
+
+			if (GetToggleTransition("UnlimitedSubsidiaries") != ToggleTransition.Unchanged)
+			{
+				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
+			}
+
 			if (ToggleJustEnabled("NoMaintenance"))
 			{
 				Helpers.TryExecute("NoMaintenance", ApplyNoMaintenance);
@@ -491,9 +568,16 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableFurnitureStealing", ApplyDisableFurnitureStealing);
 			}
 
-			if (ToggleJustEnabled("NoEducationCost"))
+			switch (GetToggleTransition("NoEducationCost"))
 			{
-				Helpers.TryExecute("NoEducationCost", () => EducationWindow.EdCost = new[] { 0f, 0f, 0f });
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("NoEducationCost", ApplyNoEducationCost);
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("NoEducationCost", RestoreEducationCost);
+					break;
+				default:
+					break;
 			}
 
 			if (ToggleJustEnabled("AutoResearchStart"))
@@ -537,9 +621,16 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableFireInspection", ApplyDisableFireInspection);
 			}
 
-			if (ToggleJustEnabled("FreePrint"))
+			switch (GetToggleTransition("FreePrint"))
 			{
-				Helpers.TryExecute("FreePrint", ApplyFreePrint);
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("FreePrint", ApplyFreePrint);
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("FreePrint", RestoreFreePrint);
+					break;
+				default:
+					break;
 			}
 
 			if (ToggleJustEnabled("IncreasePrintSpeed"))
@@ -547,26 +638,40 @@ namespace Trainer_v5
 				Helpers.TryExecute("IncreasePrintSpeed", ApplyIncreasePrintSpeed);
 			}
 
-			if (ToggleJustEnabled("FullEnvironment"))
+			switch (GetToggleTransition("FullEnvironment"))
 			{
-				Helpers.TryExecute("FullEnvironment", () =>
-				{
-					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("FullEnvironment", () =>
 					{
-						ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
-					}
-				});
+						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+						{
+							ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
+						}
+					});
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("FullEnvironment", RestoreFullEnvironment);
+					break;
+				default:
+					break;
 			}
 
-			if (ToggleJustEnabled("FullRoomBrightness"))
+			switch (GetToggleTransition("FullRoomBrightness"))
 			{
-				Helpers.TryExecute("FullRoomBrightness", () =>
-				{
-					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("FullRoomBrightness", () =>
 					{
-						ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
-					}
-				});
+						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+						{
+							ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
+						}
+					});
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("FullRoomBrightness", RestoreFullRoomBrightness);
+					break;
+				default:
+					break;
 			}
 
 			if (ToggleJustEnabled("IncreaseBookshelfSkill"))
@@ -579,34 +684,62 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
 			}
 
-			if (ToggleJustEnabled("IncreaseWalkSpeed"))
+			switch (GetToggleTransition("IncreaseWalkSpeed"))
 			{
-				Helpers.TryExecute("IncreaseWalkSpeed", () =>
-				{
-					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("IncreaseWalkSpeed", () =>
 					{
-						Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
-					}
-				});
+						for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+						{
+							Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
+						}
+					});
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("IncreaseWalkSpeed", RestoreIncreaseWalkSpeed);
+					break;
+				default:
+					break;
 			}
 
-			if (ToggleJustEnabled("IncreaseCourierCapacity"))
+			switch (GetToggleTransition("IncreaseCourierCapacity"))
 			{
-				Helpers.TryExecute("IncreaseCourierCapacity", () =>
-				{
-					AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
-					AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
-				});
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("IncreaseCourierCapacity", () =>
+					{
+						AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
+						AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
+					});
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("IncreaseCourierCapacity", RestoreIncreaseCourierCapacity);
+					break;
+				default:
+					break;
 			}
 
-			if (ToggleJustEnabled("ReduceISPCost"))
+			switch (GetToggleTransition("ReduceISPCost"))
 			{
-				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f);
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f);
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("ReduceISPCost", RestoreReduceISPCost);
+					break;
+				default:
+					break;
 			}
 
-			if (ToggleJustEnabled("ReduceExpansionCost"))
+			switch (GetToggleTransition("ReduceExpansionCost"))
 			{
-				Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
+				case ToggleTransition.JustEnabled:
+					Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
+					break;
+				case ToggleTransition.JustDisabled:
+					Helpers.TryExecute("ReduceExpansionCost", RestoreReduceExpansionCost);
+					break;
+				default:
+					break;
 			}
 
 			_minuteWatcher.Poll();
@@ -969,6 +1102,36 @@ namespace Trainer_v5
 			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 		}
 
+		// RecalculateStateVariables resets both FurnEnvironment and IndirectLighting, so FullRoomBrightness
+		// is re-applied here if it's still enabled.
+		private static void RestoreFullEnvironment()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				room.RecalculateStateVariables(false);
+				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
+				{
+					ApplyFullRoomBrightnessToRoom(room);
+				}
+			}
+		}
+
+		// RecalculateStateVariables resets both FurnEnvironment and IndirectLighting, so FullEnvironment
+		// is re-applied here if it's still enabled.
+		private static void RestoreFullRoomBrightness()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				room.RecalculateStateVariables(false);
+				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
+				{
+					ApplyFullEnvironmentToRoom(room);
+				}
+			}
+		}
+
 		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
 		{
 			if (furniture.Type == "Bookshelf")
@@ -1036,10 +1199,14 @@ namespace Trainer_v5
 			Settings.PassedFireInspection = true;
 		}
 
-		//TODO: add printspeed and printprice when it's disabled (else)
 		private static void ApplyFreePrint()
 		{
 			Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
+		}
+
+		private static void RestoreFreePrint()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
 		}
 
 		private static void ApplyIncreasePrintSpeed()
@@ -1249,6 +1416,25 @@ namespace Trainer_v5
 		private static void ApplyDisableFurnitureStealing()
 		{
 			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
+		}
+
+		private static float[] _defaultEdCost;
+
+		private static void ApplyNoEducationCost()
+		{
+			if (_defaultEdCost == null)
+			{
+				_defaultEdCost = (float[])EducationWindow.EdCost.Clone();
+			}
+			EducationWindow.EdCost = new[] { 0f, 0f, 0f };
+		}
+
+		private static void RestoreEducationCost()
+		{
+			if (_defaultEdCost != null)
+			{
+				EducationWindow.EdCost = (float[])_defaultEdCost.Clone();
+			}
 		}
 
 		private static void ApplyAutoResearchStart()

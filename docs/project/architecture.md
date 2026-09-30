@@ -66,6 +66,14 @@ When feature logic is extracted out of `TrainerBehaviour` (#126), scheduling
 stays in the orchestration layer while domain handlers own only game-state
 mutations.
 
+## Toggle Transitions
+
+Scheduling/orchestration also owns enable/disable transitions. Reversible
+toggles restore game state on disable only when the previous or current
+normal value can be recovered safely (a verified constant, or the game's own
+public recomputation); destructive or unverifiable toggles are not given
+fake restoration semantics.
+
 ## Persistence and Settings
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
