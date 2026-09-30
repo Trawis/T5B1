@@ -6,6 +6,11 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.2.10] - 2026-09-30
+
+- Fixed the employee detail window's Trait, Demand, Creativity, Inspiration,
+  and LeadSpec buttons sometimes not appearing at all.
+
 ## [5.2.9] - 2026-09-25
 
 - Instant Research button: immediately completes all currently active,
