@@ -70,6 +70,7 @@ namespace Trainer_v5
 						break;
 					case "MainScene":
 						Main.CreateUIButtons();
+						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
 						break;
@@ -118,6 +119,9 @@ namespace Trainer_v5
 			_minuteWatcher.OnMinutePassed += OnMinutePassed;
 			_minuteWatcher.Reset();
 
+			// Fires once per load, after HUD.DetailWindow already exists.
+			GameSettings.GameReady += OnGameReady;
+
 			_timeEventsSubscribed = true;
 		}
 
@@ -132,8 +136,14 @@ namespace Trainer_v5
 			TimeOfDay.OnDayPassed -= OnDayPassed;
 			TimeOfDay.OnMonthPassed -= OnMonthPassed;
 			_minuteWatcher.OnMinutePassed -= OnMinutePassed;
+			GameSettings.GameReady -= OnGameReady;
 
 			_timeEventsSubscribed = false;
+		}
+
+		private void OnGameReady(object sender, EventArgs args)
+		{
+			DetailWindowTrainer.Install();
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
