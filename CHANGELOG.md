@@ -6,6 +6,12 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## Unreleased
+
+- Added an experimental No Firing Mood Penalty toggle that suppresses newly
+  added negative, quitting, and lawsuit thoughts on remaining employees when
+  an employee leaves the player's company.
+
 ## [5.2.10] - 2026-09-30
 
 - Fixed the employee detail window's Trait, Demand, Creativity, Inspiration,
