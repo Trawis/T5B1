@@ -76,6 +76,7 @@ namespace Trainer_v5
 			{"AutoAcceptHostingDeals", false},
 			{"AutoMaxMarketShare", false},
 			{"Experimental", false},
+			{"NoFiringMoodPenalty", false},
 			{"ForceLights", false},
 			{"ShowRoomCeilings", false},
 			{"UnlimitedSubsidiaries", false},
