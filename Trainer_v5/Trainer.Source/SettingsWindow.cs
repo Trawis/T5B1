@@ -222,6 +222,7 @@ namespace Trainer_v5
 
 			if (experimental)
 			{
+				column6.Add(UIHelper.CreateToggle("NoFiringMoodPenalty".LocDef("No Firing Mood Penalty"), settings.Get("NoFiringMoodPenalty"), a => settings.Toggle("NoFiringMoodPenalty")));
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
 				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
