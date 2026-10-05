@@ -67,6 +67,7 @@ Toggle features stay active for as long as they are enabled.
 | Free Employees              | You do not pay your employees                                |
 | Free Staff                  | You do not pay your staff                                    |
 | Full Satisfaction           | Employees are fully satisfied and negative thoughts clear    |
+| No Firing Mood Penalty (Experimental) | When an employee leaves your company, removes newly added negative, quitting, or lawsuit thoughts from the remaining employees; requires Experimental |
 | Lock Age of Employees       | Employees do not age                                         |
 | No Vacation                 | Employees do not go on vacation                              |
 | No Sickness                 | Employees do not fall ill                                    |
