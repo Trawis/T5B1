@@ -7,7 +7,7 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.2.11";
+		public static string Version => "5.3.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -185,16 +185,30 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void TryExecute(Action action)
+		// Last failure time per feature+exception type, so a repeat of the same failure logs once per interval while a different failure still logs immediately.
+		private static readonly Dictionary<string, float> _featureFailureLogTimes = new Dictionary<string, float>();
+		private const float FeatureFailureLogIntervalSeconds = 60f;
+
+		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
+		public static bool TryExecute(string featureId, Action action)
 		{
 			try
 			{
 				action.Invoke();
+				return true;
 			}
 			catch (Exception ex)
 			{
-				ex.LogException();
-				UnityEngine.Debug.LogException(ex);
+				string logKey = featureId + "|" + ex.GetType().FullName;
+				float now = UnityEngine.Time.realtimeSinceStartup;
+				float lastLogged;
+				if (!_featureFailureLogTimes.TryGetValue(logKey, out lastLogged) || now - lastLogged >= FeatureFailureLogIntervalSeconds)
+				{
+					_featureFailureLogTimes[logKey] = now;
+					ex.LogException(featureId);
+					UnityEngine.Debug.LogException(ex);
+				}
+				return false;
 			}
 		}
 
