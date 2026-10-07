@@ -80,6 +80,13 @@ namespace Trainer_v5
 					);
 					
 					// transfer properties
+					// This Employee constructor overload is also used by the game to generate
+					// founder/campaign characters, so it unconditionally sets Founder = true.
+					// Left uncorrected, that made every creativity-edited employee read as a
+					// founder: Actor.WorksForFree() (and so GetMonthlySalary/GetRealSalary) and
+					// DetailWindow's fire-button and CEO-candidate-button checks all key off
+					// Employee.Founder directly.
+					newEmployee.Founder = employee.Founder;
 					newEmployee.Salary = employee.Salary;
 					newEmployee.CreativityKnown = 1f;
 					newEmployee.MyEmployer = employee.MyEmployer;
