@@ -99,11 +99,29 @@ namespace Trainer_v5
 					newEmployee.AgeMonth = employee.AgeMonth;
 					newEmployee.NickName = employee.NickName;
 					newEmployee.PlayerQuarantine = employee.PlayerQuarantine;
-					newEmployee.LastCreatity = employee.LastCreatity;
 					newEmployee.ActiveComplaint = employee.ActiveComplaint;
 					newEmployee.Filter = employee.Filter;
 					newEmployee.PreviousEmployment = employee.PreviousEmployment;
 					newEmployee.CustomBenefits = employee.CustomBenefits;
+					newEmployee.SkillCeiling = employee.SkillCeiling;
+					newEmployee.Inspiration = employee.Inspiration;
+					newEmployee.LastInpirationUse = employee.LastInpirationUse;
+
+					var roles = Employee.RoleBit.None;
+					var secondaryRoles = Employee.RoleBit.None;
+					for (var i = 0; i < Employee.RoleCount; i++)
+					{
+						if (employee.IsRoleIndex(i))
+						{
+							roles |= Employee.RoleToMask[i];
+						}
+
+						if (employee.IsSecondaryRoleIndex(i))
+						{
+							secondaryRoles |= Employee.RoleToMask[i];
+						}
+					}
+					newEmployee.SetRoles(roles, secondaryRoles);
 
 					newEmployee.Thoughts = employee.Thoughts;
 					newEmployee.JobSatisfaction = employee.JobSatisfaction;
