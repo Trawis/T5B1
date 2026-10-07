@@ -97,8 +97,6 @@ namespace Trainer_v5
 						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
-
-						// Re-capture the ISP baseline on every load, not just once per process.
 						_oneTimeSettingsApplied = false;
 						break;
 					case "Customization":
@@ -1102,8 +1100,6 @@ namespace Trainer_v5
 			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
 		}
 
-		// RecalculateStateVariables resets both FurnEnvironment and IndirectLighting, so FullRoomBrightness
-		// is re-applied here if it's still enabled.
 		private static void RestoreFullEnvironment()
 		{
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
@@ -1117,8 +1113,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// RecalculateStateVariables resets both FurnEnvironment and IndirectLighting, so FullEnvironment
-		// is re-applied here if it's still enabled.
 		private static void RestoreFullRoomBrightness()
 		{
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
