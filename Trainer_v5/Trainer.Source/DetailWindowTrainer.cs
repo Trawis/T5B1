@@ -80,20 +80,51 @@ namespace Trainer_v5
 					);
 					
 					// transfer properties
-					// This Employee constructor overload is also used by the game to generate
-					// founder/campaign characters, so it unconditionally sets Founder = true.
-					// Left uncorrected, that made every creativity-edited employee read as a
-					// founder: Actor.WorksForFree() (and so GetMonthlySalary/GetRealSalary) and
-					// DetailWindow's fire-button and CEO-candidate-button checks all key off
-					// Employee.Founder directly.
+					// This constructor overload also generates founder characters, so it always sets Founder = true.
 					newEmployee.Founder = employee.Founder;
+					newEmployee.Dismissed = employee.Dismissed;
+					newEmployee.Retired = employee.Retired;
+					newEmployee.MadeCEO = employee.MadeCEO;
+
 					newEmployee.Salary = employee.Salary;
 					newEmployee.CreativityKnown = 1f;
 					newEmployee.MyEmployer = employee.MyEmployer;
 					newEmployee.BirthDate = employee.BirthDate;
 					newEmployee.Hired = employee.Hired;
+					newEmployee.LastWage = employee.LastWage;
+					newEmployee.LastBid = employee.LastBid;
+					newEmployee.AskedFor = employee.AskedFor;
+					newEmployee.Demanded = employee.Demanded;
+					newEmployee.UpfrontDemand = employee.UpfrontDemand;
+					newEmployee.AgeMonth = employee.AgeMonth;
+					newEmployee.NickName = employee.NickName;
+					newEmployee.PlayerQuarantine = employee.PlayerQuarantine;
+					newEmployee.LastCreatity = employee.LastCreatity;
+					newEmployee.ActiveComplaint = employee.ActiveComplaint;
+					newEmployee.Filter = employee.Filter;
+					newEmployee.PreviousEmployment = employee.PreviousEmployment;
+					newEmployee.CustomBenefits = employee.CustomBenefits;
+
 					newEmployee.Thoughts = employee.Thoughts;
 					newEmployee.JobSatisfaction = employee.JobSatisfaction;
+					newEmployee.Hunger = employee.Hunger;
+					newEmployee.Energy = employee.Energy;
+					newEmployee.Bladder = employee.Bladder;
+					newEmployee.Social = employee.Social;
+					newEmployee.Stress = employee.Stress;
+					newEmployee.Posture = employee.Posture;
+					newEmployee.CoffeeQual = employee.CoffeeQual;
+					newEmployee.LowestSatisfaction = employee.LowestSatisfaction;
+					newEmployee.SatisfactionHitZero = employee.SatisfactionHitZero;
+					newEmployee.InteractedWithBestFriend = employee.InteractedWithBestFriend;
+					newEmployee.HadProperFood = employee.HadProperFood;
+
+					// Friendships/LeadSpecialization/LeadProjects are obsolete; superseded by the Fix-suffixed fields.
+					newEmployee.LeadProjectsFix = employee.LeadProjectsFix;
+					newEmployee.DemandsMet = employee.DemandsMet;
+					newEmployee.DemandsRequested = employee.DemandsRequested;
+					newEmployee.DemandResults = employee.DemandResults;
+					newEmployee.LastDemandScore = employee.LastDemandScore;
 
 					// transfer lead specs
 					foreach (var kvp in employee.LeadSpecializationFix)
