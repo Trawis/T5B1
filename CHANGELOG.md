@@ -6,7 +6,21 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## [5.3.0] - 2026-09-28
+## [5.3.0] - 2026-10-07
+
+- A failing trainer feature no longer stops the other features from running;
+  failures are logged with the feature name, at most once a minute per feature
+  and error.
+- Turning off Free Print, No Education Cost, Full Environment, Full Sun Light,
+  Increase Walk Speed, Increase Courier Capacity, Reduce Internet Cost, or
+  Reduce Expansion Cost now restores the normal game value instead of leaving
+  the changed one in place.
+- Full Environment and Full Sun Light can be turned off independently without
+  undoing each other.
+- Reduce Internet Cost now remembers the original cost per environment, so
+  loading another game in the same session no longer uses a wrong value.
+- Architecture documentation restructured; release and hotfix merge-backs into
+  `develop` now require a pull request.
 
 ## [5.2.11] - 2026-10-07
 
