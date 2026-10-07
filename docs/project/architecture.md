@@ -70,9 +70,9 @@ mutations.
 
 Scheduling/orchestration also owns enable/disable transitions. Reversible
 toggles restore game state on disable only when the previous or current
-normal value can be recovered safely (a verified constant, or the game's own
-public recomputation); destructive or unverifiable toggles are not given
-fake restoration semantics.
+normal value can be recovered safely (a verified constant, a baseline captured
+before the first override, or the game's own public recomputation);
+destructive or unverifiable toggles are not given fake restoration semantics.
 
 ## Persistence and Settings
 

@@ -22,11 +22,24 @@ namespace Trainer_v5
 		private static bool IsGameReady(bool requireSelector = false) =>
 			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 
-		private float _defaultEnvironmentISPCostFactor;
+		private readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
+
+		private float GetDefaultISPCostFactor()
+		{
+			EnvironmentPreset environment = Settings.Environment;
+			float baseline;
+			if (!_ispCostBaselines.TryGetValue(environment, out baseline))
+			{
+				baseline = environment.ISPCostFactor;
+				_ispCostBaselines[environment] = baseline;
+			}
+
+			return baseline;
+		}
 
 		private void RestoreReduceISPCost()
 		{
-			Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor;
+			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor();
 		}
 
 		private static void RestoreIncreaseWalkSpeed()
@@ -97,7 +110,6 @@ namespace Trainer_v5
 						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
-						_oneTimeSettingsApplied = false;
 						break;
 					case "Customization":
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
@@ -330,7 +342,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, "ReduceISPCost"))
 			{
-				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f);
+				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost"))
@@ -466,7 +478,6 @@ namespace Trainer_v5
 
 			if (!_oneTimeSettingsApplied)
 			{
-				_defaultEnvironmentISPCostFactor = Settings.Environment.ISPCostFactor;
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
 				_oneTimeSettingsApplied = true;
 			}
@@ -719,7 +730,7 @@ namespace Trainer_v5
 			switch (GetToggleTransition("ReduceISPCost"))
 			{
 				case ToggleTransition.JustEnabled:
-					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = _defaultEnvironmentISPCostFactor / 2f);
+					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
 					break;
 				case ToggleTransition.JustDisabled:
 					Helpers.TryExecute("ReduceISPCost", RestoreReduceISPCost);
