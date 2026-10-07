@@ -8,6 +8,12 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## [5.3.0] - 2026-09-28
 
+## [5.2.11] - 2026-10-07
+
+- Fixed editing an employee's Creativity making them behave like the company
+  founder: losing their normal salary, becoming unfireable, and disappearing
+  from Subsidiary CEO candidates.
+
 ## [5.2.10] - 2026-09-30
 
 - Fixed the employee detail window's Trait, Demand, Creativity, Inspiration,
