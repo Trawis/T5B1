@@ -9,8 +9,8 @@ namespace Trainer_v5.Tests
 		{
 			var tracker = new ToggleStateTracker();
 
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FreePrint", false));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FreePrint", false));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FreePrint", false));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FreePrint", false));
 		}
 
 		[Fact]
@@ -19,9 +19,9 @@ namespace Trainer_v5.Tests
 			var tracker = new ToggleStateTracker();
 			tracker.Observe("FreePrint", false);
 
-			Assert.Equal(ToggleTransition.JustEnabled, tracker.Observe("FreePrint", true));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FreePrint", true));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FreePrint", true));
 		}
 
 		[Fact]
@@ -30,8 +30,8 @@ namespace Trainer_v5.Tests
 			var tracker = new ToggleStateTracker();
 			tracker.Observe("FreePrint", true);
 
-			Assert.Equal(ToggleTransition.JustDisabled, tracker.Observe("FreePrint", false));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FreePrint", false));
+			Assert.Equal(ToggleTransitionEnum.JustDisabled, tracker.Observe("FreePrint", false));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FreePrint", false));
 		}
 
 		[Fact]
@@ -39,9 +39,9 @@ namespace Trainer_v5.Tests
 		{
 			var tracker = new ToggleStateTracker();
 
-			Assert.Equal(ToggleTransition.JustEnabled, tracker.Observe("FreePrint", true));
-			Assert.Equal(ToggleTransition.JustDisabled, tracker.Observe("FreePrint", false));
-			Assert.Equal(ToggleTransition.JustEnabled, tracker.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.JustDisabled, tracker.Observe("FreePrint", false));
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("FreePrint", true));
 		}
 
 		[Fact]
@@ -49,8 +49,8 @@ namespace Trainer_v5.Tests
 		{
 			var tracker = new ToggleStateTracker();
 
-			Assert.Equal(ToggleTransition.JustEnabled, tracker.Observe("NoStress", true));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("NoStress", true));
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("NoStress", true));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("NoStress", true));
 		}
 
 		[Fact]
@@ -60,8 +60,8 @@ namespace Trainer_v5.Tests
 			tracker.Observe("FullEnvironment", true);
 			tracker.Observe("FullRoomBrightness", true);
 
-			Assert.Equal(ToggleTransition.JustDisabled, tracker.Observe("FullEnvironment", false));
-			Assert.Equal(ToggleTransition.Unchanged, tracker.Observe("FullRoomBrightness", true));
+			Assert.Equal(ToggleTransitionEnum.JustDisabled, tracker.Observe("FullEnvironment", false));
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FullRoomBrightness", true));
 		}
 
 		[Fact]
@@ -71,7 +71,18 @@ namespace Trainer_v5.Tests
 			var second = new ToggleStateTracker();
 			first.Observe("FreePrint", true);
 
-			Assert.Equal(ToggleTransition.JustEnabled, second.Observe("FreePrint", true));
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, second.Observe("FreePrint", true));
+		}
+
+		[Fact]
+		public void ZeroIsReservedForUnknownAndNeverReturned()
+		{
+			var tracker = new ToggleStateTracker();
+
+			Assert.Equal(0, (int)ToggleTransitionEnum.Unknown);
+			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", false));
+			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", true));
+			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", false));
 		}
 	}
 }

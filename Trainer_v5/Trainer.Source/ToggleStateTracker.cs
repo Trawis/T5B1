@@ -2,18 +2,19 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	internal enum ToggleTransition
+	internal enum ToggleTransitionEnum
 	{
-		Unchanged,
-		JustEnabled,
-		JustDisabled
+		Unknown = 0,
+		Unchanged = 1,
+		JustEnabled = 2,
+		JustDisabled = 3
 	}
 
 	internal sealed class ToggleStateTracker
 	{
 		private readonly Dictionary<string, bool> _lastObserved = new Dictionary<string, bool>();
 
-		public ToggleTransition Observe(string settingKey, bool isEnabled)
+		public ToggleTransitionEnum Observe(string settingKey, bool isEnabled)
 		{
 			bool wasEnabled;
 			_lastObserved.TryGetValue(settingKey, out wasEnabled);
@@ -21,9 +22,9 @@ namespace Trainer_v5
 
 			if (isEnabled == wasEnabled)
 			{
-				return ToggleTransition.Unchanged;
+				return ToggleTransitionEnum.Unchanged;
 			}
-			return isEnabled ? ToggleTransition.JustEnabled : ToggleTransition.JustDisabled;
+			return isEnabled ? ToggleTransitionEnum.JustEnabled : ToggleTransitionEnum.JustDisabled;
 		}
 	}
 }

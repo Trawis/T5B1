@@ -353,10 +353,10 @@ namespace Trainer_v5
 
 		private bool ToggleJustEnabled(string settingKey)
 		{
-			return GetToggleTransition(settingKey) == ToggleTransition.JustEnabled;
+			return GetToggleTransition(settingKey) == ToggleTransitionEnum.JustEnabled;
 		}
 
-		private ToggleTransition GetToggleTransition(string settingKey)
+		private ToggleTransitionEnum GetToggleTransition(string settingKey)
 		{
 			return _toggleStates.Observe(settingKey, Helpers.GetProperty(TrainerSettings, settingKey));
 		}
@@ -480,17 +480,17 @@ namespace Trainer_v5
 				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
 			}
 
-			if (GetToggleTransition("ForceLights") != ToggleTransition.Unchanged)
+			if (GetToggleTransition("ForceLights") != ToggleTransitionEnum.Unchanged)
 			{
 				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
 			}
 
-			if (GetToggleTransition("ShowRoomCeilings") != ToggleTransition.Unchanged)
+			if (GetToggleTransition("ShowRoomCeilings") != ToggleTransitionEnum.Unchanged)
 			{
 				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
 			}
 
-			if (GetToggleTransition("UnlimitedSubsidiaries") != ToggleTransition.Unchanged)
+			if (GetToggleTransition("UnlimitedSubsidiaries") != ToggleTransitionEnum.Unchanged)
 			{
 				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
 			}
@@ -558,10 +558,10 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("NoEducationCost"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("NoEducationCost", ApplyNoEducationCost);
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("NoEducationCost", RestoreEducationCost);
 					break;
 				default:
@@ -611,10 +611,10 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("FreePrint"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FreePrint", ApplyFreePrint);
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("FreePrint", RestoreFreePrint);
 					break;
 				default:
@@ -628,7 +628,7 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("FullEnvironment"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FullEnvironment", () =>
 					{
 						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
@@ -637,7 +637,7 @@ namespace Trainer_v5
 						}
 					});
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("FullEnvironment", RestoreFullEnvironment);
 					break;
 				default:
@@ -646,7 +646,7 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("FullRoomBrightness"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FullRoomBrightness", () =>
 					{
 						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
@@ -655,7 +655,7 @@ namespace Trainer_v5
 						}
 					});
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("FullRoomBrightness", RestoreFullRoomBrightness);
 					break;
 				default:
@@ -674,7 +674,7 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("IncreaseWalkSpeed"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("IncreaseWalkSpeed", () =>
 					{
 						for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -683,7 +683,7 @@ namespace Trainer_v5
 						}
 					});
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("IncreaseWalkSpeed", RestoreIncreaseWalkSpeed);
 					break;
 				default:
@@ -692,14 +692,14 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("IncreaseCourierCapacity"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("IncreaseCourierCapacity", () =>
 					{
 						AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
 						AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
 					});
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("IncreaseCourierCapacity", RestoreIncreaseCourierCapacity);
 					break;
 				default:
@@ -708,10 +708,10 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("ReduceISPCost"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("ReduceISPCost", RestoreReduceISPCost);
 					break;
 				default:
@@ -720,10 +720,10 @@ namespace Trainer_v5
 
 			switch (GetToggleTransition("ReduceExpansionCost"))
 			{
-				case ToggleTransition.JustEnabled:
+				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
 					break;
-				case ToggleTransition.JustDisabled:
+				case ToggleTransitionEnum.JustDisabled:
 					Helpers.TryExecute("ReduceExpansionCost", RestoreReduceExpansionCost);
 					break;
 				default:
