@@ -14,7 +14,7 @@ namespace Trainer_v5
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
-		private readonly Dictionary<string, bool> _reducedCadenceToggleState = new Dictionary<string, bool>();
+		private readonly ToggleStateTracker _toggleStates = new ToggleStateTracker();
 
 		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
@@ -353,33 +353,12 @@ namespace Trainer_v5
 
 		private bool ToggleJustEnabled(string settingKey)
 		{
-			bool isEnabled = Helpers.GetProperty(TrainerSettings, settingKey);
-			bool wasEnabled;
-			_reducedCadenceToggleState.TryGetValue(settingKey, out wasEnabled);
-			_reducedCadenceToggleState[settingKey] = isEnabled;
-
-			return isEnabled && !wasEnabled;
-		}
-
-		private enum ToggleTransition
-		{
-			Unchanged,
-			JustEnabled,
-			JustDisabled
+			return GetToggleTransition(settingKey) == ToggleTransition.JustEnabled;
 		}
 
 		private ToggleTransition GetToggleTransition(string settingKey)
 		{
-			bool isEnabled = Helpers.GetProperty(TrainerSettings, settingKey);
-			bool wasEnabled;
-			_reducedCadenceToggleState.TryGetValue(settingKey, out wasEnabled);
-			_reducedCadenceToggleState[settingKey] = isEnabled;
-
-			if (isEnabled == wasEnabled)
-			{
-				return ToggleTransition.Unchanged;
-			}
-			return isEnabled ? ToggleTransition.JustEnabled : ToggleTransition.JustDisabled;
+			return _toggleStates.Observe(settingKey, Helpers.GetProperty(TrainerSettings, settingKey));
 		}
 
 		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from

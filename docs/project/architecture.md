@@ -105,13 +105,18 @@ helpers. UI text is localized; translations live under
 - CI/CD builds and validates the `Release` configuration only; `Debug` is
   local-development only.
 - `dotnet format`/`dotnet build` are the local static checks.
+- `Trainer_v5.Tests` (xUnit, `net462`) runs in CI after the build. It covers
+  setting keys and defaults, save serialization round-trips, input validation,
+  toggle transitions, and minute-event cadence. It runs the real trainer code
+  against the vendored assemblies outside Unity, so anything that calls into
+  live game objects (`TrainerBehaviour` features, window construction,
+  `Helpers.TryExecute`) is not covered and needs in-game validation.
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt
 
 - `TrainerBehaviour` still owns most feature logic directly (#126).
 - Settings remain raw string-keyed rather than typed (#127).
-- No automated test project exists (#129).
 - UI helper APIs overlap across `UIHelper`/`UIFactory`/`Utilities`/
   `SDK.WindowHelper` (#130).
 
