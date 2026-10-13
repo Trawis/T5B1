@@ -70,7 +70,7 @@ namespace Trainer_v5
 
 			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
 			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), TrainerBehaviour.AddAIFunds));
-			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
+			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
@@ -88,7 +88,7 @@ namespace Trainer_v5
 			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
-			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
+			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
 			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards));
 
 			#endregion
@@ -96,12 +96,12 @@ namespace Trainer_v5
 			#region column2
 
 			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
-			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
-			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
-			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
+			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), WorkItemFeatures.FixBugs));
+			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), WorkItemFeatures.InstantResearch));
+			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), WorkItemFeatures.InstantPorting));
 			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
 			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
-			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), TrainerBehaviour.OptimizeTeamAssignments));
+			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), WorkItemFeatures.OptimizeTeamAssignments));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
@@ -224,7 +224,7 @@ namespace Trainer_v5
 			{
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
-				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
+				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton));
 
 			}
 
