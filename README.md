@@ -60,9 +60,15 @@ adding compatibility configurations or conditional code paths.
 ## Test
 
 ```bash
-# No automated test project exists.
-# Validate changes by loading the mod in the game.
+dotnet test "Trainer v5 - Beta 1.sln"
 ```
+
+`Trainer_v5.Tests` (xUnit, `net462`) covers the logic that runs without the
+game: setting keys, defaults and save round-trips, input validation, toggle
+transitions, and the minute-event cadence. CI runs it after the build.
+
+Anything that touches live game objects is not covered; validate it by loading
+the mod in the game.
 
 ## Run
 
@@ -100,7 +106,8 @@ full feature list.
   build and require refreshing the assemblies under
   `Trainer_v5/Trainer.Libraries/` (see
   [`docs/project/architecture.md`](docs/project/architecture.md)).
-- No automated tests; behavior is validated by loading the mod in the game.
+- Automated tests cover only game-independent logic; behavior that touches
+  live game objects is validated by loading the mod in the game.
 
 ## Help and Contributing
 
