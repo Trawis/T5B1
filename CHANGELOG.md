@@ -6,16 +6,23 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.0] - 2026-10-13
+
+- Fixed one failing feature stopping other trainer features.
+- Fixed disabled toggles leaving changed values: Free Print, No Education
+  Cost, Full Environment, Full Sun Light, Increase Walk Speed, Increase
+  Courier Capacity, Reduce Internet Cost, Reduce Expansion Cost.
+- Fixed Full Environment and Full Sun Light undoing each other when disabled.
+- Fixed wrong Reduce Internet Cost value after loading another game.
+
 ## [5.2.11] - 2026-10-07
 
-- Fixed editing an employee's Creativity making them behave like the company
-  founder: losing their normal salary, becoming unfireable, and disappearing
-  from Subsidiary CEO candidates.
+- Fixed Creativity editing making employees unfireable, unpaid, and ineligible
+  as Subsidiary CEO.
 
 ## [5.2.10] - 2026-09-30
 
-- Fixed the employee detail window's Trait, Demand, Creativity, Inspiration,
-  and LeadSpec buttons sometimes not appearing at all.
+- Fixed employee window buttons sometimes missing.
 
 ## [5.2.9] - 2026-09-25
 
@@ -62,12 +69,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## [5.2.7] - 2026-09-10
 
-- Documentation restructured to the managed templates (README, CHANGELOG, and
-  the architecture overview).
-- Removed version-conditional compilation from the lead-specialization setters;
-  they now use a single code path.
-- Fixed Digital Distribution Monopol and Auto Accept Hosting Deals being
-  compiled out of Release builds; they are now included in released binaries.
+- Removed version-conditional compilation from lead-specialization setters.
+- Fixed Digital Distribution Monopol and Auto Accept Hosting Deals missing from
+  Release builds.
 
 ## [5.2.6] - 2026-05-25
 
