@@ -18,37 +18,6 @@ namespace Trainer_v5
 		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
-		private readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
-
-		private float GetDefaultISPCostFactor()
-		{
-			EnvironmentPreset environment = Settings.Environment;
-			float baseline;
-			if (!_ispCostBaselines.TryGetValue(environment, out baseline))
-			{
-				baseline = environment.ISPCostFactor;
-				_ispCostBaselines[environment] = baseline;
-			}
-
-			return baseline;
-		}
-
-		private void RestoreReduceISPCost()
-		{
-			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor();
-		}
-
-		private static void RestoreIncreaseCourierCapacity()
-		{
-			AI.MaxBoxes = Constants.MAX_BOXES_DEFAULT;
-			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
-		}
-
-		private static void RestoreReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST;
-		}
-
 		// Settings the game itself only ever sets once (ctor/new-game/save-load).
 		private bool _oneTimeSettingsApplied;
 		private bool _forceLightsApplied;
@@ -180,22 +149,17 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeStaff))
 			{
-				Helpers.TryExecute("FreeStaff", () => Settings.StaffSalaryDue = 0f);
+				Helpers.TryExecute("FreeStaff", CompanyFeatures.ApplyFreeStaff);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoServerCost))
 			{
-				Helpers.TryExecute("NoServerCost", () => Settings.ServerCost = 0f);
+				Helpers.TryExecute("NoServerCost", CompanyFeatures.ApplyNoServerCost);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoWaterElectricity))
 			{
-				Helpers.TryExecute("NoWaterElectricity", () =>
-				{
-					Settings.ElectricityBill = 0f;
-					Settings.Waterbill = 0f;
-					Settings.Gasbill = 0f;
-				});
+				Helpers.TryExecute("NoWaterElectricity", CompanyFeatures.ApplyNoWaterElectricityBills);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoMaxMarketShare))
@@ -300,11 +264,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseCourierCapacity))
 			{
-				Helpers.TryExecute("IncreaseCourierCapacity", () =>
-				{
-					AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
-					AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
-				});
+				Helpers.TryExecute("IncreaseCourierCapacity", CompanyFeatures.ApplyIncreaseCourierCapacity);
 			}
 
 			//Not working
@@ -312,12 +272,12 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceISPCost))
 			{
-				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
+				Helpers.TryExecute("ReduceISPCost", CompanyFeatures.ApplyReduceISPCost);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceExpansionCost))
 			{
-				Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
+				Helpers.TryExecute("ReduceExpansionCost", CompanyFeatures.ApplyReduceExpansionCost);
 			}
 		}
 
@@ -342,7 +302,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoInsuranceCost))
 			{
-				Helpers.TryExecute("NoInsuranceCost", ApplyNoInsuranceCost);
+				Helpers.TryExecute("NoInsuranceCost", CompanyFeatures.ApplyNoInsuranceCost);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeMarketing))
@@ -390,12 +350,12 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoLoanInterest))
 			{
-				Helpers.TryExecute("NoLoanInterest", ApplyNoLoanInterest);
+				Helpers.TryExecute("NoLoanInterest", CompanyFeatures.ApplyNoLoanInterest);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoFounderDividends))
 			{
-				Helpers.TryExecute("NoFounderDividends", ApplyNoFounderDividends);
+				Helpers.TryExecute("NoFounderDividends", CompanyFeatures.ApplyNoFounderDividends);
 			}
 		}
 
@@ -447,7 +407,7 @@ namespace Trainer_v5
 
 			if (!_unlimitedSubsidiariesApplied)
 			{
-				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
 			}
 
 			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)
@@ -462,7 +422,7 @@ namespace Trainer_v5
 
 			if (GetToggleTransition(SettingKeys.UnlimitedSubsidiaries) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+				Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
 			}
 
 			if (ToggleJustEnabled(SettingKeys.NoMaintenance))
@@ -502,21 +462,19 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.FreeStaff))
 			{
-				Helpers.TryExecute("FreeStaff", () => Settings.StaffSalaryDue = 0f);
+				Helpers.TryExecute("FreeStaff", CompanyFeatures.ApplyFreeStaff);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.NoServerCost))
 			{
-				Helpers.TryExecute("NoServerCost", () => Settings.ServerCost = 0f);
+				Helpers.TryExecute("NoServerCost", CompanyFeatures.ApplyNoServerCost);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.NoWaterElectricity))
 			{
 				Helpers.TryExecute("NoWaterElectricity", () =>
 				{
-					Settings.ElectricityBill = 0f;
-					Settings.Waterbill = 0f;
-					Settings.Gasbill = 0f;
+					CompanyFeatures.ApplyNoWaterElectricityBills();
 					EnvironmentFeatures.ApplyNoWaterElectricityToAllFurniture();
 				});
 			}
@@ -529,10 +487,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.NoEducationCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("NoEducationCost", ApplyNoEducationCost);
+					Helpers.TryExecute("NoEducationCost", CompanyFeatures.ApplyNoEducationCost);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("NoEducationCost", RestoreEducationCost);
+					Helpers.TryExecute("NoEducationCost", CompanyFeatures.RestoreEducationCost);
 					break;
 				default:
 					break;
@@ -645,14 +603,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.IncreaseCourierCapacity))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("IncreaseCourierCapacity", () =>
-					{
-						AI.MaxBoxes = Constants.MAX_BOXES_BOOSTED;
-						AI.MaxBoxCarry = Constants.MAX_CARRY_BOOSTED;
-					});
+					Helpers.TryExecute("IncreaseCourierCapacity", CompanyFeatures.ApplyIncreaseCourierCapacity);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("IncreaseCourierCapacity", RestoreIncreaseCourierCapacity);
+					Helpers.TryExecute("IncreaseCourierCapacity", CompanyFeatures.RestoreIncreaseCourierCapacity);
 					break;
 				default:
 					break;
@@ -661,10 +615,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.ReduceISPCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
+					Helpers.TryExecute("ReduceISPCost", CompanyFeatures.ApplyReduceISPCost);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("ReduceISPCost", RestoreReduceISPCost);
+					Helpers.TryExecute("ReduceISPCost", CompanyFeatures.RestoreReduceISPCost);
 					break;
 				default:
 					break;
@@ -673,10 +627,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.ReduceExpansionCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
+					Helpers.TryExecute("ReduceExpansionCost", CompanyFeatures.ApplyReduceExpansionCost);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("ReduceExpansionCost", RestoreReduceExpansionCost);
+					Helpers.TryExecute("ReduceExpansionCost", CompanyFeatures.RestoreReduceExpansionCost);
 					break;
 				default:
 					break;
@@ -745,18 +699,18 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForcePause))
 			{
-				Helpers.TryExecute("DisableForcePause", () => GameSettings.ForcePause = false);
+				Helpers.TryExecute("DisableForcePause", CompanyFeatures.ApplyDisableForcePause);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForceFreeze))
 			{
-				Helpers.TryExecute("DisableForceFreeze", () => GameSettings.FreezeGame = false);
+				Helpers.TryExecute("DisableForceFreeze", CompanyFeatures.ApplyDisableForceFreeze);
 			}
 
 			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoOffshoreHeat))
 			{
-				Helpers.TryExecute("NoOffshoreHeat", () => Settings.Heat = 0f);
+				Helpers.TryExecute("NoOffshoreHeat", CompanyFeatures.ApplyNoOffshoreHeat);
 			}
 
 			/*
@@ -777,130 +731,11 @@ namespace Trainer_v5
 			 * */
 		}
 
-		// GameSettings.PaybackLoan charges Monthly (principal + MonthlyInterest) per loan, then removes paid-off loans, before OnMonthPassed fires.
-		// Refunding the still-outstanding loans' MonthlyInterest here needs no captured baseline: Loan fields are never modified after creation.
-		private static void ApplyNoLoanInterest()
-		{
-			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
-			if (totalInterest > 0f)
-			{
-				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
-			}
-		}
-
-		// PayDividends (paid monthly, despite being called from something named EndDay) records each payout in NewStock[i].Payout.
-		private static void ApplyNoFounderDividends()
-		{
-			foreach (NewStock stock in Settings.MyCompany.NewStock)
-			{
-				if (stock.Buyer is FounderShareHolder && stock.Payout > 0f)
-				{
-					Settings.MyCompany.MakeTransaction(stock.Payout, Company.TransactionCategory.Dividends);
-				}
-			}
-		}
-
-		public static void TransferOffshoreFunds()
-		{
-			double amount = Settings.OffshoreAccount;
-			if (amount <= 0.0)
-			{
-				WindowManager.SpawnDialog("Trainer: No offshore funds to transfer!", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			// No dedicated transfer method exists; mirrors how the game's own funnel flow touches this field directly.
-			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
-			Settings.OffshoreAccount = 0.0;
-			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		private static float[] _defaultEdCost;
-
-		private static void ApplyNoEducationCost()
-		{
-			if (_defaultEdCost == null)
-			{
-				_defaultEdCost = (float[])EducationWindow.EdCost.Clone();
-			}
-			EducationWindow.EdCost = new[] { 0f, 0f, 0f };
-		}
-
-		private static void RestoreEducationCost()
-		{
-			if (_defaultEdCost != null)
-			{
-				EducationWindow.EdCost = (float[])_defaultEdCost.Clone();
-			}
-		}
-
-		// Refunds the daily insurance bill TimeOfDay.UpdateDay already charged this tick, leaving CurrentRate/coverage untouched.
-		private static void ApplyNoInsuranceCost()
-		{
-			if (!Settings.PassedFireInspection)
-			{
-				return;
-			}
-
-			float dailyBill = Settings.Insurance.GetContentBill(true) / GameSettings.DaysPerMonth;
-			Settings.MyCompany.MakeTransaction(dailyBill, Company.TransactionCategory.Bills);
-		}
-
-		public static void ClearLoans()
-		{
-			Settings.Loans.Clear();
-			HUD.Instance.AddPopupMessage("Trainer: All loans are cleared!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		public static void AIBankrupt()
-		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.ToArray();
-
-			for (int i = 0; i < Companies.Length; i++)
-			{
-				Companies[i].Bankrupt = true;
-			}
-		}
-
-		public static void UnlockAllSpace()
-		{
-			if (!Helpers.IsGameReady()) return;
-
-			Example.TakeAllLand();
-			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		public static void UnlockFurniture()
-		{
-			if (!Helpers.IsGameReady()) return;
-
-			Example.UnlockFurniture();
-			Cheats.UnlockFurn = true;
-			HUD.Instance.UpdateFurnitureButtons();
-			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
 		#region Native Cheat Flags
-
-		public static void ApplyUnlimitedSubsidiaries(bool enabled)
-		{
-			Cheats.InfiniteSubs = enabled;
-		}
 
 		#endregion
 
-		#region MonthDays
-
-		public static void MonthDaysAction(int i)
-		{
-			GameSettings.DaysPerMonth = i;
-			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
-		}
-
-		public static void MonthDays()
-		{
-			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
-		}
+		#region CompanyFeatures.MonthDays
 
 		#endregion
 
@@ -938,179 +773,25 @@ namespace Trainer_v5
 
 		#region Takeover Company
 
-		public static void TakeoverCompanyAction(string input)
-		{
-			var simulatedCompany = Settings.simulation.Companies
-				.FirstOrDefault(simCompany => simCompany.Value.Name == input).Value;
-
-			if (simulatedCompany == null)
-			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			if (!simulatedCompany.CanBuyOut(Settings.MyCompany))
-			{
-				WindowManager.SpawnDialog("Trainer: Company can't be bought!", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			var simulatedCompanyWorth = simulatedCompany.GetPossibleStockWorth();
-
-			simulatedCompany.BuyOut(
-				new Company[] { Settings.MyCompany }, // companies buying out
-				false,                                // not broke
-				SDateTime.Now(),                      // current time
-				true                                  // can disconnect (default value)
-			);
-
-			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
-		}
-
-		public static void TakeoverCompany()
-		{
-			WindowManager.SpawnInputDialog("Type company name:", "Takeover Company", "", TakeoverCompanyAction);
-		}
-
 		#endregion
 
 		#region Subsidiary Company
-
-		public static void SubDCompanyAction(string input)
-		{
-			SimulatedCompany Company =
-				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
-
-			if (Company == null)
-			{
-				return;
-			}
-
-			Company.MakeSubsidiary(Settings.MyCompany, SDateTime.Now());
-			HUD.Instance.AddPopupMessage("Trainer: Company " + Company.Name + " is now your subsidiary!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		public static void SubDCompany()
-		{
-			WindowManager.SpawnInputDialog("Type company name:", "Subsidiary Company", "", SubDCompanyAction);
-		}
 
 		#endregion
 
 		#region Force Bankrupt
 
-		public static void ForceBankruptAction(string input)
-		{
-			SimulatedCompany Company =
-				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
-
-			DevConsole.Console.Log("input => " + input + " Company: " + Company);
-
-			if (Company == null)
-			{
-				return;
-			}
-
-			Company.Bankrupt = !Company.Bankrupt;
-		}
-
-		public static void ForceBankrupt()
-		{
-			WindowManager.SpawnInputDialog("Type company name:", "Force Bankrupt", "", ForceBankruptAction);
-		}
-
 		#endregion
 
 		#region Increase Money
-
-		public static void IncreaseMoneyAction(int amount)
-		{
-			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
-			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-		public static void IncreaseMoney()
-		{
-			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
-		}
 
 		#endregion
 
 		#region Add AI Company Funds
 
-		public static void AddAIFundsAction(string input)
-		{
-			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
-				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
-				.ToList();
-
-			if (matches.Count == 0)
-			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			if (matches.Count > 1)
-			{
-				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			SimulatedCompany company = matches[0];
-			InputHelper.RequestInt("How much money do you want to add to " + company.Name + "?", "Add AI Funds", "100000",
-				amount =>
-				{
-					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
-					HUD.Instance.AddPopupMessage("Trainer: Money has been added to " + company.Name + "!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-				}, 0, int.MaxValue);
-		}
-
-		public static void AddAIFunds()
-		{
-			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
-		}
-
 		#endregion
 
 		#region Add Rep
-
-		public static void MaxReputation()
-		{
-			Action<string> action = (input) =>
-			{
-				if (input == "YES")
-				{
-					Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-					WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
-				}
-			};
-
-			Func<InputDialog> areYouSure = () =>
-			{
-				return WindowManager.SpawnInputDialog("Are you sure?", "Confirmation", "YES", action);
-			};
-
-			areYouSure();
-		}
-
-		public static void MaxMarketRecognition()
-		{
-			var softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.Where(value => !value.OneClient).ToList();
-			foreach (var softwareType in softwareTypes)
-			{
-				foreach (var category in softwareType.Categories.ToList())
-				{
-					Example.AddReputation(softwareType.Name, category.Key, int.MaxValue);
-				}
-			}
-
-			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
-		}
 
 		#endregion
 
@@ -1119,15 +800,6 @@ namespace Trainer_v5
 		#endregion
 
 		#region UnlockAllRewards
-
-		public static void UnlockAndClaimAllRewards()
-		{
-			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
-			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
-			HUD.Instance.RefreshBuildButtons();
-
-			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
-		}
 
 		#endregion
 
