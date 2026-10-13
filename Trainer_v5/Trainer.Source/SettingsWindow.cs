@@ -148,8 +148,8 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get(SettingKeys.AutoEndPatent), a => settings.Toggle(SettingKeys.AutoEndPatent)));
 			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get(SettingKeys.IncreaseWalkSpeed), a => settings.Toggle(SettingKeys.IncreaseWalkSpeed)));
 			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get(SettingKeys.DisableFurnitureStealing), a => settings.Toggle(SettingKeys.DisableFurnitureStealing)));
-			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); TrainerBehaviour.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
-			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); TrainerBehaviour.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
+			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); EnvironmentFeatures.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
+			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); EnvironmentFeatures.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
 
 			#endregion
 

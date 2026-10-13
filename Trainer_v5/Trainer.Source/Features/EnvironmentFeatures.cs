@@ -1,0 +1,274 @@
+namespace Trainer_v5
+{
+	internal static class EnvironmentFeatures
+	{
+		private static GameSettings Settings => GameSettings.Instance;
+
+		internal static void ApplyNoiseReduction()
+		{
+			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			{
+				furniture.ActorNoise = 0f;
+				furniture.EnvironmentNoise = 0f;
+				furniture.FinalNoise = 0f;
+				furniture.Noisiness = 0;
+			}
+
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].Noisiness = 0;
+			}
+		}
+
+		internal static void ApplyDisableActiveFires()
+		{
+			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			{
+				if (!furniture.Parent.IsOnFire)
+				{
+					continue;
+				}
+
+				if (furniture.Parent.Temperature > 40f)
+				{
+					furniture.Parent.Temperature = 21f;
+				}
+				furniture.Parent.StopFire();
+			}
+		}
+
+		internal static void ApplyCleanRooms()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				ApplyCleanRoomsToRoom(Settings.sRoomManager.Rooms[i]);
+			}
+		}
+
+		internal static void ApplyNoSickness()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
+			}
+
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				ApplyNoSicknessToActor(Settings.sActorManager.Actors[i]);
+			}
+		}
+
+		internal static void ApplyTemperatureLock()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Settings.sRoomManager.Rooms[i].Temperature = 21f;
+			}
+		}
+
+		private static void ApplyCleanRoomsToRoom(Room room)
+		{
+			room.ClearDirt();
+			room.Smell = 0f;
+		}
+
+		private static void ApplyNoSicknessToRoom(Room room)
+		{
+			room.GermCount = 0f;
+		}
+
+		private static void ApplyNoSicknessToActor(Actor actor)
+		{
+			TimeOfDay.Instance.Sick.Clear();
+
+			if (actor.SpecialState == Actor.HomeState.Sick)
+			{
+				actor.SpecialState = Actor.HomeState.Default;
+				actor.WasSick = true;
+			}
+
+			actor.GermAdd = 0f;
+			actor.GermCount = 0f;
+			actor.SickDays = 0;
+		}
+
+		internal static void ApplyNoMaintenance()
+		{
+			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			{
+				switch (furniture.Type)
+				{
+					case "Chair":
+						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
+						{
+							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
+						}
+						goto case "Ventilation";
+					case "CCTV":
+					case "Computer":
+					case "Lamp":
+					case "Server":
+					case "Product Printer":
+					case "Radiator":
+					case "Sink":
+					case "Toilet":
+					case "Ventilation":
+						break;
+					default:
+						break;
+				}
+
+				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
+				{
+					furniture.upg.RepairMe();
+				}
+			}
+		}
+
+		private static void ApplyFullEnvironmentToRoom(Room room)
+		{
+			room.FurnEnvironment = Constants.ENV_FULL;
+		}
+
+		private static void ApplyFullRoomBrightnessToRoom(Room room)
+		{
+			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
+		}
+
+		internal static void RestoreFullEnvironment()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				room.RecalculateStateVariables(false);
+				if (Helpers.GetProperty(Helpers.Settings, SettingKeys.FullRoomBrightness))
+				{
+					ApplyFullRoomBrightnessToRoom(room);
+				}
+			}
+		}
+
+		internal static void RestoreFullRoomBrightness()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				room.RecalculateStateVariables(false);
+				if (Helpers.GetProperty(Helpers.Settings, SettingKeys.FullEnvironment))
+				{
+					ApplyFullEnvironmentToRoom(room);
+				}
+			}
+		}
+
+		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
+		{
+			if (furniture.Type == "Bookshelf")
+			{
+				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
+			}
+		}
+
+		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
+		{
+			furniture.Water = 0;
+			furniture.Wattage = 0;
+		}
+
+		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
+		{
+			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+			{
+				furniture.upg.FireStarter = 0.0f;
+			}
+		}
+
+		internal static void ApplyDisableBurglars()
+		{
+			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
+			{
+				burglar.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(burglar);
+			}
+		}
+
+		internal static void ApplyDisableFireInspection()
+		{
+			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
+			{
+				fireInspector.Despawned = true;
+				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
+			}
+
+			Settings.ActiveFireReport.Reset();
+			Settings.PassedFireInspection = true;
+		}
+
+		internal static void ApplyDisableFurnitureStealing()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
+		}
+
+		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow),
+		// Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon),
+		// and Cheats.InfiniteSubs (read in CompanyDetailWindow.TakeOverSub's subsidiary-count
+		// gate) are all consulted directly by the game whenever relevant, so the trainer binds
+		// the native flag the moment the setting changes instead of polling for it every frame.
+		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
+		// intentionally left unexposed - setting it would have no observable effect.
+
+		public static void ApplyForceLights(bool enabled)
+		{
+			Cheats.ForceLights = enabled;
+		}
+
+		public static void ApplyShowRoomCeilings(bool enabled)
+		{
+			Cheats.CeilingMeshes = enabled;
+
+			// Mirrors CameraScript.RefreshFlyMode, the only other place the game itself flips
+			// this flag: marking every room dirty forces outer/inner meshes (the ceiling mesh
+			// included) to regenerate, so already-built rooms reflect the change immediately
+			// instead of only rooms built or modified afterward.
+			if (Helpers.IsGameLoaded)
+			{
+				foreach (Room room in Settings.sRoomManager.Rooms)
+				{
+					room.DirtyOuterMesh = true;
+					room.DirtyInnerMesh = true;
+				}
+			}
+		}
+
+		internal static void ApplyFullEnvironment()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
+			}
+		}
+
+		internal static void ApplyFullRoomBrightness()
+		{
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
+			}
+		}
+
+		internal static void ApplyIncreaseBookshelfSkill()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture);
+		}
+
+		internal static void ApplyNoWaterElectricityToAllFurniture()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture);
+		}
+
+		internal static void ApplyDisableFiresFireStarter()
+		{
+			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
+		}
+	}
+}

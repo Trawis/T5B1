@@ -215,7 +215,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoMaintenance))
 			{
-				Helpers.TryExecute("NoMaintenance", ApplyNoMaintenance);
+				Helpers.TryExecute("NoMaintenance", EnvironmentFeatures.ApplyNoMaintenance);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoMissedSupportTickets))
@@ -279,39 +279,27 @@ namespace Trainer_v5
 
 			if (fullEnvironment)
 			{
-				Helpers.TryExecute("FullEnvironment", () =>
-				{
-					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-					{
-						ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
-					}
-				});
+				Helpers.TryExecute("FullEnvironment", EnvironmentFeatures.ApplyFullEnvironment);
 			}
 
 			if (fullRoomBrightness)
 			{
-				Helpers.TryExecute("FullRoomBrightness", () =>
-				{
-					for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-					{
-						ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
-					}
-				});
+				Helpers.TryExecute("FullRoomBrightness", EnvironmentFeatures.ApplyFullRoomBrightness);
 			}
 
 			if (increaseBookshelfSkill)
 			{
-				Helpers.TryExecute("IncreaseBookshelfSkill", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture));
+				Helpers.TryExecute("IncreaseBookshelfSkill", EnvironmentFeatures.ApplyIncreaseBookshelfSkill);
 			}
 
 			if (noWaterElectricity)
 			{
-				Helpers.TryExecute("NoWaterElectricity", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture));
+				Helpers.TryExecute("NoWaterElectricity", EnvironmentFeatures.ApplyNoWaterElectricityToAllFurniture);
 			}
 
 			if (disableFires)
 			{
-				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
+				Helpers.TryExecute("DisableFires", EnvironmentFeatures.ApplyDisableFiresFireStarter);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseWalkSpeed))
@@ -392,17 +380,17 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableBurglars))
 			{
-				Helpers.TryExecute("DisableBurglars", ApplyDisableBurglars);
+				Helpers.TryExecute("DisableBurglars", EnvironmentFeatures.ApplyDisableBurglars);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFireInspection))
 			{
-				Helpers.TryExecute("DisableFireInspection", ApplyDisableFireInspection);
+				Helpers.TryExecute("DisableFireInspection", EnvironmentFeatures.ApplyDisableFireInspection);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFurnitureStealing))
 			{
-				Helpers.TryExecute("DisableFurnitureStealing", ApplyDisableFurnitureStealing);
+				Helpers.TryExecute("DisableFurnitureStealing", EnvironmentFeatures.ApplyDisableFurnitureStealing);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoVacation))
@@ -464,12 +452,12 @@ namespace Trainer_v5
 			// so a transient failure in one only retries that one, without losing or re-running the others.
 			if (!_forceLightsApplied)
 			{
-				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
 			}
 
 			if (!_showRoomCeilingsApplied)
 			{
-				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
 			}
 
 			if (!_unlimitedSubsidiariesApplied)
@@ -479,12 +467,12 @@ namespace Trainer_v5
 
 			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+				Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
 			}
 
 			if (GetToggleTransition(SettingKeys.ShowRoomCeilings) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+				Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
 			}
 
 			if (GetToggleTransition(SettingKeys.UnlimitedSubsidiaries) != ToggleTransitionEnum.Unchanged)
@@ -494,7 +482,7 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.NoMaintenance))
 			{
-				Helpers.TryExecute("NoMaintenance", ApplyNoMaintenance);
+				Helpers.TryExecute("NoMaintenance", EnvironmentFeatures.ApplyNoMaintenance);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.NoVacation))
@@ -544,13 +532,13 @@ namespace Trainer_v5
 					Settings.ElectricityBill = 0f;
 					Settings.Waterbill = 0f;
 					Settings.Gasbill = 0f;
-					Settings.sRoomManager.AllFurniture.ForEach(ApplyNoWaterElectricityToFurniture);
+					EnvironmentFeatures.ApplyNoWaterElectricityToAllFurniture();
 				});
 			}
 
 			if (ToggleJustEnabled(SettingKeys.DisableFurnitureStealing))
 			{
-				Helpers.TryExecute("DisableFurnitureStealing", ApplyDisableFurnitureStealing);
+				Helpers.TryExecute("DisableFurnitureStealing", EnvironmentFeatures.ApplyDisableFurnitureStealing);
 			}
 
 			switch (GetToggleTransition(SettingKeys.NoEducationCost))
@@ -598,12 +586,12 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.DisableBurglars))
 			{
-				Helpers.TryExecute("DisableBurglars", ApplyDisableBurglars);
+				Helpers.TryExecute("DisableBurglars", EnvironmentFeatures.ApplyDisableBurglars);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.DisableFireInspection))
 			{
-				Helpers.TryExecute("DisableFireInspection", ApplyDisableFireInspection);
+				Helpers.TryExecute("DisableFireInspection", EnvironmentFeatures.ApplyDisableFireInspection);
 			}
 
 			switch (GetToggleTransition(SettingKeys.FreePrint))
@@ -626,16 +614,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.FullEnvironment))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("FullEnvironment", () =>
-					{
-						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-						{
-							ApplyFullEnvironmentToRoom(Settings.sRoomManager.Rooms[i]);
-						}
-					});
+					Helpers.TryExecute("FullEnvironment", EnvironmentFeatures.ApplyFullEnvironment);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("FullEnvironment", RestoreFullEnvironment);
+					Helpers.TryExecute("FullEnvironment", EnvironmentFeatures.RestoreFullEnvironment);
 					break;
 				default:
 					break;
@@ -644,16 +626,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.FullRoomBrightness))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("FullRoomBrightness", () =>
-					{
-						for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-						{
-							ApplyFullRoomBrightnessToRoom(Settings.sRoomManager.Rooms[i]);
-						}
-					});
+					Helpers.TryExecute("FullRoomBrightness", EnvironmentFeatures.ApplyFullRoomBrightness);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("FullRoomBrightness", RestoreFullRoomBrightness);
+					Helpers.TryExecute("FullRoomBrightness", EnvironmentFeatures.RestoreFullRoomBrightness);
 					break;
 				default:
 					break;
@@ -661,12 +637,12 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.IncreaseBookshelfSkill))
 			{
-				Helpers.TryExecute("IncreaseBookshelfSkill", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture));
+				Helpers.TryExecute("IncreaseBookshelfSkill", EnvironmentFeatures.ApplyIncreaseBookshelfSkill);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.DisableFires))
 			{
-				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
+				Helpers.TryExecute("DisableFires", EnvironmentFeatures.ApplyDisableFiresFireStarter);
 			}
 
 			switch (GetToggleTransition(SettingKeys.IncreaseWalkSpeed))
@@ -735,27 +711,27 @@ namespace Trainer_v5
 			// and actors) still gets a single boundary, since isolating its parts from each other isn't required.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoiseReduction))
 			{
-				Helpers.TryExecute("NoiseReduction", ApplyNoiseReduction);
+				Helpers.TryExecute("NoiseReduction", EnvironmentFeatures.ApplyNoiseReduction);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFires))
 			{
-				Helpers.TryExecute("DisableFires", ApplyDisableActiveFires);
+				Helpers.TryExecute("DisableFires", EnvironmentFeatures.ApplyDisableActiveFires);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.CleanRooms))
 			{
-				Helpers.TryExecute("CleanRooms", ApplyCleanRooms);
+				Helpers.TryExecute("CleanRooms", EnvironmentFeatures.ApplyCleanRooms);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoSickness))
 			{
-				Helpers.TryExecute("NoSickness", ApplyNoSickness);
+				Helpers.TryExecute("NoSickness", EnvironmentFeatures.ApplyNoSickness);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.TemperatureLock))
 			{
-				Helpers.TryExecute("TemperatureLock", ApplyTemperatureLock);
+				Helpers.TryExecute("TemperatureLock", EnvironmentFeatures.ApplyTemperatureLock);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullSatisfaction))
@@ -822,68 +798,6 @@ namespace Trainer_v5
 			 * */
 		}
 
-		private static void ApplyNoiseReduction()
-		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
-			{
-				furniture.ActorNoise = 0f;
-				furniture.EnvironmentNoise = 0f;
-				furniture.FinalNoise = 0f;
-				furniture.Noisiness = 0;
-			}
-
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].Noisiness = 0;
-			}
-		}
-
-		private static void ApplyDisableActiveFires()
-		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
-			{
-				if (!furniture.Parent.IsOnFire)
-				{
-					continue;
-				}
-
-				if (furniture.Parent.Temperature > 40f)
-				{
-					furniture.Parent.Temperature = 21f;
-				}
-				furniture.Parent.StopFire();
-			}
-		}
-
-		private static void ApplyCleanRooms()
-		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				ApplyCleanRoomsToRoom(Settings.sRoomManager.Rooms[i]);
-			}
-		}
-
-		private static void ApplyNoSickness()
-		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
-			}
-
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				ApplyNoSicknessToActor(Settings.sActorManager.Actors[i]);
-			}
-		}
-
-		private static void ApplyTemperatureLock()
-		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				Settings.sRoomManager.Rooms[i].Temperature = 21f;
-			}
-		}
-
 		private static void ApplyFullSatisfaction()
 		{
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -948,65 +862,6 @@ namespace Trainer_v5
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Settings.sActorManager.Actors[i].employee.LastInpirationUse = new SDateTime(0);
-			}
-		}
-
-		private static void ApplyCleanRoomsToRoom(Room room)
-		{
-			room.ClearDirt();
-			room.Smell = 0f;
-		}
-
-		private static void ApplyNoSicknessToRoom(Room room)
-		{
-			room.GermCount = 0f;
-		}
-
-		private static void ApplyNoSicknessToActor(Actor actor)
-		{
-			TimeOfDay.Instance.Sick.Clear();
-
-			if (actor.SpecialState == Actor.HomeState.Sick)
-			{
-				actor.SpecialState = Actor.HomeState.Default;
-				actor.WasSick = true;
-			}
-
-			actor.GermAdd = 0f;
-			actor.GermCount = 0f;
-			actor.SickDays = 0;
-		}
-
-		private static void ApplyNoMaintenance()
-		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
-			{
-				switch (furniture.Type)
-				{
-					case "Chair":
-						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
-						{
-							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
-						}
-						goto case "Ventilation";
-					case "CCTV":
-					case "Computer":
-					case "Lamp":
-					case "Server":
-					case "Product Printer":
-					case "Radiator":
-					case "Sink":
-					case "Toilet":
-					case "Ventilation":
-						break;
-					default:
-						break;
-				}
-
-				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
-				{
-					furniture.upg.RepairMe();
-				}
 			}
 		}
 
@@ -1077,64 +932,6 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		private static void ApplyFullEnvironmentToRoom(Room room)
-		{
-			room.FurnEnvironment = Constants.ENV_FULL;
-		}
-
-		private static void ApplyFullRoomBrightnessToRoom(Room room)
-		{
-			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
-		}
-
-		private static void RestoreFullEnvironment()
-		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				Room room = Settings.sRoomManager.Rooms[i];
-				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullRoomBrightness))
-				{
-					ApplyFullRoomBrightnessToRoom(room);
-				}
-			}
-		}
-
-		private static void RestoreFullRoomBrightness()
-		{
-			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
-			{
-				Room room = Settings.sRoomManager.Rooms[i];
-				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullEnvironment))
-				{
-					ApplyFullEnvironmentToRoom(room);
-				}
-			}
-		}
-
-		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
-		{
-			if (furniture.Type == "Bookshelf")
-			{
-				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
-			}
-		}
-
-		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
-		{
-			furniture.Water = 0;
-			furniture.Wattage = 0;
-		}
-
-		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
-		{
-			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
-			{
-				furniture.upg.FireStarter = 0.0f;
-			}
-		}
-
 		private static void ApplyFreeEmployees()
 		{
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -1157,27 +954,6 @@ namespace Trainer_v5
 			{
 				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
 			}
-		}
-
-		private static void ApplyDisableBurglars()
-		{
-			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-			{
-				burglar.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(burglar);
-			}
-		}
-
-		private static void ApplyDisableFireInspection()
-		{
-			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
-			{
-				fireInspector.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
-			}
-
-			Settings.ActiveFireReport.Reset();
-			Settings.PassedFireInspection = true;
 		}
 
 		private static void ApplyFreePrint()
@@ -1392,11 +1168,6 @@ namespace Trainer_v5
 					supportWork.Tickets[i] = SDateTime.Now();
 				}
 			}
-		}
-
-		private static void ApplyDisableFurnitureStealing()
-		{
-			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
 		}
 
 		private static float[] _defaultEdCost;
@@ -1905,37 +1676,6 @@ namespace Trainer_v5
 		}
 
 		#region Native Cheat Flags
-
-		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow),
-		// Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon),
-		// and Cheats.InfiniteSubs (read in CompanyDetailWindow.TakeOverSub's subsidiary-count
-		// gate) are all consulted directly by the game whenever relevant, so the trainer binds
-		// the native flag the moment the setting changes instead of polling for it every frame.
-		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
-		// intentionally left unexposed - setting it would have no observable effect.
-
-		public static void ApplyForceLights(bool enabled)
-		{
-			Cheats.ForceLights = enabled;
-		}
-
-		public static void ApplyShowRoomCeilings(bool enabled)
-		{
-			Cheats.CeilingMeshes = enabled;
-
-			// Mirrors CameraScript.RefreshFlyMode, the only other place the game itself flips
-			// this flag: marking every room dirty forces outer/inner meshes (the ceiling mesh
-			// included) to regenerate, so already-built rooms reflect the change immediately
-			// instead of only rooms built or modified afterward.
-			if (Helpers.IsGameLoaded)
-			{
-				foreach (Room room in Settings.sRoomManager.Rooms)
-				{
-					room.DirtyOuterMesh = true;
-					room.DirtyInnerMesh = true;
-				}
-			}
-		}
 
 		public static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
