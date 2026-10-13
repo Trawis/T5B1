@@ -185,22 +185,22 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
-			if (Helpers.GetProperty(TrainerSettings, "MoreHostingDeals"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.MoreHostingDeals))
 			{
 				Helpers.TryExecute("MoreHostingDeals", ApplyHostingDealTiming);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "FreeStaff"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeStaff))
 			{
 				Helpers.TryExecute("FreeStaff", () => Settings.StaffSalaryDue = 0f);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoServerCost"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoServerCost))
 			{
 				Helpers.TryExecute("NoServerCost", () => Settings.ServerCost = 0f);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoWaterElectricity"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoWaterElectricity))
 			{
 				Helpers.TryExecute("NoWaterElectricity", () =>
 				{
@@ -210,28 +210,28 @@ namespace Trainer_v5
 				});
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoMaxMarketShare"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoMaxMarketShare))
 			{
 				// Disabled, see #150
 				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoMaintenance"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoMaintenance))
 			{
 				Helpers.TryExecute("NoMaintenance", ApplyNoMaintenance);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoMissedSupportTickets"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoMissedSupportTickets))
 			{
 				Helpers.TryExecute("NoMissedSupportTickets", ApplyNoMissedSupportTickets);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "FreePrint"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreePrint))
 			{
 				Helpers.TryExecute("FreePrint", ApplyFreePrint);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "IncreasePrintSpeed"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreasePrintSpeed))
 			{
 				Helpers.TryExecute("IncreasePrintSpeed", ApplyIncreasePrintSpeed);
 			}
@@ -239,46 +239,46 @@ namespace Trainer_v5
 
 		private void OnMinutePassed(object obj, EventArgs args)
 		{
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndDesign"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoEndDesign))
 			{
 				Helpers.TryExecute("AutoEndDesign", ApplyAutoEndDesign);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoContractProgression"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoContractProgression))
 			{
 				Helpers.TryExecute("AutoContractProgression", ApplyAutoContractProgression);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndResearch"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoEndResearch))
 			{
 				Helpers.TryExecute("AutoEndResearch", ApplyAutoEndResearch);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoEndPatent"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoEndPatent))
 			{
 				Helpers.TryExecute("AutoEndPatent", ApplyAutoEndPatent);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoResearchStart"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoResearchStart))
 			{
 				Helpers.TryExecute("AutoResearchStart", ApplyAutoResearchStart);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoAcceptHostingDeals"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoAcceptHostingDeals))
 			{
 				Helpers.TryExecute("AutoAcceptHostingDeals", ApplyAutoAcceptHostingDeals);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "AutoPorting"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoPorting))
 			{
 				Helpers.TryExecute("AutoPorting", ApplyAutoPorting);
 			}
 
-			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, "FullEnvironment");
-			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, "FullRoomBrightness");
-			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, "IncreaseBookshelfSkill");
-			bool noWaterElectricity = Helpers.GetProperty(TrainerSettings, "NoWaterElectricity");
-			bool disableFires = Helpers.GetProperty(TrainerSettings, "DisableFires");
+			bool fullEnvironment = Helpers.GetProperty(TrainerSettings, SettingKeys.FullEnvironment);
+			bool fullRoomBrightness = Helpers.GetProperty(TrainerSettings, SettingKeys.FullRoomBrightness);
+			bool increaseBookshelfSkill = Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseBookshelfSkill);
+			bool noWaterElectricity = Helpers.GetProperty(TrainerSettings, SettingKeys.NoWaterElectricity);
+			bool disableFires = Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFires);
 
 			if (fullEnvironment)
 			{
@@ -317,7 +317,7 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "IncreaseWalkSpeed"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseWalkSpeed))
 			{
 				Helpers.TryExecute("IncreaseWalkSpeed", () =>
 				{
@@ -328,7 +328,7 @@ namespace Trainer_v5
 				});
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "IncreaseCourierCapacity"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseCourierCapacity))
 			{
 				Helpers.TryExecute("IncreaseCourierCapacity", () =>
 				{
@@ -338,44 +338,44 @@ namespace Trainer_v5
 			}
 
 			//Not working
-			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, "ReduceBoxPrice") ? 62.5f : 125;
+			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceBoxPrice) ? 62.5f : 125;
 
-			if (Helpers.GetProperty(TrainerSettings, "ReduceISPCost"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceISPCost))
 			{
 				Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "ReduceExpansionCost"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceExpansionCost))
 			{
 				Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
 			}
 		}
 
-		private bool ToggleJustEnabled(string settingKey)
+		private bool ToggleJustEnabled(SettingKey<bool> settingKey)
 		{
 			return GetToggleTransition(settingKey) == ToggleTransitionEnum.JustEnabled;
 		}
 
-		private ToggleTransitionEnum GetToggleTransition(string settingKey)
+		private ToggleTransitionEnum GetToggleTransition(SettingKey<bool> settingKey)
 		{
-			return _toggleStates.Observe(settingKey, Helpers.GetProperty(TrainerSettings, settingKey));
+			return _toggleStates.Observe(settingKey.Key, Helpers.GetProperty(TrainerSettings, settingKey));
 		}
 
 		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from
 		// TimeOfDay.UpdateDay despite the name), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
-			if (Helpers.GetProperty(TrainerSettings, "DigitalDistributionMonopol"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DigitalDistributionMonopol))
 			{
 				Helpers.TryExecute("DigitalDistributionMonopol", ApplyDigitalDistributionMonopol);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoInsuranceCost"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoInsuranceCost))
 			{
 				Helpers.TryExecute("NoInsuranceCost", ApplyNoInsuranceCost);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "FreeMarketing"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeMarketing))
 			{
 				Helpers.TryExecute("FreeMarketing", ApplyFreeMarketing);
 			}
@@ -383,47 +383,47 @@ namespace Trainer_v5
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
-			if (Helpers.GetProperty(TrainerSettings, "FreeEmployees"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeEmployees))
 			{
 				Helpers.TryExecute("FreeEmployees", ApplyFreeEmployees);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "MoreCreativity"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.MoreCreativity))
 			{
 				Helpers.TryExecute("MoreCreativity", ApplyMoreCreativity);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableBurglars"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableBurglars))
 			{
 				Helpers.TryExecute("DisableBurglars", ApplyDisableBurglars);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableFireInspection"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFireInspection))
 			{
 				Helpers.TryExecute("DisableFireInspection", ApplyDisableFireInspection);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableFurnitureStealing"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFurnitureStealing))
 			{
 				Helpers.TryExecute("DisableFurnitureStealing", ApplyDisableFurnitureStealing);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoVacation"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoVacation))
 			{
 				Helpers.TryExecute("NoVacation", ApplyNoVacation);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "LockAge"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.LockAge))
 			{
 				Helpers.TryExecute("LockAge", () => Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1));
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoLoanInterest"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoLoanInterest))
 			{
 				Helpers.TryExecute("NoLoanInterest", ApplyNoLoanInterest);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoFounderDividends"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoFounderDividends))
 			{
 				Helpers.TryExecute("NoFounderDividends", ApplyNoFounderDividends);
 			}
@@ -467,80 +467,80 @@ namespace Trainer_v5
 			// so a transient failure in one only retries that one, without losing or re-running the others.
 			if (!_forceLightsApplied)
 			{
-				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
+				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
 			}
 
 			if (!_showRoomCeilingsApplied)
 			{
-				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
+				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
 			}
 
 			if (!_unlimitedSubsidiariesApplied)
 			{
-				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
+				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
 			}
 
-			if (GetToggleTransition("ForceLights") != ToggleTransitionEnum.Unchanged)
+			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, "ForceLights")));
+				Helpers.TryExecute("ForceLights", () => ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
 			}
 
-			if (GetToggleTransition("ShowRoomCeilings") != ToggleTransitionEnum.Unchanged)
+			if (GetToggleTransition(SettingKeys.ShowRoomCeilings) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, "ShowRoomCeilings")));
+				Helpers.TryExecute("ShowRoomCeilings", () => ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
 			}
 
-			if (GetToggleTransition("UnlimitedSubsidiaries") != ToggleTransitionEnum.Unchanged)
+			if (GetToggleTransition(SettingKeys.UnlimitedSubsidiaries) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, "UnlimitedSubsidiaries")));
+				Helpers.TryExecute("UnlimitedSubsidiaries", () => ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
 			}
 
-			if (ToggleJustEnabled("NoMaintenance"))
+			if (ToggleJustEnabled(SettingKeys.NoMaintenance))
 			{
 				Helpers.TryExecute("NoMaintenance", ApplyNoMaintenance);
 			}
 
-			if (ToggleJustEnabled("NoVacation"))
+			if (ToggleJustEnabled(SettingKeys.NoVacation))
 			{
 				Helpers.TryExecute("NoVacation", ApplyNoVacation);
 			}
 
-			if (ToggleJustEnabled("MoreHostingDeals"))
+			if (ToggleJustEnabled(SettingKeys.MoreHostingDeals))
 			{
 				Helpers.TryExecute("MoreHostingDeals", ApplyHostingDealTiming);
 			}
 
-			if (ToggleJustEnabled("AutoEndDesign"))
+			if (ToggleJustEnabled(SettingKeys.AutoEndDesign))
 			{
 				Helpers.TryExecute("AutoEndDesign", ApplyAutoEndDesign);
 			}
 
-			if (ToggleJustEnabled("AutoContractProgression"))
+			if (ToggleJustEnabled(SettingKeys.AutoContractProgression))
 			{
 				Helpers.TryExecute("AutoContractProgression", ApplyAutoContractProgression);
 			}
 
-			if (ToggleJustEnabled("AutoEndResearch"))
+			if (ToggleJustEnabled(SettingKeys.AutoEndResearch))
 			{
 				Helpers.TryExecute("AutoEndResearch", ApplyAutoEndResearch);
 			}
 
-			if (ToggleJustEnabled("AutoEndPatent"))
+			if (ToggleJustEnabled(SettingKeys.AutoEndPatent))
 			{
 				Helpers.TryExecute("AutoEndPatent", ApplyAutoEndPatent);
 			}
 
-			if (ToggleJustEnabled("FreeStaff"))
+			if (ToggleJustEnabled(SettingKeys.FreeStaff))
 			{
 				Helpers.TryExecute("FreeStaff", () => Settings.StaffSalaryDue = 0f);
 			}
 
-			if (ToggleJustEnabled("NoServerCost"))
+			if (ToggleJustEnabled(SettingKeys.NoServerCost))
 			{
 				Helpers.TryExecute("NoServerCost", () => Settings.ServerCost = 0f);
 			}
 
-			if (ToggleJustEnabled("NoWaterElectricity"))
+			if (ToggleJustEnabled(SettingKeys.NoWaterElectricity))
 			{
 				Helpers.TryExecute("NoWaterElectricity", () =>
 				{
@@ -551,12 +551,12 @@ namespace Trainer_v5
 				});
 			}
 
-			if (ToggleJustEnabled("DisableFurnitureStealing"))
+			if (ToggleJustEnabled(SettingKeys.DisableFurnitureStealing))
 			{
 				Helpers.TryExecute("DisableFurnitureStealing", ApplyDisableFurnitureStealing);
 			}
 
-			switch (GetToggleTransition("NoEducationCost"))
+			switch (GetToggleTransition(SettingKeys.NoEducationCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("NoEducationCost", ApplyNoEducationCost);
@@ -568,48 +568,48 @@ namespace Trainer_v5
 					break;
 			}
 
-			if (ToggleJustEnabled("AutoResearchStart"))
+			if (ToggleJustEnabled(SettingKeys.AutoResearchStart))
 			{
 				Helpers.TryExecute("AutoResearchStart", ApplyAutoResearchStart);
 			}
 
-			if (ToggleJustEnabled("DigitalDistributionMonopol"))
+			if (ToggleJustEnabled(SettingKeys.DigitalDistributionMonopol))
 			{
 				Helpers.TryExecute("DigitalDistributionMonopol", ApplyDigitalDistributionMonopol);
 			}
 
-			if (ToggleJustEnabled("AutoMaxMarketShare"))
+			if (ToggleJustEnabled(SettingKeys.AutoMaxMarketShare))
 			{
 				// Disabled, see #150
 				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
-			if (ToggleJustEnabled("AutoAcceptHostingDeals"))
+			if (ToggleJustEnabled(SettingKeys.AutoAcceptHostingDeals))
 			{
 				Helpers.TryExecute("AutoAcceptHostingDeals", ApplyAutoAcceptHostingDeals);
 			}
 
-			if (ToggleJustEnabled("FreeEmployees"))
+			if (ToggleJustEnabled(SettingKeys.FreeEmployees))
 			{
 				Helpers.TryExecute("FreeEmployees", ApplyFreeEmployees);
 			}
 
-			if (ToggleJustEnabled("MoreCreativity"))
+			if (ToggleJustEnabled(SettingKeys.MoreCreativity))
 			{
 				Helpers.TryExecute("MoreCreativity", ApplyMoreCreativity);
 			}
 
-			if (ToggleJustEnabled("DisableBurglars"))
+			if (ToggleJustEnabled(SettingKeys.DisableBurglars))
 			{
 				Helpers.TryExecute("DisableBurglars", ApplyDisableBurglars);
 			}
 
-			if (ToggleJustEnabled("DisableFireInspection"))
+			if (ToggleJustEnabled(SettingKeys.DisableFireInspection))
 			{
 				Helpers.TryExecute("DisableFireInspection", ApplyDisableFireInspection);
 			}
 
-			switch (GetToggleTransition("FreePrint"))
+			switch (GetToggleTransition(SettingKeys.FreePrint))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FreePrint", ApplyFreePrint);
@@ -621,12 +621,12 @@ namespace Trainer_v5
 					break;
 			}
 
-			if (ToggleJustEnabled("IncreasePrintSpeed"))
+			if (ToggleJustEnabled(SettingKeys.IncreasePrintSpeed))
 			{
 				Helpers.TryExecute("IncreasePrintSpeed", ApplyIncreasePrintSpeed);
 			}
 
-			switch (GetToggleTransition("FullEnvironment"))
+			switch (GetToggleTransition(SettingKeys.FullEnvironment))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FullEnvironment", () =>
@@ -644,7 +644,7 @@ namespace Trainer_v5
 					break;
 			}
 
-			switch (GetToggleTransition("FullRoomBrightness"))
+			switch (GetToggleTransition(SettingKeys.FullRoomBrightness))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("FullRoomBrightness", () =>
@@ -662,17 +662,17 @@ namespace Trainer_v5
 					break;
 			}
 
-			if (ToggleJustEnabled("IncreaseBookshelfSkill"))
+			if (ToggleJustEnabled(SettingKeys.IncreaseBookshelfSkill))
 			{
 				Helpers.TryExecute("IncreaseBookshelfSkill", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyIncreaseBookshelfSkillToFurniture));
 			}
 
-			if (ToggleJustEnabled("DisableFires"))
+			if (ToggleJustEnabled(SettingKeys.DisableFires))
 			{
 				Helpers.TryExecute("DisableFires", () => Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture));
 			}
 
-			switch (GetToggleTransition("IncreaseWalkSpeed"))
+			switch (GetToggleTransition(SettingKeys.IncreaseWalkSpeed))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("IncreaseWalkSpeed", () =>
@@ -690,7 +690,7 @@ namespace Trainer_v5
 					break;
 			}
 
-			switch (GetToggleTransition("IncreaseCourierCapacity"))
+			switch (GetToggleTransition(SettingKeys.IncreaseCourierCapacity))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("IncreaseCourierCapacity", () =>
@@ -706,7 +706,7 @@ namespace Trainer_v5
 					break;
 			}
 
-			switch (GetToggleTransition("ReduceISPCost"))
+			switch (GetToggleTransition(SettingKeys.ReduceISPCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("ReduceISPCost", () => Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f);
@@ -718,7 +718,7 @@ namespace Trainer_v5
 					break;
 			}
 
-			switch (GetToggleTransition("ReduceExpansionCost"))
+			switch (GetToggleTransition(SettingKeys.ReduceExpansionCost))
 			{
 				case ToggleTransitionEnum.JustEnabled:
 					Helpers.TryExecute("ReduceExpansionCost", () => Settings.ExpansionCost = Constants.EXPANSION_COST_HALF);
@@ -736,73 +736,73 @@ namespace Trainer_v5
 			// its own remaining work for this frame, but unrelated features and the next frame's retry are
 			// unaffected. A feature spanning more than one collection (e.g. NoSickness affecting both rooms
 			// and actors) still gets a single boundary, since isolating its parts from each other isn't required.
-			if (Helpers.GetProperty(TrainerSettings, "NoiseReduction"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoiseReduction))
 			{
 				Helpers.TryExecute("NoiseReduction", ApplyNoiseReduction);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableFires"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableFires))
 			{
 				Helpers.TryExecute("DisableFires", ApplyDisableActiveFires);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "CleanRooms"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.CleanRooms))
 			{
 				Helpers.TryExecute("CleanRooms", ApplyCleanRooms);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoSickness"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoSickness))
 			{
 				Helpers.TryExecute("NoSickness", ApplyNoSickness);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "TemperatureLock"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.TemperatureLock))
 			{
 				Helpers.TryExecute("TemperatureLock", ApplyTemperatureLock);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "FullSatisfaction"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullSatisfaction))
 			{
 				Helpers.TryExecute("FullSatisfaction", ApplyFullSatisfaction);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoStress"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoStress))
 			{
 				Helpers.TryExecute("NoStress", ApplyNoStress);
 			}
 
-			if (Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore") != null)
+			if (Helpers.GetProperty(StoresSettings, SettingKeys.LeadEfficiencyStore) != null)
 			{
 				Helpers.TryExecute("LeadEfficiencyStore", ApplyLeadEfficiencyStore);
 			}
 
-			if (Helpers.GetProperty(StoresSettings, "EfficiencyStore") != null)
+			if (Helpers.GetProperty(StoresSettings, SettingKeys.EfficiencyStore) != null)
 			{
 				Helpers.TryExecute("EfficiencyStore", ApplyEfficiencyStore);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "NoNeeds"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoNeeds))
 			{
 				Helpers.TryExecute("NoNeeds", ApplyNoNeeds);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "MoreInspiration"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.MoreInspiration))
 			{
 				Helpers.TryExecute("MoreInspiration", ApplyMoreInspiration);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableForcePause"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForcePause))
 			{
 				Helpers.TryExecute("DisableForcePause", () => GameSettings.ForcePause = false);
 			}
 
-			if (Helpers.GetProperty(TrainerSettings, "DisableForceFreeze"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForceFreeze))
 			{
 				Helpers.TryExecute("DisableForceFreeze", () => GameSettings.FreezeGame = false);
 			}
 
 			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
-			if (Helpers.GetProperty(TrainerSettings, "NoOffshoreHeat"))
+			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoOffshoreHeat))
 			{
 				Helpers.TryExecute("NoOffshoreHeat", () => Settings.Heat = 0f);
 			}
@@ -905,7 +905,7 @@ namespace Trainer_v5
 
 		private static void ApplyLeadEfficiencyStore()
 		{
-			float value = Helpers.GetProperty(StoresSettings, "LeadEfficiencyStore").MakeFloat();
+			float value = Helpers.GetProperty(StoresSettings, SettingKeys.LeadEfficiencyStore).MakeFloat();
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
@@ -918,7 +918,7 @@ namespace Trainer_v5
 
 		private static void ApplyEfficiencyStore()
 		{
-			float value = Helpers.GetProperty(StoresSettings, "EfficiencyStore").MakeFloat();
+			float value = Helpers.GetProperty(StoresSettings, SettingKeys.EfficiencyStore).MakeFloat();
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
@@ -1096,7 +1096,7 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(TrainerSettings, "FullRoomBrightness"))
+				if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullRoomBrightness))
 				{
 					ApplyFullRoomBrightnessToRoom(room);
 				}
@@ -1109,7 +1109,7 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(TrainerSettings, "FullEnvironment"))
+				if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullEnvironment))
 				{
 					ApplyFullEnvironmentToRoom(room);
 				}
