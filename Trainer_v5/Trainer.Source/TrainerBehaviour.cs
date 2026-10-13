@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using OrbCreationExtensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
@@ -730,87 +728,6 @@ namespace Trainer_v5
 			}
 			 * */
 		}
-
-		#region Native Cheat Flags
-
-		#endregion
-
-		#region CompanyFeatures.MonthDays
-
-		#endregion
-
-		#region Extend Deadline
-
-		#endregion
-
-		#region Fix Bugs
-
-		#endregion
-
-		#region Max Followers
-
-		#endregion
-
-		#region Instant Research
-
-		#endregion
-
-		#region Product Lookup
-
-		#endregion
-
-		#region Set Product Price
-
-		#endregion
-
-		#region Set Product Stock
-
-		#endregion
-
-		#region Add Active Users
-
-		#endregion
-
-		#region Takeover Company
-
-		#endregion
-
-		#region Subsidiary Company
-
-		#endregion
-
-		#region Force Bankrupt
-
-		#endregion
-
-		#region Increase Money
-
-		#endregion
-
-		#region Add AI Company Funds
-
-		#endregion
-
-		#region Add Rep
-
-		#endregion
-
-		#region Max Market Share
-
-		#endregion
-
-		#region UnlockAllRewards
-
-		#endregion
-
-		private static void AreYouSureAction(Action action)
-		{
-			action();
-		}
-
-		#region Experimental/WorkItemFeatures.Test
-
-		#endregion
 
 		#region Overrides
 

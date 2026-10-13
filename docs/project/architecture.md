@@ -27,8 +27,15 @@ dependencies.
 ## Components
 
 - `Main`: mod entry point, toolbar buttons, settings persistence.
-- `TrainerBehaviour`: scene/time event orchestration, feature scheduling, and
-  the runtime error-boundary contract (see Runtime Feature Isolation).
+- `TrainerBehaviour`: scene/time event orchestration, feature scheduling,
+  toggle transitions, and the runtime error-boundary contract (see Runtime
+  Feature Isolation).
+- `Features/*Features`: domain classes that own the game-state mutations and
+  one-shot UI actions: `EnvironmentFeatures` (rooms, furniture, fires,
+  intruders, native cheat flags), `EmployeeFeatures`, `CompanyFeatures`
+  (money, bills, loans, costs, rewards, company actions), `ProductFeatures`,
+  `MarketFeatures` (hosting deals, distribution, marketing), and
+  `WorkItemFeatures` (design, research, patents, porting, team assignment).
 - `SettingKeys`: the registry declaring every persisted setting, its key, and
   its default. `Helpers`: the settings dictionaries built from it, property
   accessors, and `TryExecute`.
@@ -64,9 +71,10 @@ features; repeated failures are rate-limited rather than flooding the log.
 `TryExecute`'s `bool` result is used only where orchestration needs success
 state for retryable one-time work.
 
-When feature logic is extracted out of `TrainerBehaviour` (#126), scheduling
-stays in the orchestration layer while domain handlers own only game-state
-mutations.
+The domain classes under `Features/` own only game-state mutations. They do
+not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
+cadence, the boundary, and the toggle transitions, and calls into them. UI
+buttons call the one-shot actions on the domain classes directly.
 
 ## Toggle Transitions
 
@@ -116,13 +124,12 @@ helpers. UI text is localized; translations live under
   setting keys and defaults, save serialization round-trips, input validation,
   toggle transitions, and minute-event cadence. It runs the real trainer code
   against the vendored assemblies outside Unity, so anything that calls into
-  live game objects (`TrainerBehaviour` features, window construction,
+  live game objects (the `Features/` classes, window construction,
   `Helpers.TryExecute`) is not covered and needs in-game validation.
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt
 
-- `TrainerBehaviour` still owns most feature logic directly (#126).
 - UI helper APIs overlap across `UIHelper`/`UIFactory`/`Utilities`/
   `SDK.WindowHelper` (#130).
 
