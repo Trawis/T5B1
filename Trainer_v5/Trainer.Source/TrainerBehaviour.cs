@@ -10,7 +10,6 @@ namespace Trainer_v5
 {
 	public class TrainerBehaviour : ModBehaviour
 	{
-		private static bool _specializationsLoaded;
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
@@ -37,14 +36,6 @@ namespace Trainer_v5
 		private void RestoreReduceISPCost()
 		{
 			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor();
-		}
-
-		private static void RestoreIncreaseWalkSpeed()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_DEFAULT;
-			}
 		}
 
 		private static void RestoreIncreaseCourierCapacity()
@@ -304,13 +295,7 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseWalkSpeed))
 			{
-				Helpers.TryExecute("IncreaseWalkSpeed", () =>
-				{
-					for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-					{
-						Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
-					}
-				});
+				Helpers.TryExecute("IncreaseWalkSpeed", EmployeeFeatures.ApplyIncreaseWalkSpeed);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.IncreaseCourierCapacity))
@@ -370,12 +355,12 @@ namespace Trainer_v5
 		{
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FreeEmployees))
 			{
-				Helpers.TryExecute("FreeEmployees", ApplyFreeEmployees);
+				Helpers.TryExecute("FreeEmployees", EmployeeFeatures.ApplyFreeEmployees);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.MoreCreativity))
 			{
-				Helpers.TryExecute("MoreCreativity", ApplyMoreCreativity);
+				Helpers.TryExecute("MoreCreativity", EmployeeFeatures.ApplyMoreCreativity);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableBurglars))
@@ -395,12 +380,12 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoVacation))
 			{
-				Helpers.TryExecute("NoVacation", ApplyNoVacation);
+				Helpers.TryExecute("NoVacation", EmployeeFeatures.ApplyNoVacation);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.LockAge))
 			{
-				Helpers.TryExecute("LockAge", () => Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1));
+				Helpers.TryExecute("LockAge", EmployeeFeatures.ApplyLockAge);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoLoanInterest))
@@ -431,11 +416,11 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
-			if (!_specializationsLoaded && Settings.MyCompany != null)
+			if (!EmployeeFeatures.SpecializationsLoaded && Settings.MyCompany != null)
 			{
 				Helpers.TryExecute("LoadSpecializations", () =>
 				{
-					LoadSpecializations();
+					EmployeeFeatures.LoadSpecializations();
 					Helpers.ShowDiscordInvite(displayAsPopup: true);
 				});
 			}
@@ -487,7 +472,7 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.NoVacation))
 			{
-				Helpers.TryExecute("NoVacation", ApplyNoVacation);
+				Helpers.TryExecute("NoVacation", EmployeeFeatures.ApplyNoVacation);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.MoreHostingDeals))
@@ -576,12 +561,12 @@ namespace Trainer_v5
 
 			if (ToggleJustEnabled(SettingKeys.FreeEmployees))
 			{
-				Helpers.TryExecute("FreeEmployees", ApplyFreeEmployees);
+				Helpers.TryExecute("FreeEmployees", EmployeeFeatures.ApplyFreeEmployees);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.MoreCreativity))
 			{
-				Helpers.TryExecute("MoreCreativity", ApplyMoreCreativity);
+				Helpers.TryExecute("MoreCreativity", EmployeeFeatures.ApplyMoreCreativity);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.DisableBurglars))
@@ -648,16 +633,10 @@ namespace Trainer_v5
 			switch (GetToggleTransition(SettingKeys.IncreaseWalkSpeed))
 			{
 				case ToggleTransitionEnum.JustEnabled:
-					Helpers.TryExecute("IncreaseWalkSpeed", () =>
-					{
-						for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-						{
-							Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_BOOSTED;
-						}
-					});
+					Helpers.TryExecute("IncreaseWalkSpeed", EmployeeFeatures.ApplyIncreaseWalkSpeed);
 					break;
 				case ToggleTransitionEnum.JustDisabled:
-					Helpers.TryExecute("IncreaseWalkSpeed", RestoreIncreaseWalkSpeed);
+					Helpers.TryExecute("IncreaseWalkSpeed", EmployeeFeatures.RestoreIncreaseWalkSpeed);
 					break;
 				default:
 					break;
@@ -736,32 +715,32 @@ namespace Trainer_v5
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.FullSatisfaction))
 			{
-				Helpers.TryExecute("FullSatisfaction", ApplyFullSatisfaction);
+				Helpers.TryExecute("FullSatisfaction", EmployeeFeatures.ApplyFullSatisfaction);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoStress))
 			{
-				Helpers.TryExecute("NoStress", ApplyNoStress);
+				Helpers.TryExecute("NoStress", EmployeeFeatures.ApplyNoStress);
 			}
 
 			if (Helpers.GetProperty(StoresSettings, SettingKeys.LeadEfficiencyStore) != null)
 			{
-				Helpers.TryExecute("LeadEfficiencyStore", ApplyLeadEfficiencyStore);
+				Helpers.TryExecute("LeadEfficiencyStore", EmployeeFeatures.ApplyLeadEfficiencyStore);
 			}
 
 			if (Helpers.GetProperty(StoresSettings, SettingKeys.EfficiencyStore) != null)
 			{
-				Helpers.TryExecute("EfficiencyStore", ApplyEfficiencyStore);
+				Helpers.TryExecute("EfficiencyStore", EmployeeFeatures.ApplyEfficiencyStore);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoNeeds))
 			{
-				Helpers.TryExecute("NoNeeds", ApplyNoNeeds);
+				Helpers.TryExecute("NoNeeds", EmployeeFeatures.ApplyNoNeeds);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.MoreInspiration))
 			{
-				Helpers.TryExecute("MoreInspiration", ApplyMoreInspiration);
+				Helpers.TryExecute("MoreInspiration", EmployeeFeatures.ApplyMoreInspiration);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForcePause))
@@ -796,102 +775,6 @@ namespace Trainer_v5
 			  actor.ForgetfulETA += months;
 			}
 			 * */
-		}
-
-		private static void ApplyFullSatisfaction()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				ApplyFullSatisfactionToActor(Settings.sActorManager.Actors[i]);
-			}
-		}
-
-		private static void ApplyNoStress()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.Stress = 1f;
-			}
-		}
-
-		private static void ApplyLeadEfficiencyStore()
-		{
-			float value = Helpers.GetProperty(StoresSettings, SettingKeys.LeadEfficiencyStore).MakeFloat();
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				if (actor.employee.RoleString.Contains("Lead"))
-				{
-					actor.Effectiveness = value;
-				}
-			}
-		}
-
-		private static void ApplyEfficiencyStore()
-		{
-			float value = Helpers.GetProperty(StoresSettings, SettingKeys.EfficiencyStore).MakeFloat();
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				if (!actor.employee.RoleString.Contains("Lead"))
-				{
-					actor.Effectiveness = value;
-				}
-			}
-		}
-
-		private static void ApplyNoNeeds()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-				actor.NextSmell = 0f;
-				employee.Bladder = 1f;
-				employee.Hunger = 1f;
-				employee.Energy = 1f;
-				employee.Social = 1f;
-				employee.Posture = 1f;
-				employee.ActiveComplaint = false;
-				employee.HadProperFood = true;
-			}
-		}
-
-		private static void ApplyMoreInspiration()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.LastInpirationUse = new SDateTime(0);
-			}
-		}
-
-		private static void ApplyFullSatisfactionToActor(Actor actor)
-		{
-			Employee employee = actor.employee;
-
-			employee.JobSatisfaction = 2f;
-			employee.ActiveComplaint = false;
-			foreach (var thought in employee.Thoughts.Values.ToList())
-			{
-				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-				{
-					employee.Thoughts.Remove(thought.Thought);
-				}
-			}
-
-			employee.SetMood("LoveWork", actor, 1f);
-		}
-
-		private static void ApplyNoVacation()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-
-				actor.VacationMonth = SDateTime.NextMonth(24);
-				if (actor.SpecialState == Actor.HomeState.Vacation)
-					actor.SpecialState = Actor.HomeState.Default;
-			}
 		}
 
 		// GameSettings.PaybackLoan charges Monthly (principal + MonthlyInterest) per loan, then removes paid-off loans, before OnMonthPassed fires.
@@ -930,30 +813,6 @@ namespace Trainer_v5
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
 			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		private static void ApplyFreeEmployees()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-
-				actor.NegotiateSalary = false;
-				employee.Salary = 0f;
-				employee.AskedFor = 0f;
-				employee.Demanded = 0f;
-				employee.UpfrontDemand = 0f;
-				employee.ChangeSalary(0f, 0f, actor, false);
-			}
-		}
-
-		private static void ApplyMoreCreativity()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
-			}
 		}
 
 		private static void ApplyFreePrint()
@@ -1375,82 +1234,6 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void LoadSpecializations()
-		{
-			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)
-			{
-				return;
-			}
-
-			var specializations = new Dictionary<string, bool>();
-
-			foreach (var role in Helpers.RolesList)
-			{
-				foreach (var specialization in Settings.GetAllSpecializations(role.Key.ToEmployeeRole()))
-				{
-					if (!specializations.ContainsKey(specialization))
-					{
-						specializations.Add(specialization, false);
-					}
-				}
-			}
-
-			Helpers.SpecializationsList = specializations;
-
-			_specializationsLoaded = true;
-		}
-
-		public static void SetSkillPerEmployeeAction(string input)
-		{
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
-			var selectedRoles = Helpers.RolesList.Where(r => r.Value).ToList();
-			var selectedSpecializations = Helpers.SpecializationsList.Where(s => s.Value).ToList();
-
-			int amount;
-			if (selectedActors.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more employees.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (selectedRoles.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more roles.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (selectedSpecializations.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more specializations.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
-			{
-				WindowManager.SpawnDialog("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else
-			{
-				selectedActors.ForEach(actor =>
-				{
-					foreach (var role in selectedRoles)
-					{
-						//actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
-
-						foreach (var specialization in selectedSpecializations)
-						{
-							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
-						}
-					}
-				});
-
-				HUD.Instance.AddPopupMessage("Trainer: Employee skills/specializations are set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-			}
-		}
-
-		public static void SetSkillPerEmployee()
-		{
-			WindowManager.SpawnInputDialog("How many specialization stars do you want?\nMin = -3, Max = 3", "Stars amount", "3", SetSkillPerEmployeeAction);
-		}
-
 		public static void ClearLoans()
 		{
 			Settings.Loans.Clear();
@@ -1536,27 +1319,6 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void HREmployees()
-		{
-			if (!Helpers.IsGameReady(requireSelector: true)) return;
-
-			Actor[] Actors = Settings.sActorManager.Actors
-									 .Where(actor => actor.employee.RoleString.Contains("Lead"))
-									 .ToArray();
-
-			if (Actors.Length == 0)
-			{
-				return;
-			}
-
-			for (var i = 0; i < Actors.Length; i++)
-			{
-				Actors[i].employee.SetSpecialization(Actors[i].employee.GetRoleOrNatural(), "HR", 5);
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: All leaders are now HRed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
-		}
-
 		public static void SellProductStock()
 		{
 			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
@@ -1612,49 +1374,6 @@ namespace Trainer_v5
 			}
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
-		}
-
-		public static void ResetAgeOfEmployees()
-		{
-			var currentTime = SDateTime.Now();
-			foreach (var actor in Settings.sActorManager.Actors)
-			{
-				actor.employee.BirthDate = currentTime - Employee.Youngest * 12;
-				actor.UpdateAgeLook();
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		public static void EmployeesToMax()
-		{
-			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
-			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
-
-			if (!Helpers.IsGameReady(requireSelector: true)) return;
-
-			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
-			{
-				actor.employee.CreativityKnown = 1f;
-
-				foreach (SoftwareType t in softwareTypes)
-				{
-					actor.employee.LeadSpecializationFix[t.ToString()] = 1f;
-				}
-
-				foreach (Employee.EmployeeRole employeeRole in employeeRoles)
-				{
-					actor.employee.ChangeSkillDirect(employeeRole, 1f);
-
-					string[] specializations = Settings.GetAllSpecializations(employeeRole);
-					foreach (string specialization in specializations)
-					{
-						actor.employee.AddSpecialization(employeeRole, specialization, false, true, 3);
-					}
-				}
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: All employees are now max skilled!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
 		}
 
 		public static void UnlockAllSpace()
