@@ -19,9 +19,6 @@ namespace Trainer_v5
 		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
-		private static bool IsGameReady(bool requireSelector = false) =>
-			Helpers.IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
-
 		private readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
 
 		private float GetDefaultISPCostFactor()
@@ -451,7 +448,7 @@ namespace Trainer_v5
 				Helpers.TryExecute("LoadSpecializations", () =>
 				{
 					LoadSpecializations();
-					ShowDiscordInvite(displayAsPopup: true);
+					Helpers.ShowDiscordInvite(displayAsPopup: true);
 				});
 			}
 
@@ -1632,19 +1629,6 @@ namespace Trainer_v5
 			_specializationsLoaded = true;
 		}
 
-		public static void ShowDiscordInvite(bool displayAsPopup = false)
-		{
-			string message = $"Join us on our discord server\n{Helpers.DiscordUrl}";
-			if (displayAsPopup)
-			{
-				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-			}
-			else
-			{
-				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
-			}
-		}
-
 		public static void SetSkillPerEmployeeAction(string input)
 		{
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
@@ -1783,7 +1767,7 @@ namespace Trainer_v5
 
 		public static void HREmployees()
 		{
-			if (!IsGameReady(requireSelector: true)) return;
+			if (!Helpers.IsGameReady(requireSelector: true)) return;
 
 			Actor[] Actors = Settings.sActorManager.Actors
 									 .Where(actor => actor.employee.RoleString.Contains("Lead"))
@@ -1876,7 +1860,7 @@ namespace Trainer_v5
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
 
-			if (!IsGameReady(requireSelector: true)) return;
+			if (!Helpers.IsGameReady(requireSelector: true)) return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -1904,7 +1888,7 @@ namespace Trainer_v5
 
 		public static void UnlockAllSpace()
 		{
-			if (!IsGameReady()) return;
+			if (!Helpers.IsGameReady()) return;
 
 			Example.TakeAllLand();
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -1912,7 +1896,7 @@ namespace Trainer_v5
 
 		public static void UnlockFurniture()
 		{
-			if (!IsGameReady()) return;
+			if (!Helpers.IsGameReady()) return;
 
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;

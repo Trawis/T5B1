@@ -7,6 +7,8 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
+		internal static bool IsGameReady(bool requireSelector = false) =>
+			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		public static string Version => "5.3.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
@@ -153,6 +155,19 @@ namespace Trainer_v5
 					UnityEngine.Debug.LogException(ex);
 				}
 				return false;
+			}
+		}
+
+		public static void ShowDiscordInvite(bool displayAsPopup = false)
+		{
+			string message = $"Join us on our discord server\n{DiscordUrl}";
+			if (displayAsPopup)
+			{
+				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			}
+			else
+			{
+				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
 			}
 		}
 

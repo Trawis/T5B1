@@ -191,7 +191,7 @@ namespace Trainer_v5
 			#region column5
 
 			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite()));
+			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => Helpers.ShowDiscordInvite()));
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
