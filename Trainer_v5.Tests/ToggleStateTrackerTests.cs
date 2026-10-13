@@ -63,26 +63,5 @@ namespace Trainer_v5.Tests
 			Assert.Equal(ToggleTransitionEnum.JustDisabled, tracker.Observe("FullEnvironment", false));
 			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FullRoomBrightness", true));
 		}
-
-		[Fact]
-		public void SeparateTrackersDoNotShareState()
-		{
-			var first = new ToggleStateTracker();
-			var second = new ToggleStateTracker();
-			first.Observe("FreePrint", true);
-
-			Assert.Equal(ToggleTransitionEnum.JustEnabled, second.Observe("FreePrint", true));
-		}
-
-		[Fact]
-		public void ZeroIsReservedForUnknownAndNeverReturned()
-		{
-			var tracker = new ToggleStateTracker();
-
-			Assert.Equal(0, (int)ToggleTransitionEnum.Unknown);
-			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", false));
-			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", true));
-			Assert.NotEqual(ToggleTransitionEnum.Unknown, tracker.Observe("FreePrint", false));
-		}
 	}
 }

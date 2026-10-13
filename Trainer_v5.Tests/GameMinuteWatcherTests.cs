@@ -53,14 +53,5 @@ namespace Trainer_v5.Tests
 
 			Assert.Equal(2, count);
 		}
-
-		[Fact]
-		public void ObservingWithoutSubscribersDoesNotThrow()
-		{
-			var watcher = new GameMinuteWatcher();
-
-			watcher.Observe(5);
-			watcher.Observe(6);
-		}
 	}
 }

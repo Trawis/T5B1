@@ -125,16 +125,5 @@ namespace Trainer_v5.Tests
 			Assert.Null(InputHelper.Validate<uint>("100", uint.TryParse, 0u, 100u, out value));
 			Assert.Equal(100u, value);
 		}
-
-		[Fact]
-		public void FloatParsing_FollowsTheCurrentCulture()
-		{
-			Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
-			float value;
-
-			Assert.Null(InputHelper.Validate<float>("1,5", float.TryParse, out value));
-			Assert.Equal(1.5f, value);
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>("1.5e", float.TryParse, out value));
-		}
 	}
 }

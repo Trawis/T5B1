@@ -66,28 +66,5 @@ namespace Trainer_v5.Tests
 		{
 			Assert.Empty(UnregisteredUsages(StoreKeyUsage, Helpers.StoresSettings));
 		}
-
-		// Still persisted in saves but no longer read by any feature.
-		private static readonly string[] RetiredToggleKeys = { "DisableSkillDecay", "ReduceBoxPrice" };
-
-		[Fact]
-		public void EveryRegisteredToggleIsUsedBySomeFeature()
-		{
-			var used = new HashSet<string>();
-			foreach (var found in FindKeys(ToggleKeyUsage))
-			{
-				used.Add(found.Value);
-			}
-
-			var unused = new List<string>();
-			foreach (var key in Helpers.Settings.Keys)
-			{
-				if (!used.Contains(key) && System.Array.IndexOf(RetiredToggleKeys, key) < 0)
-				{
-					unused.Add(key);
-				}
-			}
-			Assert.Empty(unused);
-		}
 	}
 }

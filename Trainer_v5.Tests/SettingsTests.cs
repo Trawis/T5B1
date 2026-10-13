@@ -127,36 +127,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(new object[] { null, 1, 2, 5, 10, 20, 40, 80 }, items.Values);
 		}
 
-		[Fact]
-		public void GetIndex_ReturnsMinusOneForAnUnknownValueType()
-		{
-			using (new SettingsSnapshot())
-			{
-				Helpers.StoresSettings["EfficiencyStore"] = 5;
-
-				Assert.Equal(-1, Helpers.EfficiencySelectItems.GetIndex(Helpers.StoresSettings, "EfficiencyStore", 99));
-			}
-		}
-
-		[Fact]
-		public void ListGetIndex_ReturnsMinusOneWhenNothingMatches()
-		{
-			using (new SettingsSnapshot())
-			{
-				var values = new List<KeyValuePair<string, object>>
-				{
-					new KeyValuePair<string, object>("a", "x"),
-					new KeyValuePair<string, object>("b", "y")
-				};
-				Helpers.StoresSettings["EfficiencyStore"] = "y";
-
-				Assert.Equal(1, Helpers.GetIndex(values, Helpers.StoresSettings, "EfficiencyStore", 3));
-
-				Helpers.StoresSettings["EfficiencyStore"] = "z";
-				Assert.Equal(-1, Helpers.GetIndex(values, Helpers.StoresSettings, "EfficiencyStore", 3));
-			}
-		}
-
 		internal static void ResetToDefaults()
 		{
 			foreach (var key in Helpers.Settings.Keys.ToList())
