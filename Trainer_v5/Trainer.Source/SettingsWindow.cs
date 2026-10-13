@@ -82,10 +82,10 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
+			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductFeatures.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
-			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
-			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
+			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
+			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), ProductFeatures.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
 			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
@@ -103,7 +103,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
 			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), WorkItemFeatures.OptimizeTeamAssignments));
 			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
+			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), ProductFeatures.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
 			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany));
 			column2.Add(UIHelper.CreateLabel());
@@ -129,7 +129,7 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock));
+			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), ProductFeatures.SetProductStock));
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt));
 			column3.Add(UIHelper.CreateLabel());
@@ -158,7 +158,7 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers));
+			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), ProductFeatures.AddActiveUsers));
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
