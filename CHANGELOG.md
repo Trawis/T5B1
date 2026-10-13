@@ -19,8 +19,6 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   undoing each other.
 - Reduce Internet Cost now remembers the original cost per environment, so
   loading another game in the same session no longer uses a wrong value.
-- Architecture documentation restructured; release and hotfix merge-backs into
-  `develop` now require a pull request.
 
 ## [5.2.11] - 2026-10-07
 
