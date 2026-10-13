@@ -76,8 +76,6 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## [5.2.7] - 2026-09-10
 
-- Documentation restructured to the managed templates (README, CHANGELOG, and
-  the architecture overview).
 - Removed version-conditional compilation from the lead-specialization setters;
   they now use a single code path.
 - Fixed Digital Distribution Monopol and Auto Accept Hosting Deals being
