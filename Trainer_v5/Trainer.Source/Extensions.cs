@@ -27,6 +27,16 @@ namespace Trainer_v5
 			return false;
 		}
 
+		public static bool Get(this Dictionary<string, bool> settings, SettingKey<bool> key) => settings.Get(key.Key);
+
+		public static object Get(this Dictionary<string, object> settings, SettingKey<object> key) => settings.Get(key.Key);
+
+		public static void Set(this Dictionary<string, object> settings, SettingKey<object> key, object value) => settings.Set(key.Key, value);
+
+		public static void Toggle(this Dictionary<string, bool> settings, SettingKey<bool> key) => settings.Toggle(key.Key);
+
+		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, SettingKey<object> key, int valueType) => items.GetIndex(settings, key.Key, valueType);
+
 		public static void Set(this Dictionary<string, object> settings, string key, object value)
 		{
 			if (!settings.ContainsKey(key))

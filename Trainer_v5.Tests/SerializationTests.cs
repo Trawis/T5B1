@@ -57,6 +57,30 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void Deserialize_LoadsEverySavedKeyFromASaveWrittenWithRawKeyNames()
+		{
+			using (new SettingsSnapshot())
+			{
+				SettingsTests.ResetToDefaults();
+				var save = new WriteDictionary();
+				foreach (var key in SettingsTests.PersistedToggleKeys)
+				{
+					save[key] = true;
+				}
+
+				foreach (var key in SettingsTests.PersistedStoreKeys)
+				{
+					save[key] = 40;
+				}
+
+				Deserialize(save);
+
+				Assert.All(SettingsTests.PersistedToggleKeys, key => Assert.True(Helpers.Settings[key], key));
+				Assert.All(SettingsTests.PersistedStoreKeys, key => Assert.Equal(40, Helpers.StoresSettings[key]));
+			}
+		}
+
+		[Fact]
 		public void Deserialize_KeepsCurrentValuesForKeysMissingFromAnOlderSave()
 		{
 			using (new SettingsSnapshot())

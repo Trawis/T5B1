@@ -9,7 +9,7 @@ namespace Trainer_v5.Tests
 	{
 		// Every key below is persisted in player saves. Renaming or removing one silently resets
 		// that toggle for existing players, so a change here must be deliberate and add a migration.
-		private static readonly string[] PersistedToggleKeys =
+		internal static readonly string[] PersistedToggleKeys =
 		{
 			"NoStress", "NoVacation", "FullRoomBrightness", "CleanRooms", "FullEnvironment",
 			"NoiseReduction", "FreeStaff", "TemperatureLock", "NoWaterElectricity", "NoNeeds",
@@ -26,7 +26,7 @@ namespace Trainer_v5.Tests
 			"NoFounderDividends"
 		};
 
-		private static readonly string[] PersistedStoreKeys = { "EfficiencyStore", "LeadEfficiencyStore" };
+		internal static readonly string[] PersistedStoreKeys = { "EfficiencyStore", "LeadEfficiencyStore" };
 
 		[Fact]
 		public void ToggleKeys_MatchThePersistedKeySet()

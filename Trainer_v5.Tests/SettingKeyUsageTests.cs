@@ -5,8 +5,8 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// A misspelled setting key compiles fine and only shows up in-game as a logged warning and a
-	// permanently disabled feature, so literal keys in the source are checked against the registry.
+	// Settings are referenced through SettingKeys so a misspelled key fails to compile. A raw key
+	// string would bypass that and only show up in-game as a logged warning and a dead feature.
 	// LINQ is avoided here: the game assembly's global Utilities class defines extension methods
 	// that can win overload resolution and fail to initialize outside Unity.
 	public class SettingKeyUsageTests
@@ -35,36 +35,29 @@ namespace Trainer_v5.Tests
 			return found;
 		}
 
-		private static List<string> UnregisteredUsages<T>(Regex usage, Dictionary<string, T> registry)
+		[Fact]
+		public void TheScanFindsRawKeyUsagesWhenPresent()
 		{
-			var problems = new List<string>();
-			foreach (var found in FindKeys(usage))
+			Assert.Single(ToggleKeyUsage.Matches("settings.Get(\"NoStress\")"));
+			Assert.Single(ToggleKeyUsage.Matches("GetToggleTransition(\"FreePrint\")"));
+			Assert.Single(StoreKeyUsage.Matches("storesSettings.Set(\"EfficiencyStore\", 1)"));
+		}
+
+		[Fact]
+		public void SourceUsesSettingKeysInsteadOfRawKeyStrings()
+		{
+			var rawUsages = new List<string>();
+			foreach (var found in FindKeys(ToggleKeyUsage))
 			{
-				if (!registry.ContainsKey(found.Value))
-				{
-					problems.Add(found.Key + ": " + found.Value);
-				}
+				rawUsages.Add(found.Key + ": " + found.Value);
 			}
-			return problems;
-		}
 
-		[Fact]
-		public void TheSourceScanFindsSettingUsages()
-		{
-			Assert.True(FindKeys(ToggleKeyUsage).Count > 50);
-			Assert.True(FindKeys(StoreKeyUsage).Count > 0);
-		}
+			foreach (var found in FindKeys(StoreKeyUsage))
+			{
+				rawUsages.Add(found.Key + ": " + found.Value);
+			}
 
-		[Fact]
-		public void EveryToggleKeyUsedInSourceIsRegistered()
-		{
-			Assert.Empty(UnregisteredUsages(ToggleKeyUsage, Helpers.Settings));
-		}
-
-		[Fact]
-		public void EveryStoreKeyUsedInSourceIsRegistered()
-		{
-			Assert.Empty(UnregisteredUsages(StoreKeyUsage, Helpers.StoresSettings));
+			Assert.Empty(rawUsages);
 		}
 	}
 }

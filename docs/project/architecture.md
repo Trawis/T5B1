@@ -29,7 +29,9 @@ dependencies.
 - `Main`: mod entry point, toolbar buttons, settings persistence.
 - `TrainerBehaviour`: scene/time event orchestration, feature scheduling, and
   the runtime error-boundary contract (see Runtime Feature Isolation).
-- `Helpers`: settings dictionaries, property accessors, and `TryExecute`.
+- `SettingKeys`: the registry declaring every persisted setting, its key, and
+  its default. `Helpers`: the settings dictionaries built from it, property
+  accessors, and `TryExecute`.
 - `GameMinuteWatcher`: synthesizes a minute-passed event the game doesn't
   natively provide.
 - `SettingsWindow` and the UI layer (`UIHelper`/`UIFactory`/`Utilities`/
@@ -78,8 +80,13 @@ destructive or unverifiable toggles are not given fake restoration semantics.
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
 mechanism; serialized key compatibility must be preserved across releases.
-Settings are currently raw string-keyed dictionaries, tracked as technical
-debt (#127).
+Every persisted setting is declared once in `SettingKeys` as a typed
+`SettingKey<T>` carrying its save key and default; `Helpers.Settings` and
+`Helpers.StoresSettings` are built from it, so serialization still reads and
+writes the same string keys. Code references settings through `SettingKeys`
+(a misspelled setting fails to compile) rather than raw strings. The key string
+passed when declaring a setting is the save-file key and must never change; a
+new setting is one new declaration there plus its UI and behavior.
 
 ## Game API Compatibility
 
@@ -116,7 +123,6 @@ helpers. UI text is localized; translations live under
 ## Architectural Debt
 
 - `TrainerBehaviour` still owns most feature logic directly (#126).
-- Settings remain raw string-keyed rather than typed (#127).
 - UI helper APIs overlap across `UIHelper`/`UIFactory`/`Utilities`/
   `SDK.WindowHelper` (#130).
 

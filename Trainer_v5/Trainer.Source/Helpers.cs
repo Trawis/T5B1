@@ -30,63 +30,7 @@ namespace Trainer_v5
 			{"8000%", 80}
 		};
 
-		public static Dictionary<string, bool> Settings { get; } = new Dictionary<string, bool>
-		{
-			{"NoStress", false},
-			{"NoVacation", false},
-			{"FullRoomBrightness", false},
-			{"CleanRooms", false},
-			{"FullEnvironment", false},
-			{"NoiseReduction", false},
-			{"FreeStaff", false},
-			{"TemperatureLock", false},
-			{"NoWaterElectricity", false},
-			{"NoNeeds", false},
-			{"FreeEmployees", false},
-			{"LockAge", false},
-			{"MoreHostingDeals", false},
-			{"IncreaseCourierCapacity", false},
-			{"ReduceISPCost", false},
-			{"IncreasePrintSpeed", false},
-			{"FreePrint", false},
-			{"IncreaseBookshelfSkill", false},
-			{"NoMaintenance", false},
-			{"NoSickness", false},
-			{"FullSatisfaction", false},
-			{"DisableSkillDecay", false},
-			{"DisableBurglars", false},
-			{"DisableFires", false},
-			{"NoServerCost", false},
-			{"ReduceExpansionCost", false},
-			{"NoEducationCost", false},
-			{"IncreaseWalkSpeed", false},
-			{"AutoEndDesign", false},
-			{"AutoContractProgression", false},
-			{"AutoEndResearch", false},
-			{"AutoEndPatent", false},
-			{"ReduceBoxPrice", false},
-			{"DisableFurnitureStealing", false},
-			{"MoreInspiration", false},
-			{"MoreCreativity", false},
-			{"AutoResearchStart", false},
-			{"DigitalDistributionMonopol", false},
-			{"DisableFireInspection", false},
-			{"DisableForcePause", false},
-			{"DisableForceFreeze", false},
-			{"AutoAcceptHostingDeals", false},
-			{"AutoMaxMarketShare", false},
-			{"Experimental", false},
-			{"ForceLights", false},
-			{"ShowRoomCeilings", false},
-			{"UnlimitedSubsidiaries", false},
-			{"NoMissedSupportTickets", false},
-			{"NoInsuranceCost", false},
-			{"NoLoanInterest", false},
-			{"AutoPorting", false},
-			{"FreeMarketing", false},
-			{"NoOffshoreHeat", false},
-			{"NoFounderDividends", false},
-		};
+		public static Dictionary<string, bool> Settings { get; } = SettingKeys.CreateToggleDefaults();
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
 		{
@@ -97,11 +41,7 @@ namespace Trainer_v5
 			{"Designer", false}
 		};
 
-		public static Dictionary<string, object> StoresSettings { get; } = new Dictionary<string, object>
-		{
-			{"EfficiencyStore", null},
-			{"LeadEfficiencyStore", null}
-		};
+		public static Dictionary<string, object> StoresSettings { get; } = SettingKeys.CreateStoreDefaults();
 
 		#region methods
 
@@ -146,6 +86,10 @@ namespace Trainer_v5
 			LogUnregisteredKey("GetProperty", key);
 			return null;
 		}
+
+		public static bool GetProperty(Dictionary<string, bool> properties, SettingKey<bool> key) => GetProperty(properties, key.Key);
+
+		public static object GetProperty(Dictionary<string, object> properties, SettingKey<object> key) => GetProperty(properties, key.Key);
 
 		public static void SetProperty(Dictionary<string, bool> properties, string key, bool value)
 		{
