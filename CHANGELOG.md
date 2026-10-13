@@ -6,7 +6,7 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## [5.3.0] - 2026-10-07
+## [5.3.0] - 2026-10-13
 
 - A failing trainer feature no longer stops the other features from running;
   failures are logged with the feature name, at most once a minute per feature
