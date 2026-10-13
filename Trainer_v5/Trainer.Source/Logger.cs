@@ -26,5 +26,6 @@ namespace Trainer_v5
 		public static void Log(this double str) => ConsoleLogWithPropertyName(str.ToString(CultureInfo.InvariantCulture));
 		public static void Log(this object str) => ConsoleLogWithPropertyName(str.ToString());
 		public static void LogException(this Exception ex) => ConsoleLog($"Trainer Exception: {ex.Message}");
+		public static void LogException(this Exception ex, string featureId) => ConsoleLog($"Trainer feature '{featureId}' failed: {ex.Message}");
 	}
 }
