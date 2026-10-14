@@ -51,6 +51,13 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void TheScanStillFindsRawKeysNextToInterpolatedStrings()
+		{
+			var code = SourceText.Strip("var m = $\"{name}\"; settings.Get(\"NoStress\"); var n = $\"{settings.Get(\"FreePrint\")}\";", keepStrings: true);
+			Assert.Equal(2, ToggleKeyUsage.Matches(code).Count);
+		}
+
+		[Fact]
 		public void SourceUsesSettingKeysInsteadOfRawKeyStrings()
 		{
 			var rawUsages = new List<string>();
