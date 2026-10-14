@@ -11,7 +11,7 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed the Workshop (source) version failing to load in the game with a
   CS1014 compile error.
 
-## [5.3.2] - 2026-10-21
+## [5.3.2] - 2026-10-14
 
 - Internal cleanup with no intended behavior change: repeated toggle wiring in
   the settings window and trainer window setup are centralized, feature class
