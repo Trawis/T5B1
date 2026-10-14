@@ -10,12 +10,6 @@ namespace Trainer_v5.Window
 	public class EmployeeTraitChangeWindow
 	{
 		public static EmployeeTraitChangeWindow Instance => _instance.Value;
-		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
-
-		private GUIWindow _window;
-		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
-		private Actor _actor;
-		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -49,6 +43,13 @@ namespace Trainer_v5.Window
 			}
 			_isRefreshing = false;
 		}
+
+		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
+
+		private GUIWindow _window;
+		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
+		private Actor _actor;
+		private bool _isRefreshing;
 
 		private void CreateWindow()
 		{

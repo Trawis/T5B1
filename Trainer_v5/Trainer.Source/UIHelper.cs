@@ -62,11 +62,6 @@ namespace Trainer_v5
 			}
 		}
 
-		internal static Rect GetColumnSlot(int index, int column, bool isComboBox)
-		{
-			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
-		}
-
 		public static void SetWindowSize(this GUIWindow window, int rows, int xWindowSize)
 		{
 			window.SetMinSize(xWindowSize, (rows + 1) * Constants.ELEMENT_HEIGHT);
@@ -77,10 +72,6 @@ namespace Trainer_v5
 			window.MinSize.x = width;
 			window.MinSize.y = height;
 		}
-
-		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
-		private const float WINDOW_CHROME_HEIGHT = 200f;
-		private const int MIN_VISIBLE_ROWS = 6;
 
 		/// <summary>
 		/// Estimates how many rows of <paramref name="rowHeight"/> comfortably fit on screen for a
@@ -175,6 +166,15 @@ namespace Trainer_v5
 
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
 		}
+
+		internal static Rect GetColumnSlot(int index, int column, bool isComboBox)
+		{
+			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
+		}
+
+		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
+		private const float WINDOW_CHROME_HEIGHT = 200f;
+		private const int MIN_VISIBLE_ROWS = 6;
 
 		private static string NameOrDefault(this string name, string suffix, string text = null)
 		{

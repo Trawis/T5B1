@@ -7,18 +7,10 @@ namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
 	{
-		// Tracks the specific DetailWindow instance the trainer controls were injected into.
-		// The game destroys and recreates DetailWindow on save reloads and some scene
-		// transitions, so a plain "installed once" flag would permanently skip
-		// re-installation on every DetailWindow after the first one.
-		private static DetailWindow _installedOn;
-
 		public static void Reset()
 		{
 			_installedOn = null;
 		}
-
-		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		public static void Install()
 		{
@@ -48,6 +40,13 @@ namespace Trainer_v5
 			// permanently blocking installation.
 			_installedOn = target;
 		}
+
+		// Tracks the specific DetailWindow instance the trainer controls were injected into.
+		// The game destroys and recreates DetailWindow on save reloads and some scene
+		// transitions, so a plain "installed once" flag would permanently skip
+		// re-installation on every DetailWindow after the first one.
+		private static DetailWindow _installedOn;
+		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		private static void SetCreativity()
 		{

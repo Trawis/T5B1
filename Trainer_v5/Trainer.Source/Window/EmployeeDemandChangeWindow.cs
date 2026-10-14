@@ -10,12 +10,6 @@ namespace Trainer_v5.Window
 	public class EmployeeDemandChangeWindow
 	{
 		public static EmployeeDemandChangeWindow Instance => _instance.Value;
-		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
-
-		private GUIWindow _window;
-		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
-		private Actor _actor;
-		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -49,6 +43,13 @@ namespace Trainer_v5.Window
 			}
 			_isRefreshing = false;
 		}
+
+		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
+
+		private GUIWindow _window;
+		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
+		private Actor _actor;
+		private bool _isRefreshing;
 
 		private void CreateWindow()
 		{
