@@ -25,5 +25,8 @@ jobs:
       - name: Build
         run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental
 
+      - name: Format
+        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+
       - name: Test
         run: dotnet test "Trainer v5 - Beta 1.sln" --configuration Release --no-build
