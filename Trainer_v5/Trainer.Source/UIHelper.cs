@@ -58,12 +58,13 @@ namespace Trainer_v5
 		{
 			for (int i = 0; i < gameObjects.Count; i++)
 			{
-				var gameObject = gameObjects[i];
-
-				WindowManager.AddElementToWindow(gameObject, window,
-						new Rect(column, (i - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && i % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT),
-						new Rect(0, 0, 0, 0));
+				WindowManager.AddElementToWindow(gameObjects[i], window, GetColumnSlot(i, column, isComboBox), new Rect(0, 0, 0, 0));
 			}
+		}
+
+		internal static Rect GetColumnSlot(int index, int column, bool isComboBox)
+		{
+			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
 		}
 
 		public static void SetWindowSize(this GUIWindow window, int rows, int xWindowSize)

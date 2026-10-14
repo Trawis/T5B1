@@ -40,7 +40,7 @@ namespace Trainer_v5
 			{
 				var x = i * (width + spacing);
 				const int y = 0 - spacing - height;
-				Utilities.AddElementToElement(components[i].gameObject, "DetailWindow", new Rect(x, y, width, height));
+				components[i].gameObject.AddToElement("DetailWindow", new Rect(x, y, width, height));
 			}
 
 			// Only mark this instance as installed once the loop above completes

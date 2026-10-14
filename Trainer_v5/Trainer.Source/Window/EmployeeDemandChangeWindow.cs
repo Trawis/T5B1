@@ -4,7 +4,6 @@ using System.Linq;
 using Trainer_v5.SDK;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils = Trainer_v5.Utilities;
 
 namespace Trainer_v5.Window
 {
@@ -66,10 +65,10 @@ namespace Trainer_v5.Window
 			col1.AddRange(demands.Values.Select(e => e.gameObject));
 			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN, col1.ToArray(), window);
+			col1.AddToWindow(window, Constants.FIRST_COLUMN);
 
 			var maxRows = new[] { col1.Count }.Max();
-			Utils.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1, window);
+			window.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1);
 
 			_window = window;
 			_demandToggles = demands;
