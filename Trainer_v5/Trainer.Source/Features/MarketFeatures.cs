@@ -4,14 +4,69 @@ namespace Trainer_v5
 {
 	internal static class MarketFeatures
 	{
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
+		public static void InstantMarketing()
 		{
-			MarketingPlan.PressOption.Text,
-			MarketingPlan.PressOption.Image,
-			MarketingPlan.PressOption.Video,
-		};
+			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
+				.Where(plan => plan.Type == MarketingPlan.TaskType.PressRelease)
+				.ToList();
+
+			if (plans.Count == 0)
+			{
+				WindowManager.SpawnDialog("Trainer: No active press release campaigns to complete!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			foreach (MarketingPlan plan in plans)
+			{
+				CompletePressRelease(plan);
+			}
+
+			HUD.Instance.AddPopupMessage("Trainer: Press release campaigns have been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		public static void PushReward()
+		{
+			var Deals = HUD.Instance.dealWindow.GetActiveDeals().Where(deal => deal.ToString() == "ServerDeal").ToArray();
+
+			if (!Deals.Any())
+			{
+				return;
+			}
+
+			for (int i = 0; i < Deals.Length; i++)
+			{
+				Settings.MyCompany.MakeTransaction(Helpers.Random.Next(500, 50000), Company.TransactionCategory.Deals);
+			}
+
+			Helpers.RewardIsGained = true;
+		}
+
+		public static void PushDeal()
+		{
+			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(false).Where(pr =>
+				  MarketSimulation.Active.SoftwareTypes.ContainsKey(pr.Type.ToString())
+				&& pr.Userbase > 0
+				&& pr.DevCompany.Name != Settings.MyCompany.Name
+				&& pr.ServerReq > 0
+				&& !pr.ExternalHostingActive)
+					  .ToArray();
+
+			if (Products.Length == 0)
+				return;
+
+			int index = Helpers.Random.Next(0, Products.Length);
+			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
+			if (!dealExist)
+			{
+				ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
+				deal.StillValid(true);
+				deal.PerPower *= 2f;
+
+				HUD.Instance.dealWindow.InsertDeal(deal);
+
+				Helpers.DealIsPushed = true;
+			}
+		}
 
 		internal static void ApplyHostingDealTiming()
 		{
@@ -36,41 +91,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// Only PressRelease has a completable Progress array; PostMarket/Hype campaigns run perpetually with no finish state to force.
-		private static void CompletePressRelease(MarketingPlan plan)
-		{
-			for (int i = 0; i < PressReleaseOptions.Length; i++)
-			{
-				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
-				{
-					plan.Progress[i] = 1f;
-				}
-			}
-
-			plan.StopMarketing();
-		}
-
-		public static void InstantMarketing()
-		{
-			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
-				.Where(plan => plan.Type == MarketingPlan.TaskType.PressRelease)
-				.ToList();
-
-			if (plans.Count == 0)
-			{
-				WindowManager.SpawnDialog("Trainer: No active press release campaigns to complete!", false, DialogWindow.DialogType.Information);
-				return;
-			}
-
-			foreach (MarketingPlan plan in plans)
-			{
-				CompletePressRelease(plan);
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: Press release campaigns have been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		// MarketingPlan.AddEffect bills Spent to the Marketing category daily for PostMarket campaigns then moves it into LastSpent and zeroes Spent; refunding that settled amount needs no captured baseline.
+		// PostMarket spend is settled into LastSpent daily; this refunds it.
 		internal static void ApplyFreeMarketing()
 		{
 			foreach (MarketingPlan plan in Settings.MyCompany.WorkItems.OfType<MarketingPlan>())
@@ -132,48 +153,27 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void PushReward()
+		private static GameSettings Settings => GameSettings.Instance;
+
+		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
 		{
-			var Deals = HUD.Instance.dealWindow.GetActiveDeals().Where(deal => deal.ToString() == "ServerDeal").ToArray();
+			MarketingPlan.PressOption.Text,
+			MarketingPlan.PressOption.Image,
+			MarketingPlan.PressOption.Video,
+		};
 
-			if (!Deals.Any())
-			{
-				return;
-			}
-
-			for (int i = 0; i < Deals.Length; i++)
-			{
-				Settings.MyCompany.MakeTransaction(Helpers.Random.Next(500, 50000), Company.TransactionCategory.Deals);
-			}
-
-			Helpers.RewardIsGained = true;
-		}
-
-		public static void PushDeal()
+		// Only press-release campaigns have a finish state to force.
+		private static void CompletePressRelease(MarketingPlan plan)
 		{
-			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(false).Where(pr =>
-				  MarketSimulation.Active.SoftwareTypes.ContainsKey(pr.Type.ToString())
-				&& pr.Userbase > 0
-				&& pr.DevCompany.Name != Settings.MyCompany.Name
-				&& pr.ServerReq > 0
-				&& !pr.ExternalHostingActive)
-					  .ToArray();
-
-			if (Products.Length == 0)
-				return;
-
-			int index = Helpers.Random.Next(0, Products.Length);
-			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
-			if (!dealExist)
+			for (int i = 0; i < PressReleaseOptions.Length; i++)
 			{
-				ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
-				deal.StillValid(true);
-				deal.PerPower *= 2f;
-
-				HUD.Instance.dealWindow.InsertDeal(deal);
-
-				Helpers.DealIsPushed = true;
+				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
+				{
+					plan.Progress[i] = 1f;
+				}
 			}
+
+			plan.StopMarketing();
 		}
 	}
 }

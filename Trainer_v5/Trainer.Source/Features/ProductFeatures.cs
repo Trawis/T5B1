@@ -5,23 +5,6 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
-		private static GameSettings Settings => GameSettings.Instance;
-
-		internal static void ApplyFreePrint()
-		{
-			Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
-		}
-
-		internal static void RestoreFreePrint()
-		{
-			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
-		}
-
-		internal static void ApplyIncreasePrintSpeed()
-		{
-			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
-		}
-
 		public static void SellProductStock()
 		{
 			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
@@ -77,32 +60,6 @@ namespace Trainer_v5
 			}
 
 			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
-		}
-
-		// Shared by SetProductPriceAction, SetProductStockAction, and AddActiveUsersAction so
-		// player and AI-company products can both be targeted without duplicating the lookup,
-		// and without silently picking a product when the entered name isn't unique.
-		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
-		{
-			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)
-				.Where(product => product.Name == name)
-				.ToList();
-
-			if (matches.Count == 0)
-			{
-				errorMessage = "Trainer: Product " + name + " not found!";
-				return null;
-			}
-
-			if (matches.Count > 1)
-			{
-				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
-				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
-				return null;
-			}
-
-			errorMessage = null;
-			return matches[0];
 		}
 
 		public static void SetProductPriceAction(float price)
@@ -168,8 +125,47 @@ namespace Trainer_v5
 		public static void MaxMarketShare()
 		{
 			// Disabled, see #150
-			//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
-			//HUD.Instance.AddPopupMessage("Trainer: Market share set to 100% for all products!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+		}
+
+		internal static void ApplyFreePrint()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintPrice = 0f);
+		}
+
+		internal static void RestoreFreePrint()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
+		}
+
+		internal static void ApplyIncreasePrintSpeed()
+		{
+			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
+		}
+
+		private static GameSettings Settings => GameSettings.Instance;
+
+		// Shared by the price, stock and active-users actions; rejects ambiguous names.
+		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
+		{
+			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)
+				.Where(product => product.Name == name)
+				.ToList();
+
+			if (matches.Count == 0)
+			{
+				errorMessage = "Trainer: Product " + name + " not found!";
+				return null;
+			}
+
+			if (matches.Count > 1)
+			{
+				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
+				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
+				return null;
+			}
+
+			errorMessage = null;
+			return matches[0];
 		}
 	}
 }

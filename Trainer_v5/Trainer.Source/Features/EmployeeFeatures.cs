@@ -7,163 +7,6 @@ namespace Trainer_v5
 {
 	internal static class EmployeeFeatures
 	{
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static bool _specializationsLoaded;
-
-		internal static void RestoreIncreaseWalkSpeed()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_DEFAULT;
-			}
-		}
-
-		internal static void ApplyFullSatisfaction()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				ApplyFullSatisfactionToActor(Settings.sActorManager.Actors[i]);
-			}
-		}
-
-		internal static void ApplyNoStress()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.Stress = 1f;
-			}
-		}
-
-		internal static void ApplyLeadEfficiencyStore()
-		{
-			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.LeadEfficiencyStore).MakeFloat();
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				if (actor.employee.RoleString.Contains("Lead"))
-				{
-					actor.Effectiveness = value;
-				}
-			}
-		}
-
-		internal static void ApplyEfficiencyStore()
-		{
-			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.EfficiencyStore).MakeFloat();
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				if (!actor.employee.RoleString.Contains("Lead"))
-				{
-					actor.Effectiveness = value;
-				}
-			}
-		}
-
-		internal static void ApplyNoNeeds()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-				actor.NextSmell = 0f;
-				employee.Bladder = 1f;
-				employee.Hunger = 1f;
-				employee.Energy = 1f;
-				employee.Social = 1f;
-				employee.Posture = 1f;
-				employee.ActiveComplaint = false;
-				employee.HadProperFood = true;
-			}
-		}
-
-		internal static void ApplyMoreInspiration()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.LastInpirationUse = new SDateTime(0);
-			}
-		}
-
-		private static void ApplyFullSatisfactionToActor(Actor actor)
-		{
-			Employee employee = actor.employee;
-
-			employee.JobSatisfaction = 2f;
-			employee.ActiveComplaint = false;
-			foreach (var thought in employee.Thoughts.Values.ToList())
-			{
-				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-				{
-					employee.Thoughts.Remove(thought.Thought);
-				}
-			}
-
-			employee.SetMood("LoveWork", actor, 1f);
-		}
-
-		internal static void ApplyNoVacation()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-
-				actor.VacationMonth = SDateTime.NextMonth(24);
-				if (actor.SpecialState == Actor.HomeState.Vacation)
-					actor.SpecialState = Actor.HomeState.Default;
-			}
-		}
-
-		internal static void ApplyFreeEmployees()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Actor actor = Settings.sActorManager.Actors[i];
-				Employee employee = actor.employee;
-
-				actor.NegotiateSalary = false;
-				employee.Salary = 0f;
-				employee.AskedFor = 0f;
-				employee.Demanded = 0f;
-				employee.UpfrontDemand = 0f;
-				employee.ChangeSalary(0f, 0f, actor, false);
-			}
-		}
-
-		internal static void ApplyMoreCreativity()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
-			}
-		}
-
-		internal static void LoadSpecializations()
-		{
-			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)
-			{
-				return;
-			}
-
-			var specializations = new Dictionary<string, bool>();
-
-			foreach (var role in Helpers.RolesList)
-			{
-				foreach (var specialization in Settings.GetAllSpecializations(role.Key.ToEmployeeRole()))
-				{
-					if (!specializations.ContainsKey(specialization))
-					{
-						specializations.Add(specialization, false);
-					}
-				}
-			}
-
-			Helpers.SpecializationsList = specializations;
-
-			_specializationsLoaded = true;
-		}
-
 		public static void SetSkillPerEmployeeAction(string input)
 		{
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
@@ -197,8 +40,6 @@ namespace Trainer_v5
 				{
 					foreach (var role in selectedRoles)
 					{
-						//actor.employee.ChangeSkillDirect(role.Key.ToEmployeeRole(), 1f);
-
 						foreach (var specialization in selectedSpecializations)
 						{
 							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
@@ -279,6 +120,142 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All employees are now max skilled!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
 		}
 
+		internal static void RestoreIncreaseWalkSpeed()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].WalkSpeed = Constants.WALK_SPEED_DEFAULT;
+			}
+		}
+
+		internal static void ApplyFullSatisfaction()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				ApplyFullSatisfactionToActor(Settings.sActorManager.Actors[i]);
+			}
+		}
+
+		internal static void ApplyNoStress()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].employee.Stress = 1f;
+			}
+		}
+
+		internal static void ApplyLeadEfficiencyStore()
+		{
+			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.LeadEfficiencyStore).MakeFloat();
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				if (actor.employee.RoleString.Contains("Lead"))
+				{
+					actor.Effectiveness = value;
+				}
+			}
+		}
+
+		internal static void ApplyEfficiencyStore()
+		{
+			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.EfficiencyStore).MakeFloat();
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				if (!actor.employee.RoleString.Contains("Lead"))
+				{
+					actor.Effectiveness = value;
+				}
+			}
+		}
+
+		internal static void ApplyNoNeeds()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				Employee employee = actor.employee;
+				actor.NextSmell = 0f;
+				employee.Bladder = 1f;
+				employee.Hunger = 1f;
+				employee.Energy = 1f;
+				employee.Social = 1f;
+				employee.Posture = 1f;
+				employee.ActiveComplaint = false;
+				employee.HadProperFood = true;
+			}
+		}
+
+		internal static void ApplyMoreInspiration()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].employee.LastInpirationUse = new SDateTime(0);
+			}
+		}
+
+		internal static void ApplyNoVacation()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+
+				actor.VacationMonth = SDateTime.NextMonth(24);
+				if (actor.SpecialState == Actor.HomeState.Vacation)
+					actor.SpecialState = Actor.HomeState.Default;
+			}
+		}
+
+		internal static void ApplyFreeEmployees()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+				Employee employee = actor.employee;
+
+				actor.NegotiateSalary = false;
+				employee.Salary = 0f;
+				employee.AskedFor = 0f;
+				employee.Demanded = 0f;
+				employee.UpfrontDemand = 0f;
+				employee.ChangeSalary(0f, 0f, actor, false);
+			}
+		}
+
+		internal static void ApplyMoreCreativity()
+		{
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
+			}
+		}
+
+		internal static void LoadSpecializations()
+		{
+			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)
+			{
+				return;
+			}
+
+			var specializations = new Dictionary<string, bool>();
+
+			foreach (var role in Helpers.RolesList)
+			{
+				foreach (var specialization in Settings.GetAllSpecializations(role.Key.ToEmployeeRole()))
+				{
+					if (!specializations.ContainsKey(specialization))
+					{
+						specializations.Add(specialization, false);
+					}
+				}
+			}
+
+			Helpers.SpecializationsList = specializations;
+
+			_specializationsLoaded = true;
+		}
+
 		internal static bool SpecializationsLoaded => _specializationsLoaded;
 
 		internal static void ApplyIncreaseWalkSpeed()
@@ -292,6 +269,27 @@ namespace Trainer_v5
 		internal static void ApplyLockAge()
 		{
 			Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
+		}
+
+		private static GameSettings Settings => GameSettings.Instance;
+
+		private static bool _specializationsLoaded;
+
+		private static void ApplyFullSatisfactionToActor(Actor actor)
+		{
+			Employee employee = actor.employee;
+
+			employee.JobSatisfaction = 2f;
+			employee.ActiveComplaint = false;
+			foreach (var thought in employee.Thoughts.Values.ToList())
+			{
+				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
+				{
+					employee.Thoughts.Remove(thought.Thought);
+				}
+			}
+
+			employee.SetMood("LoveWork", actor, 1f);
 		}
 	}
 }

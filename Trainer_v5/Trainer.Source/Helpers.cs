@@ -7,8 +7,6 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		internal static bool IsGameReady(bool requireSelector = false) =>
-			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 		public static string Version => "5.3.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
@@ -170,6 +168,9 @@ namespace Trainer_v5
 				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
 			}
 		}
+
+		internal static bool IsGameReady(bool requireSelector = false) =>
+			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 
 		#endregion
 

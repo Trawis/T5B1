@@ -2,7 +2,26 @@ namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
 	{
-		private static GameSettings Settings => GameSettings.Instance;
+		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
+		public static void ApplyForceLights(bool enabled)
+		{
+			Cheats.ForceLights = enabled;
+		}
+
+		public static void ApplyShowRoomCeilings(bool enabled)
+		{
+			Cheats.CeilingMeshes = enabled;
+
+			// Mirrors CameraScript.RefreshFlyMode: marking rooms dirty regenerates the ceiling meshes.
+			if (Helpers.IsGameLoaded)
+			{
+				foreach (Room room in Settings.sRoomManager.Rooms)
+				{
+					room.DirtyOuterMesh = true;
+					room.DirtyInnerMesh = true;
+				}
+			}
+		}
 
 		internal static void ApplyNoiseReduction()
 		{
@@ -66,32 +85,6 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void ApplyCleanRoomsToRoom(Room room)
-		{
-			room.ClearDirt();
-			room.Smell = 0f;
-		}
-
-		private static void ApplyNoSicknessToRoom(Room room)
-		{
-			room.GermCount = 0f;
-		}
-
-		private static void ApplyNoSicknessToActor(Actor actor)
-		{
-			TimeOfDay.Instance.Sick.Clear();
-
-			if (actor.SpecialState == Actor.HomeState.Sick)
-			{
-				actor.SpecialState = Actor.HomeState.Default;
-				actor.WasSick = true;
-			}
-
-			actor.GermAdd = 0f;
-			actor.GermCount = 0f;
-			actor.SickDays = 0;
-		}
-
 		internal static void ApplyNoMaintenance()
 		{
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
@@ -125,16 +118,6 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void ApplyFullEnvironmentToRoom(Room room)
-		{
-			room.FurnEnvironment = Constants.ENV_FULL;
-		}
-
-		private static void ApplyFullRoomBrightnessToRoom(Room room)
-		{
-			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
-		}
-
 		internal static void RestoreFullEnvironment()
 		{
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
@@ -158,28 +141,6 @@ namespace Trainer_v5
 				{
 					ApplyFullEnvironmentToRoom(room);
 				}
-			}
-		}
-
-		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
-		{
-			if (furniture.Type == "Bookshelf")
-			{
-				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
-			}
-		}
-
-		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
-		{
-			furniture.Water = 0;
-			furniture.Wattage = 0;
-		}
-
-		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
-		{
-			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
-			{
-				furniture.upg.FireStarter = 0.0f;
 			}
 		}
 
@@ -207,36 +168,6 @@ namespace Trainer_v5
 		internal static void ApplyDisableFurnitureStealing()
 		{
 			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
-		}
-
-		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow)
-		// and Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon)
-		// are consulted directly by the game whenever relevant, so the trainer binds the native
-		// flag the moment the setting changes instead of polling for it every frame.
-		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
-		// intentionally left unexposed - setting it would have no observable effect.
-
-		public static void ApplyForceLights(bool enabled)
-		{
-			Cheats.ForceLights = enabled;
-		}
-
-		public static void ApplyShowRoomCeilings(bool enabled)
-		{
-			Cheats.CeilingMeshes = enabled;
-
-			// Mirrors CameraScript.RefreshFlyMode, the only other place the game itself flips
-			// this flag: marking every room dirty forces outer/inner meshes (the ceiling mesh
-			// included) to regenerate, so already-built rooms reflect the change immediately
-			// instead of only rooms built or modified afterward.
-			if (Helpers.IsGameLoaded)
-			{
-				foreach (Room room in Settings.sRoomManager.Rooms)
-				{
-					room.DirtyOuterMesh = true;
-					room.DirtyInnerMesh = true;
-				}
-			}
 		}
 
 		internal static void ApplyFullEnvironment()
@@ -268,6 +199,66 @@ namespace Trainer_v5
 		internal static void ApplyDisableFiresFireStarter()
 		{
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
+		}
+
+		private static GameSettings Settings => GameSettings.Instance;
+
+		private static void ApplyCleanRoomsToRoom(Room room)
+		{
+			room.ClearDirt();
+			room.Smell = 0f;
+		}
+
+		private static void ApplyNoSicknessToRoom(Room room)
+		{
+			room.GermCount = 0f;
+		}
+
+		private static void ApplyNoSicknessToActor(Actor actor)
+		{
+			TimeOfDay.Instance.Sick.Clear();
+
+			if (actor.SpecialState == Actor.HomeState.Sick)
+			{
+				actor.SpecialState = Actor.HomeState.Default;
+				actor.WasSick = true;
+			}
+
+			actor.GermAdd = 0f;
+			actor.GermCount = 0f;
+			actor.SickDays = 0;
+		}
+
+		private static void ApplyFullEnvironmentToRoom(Room room)
+		{
+			room.FurnEnvironment = Constants.ENV_FULL;
+		}
+
+		private static void ApplyFullRoomBrightnessToRoom(Room room)
+		{
+			room.IndirectLighting = Constants.ROOM_BRIGHTNESS_FULL;
+		}
+
+		private static void ApplyIncreaseBookshelfSkillToFurniture(Furniture furniture)
+		{
+			if (furniture.Type == "Bookshelf")
+			{
+				furniture.AuraValues[1] = Constants.BOOKSHELF_AURA_BOOSTED;
+			}
+		}
+
+		private static void ApplyNoWaterElectricityToFurniture(Furniture furniture)
+		{
+			furniture.Water = 0;
+			furniture.Wattage = 0;
+		}
+
+		private static void ApplyDisableFiresFireStarterToFurniture(Furniture furniture)
+		{
+			if (furniture.HasUpg && furniture.upg.FireStarter > 0.0f)
+			{
+				furniture.upg.FireStarter = 0.0f;
+			}
 		}
 	}
 }

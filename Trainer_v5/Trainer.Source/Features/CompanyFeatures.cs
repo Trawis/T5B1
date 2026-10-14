@@ -6,68 +6,6 @@ namespace Trainer_v5
 {
 	internal static class CompanyFeatures
 	{
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
-
-		private static float[] _defaultEdCost;
-
-		private static float GetDefaultISPCostFactor()
-		{
-			EnvironmentPreset environment = Settings.Environment;
-			float baseline;
-			if (!_ispCostBaselines.TryGetValue(environment, out baseline))
-			{
-				baseline = environment.ISPCostFactor;
-				_ispCostBaselines[environment] = baseline;
-			}
-
-			return baseline;
-		}
-
-		// Presets are shared for the whole game process, so every preset the trainer has halved is restored, not just the current one.
-		internal static void RestoreReduceISPCost()
-		{
-			foreach (KeyValuePair<EnvironmentPreset, float> baseline in _ispCostBaselines)
-			{
-				baseline.Key.ISPCostFactor = baseline.Value;
-			}
-		}
-
-		internal static void RestoreIncreaseCourierCapacity()
-		{
-			AI.MaxBoxes = Constants.MAX_BOXES_DEFAULT;
-			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
-		}
-
-		internal static void RestoreReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST;
-		}
-
-		// GameSettings.PaybackLoan charges Monthly (principal + MonthlyInterest) per loan, then removes paid-off loans, before OnMonthPassed fires.
-		// Refunding the still-outstanding loans' MonthlyInterest here needs no captured baseline: Loan fields are never modified after creation.
-		internal static void ApplyNoLoanInterest()
-		{
-			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
-			if (totalInterest > 0f)
-			{
-				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
-			}
-		}
-
-		// PayDividends (paid monthly, despite being called from something named EndDay) records each payout in NewStock[i].Payout.
-		internal static void ApplyNoFounderDividends()
-		{
-			foreach (NewStock stock in Settings.MyCompany.NewStock)
-			{
-				if (stock.Buyer is FounderShareHolder && stock.Payout > 0f)
-				{
-					Settings.MyCompany.MakeTransaction(stock.Payout, Company.TransactionCategory.Dividends);
-				}
-			}
-		}
-
 		public static void TransferOffshoreFunds()
 		{
 			double amount = Settings.OffshoreAccount;
@@ -77,39 +15,10 @@ namespace Trainer_v5
 				return;
 			}
 
-			// No dedicated transfer method exists; mirrors how the game's own funnel flow touches this field directly.
+			// The game has no transfer method; it adjusts this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
 			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		internal static void ApplyNoEducationCost()
-		{
-			if (_defaultEdCost == null)
-			{
-				_defaultEdCost = (float[])EducationWindow.EdCost.Clone();
-			}
-			EducationWindow.EdCost = new[] { 0f, 0f, 0f };
-		}
-
-		internal static void RestoreEducationCost()
-		{
-			if (_defaultEdCost != null)
-			{
-				EducationWindow.EdCost = (float[])_defaultEdCost.Clone();
-			}
-		}
-
-		// Refunds the daily insurance bill TimeOfDay.UpdateDay already charged this tick, leaving CurrentRate/coverage untouched.
-		internal static void ApplyNoInsuranceCost()
-		{
-			if (!Settings.PassedFireInspection)
-			{
-				return;
-			}
-
-			float dailyBill = Settings.Insurance.GetContentBill(true) / GameSettings.DaysPerMonth;
-			Settings.MyCompany.MakeTransaction(dailyBill, Company.TransactionCategory.Bills);
 		}
 
 		public static void ClearLoans()
@@ -146,7 +55,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		// Cheats.InfiniteSubs is read directly by CompanyDetailWindow.TakeOverSub's subsidiary-count gate, so it is bound like the room flags in the environment domain.
+		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
 		public static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
 			Cheats.InfiniteSubs = enabled;
@@ -327,6 +236,77 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
 		}
 
+		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.
+		internal static void RestoreReduceISPCost()
+		{
+			foreach (KeyValuePair<EnvironmentPreset, float> baseline in _ispCostBaselines)
+			{
+				baseline.Key.ISPCostFactor = baseline.Value;
+			}
+		}
+
+		internal static void RestoreIncreaseCourierCapacity()
+		{
+			AI.MaxBoxes = Constants.MAX_BOXES_DEFAULT;
+			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
+		}
+
+		internal static void RestoreReduceExpansionCost()
+		{
+			Settings.ExpansionCost = Constants.EXPANSION_COST;
+		}
+
+		// Paid-off loans are already removed when this runs; only outstanding loans' interest is refunded.
+		internal static void ApplyNoLoanInterest()
+		{
+			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
+			if (totalInterest > 0f)
+			{
+				Settings.MyCompany.MakeTransaction(totalInterest, Company.TransactionCategory.Interest);
+			}
+		}
+
+		// PayDividends records each payout in NewStock[i].Payout.
+		internal static void ApplyNoFounderDividends()
+		{
+			foreach (NewStock stock in Settings.MyCompany.NewStock)
+			{
+				if (stock.Buyer is FounderShareHolder && stock.Payout > 0f)
+				{
+					Settings.MyCompany.MakeTransaction(stock.Payout, Company.TransactionCategory.Dividends);
+				}
+			}
+		}
+
+		internal static void ApplyNoEducationCost()
+		{
+			if (_defaultEdCost == null)
+			{
+				_defaultEdCost = (float[])EducationWindow.EdCost.Clone();
+			}
+			EducationWindow.EdCost = new[] { 0f, 0f, 0f };
+		}
+
+		internal static void RestoreEducationCost()
+		{
+			if (_defaultEdCost != null)
+			{
+				EducationWindow.EdCost = (float[])_defaultEdCost.Clone();
+			}
+		}
+
+		// Refunds the daily insurance bill already charged this tick.
+		internal static void ApplyNoInsuranceCost()
+		{
+			if (!Settings.PassedFireInspection)
+			{
+				return;
+			}
+
+			float dailyBill = Settings.Insurance.GetContentBill(true) / GameSettings.DaysPerMonth;
+			Settings.MyCompany.MakeTransaction(dailyBill, Company.TransactionCategory.Bills);
+		}
+
 		internal static void ApplyFreeStaff()
 		{
 			Settings.StaffSalaryDue = 0f;
@@ -373,6 +353,25 @@ namespace Trainer_v5
 		internal static void ApplyNoOffshoreHeat()
 		{
 			Settings.Heat = 0f;
+		}
+
+		private static GameSettings Settings => GameSettings.Instance;
+
+		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
+
+		private static float[] _defaultEdCost;
+
+		private static float GetDefaultISPCostFactor()
+		{
+			EnvironmentPreset environment = Settings.Environment;
+			float baseline;
+			if (!_ispCostBaselines.TryGetValue(environment, out baseline))
+			{
+				baseline = environment.ISPCostFactor;
+				_ispCostBaselines[environment] = baseline;
+			}
+
+			return baseline;
 		}
 	}
 }
