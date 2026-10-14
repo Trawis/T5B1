@@ -57,7 +57,7 @@ namespace Trainer_v5
 				}
 			}
 
-			bool experimental = Helpers.GetProperty(settings, "Experimental") || Helpers.IsDebug;
+			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
 
 			List<GameObject> column1 = new List<GameObject>();
 			List<GameObject> column2 = new List<GameObject>();
@@ -68,59 +68,59 @@ namespace Trainer_v5
 
 			#region column1
 
-			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
-			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), TrainerBehaviour.AddAIFunds));
-			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
+			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), CompanyFeatures.IncreaseMoney));
+			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), CompanyFeatures.AddAIFunds));
+			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany));
+			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyFeatures.TakeoverCompany));
 			column1.Add(UIHelper.CreateLabel());
 
-			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt));
-			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays));
-			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
-			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
-			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
-			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
-			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
-			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
-			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
-			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
-			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
-			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards));
+			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), CompanyFeatures.AIBankrupt));
+			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), CompanyFeatures.MonthDays));
+			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
+			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), CompanyFeatures.MaxMarketRecognition));
+			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
+			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductFeatures.RemoveSoft));
+			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
+			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
+			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), ProductFeatures.MaxMarketShare));
+			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
+			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), CompanyFeatures.UnlockAllSpace));
+			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
+			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), CompanyFeatures.UnlockAndClaimAllRewards));
 
 			#endregion
 
 			#region column2
 
-			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
-			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
-			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
-			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
-			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
-			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
-			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), TrainerBehaviour.OptimizeTeamAssignments));
+			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), CompanyFeatures.MaxReputation));
+			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), WorkItemFeatures.FixBugs));
+			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), WorkItemFeatures.InstantResearch));
+			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), WorkItemFeatures.InstantPorting));
+			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), MarketFeatures.InstantMarketing));
+			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), CompanyFeatures.TransferOffshoreFunds));
+			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), WorkItemFeatures.OptimizeTeamAssignments));
 			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
+			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), ProductFeatures.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany));
+			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), CompanyFeatures.SubDCompany));
 			column2.Add(UIHelper.CreateLabel());
 
-			column2.Add(UIHelper.CreateToggle("DisableNeeds".LocDef("Disable Needs"), settings.Get("NoNeeds"), a => settings.Toggle("NoNeeds")));
-			column2.Add(UIHelper.CreateToggle("DisableStress".LocDef("Disable Stress"), settings.Get("NoStress"), a => settings.Toggle("NoStress")));
-			column2.Add(UIHelper.CreateToggle("FreeEmployees".LocDef("Free Employees"), settings.Get("FreeEmployees"), a => settings.Toggle("FreeEmployees")));
-			column2.Add(UIHelper.CreateToggle("FreeStaff".LocDef("Free Staff"), settings.Get("FreeStaff"), a => settings.Toggle("FreeStaff")));
-			column2.Add(UIHelper.CreateToggle("FullSatisfaction".LocDef("Full Satisfaction"), settings.Get("FullSatisfaction"), a => settings.Toggle("FullSatisfaction")));
-			column2.Add(UIHelper.CreateToggle("LockAge".LocDef("Lock Age of Employees"), settings.Get("LockAge"), a => settings.Toggle("LockAge")));
-			column2.Add(UIHelper.CreateToggle("NoVacation".LocDef("No Vacation"), settings.Get("NoVacation"), a => settings.Toggle("NoVacation")));
-			column2.Add(UIHelper.CreateToggle("NoSickness".LocDef("No Sickness"), settings.Get("NoSickness"), a => settings.Toggle("NoSickness")));
-			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), settings.Get("AutoResearchStart"), a => settings.Toggle("AutoResearchStart")));
-			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get("DigitalDistributionMonopol"), a => settings.Toggle("DigitalDistributionMonopol")));
-			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get("DisableFireInspection"), a => settings.Toggle("DisableFireInspection")));
-			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get("AutoMaxMarketShare"), a => settings.Toggle("AutoMaxMarketShare")));
-			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get("UnlimitedSubsidiaries"), a => { settings.Toggle("UnlimitedSubsidiaries"); TrainerBehaviour.ApplyUnlimitedSubsidiaries(settings.Get("UnlimitedSubsidiaries")); }));
+			column2.Add(UIHelper.CreateToggle("DisableNeeds".LocDef("Disable Needs"), settings.Get(SettingKeys.NoNeeds), a => settings.Toggle(SettingKeys.NoNeeds)));
+			column2.Add(UIHelper.CreateToggle("DisableStress".LocDef("Disable Stress"), settings.Get(SettingKeys.NoStress), a => settings.Toggle(SettingKeys.NoStress)));
+			column2.Add(UIHelper.CreateToggle("FreeEmployees".LocDef("Free Employees"), settings.Get(SettingKeys.FreeEmployees), a => settings.Toggle(SettingKeys.FreeEmployees)));
+			column2.Add(UIHelper.CreateToggle("FreeStaff".LocDef("Free Staff"), settings.Get(SettingKeys.FreeStaff), a => settings.Toggle(SettingKeys.FreeStaff)));
+			column2.Add(UIHelper.CreateToggle("FullSatisfaction".LocDef("Full Satisfaction"), settings.Get(SettingKeys.FullSatisfaction), a => settings.Toggle(SettingKeys.FullSatisfaction)));
+			column2.Add(UIHelper.CreateToggle("LockAge".LocDef("Lock Age of Employees"), settings.Get(SettingKeys.LockAge), a => settings.Toggle(SettingKeys.LockAge)));
+			column2.Add(UIHelper.CreateToggle("NoVacation".LocDef("No Vacation"), settings.Get(SettingKeys.NoVacation), a => settings.Toggle(SettingKeys.NoVacation)));
+			column2.Add(UIHelper.CreateToggle("NoSickness".LocDef("No Sickness"), settings.Get(SettingKeys.NoSickness), a => settings.Toggle(SettingKeys.NoSickness)));
+			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), settings.Get(SettingKeys.AutoResearchStart), a => settings.Toggle(SettingKeys.AutoResearchStart)));
+			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get(SettingKeys.DigitalDistributionMonopol), a => settings.Toggle(SettingKeys.DigitalDistributionMonopol)));
+			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get(SettingKeys.DisableFireInspection), a => settings.Toggle(SettingKeys.DisableFireInspection)));
+			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get(SettingKeys.AutoMaxMarketShare), a => settings.Toggle(SettingKeys.AutoMaxMarketShare)));
+			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
 
 			#endregion
 
@@ -129,27 +129,27 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock));
+			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), ProductFeatures.SetProductStock));
 			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt));
+			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), CompanyFeatures.ForceBankrupt));
 			column3.Add(UIHelper.CreateLabel());
 
-			column3.Add(UIHelper.CreateToggle("FullEnvironment".LocDef("Full Environment"), settings.Get("FullEnvironment"), a => settings.Toggle("FullEnvironment")));
-			column3.Add(UIHelper.CreateToggle("FullSunLight".LocDef("Full Sun Light"), settings.Get("FullRoomBrightness"), a => settings.Toggle("FullRoomBrightness")));
-			column3.Add(UIHelper.CreateToggle("LockTemperature".LocDef("Lock Temperature To 21"), settings.Get("TemperatureLock"), a => settings.Toggle("TemperatureLock")));
-			column3.Add(UIHelper.CreateToggle("NoMaintenance".LocDef("No Maintenance"), settings.Get("NoMaintenance"), a => settings.Toggle("NoMaintenance")));
-			column3.Add(UIHelper.CreateToggle("NoiseReduction".LocDef("Noise Reduction"), settings.Get("NoiseReduction"), a => settings.Toggle("NoiseReduction")));
-			column3.Add(UIHelper.CreateToggle("RoomsNeverDirty".LocDef("Rooms Never Dirty"), settings.Get("CleanRooms"), a => settings.Toggle("CleanRooms")));
-			column3.Add(UIHelper.CreateToggle("NoEducationCost".LocDef("No Education Cost"), settings.Get("NoEducationCost"), a => settings.Toggle("NoEducationCost")));
-			column3.Add(UIHelper.CreateToggle("DisableFires".LocDef("Disable Fires"), settings.Get("DisableFires"), a => settings.Toggle("DisableFires")));
-			column3.Add(UIHelper.CreateToggle("AutoDesignEnd".LocDef("Auto Design End"), settings.Get("AutoEndDesign"), a => settings.Toggle("AutoEndDesign")));
-			column3.Add(UIHelper.CreateToggle("AutoContractProgression".LocDef("Auto Contract Progression"), settings.Get("AutoContractProgression"), a => settings.Toggle("AutoContractProgression")));
-			column3.Add(UIHelper.CreateToggle("AutoResearchEnd".LocDef("Auto Research End"), settings.Get("AutoEndResearch"), a => settings.Toggle("AutoEndResearch")));
-			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get("AutoEndPatent"), a => settings.Toggle("AutoEndPatent")));
-			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get("IncreaseWalkSpeed"), a => settings.Toggle("IncreaseWalkSpeed")));
-			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get("DisableFurnitureStealing"), a => settings.Toggle("DisableFurnitureStealing")));
-			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get("ForceLights"), a => { settings.Toggle("ForceLights"); TrainerBehaviour.ApplyForceLights(settings.Get("ForceLights")); }));
-			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get("ShowRoomCeilings"), a => { settings.Toggle("ShowRoomCeilings"); TrainerBehaviour.ApplyShowRoomCeilings(settings.Get("ShowRoomCeilings")); }));
+			column3.Add(UIHelper.CreateToggle("FullEnvironment".LocDef("Full Environment"), settings.Get(SettingKeys.FullEnvironment), a => settings.Toggle(SettingKeys.FullEnvironment)));
+			column3.Add(UIHelper.CreateToggle("FullSunLight".LocDef("Full Sun Light"), settings.Get(SettingKeys.FullRoomBrightness), a => settings.Toggle(SettingKeys.FullRoomBrightness)));
+			column3.Add(UIHelper.CreateToggle("LockTemperature".LocDef("Lock Temperature To 21"), settings.Get(SettingKeys.TemperatureLock), a => settings.Toggle(SettingKeys.TemperatureLock)));
+			column3.Add(UIHelper.CreateToggle("NoMaintenance".LocDef("No Maintenance"), settings.Get(SettingKeys.NoMaintenance), a => settings.Toggle(SettingKeys.NoMaintenance)));
+			column3.Add(UIHelper.CreateToggle("NoiseReduction".LocDef("Noise Reduction"), settings.Get(SettingKeys.NoiseReduction), a => settings.Toggle(SettingKeys.NoiseReduction)));
+			column3.Add(UIHelper.CreateToggle("RoomsNeverDirty".LocDef("Rooms Never Dirty"), settings.Get(SettingKeys.CleanRooms), a => settings.Toggle(SettingKeys.CleanRooms)));
+			column3.Add(UIHelper.CreateToggle("NoEducationCost".LocDef("No Education Cost"), settings.Get(SettingKeys.NoEducationCost), a => settings.Toggle(SettingKeys.NoEducationCost)));
+			column3.Add(UIHelper.CreateToggle("DisableFires".LocDef("Disable Fires"), settings.Get(SettingKeys.DisableFires), a => settings.Toggle(SettingKeys.DisableFires)));
+			column3.Add(UIHelper.CreateToggle("AutoDesignEnd".LocDef("Auto Design End"), settings.Get(SettingKeys.AutoEndDesign), a => settings.Toggle(SettingKeys.AutoEndDesign)));
+			column3.Add(UIHelper.CreateToggle("AutoContractProgression".LocDef("Auto Contract Progression"), settings.Get(SettingKeys.AutoContractProgression), a => settings.Toggle(SettingKeys.AutoContractProgression)));
+			column3.Add(UIHelper.CreateToggle("AutoResearchEnd".LocDef("Auto Research End"), settings.Get(SettingKeys.AutoEndResearch), a => settings.Toggle(SettingKeys.AutoEndResearch)));
+			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get(SettingKeys.AutoEndPatent), a => settings.Toggle(SettingKeys.AutoEndPatent)));
+			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get(SettingKeys.IncreaseWalkSpeed), a => settings.Toggle(SettingKeys.IncreaseWalkSpeed)));
+			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get(SettingKeys.DisableFurnitureStealing), a => settings.Toggle(SettingKeys.DisableFurnitureStealing)));
+			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); EnvironmentFeatures.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
+			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); EnvironmentFeatures.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
 
 			#endregion
 
@@ -158,40 +158,40 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers));
+			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), ProductFeatures.AddActiveUsers));
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 
-			column4.Add(UIHelper.CreateToggle("FreePrint".LocDef("Free Print"), settings.Get("FreePrint"), a => settings.Toggle("FreePrint")));
-			column4.Add(UIHelper.CreateToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), settings.Get("NoWaterElectricity"), a => settings.Toggle("NoWaterElectricity")));
-			column4.Add(UIHelper.CreateToggle("IncreaseBookshelfSkill".LocDef("Increase Bookshelf Skill"), settings.Get("IncreaseBookshelfSkill"), a => settings.Toggle("IncreaseBookshelfSkill")));
-			column4.Add(UIHelper.CreateToggle("IncreaseCourierCapacity".LocDef("Increase Courier Capacity"), settings.Get("IncreaseCourierCapacity"), a => settings.Toggle("IncreaseCourierCapacity")));
-			column4.Add(UIHelper.CreateToggle("IncreasePrintSpeed".LocDef("Increase Print Speed"), settings.Get("IncreasePrintSpeed"), a => settings.Toggle("IncreasePrintSpeed")));
-			column4.Add(UIHelper.CreateToggle("MoreHostingDeals".LocDef("More Hosting Deals"), settings.Get("MoreHostingDeals"), a => settings.Toggle("MoreHostingDeals")));
-			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), settings.Get("ReduceISPCost"), a => settings.Toggle("ReduceISPCost")));
-			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), settings.Get("NoServerCost"), a => settings.Toggle("NoServerCost")));
-			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), settings.Get("ReduceExpansionCost"), a => settings.Toggle("ReduceExpansionCost")));
-			//column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get("ReduceBoxPrice"), a => settings.Toggle("ReduceBoxPrice")));
-			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get("DisableForcePause"), a => settings.Toggle("DisableForcePause")));
-			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get("DisableForceFreeze"), a => settings.Toggle("DisableForceFreeze")));
-			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get("AutoAcceptHostingDeals"), a => settings.Toggle("AutoAcceptHostingDeals")));
-			column4.Add(UIHelper.CreateToggle("AutoPorting".LocDef("Auto Porting"), settings.Get("AutoPorting"), a => settings.Toggle("AutoPorting")));
-			column4.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration"), settings.Get("MoreInspiration"), a => settings.Toggle("MoreInspiration")));
-			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get("MoreCreativity"), a => settings.Toggle("MoreCreativity")));
-			column4.Add(UIHelper.CreateToggle("NoMissedSupportTickets".LocDef("No Missed Support Tickets"), settings.Get("NoMissedSupportTickets"), a => settings.Toggle("NoMissedSupportTickets")));
-			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get("NoInsuranceCost"), a => settings.Toggle("NoInsuranceCost")));
-			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get("NoLoanInterest"), a => settings.Toggle("NoLoanInterest")));
-			column4.Add(UIHelper.CreateToggle("FreeMarketing".LocDef("Free Marketing"), settings.Get("FreeMarketing"), a => settings.Toggle("FreeMarketing")));
-			column4.Add(UIHelper.CreateToggle("NoOffshoreHeat".LocDef("No Offshore Heat"), settings.Get("NoOffshoreHeat"), a => settings.Toggle("NoOffshoreHeat")));
-			column4.Add(UIHelper.CreateToggle("NoFounderDividends".LocDef("No Founder Dividends"), settings.Get("NoFounderDividends"), a => settings.Toggle("NoFounderDividends")));
+			column4.Add(UIHelper.CreateToggle("FreePrint".LocDef("Free Print"), settings.Get(SettingKeys.FreePrint), a => settings.Toggle(SettingKeys.FreePrint)));
+			column4.Add(UIHelper.CreateToggle("FreeWaterElectricity".LocDef("Free Water & Electricity"), settings.Get(SettingKeys.NoWaterElectricity), a => settings.Toggle(SettingKeys.NoWaterElectricity)));
+			column4.Add(UIHelper.CreateToggle("IncreaseBookshelfSkill".LocDef("Increase Bookshelf Skill"), settings.Get(SettingKeys.IncreaseBookshelfSkill), a => settings.Toggle(SettingKeys.IncreaseBookshelfSkill)));
+			column4.Add(UIHelper.CreateToggle("IncreaseCourierCapacity".LocDef("Increase Courier Capacity"), settings.Get(SettingKeys.IncreaseCourierCapacity), a => settings.Toggle(SettingKeys.IncreaseCourierCapacity)));
+			column4.Add(UIHelper.CreateToggle("IncreasePrintSpeed".LocDef("Increase Print Speed"), settings.Get(SettingKeys.IncreasePrintSpeed), a => settings.Toggle(SettingKeys.IncreasePrintSpeed)));
+			column4.Add(UIHelper.CreateToggle("MoreHostingDeals".LocDef("More Hosting Deals"), settings.Get(SettingKeys.MoreHostingDeals), a => settings.Toggle(SettingKeys.MoreHostingDeals)));
+			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), settings.Get(SettingKeys.ReduceISPCost), a => settings.Toggle(SettingKeys.ReduceISPCost)));
+			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), settings.Get(SettingKeys.NoServerCost), a => settings.Toggle(SettingKeys.NoServerCost)));
+			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), settings.Get(SettingKeys.ReduceExpansionCost), a => settings.Toggle(SettingKeys.ReduceExpansionCost)));
+			//column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get(SettingKeys.ReduceBoxPrice), a => settings.Toggle(SettingKeys.ReduceBoxPrice)));
+			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get(SettingKeys.DisableForcePause), a => settings.Toggle(SettingKeys.DisableForcePause)));
+			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get(SettingKeys.DisableForceFreeze), a => settings.Toggle(SettingKeys.DisableForceFreeze)));
+			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get(SettingKeys.AutoAcceptHostingDeals), a => settings.Toggle(SettingKeys.AutoAcceptHostingDeals)));
+			column4.Add(UIHelper.CreateToggle("AutoPorting".LocDef("Auto Porting"), settings.Get(SettingKeys.AutoPorting), a => settings.Toggle(SettingKeys.AutoPorting)));
+			column4.Add(UIHelper.CreateToggle("MoreInspiration".LocDef("More Inspiration"), settings.Get(SettingKeys.MoreInspiration), a => settings.Toggle(SettingKeys.MoreInspiration)));
+			column4.Add(UIHelper.CreateToggle("MoreCreativity".LocDef("More Creativity"), settings.Get(SettingKeys.MoreCreativity), a => settings.Toggle(SettingKeys.MoreCreativity)));
+			column4.Add(UIHelper.CreateToggle("NoMissedSupportTickets".LocDef("No Missed Support Tickets"), settings.Get(SettingKeys.NoMissedSupportTickets), a => settings.Toggle(SettingKeys.NoMissedSupportTickets)));
+			column4.Add(UIHelper.CreateToggle("NoInsuranceCost".LocDef("No Insurance Cost"), settings.Get(SettingKeys.NoInsuranceCost), a => settings.Toggle(SettingKeys.NoInsuranceCost)));
+			column4.Add(UIHelper.CreateToggle("NoLoanInterest".LocDef("No Loan Interest"), settings.Get(SettingKeys.NoLoanInterest), a => settings.Toggle(SettingKeys.NoLoanInterest)));
+			column4.Add(UIHelper.CreateToggle("FreeMarketing".LocDef("Free Marketing"), settings.Get(SettingKeys.FreeMarketing), a => settings.Toggle(SettingKeys.FreeMarketing)));
+			column4.Add(UIHelper.CreateToggle("NoOffshoreHeat".LocDef("No Offshore Heat"), settings.Get(SettingKeys.NoOffshoreHeat), a => settings.Toggle(SettingKeys.NoOffshoreHeat)));
+			column4.Add(UIHelper.CreateToggle("NoFounderDividends".LocDef("No Founder Dividends"), settings.Get(SettingKeys.NoFounderDividends), a => settings.Toggle(SettingKeys.NoFounderDividends)));
 
 			#endregion
 
 			#region column5
 
 			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite()));
+			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => Helpers.ShowDiscordInvite()));
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
@@ -200,23 +200,23 @@ namespace Trainer_v5
 			column5.Add(UIHelper.CreateLabel("Efficiency"));
 			var efficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, "EfficiencyStore", 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.EfficiencyStore, 2)
 			);
-			efficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("EfficiencyStore", efficiencySelectItems.GetAt(efficiencyComboBox.Selected).Value));
+			efficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.EfficiencyStore, efficiencySelectItems.GetAt(efficiencyComboBox.Selected).Value));
 			column5.Add(efficiencyComboBox.gameObject);
 
 			column5.Add(UIHelper.CreateLabel("Lead Efficiency"));
 			var leadEfficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, "LeadEfficiencyStore", 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.LeadEfficiencyStore, 2)
 			);
-			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set("LeadEfficiencyStore", efficiencySelectItems.GetAt(leadEfficiencyComboBox.Selected).Value));
+			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.LeadEfficiencyStore, efficiencySelectItems.GetAt(leadEfficiencyComboBox.Selected).Value));
 			column5.Add(leadEfficiencyComboBox.gameObject);
 
 			#endregion
 
 			#region column6
-			column6.Add(UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get("Experimental"), a => settings.Toggle("Experimental")));
+			column6.Add(UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a => settings.Toggle(SettingKeys.Experimental)));
 			column6.Add(UIHelper.CreateLabel("After toggle re-open the window"));
 			column6.Add(UIHelper.CreateLabel());
 
@@ -224,7 +224,7 @@ namespace Trainer_v5
 			{
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
-				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
+				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton));
 
 			}
 

@@ -22,6 +22,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Trainer_v5.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
 			<HintPath>Trainer.Libraries\Assembly-CSharp.dll</HintPath>
 			<Private>False</Private>

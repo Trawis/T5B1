@@ -12,7 +12,11 @@ namespace Trainer_v5
 
 		public void Poll()
 		{
-			int currentMinute = (int)TimeOfDay.Instance.Minute;
+			Observe((int)TimeOfDay.Instance.Minute);
+		}
+
+		internal void Observe(int currentMinute)
+		{
 			if (currentMinute == _lastObservedMinute)
 			{
 				return;

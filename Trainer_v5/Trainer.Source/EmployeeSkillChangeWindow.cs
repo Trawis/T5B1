@@ -76,7 +76,7 @@ namespace Trainer_v5
 		{
 			return new[]
 			{
-				UIFactory.Button("Set Skills", TrainerBehaviour.SetSkillPerEmployee).gameObject,
+				UIFactory.Button("Set Skills", EmployeeFeatures.SetSkillPerEmployee).gameObject,
 				UIFactory.EmptyBox().gameObject,
 				UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject
 			};

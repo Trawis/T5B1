@@ -27,13 +27,24 @@ dependencies.
 ## Components
 
 - `Main`: mod entry point, toolbar buttons, settings persistence.
-- `TrainerBehaviour`: scene/time event orchestration, feature scheduling, and
-  the runtime error-boundary contract (see Runtime Feature Isolation).
-- `Helpers`: settings dictionaries, property accessors, and `TryExecute`.
+- `TrainerBehaviour`: scene/time event orchestration, feature scheduling,
+  toggle transitions, and the runtime error-boundary contract (see Runtime
+  Feature Isolation).
+- `Features/*Features`: domain classes that own the game-state mutations and
+  one-shot UI actions: `EnvironmentFeatures` (rooms, furniture, fires,
+  intruders, native cheat flags), `EmployeeFeatures`, `CompanyFeatures`
+  (money, bills, loans, costs, rewards, company actions), `ProductFeatures`,
+  `MarketFeatures` (hosting deals, distribution, marketing), and
+  `WorkItemFeatures` (design, research, patents, porting, team assignment).
+- `SettingKeys`: the registry declaring every persisted setting, its key, and
+  its default. `Helpers`: the settings dictionaries built from it, property
+  accessors, and `TryExecute`.
 - `GameMinuteWatcher`: synthesizes a minute-passed event the game doesn't
   natively provide.
-- `SettingsWindow` and the UI layer (`UIHelper`/`UIFactory`/`Utilities`/
-  `InputHelper`/`Notification`): game-native UI construction and input.
+- `SettingsWindow` and the UI layer: `UIFactory` is the only place that
+  spawns labels, buttons, toggles and input boxes; `UIHelper` adds the named
+  `GameObject` variants, column layout, window sizing and the scrollable
+  column; `InputHelper` and `Notification` cover input dialogs and errors.
 - Domain/editor helpers (`DetailWindowTrainer`, `Window.*`, `SDK.*`):
   specialized employee/actor editing windows.
 
@@ -62,9 +73,10 @@ features; repeated failures are rate-limited rather than flooding the log.
 `TryExecute`'s `bool` result is used only where orchestration needs success
 state for retryable one-time work.
 
-When feature logic is extracted out of `TrainerBehaviour` (#126), scheduling
-stays in the orchestration layer while domain handlers own only game-state
-mutations.
+The domain classes under `Features/` own only game-state mutations. They do
+not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
+cadence, the boundary, and the toggle transitions, and calls into them. UI
+buttons call the one-shot actions on the domain classes directly.
 
 ## Toggle Transitions
 
@@ -78,8 +90,13 @@ destructive or unverifiable toggles are not given fake restoration semantics.
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
 mechanism; serialized key compatibility must be preserved across releases.
-Settings are currently raw string-keyed dictionaries, tracked as technical
-debt (#127).
+Every persisted setting is declared once in `SettingKeys` as a typed
+`SettingKey<T>` carrying its save key and default; `Helpers.Settings` and
+`Helpers.StoresSettings` are built from it, so serialization still reads and
+writes the same string keys. Code references settings through `SettingKeys`
+(a misspelled setting fails to compile) rather than raw strings. The key string
+passed when declaring a setting is the save-file key and must never change; a
+new setting is one new declaration there plus its UI and behavior.
 
 ## Game API Compatibility
 
@@ -105,15 +122,17 @@ helpers. UI text is localized; translations live under
 - CI/CD builds and validates the `Release` configuration only; `Debug` is
   local-development only.
 - `dotnet format`/`dotnet build` are the local static checks.
+- `Trainer_v5.Tests` (xUnit, `net462`) runs in CI after the build. It covers
+  setting keys and defaults, save serialization round-trips, input validation,
+  toggle transitions, and minute-event cadence. It runs the real trainer code
+  against the vendored assemblies outside Unity, so anything that calls into
+  live game objects (the `Features/` classes, window construction,
+  `Helpers.TryExecute`) is not covered and needs in-game validation.
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt
 
-- `TrainerBehaviour` still owns most feature logic directly (#126).
-- Settings remain raw string-keyed rather than typed (#127).
-- No automated test project exists (#129).
-- UI helper APIs overlap across `UIHelper`/`UIFactory`/`Utilities`/
-  `SDK.WindowHelper` (#130).
+- None currently tracked.
 
 ## Design Records
 

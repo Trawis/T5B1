@@ -119,7 +119,7 @@ namespace Trainer_v5
 				});
 		}
 
-		private delegate bool TryParse<T>(string s, out T result) where T : struct;
+		internal delegate bool TryParse<T>(string s, out T result) where T : struct;
 
 		//private static T? TryParseAndValidate<T>(
 		//	string str,
@@ -156,10 +156,26 @@ namespace Trainer_v5
 			) where T : struct, IComparable<T>
 		{
 			T val;
+			string error = Validate(str, tryParse, out val);
+			if (error != null)
+			{
+				Notification.ShowError(error);
+				return null;
+			}
+
+			return val;
+		}
+
+		internal static string Validate<T>(
+			string str,
+			TryParse<T> tryParse,
+			out T val
+			) where T : struct, IComparable<T>
+		{
 			if (str.Length == 0 || !tryParse(str, out val))
 			{
-				Notification.ShowError("Invalid input!");
-				return null;
+				val = default(T);
+				return "Invalid input!";
 			}
 
 			if (typeof(T) == typeof(float))
@@ -167,12 +183,11 @@ namespace Trainer_v5
 				var f = (float)(object)val;
 				if (float.IsNaN(f) || float.IsInfinity(f))
 				{
-					Notification.ShowError("Invalid input!");
-					return null;
+					return "Invalid input!";
 				}
 			}
 
-			return val;
+			return null;
 		}
 
 		private static T? TryParseAndValidate<T>(
@@ -183,35 +198,41 @@ namespace Trainer_v5
 			) where T : struct, IComparable<T>
 		{
 			T val;
-			if (str.Length == 0 || !tryParse(str, out val))
+			string error = Validate(str, tryParse, min, max, out val);
+			if (error != null)
 			{
-				Notification.ShowError("Invalid input!");
-				return null;
-			}
-
-			if (typeof(T) == typeof(float))
-			{
-				var f = (float)(object)val;
-				if (float.IsNaN(f) || float.IsInfinity(f))
-				{
-					Notification.ShowError("Invalid input!");
-					return null;
-				}
-			}
-
-			if (val.CompareTo(min) < 0)
-			{
-				Notification.ShowError("Invalid input!\nmin value is " + min);
-				return null;
-			}
-
-			if (val.CompareTo(max) > 0)
-			{
-				Notification.ShowError("Invalid input!\nmax value is " + max);
+				Notification.ShowError(error);
 				return null;
 			}
 
 			return val;
+		}
+
+		internal static string Validate<T>(
+			string str,
+			TryParse<T> tryParse,
+			T min,
+			T max,
+			out T val
+			) where T : struct, IComparable<T>
+		{
+			string error = Validate(str, tryParse, out val);
+			if (error != null)
+			{
+				return error;
+			}
+
+			if (val.CompareTo(min) < 0)
+			{
+				return "Invalid input!\nmin value is " + min;
+			}
+
+			if (val.CompareTo(max) > 0)
+			{
+				return "Invalid input!\nmax value is " + max;
+			}
+
+			return null;
 		}
 	}
 }
