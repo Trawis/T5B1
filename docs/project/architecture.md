@@ -41,8 +41,10 @@ dependencies.
   accessors, and `TryExecute`.
 - `GameMinuteWatcher`: synthesizes a minute-passed event the game doesn't
   natively provide.
-- `SettingsWindow` and the UI layer (`UIHelper`/`UIFactory`/`Utilities`/
-  `InputHelper`/`Notification`): game-native UI construction and input.
+- `SettingsWindow` and the UI layer: `UIFactory` is the only place that
+  spawns labels, buttons, toggles and input boxes; `UIHelper` adds the named
+  `GameObject` variants, column layout, window sizing and the scrollable
+  column; `InputHelper` and `Notification` cover input dialogs and errors.
 - Domain/editor helpers (`DetailWindowTrainer`, `Window.*`, `SDK.*`):
   specialized employee/actor editing windows.
 
@@ -130,8 +132,7 @@ helpers. UI text is localized; translations live under
 
 ## Architectural Debt
 
-- UI helper APIs overlap across `UIHelper`/`UIFactory`/`Utilities`/
-  `SDK.WindowHelper` (#130).
+- None currently tracked.
 
 ## Design Records
 

@@ -69,8 +69,13 @@ namespace Trainer_v5
 
 		public static void SetWindowSize(this GUIWindow window, int rows, int xWindowSize)
 		{
-			window.MinSize.x = xWindowSize;
-			window.MinSize.y = (rows + 1) * Constants.ELEMENT_HEIGHT;
+			window.SetMinSize(xWindowSize, (rows + 1) * Constants.ELEMENT_HEIGHT);
+		}
+
+		public static void SetMinSize(this GUIWindow window, int width, int height)
+		{
+			window.MinSize.x = width;
+			window.MinSize.y = height;
 		}
 
 		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
@@ -187,11 +192,5 @@ namespace Trainer_v5
 				.Where(c => !char.IsWhiteSpace(c))
 				.ToArray());
 		}
-	}
-
-	public class ComboBox
-	{
-		public GameObject Label { get; set; }
-		public GameObject Dropdown { get; set; }
 	}
 }
