@@ -23,9 +23,9 @@ namespace Trainer_v5.Tests
 			var mismatched = new List<string>();
 			foreach (var field in DeclaredKeys())
 			{
-				var key = field.FieldType == typeof(SettingKey<bool>)
-					? ((SettingKey<bool>)field.GetValue(null)).Key
-					: ((SettingKey<object>)field.GetValue(null)).Key;
+				var key = field.FieldType == typeof(ToggleKey)
+					? ((ToggleKey)field.GetValue(null)).Key
+					: ((StoreKey)field.GetValue(null)).Key;
 				if (field.Name != key)
 				{
 					mismatched.Add(field.Name + " saves as " + key);
@@ -42,13 +42,13 @@ namespace Trainer_v5.Tests
 			var declaredStores = new List<string>();
 			foreach (var field in DeclaredKeys())
 			{
-				if (field.FieldType == typeof(SettingKey<bool>))
+				if (field.FieldType == typeof(ToggleKey))
 				{
-					declaredToggles.Add(((SettingKey<bool>)field.GetValue(null)).Key);
+					declaredToggles.Add(((ToggleKey)field.GetValue(null)).Key);
 				}
 				else
 				{
-					declaredStores.Add(((SettingKey<object>)field.GetValue(null)).Key);
+					declaredStores.Add(((StoreKey)field.GetValue(null)).Key);
 				}
 			}
 
