@@ -5,7 +5,7 @@ namespace Trainer_v5
 {
 	internal static class WorkItemFeatures
 	{
-		public static void OptimizeTeamAssignments()
+		internal static void OptimizeTeamAssignments()
 		{
 			int reassigned = 0;
 
@@ -63,7 +63,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Team assignments optimized!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void InstantPorting()
+		internal static void InstantPorting()
 		{
 			var ports = Settings.MyCompany.WorkItems.OfType<SoftwarePort>().ToList();
 
@@ -88,7 +88,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void Test()
+		internal static void Test()
 		{
 			var designDocuments = Settings.MyCompany.WorkItems.OfType<DesignDocument>().Where(d => !d.HasFinished).ToList();
 
@@ -113,7 +113,7 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void ExtendDeadline()
+		internal static void ExtendDeadline()
 		{
 			foreach (var work in Settings.MyCompany.WorkItems)
 			{
@@ -124,7 +124,7 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void FixBugsAction(string input)
+		internal static void FixBugsAction(string input)
 		{
 			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
 				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
@@ -138,12 +138,12 @@ namespace Trainer_v5
 			WorkItem.FixedBugs = WorkItem.MaxBugs;
 		}
 
-		public static void FixBugs()
+		internal static void FixBugs()
 		{
 			WindowManager.SpawnInputDialog("Type product name:", "Fix Bugs", "", FixBugsAction);
 		}
 
-		public static void MaxFollowersAction(string input)
+		internal static void MaxFollowersAction(string input)
 		{
 			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
 				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
@@ -161,12 +161,12 @@ namespace Trainer_v5
 			WorkItem.Followers += 1000000000f;
 		}
 
-		public static void MaxFollowers()
+		internal static void MaxFollowers()
 		{
 			WindowManager.SpawnInputDialog("Type product name:", "Max Followers", "", MaxFollowersAction);
 		}
 
-		public static void InstantResearch()
+		internal static void InstantResearch()
 		{
 			var eligibleResearch = Settings.MyCompany.WorkItems
 								.OfType<ResearchWork>()
@@ -189,7 +189,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Research completed instantly!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void TestAction(string input)
+		internal static void TestAction(string input)
 		{
 			WorkItem WorkItem = Settings.MyCompany.WorkItems
 				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
@@ -202,7 +202,7 @@ namespace Trainer_v5
 			softwareAlpha.AddQuality(10f, 10f, false);
 		}
 
-		public static void TestButton()
+		internal static void TestButton()
 		{
 			WindowManager.SpawnInputDialog("Type product name in alpha (not beta):", "Add Quality", "", TestAction);
 		}

@@ -77,6 +77,8 @@ The domain classes under `Features/` own only game-state mutations. They do
 not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
 cadence, the boundary, and the toggle transitions, and calls into them. UI
 buttons call the one-shot actions on the domain classes directly.
+The classes and their members are `internal`; each keeps its own one-line
+`Settings` accessor rather than sharing one, to avoid coupling them.
 
 ## Toggle Transitions
 
