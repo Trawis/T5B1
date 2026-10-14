@@ -10,40 +10,31 @@ namespace Trainer_v5
 	{
 		public static GameObject CreateLabel(string text = null, string name = null)
 		{
-			var control = WindowManager.SpawnLabel();
+			var control = UIFactory.Label(text.TextOrEmpty());
 			control.name = name.NameOrDefault("Text", text);
-			control.text = text.TextOrEmpty();
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateButton(string text, UnityAction action, string name = null)
 		{
-			var control = WindowManager.SpawnButton();
-			control.name = name.NameOrDefault("Button", text);
-			control.GetComponentInChildren<Text>().text = text.TextOrEmpty();
-			control.onClick.AddListener(action);
+			var control = UIFactory.Button(text.TextOrEmpty(), action, name.NameOrDefault("Button", text));
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateInputBox(string text, UnityAction<string> action, string name = null)
 		{
-			var control = WindowManager.SpawnInputbox();
+			var control = UIFactory.InputBox(text, action);
 			control.name = name.NameOrDefault("InputField", text);
-			control.text = text;
-			control.onValueChanged.AddListener(action);
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateToggle(string text, bool isOn, UnityAction<bool> action, string name = null)
 		{
-			var control = WindowManager.SpawnCheckbox();
+			var control = UIFactory.Toggle(text, isOn, action);
 			control.name = name.NameOrDefault("Toggle", text);
-			control.GetComponentInChildren<Text>().text = text;
-			control.isOn = isOn;
-			control.onValueChanged.AddListener(action);
 
 			return control.gameObject;
 		}
