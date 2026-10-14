@@ -5,7 +5,7 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
-		public static void SellProductStock()
+		internal static void SellProductStock()
 		{
 			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
 				false, DialogWindow.DialogType.Information);
@@ -29,40 +29,7 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void RemoveSoft()
-		{
-			return;
-
-			//currently broken
-			SDateTime time = new SDateTime(1, 70);
-			CompanyType type = new CompanyType();
-			var dict = new Dictionary<string, string[]>();
-			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, MarketSimulation.Active);
-			simComp.CanMakeTransaction(2139095030f);
-
-			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
-				product.DevCompany == Settings.MyCompany &&
-				product.Inventor != Settings.MyCompany.Name).ToArray();
-
-			if (Products.Length == 0)
-			{
-				return;
-			}
-
-			for (int i = 0; i < Products.Length; i++)
-			{
-				SoftwareProduct Product = Products[i];
-
-				Product.Userbase = 0;
-				Product.PhysicalCopies = 0;
-				Product.Marketing = 0;
-				Product.Trade(simComp, time);
-			}
-
-			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
-		}
-
-		public static void SetProductPriceAction(float price)
+		internal static void SetProductPriceAction(float price)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -77,12 +44,12 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void SetProductPrice()
+		internal static void SetProductPrice()
 		{
 			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
 		}
 
-		public static void SetProductStockAction(uint stock)
+		internal static void SetProductStockAction(uint stock)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -97,12 +64,12 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void SetProductStock()
+		internal static void SetProductStock()
 		{
 			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
 		}
 
-		public static void AddActiveUsersAction(int users)
+		internal static void AddActiveUsersAction(int users)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -117,14 +84,9 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void AddActiveUsers()
+		internal static void AddActiveUsers()
 		{
 			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
-		}
-
-		public static void MaxMarketShare()
-		{
-			// Disabled, see #150
 		}
 
 		internal static void ApplyFreePrint()

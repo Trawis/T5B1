@@ -56,10 +56,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = WindowManager.SpawnWindow();
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = "Edit lead specialization for Nobody";
-			window.name = "EditLeadSpec";
-			window.MainPanel.name = "MainPanel";
+			var window = UIHelper.SpawnWindow("Edit lead specialization for Nobody", "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
@@ -101,13 +98,13 @@ namespace Trainer_v5.Trainer.Source.Window
 				col2Header, col2Toggles, col2Footer,
 				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
 
-			int totalWidth  = padding * 2 + colWidth * 2 + colGap;
+			int totalWidth = padding * 2 + colWidth * 2 + colGap;
 			int totalHeight = Mathf.Max(col1Height, col2Height) + padding;
 			window.SetMinSize(totalWidth, totalHeight);
 
-			_window      = window;
+			_window = window;
 			_softwareTypes = softwareTypes;
-			_specToggles  = toggles;
+			_specToggles = toggles;
 		}
 
 		private void OnToggle(string key, bool isOn)

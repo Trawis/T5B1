@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
 using UnityEngine;
@@ -59,13 +59,14 @@ namespace Trainer_v5
 				val =>
 				{
 					var skills = new float[5];
-					for(int i = 0; i < 5; i++) {
+					for (int i = 0; i < 5; i++)
+					{
 						skills[i] = employee.GetSkillI(i);
 					}
-					
+
 					// clone employee with new creativity value
 					var newEmployee = new Employee(
-						currentTime: SDateTime.Now(), 
+						currentTime: SDateTime.Now(),
 						female: employee.Female,
 						name: employee.Name,
 						skills: skills,
@@ -77,7 +78,7 @@ namespace Trainer_v5
 						style: employee.StyleGen,
 						forceBrain: employee.HiredFor
 					);
-					
+
 					// transfer properties
 					// This constructor overload also generates founder characters, so it always sets Founder = true.
 					newEmployee.Founder = employee.Founder;
@@ -148,7 +149,7 @@ namespace Trainer_v5
 					{
 						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
 					}
-					
+
 					var actor = employee.MyActor;
 					if (actor != null)
 					{
@@ -156,7 +157,7 @@ namespace Trainer_v5
 						employee.MyActor = null;
 						actor.employee = newEmployee;
 						newEmployee.MyActor = actor;
-						
+
 						if (HUD.Instance?.DetailWindow?.CurrentEmployee?.employee == employee)
 						{
 							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
@@ -176,7 +177,7 @@ namespace Trainer_v5
 				$"Current is {employee.Inspiration}\nMin = 0, Max = 2.0",
 				$"Set inspiration for {employee.Name}",
 				val => employee.Inspiration = val,
-				min: 0, 
+				min: 0,
 				max: 2);
 		}
 	}

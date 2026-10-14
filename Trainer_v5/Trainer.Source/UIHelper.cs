@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,6 +8,16 @@ namespace Trainer_v5
 {
 	public static class UIHelper
 	{
+		public static GUIWindow SpawnWindow(string title, string name, string panelName)
+		{
+			var window = WindowManager.SpawnWindow();
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = title;
+			window.name = name;
+			window.MainPanel.name = panelName;
+
+			return window;
+		}
+
 		public static GameObject CreateLabel(string text = null, string name = null)
 		{
 			var control = UIFactory.Label(text.TextOrEmpty());

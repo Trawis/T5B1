@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrbCreationExtensions;
 
 namespace Trainer_v5
