@@ -29,39 +29,6 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void RemoveSoft()
-		{
-			return;
-
-			//currently broken
-			SDateTime time = new SDateTime(1, 70);
-			CompanyType type = new CompanyType();
-			var dict = new Dictionary<string, string[]>();
-			SimulatedCompany simComp = new SimulatedCompany("Trainer Company", time, type, dict, 0f, MarketSimulation.Active);
-			simComp.CanMakeTransaction(2139095030f);
-
-			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(true).Where(product =>
-				product.DevCompany == Settings.MyCompany &&
-				product.Inventor != Settings.MyCompany.Name).ToArray();
-
-			if (Products.Length == 0)
-			{
-				return;
-			}
-
-			for (int i = 0; i < Products.Length; i++)
-			{
-				SoftwareProduct Product = Products[i];
-
-				Product.Userbase = 0;
-				Product.PhysicalCopies = 0;
-				Product.Marketing = 0;
-				Product.Trade(simComp, time);
-			}
-
-			WindowManager.SpawnDialog("Products that you didn't invent are removed.", false, DialogWindow.DialogType.Information);
-		}
-
 		public static void SetProductPriceAction(float price)
 		{
 			string error;
@@ -120,11 +87,6 @@ namespace Trainer_v5
 		public static void AddActiveUsers()
 		{
 			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
-		}
-
-		public static void MaxMarketShare()
-		{
-			// Disabled, see #150
 		}
 
 		internal static void ApplyFreePrint()

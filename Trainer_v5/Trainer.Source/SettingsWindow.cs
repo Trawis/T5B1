@@ -82,10 +82,8 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), CompanyFeatures.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductFeatures.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
-			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), ProductFeatures.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), CompanyFeatures.UnlockAllSpace));
 			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
@@ -119,7 +117,6 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("AutoResearchStart".LocDef("Auto Research Start"), settings.Get(SettingKeys.AutoResearchStart), a => settings.Toggle(SettingKeys.AutoResearchStart)));
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get(SettingKeys.DigitalDistributionMonopol), a => settings.Toggle(SettingKeys.DigitalDistributionMonopol)));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get(SettingKeys.DisableFireInspection), a => settings.Toggle(SettingKeys.DisableFireInspection)));
-			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get(SettingKeys.AutoMaxMarketShare), a => settings.Toggle(SettingKeys.AutoMaxMarketShare)));
 			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
 
 			#endregion
@@ -172,7 +169,6 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateToggle("ReduceInternetCost".LocDef("Reduce Internet Cost"), settings.Get(SettingKeys.ReduceISPCost), a => settings.Toggle(SettingKeys.ReduceISPCost)));
 			column4.Add(UIHelper.CreateToggle("NoServerCost".LocDef("No Server Cost"), settings.Get(SettingKeys.NoServerCost), a => settings.Toggle(SettingKeys.NoServerCost)));
 			column4.Add(UIHelper.CreateToggle("ReduceExpansionCost".LocDef("Reduce Expansion Cost"), settings.Get(SettingKeys.ReduceExpansionCost), a => settings.Toggle(SettingKeys.ReduceExpansionCost)));
-			//column4.Add(UIHelper.CreateToggle("ReduceBoxPrice".LocDef("Reduce Box Price"), settings.Get(SettingKeys.ReduceBoxPrice), a => settings.Toggle(SettingKeys.ReduceBoxPrice)));
 			column4.Add(UIHelper.CreateToggle("DisableForcePause".LocDef("Disable Force Pause"), settings.Get(SettingKeys.DisableForcePause), a => settings.Toggle(SettingKeys.DisableForcePause)));
 			column4.Add(UIHelper.CreateToggle("DisableForceFreeze".LocDef("Disable Force Freeze"), settings.Get(SettingKeys.DisableForceFreeze), a => settings.Toggle(SettingKeys.DisableForceFreeze)));
 			column4.Add(UIHelper.CreateToggle("AutoAcceptHostingDeals".LocDef("Auto Accept Hosting Deals"), settings.Get(SettingKeys.AutoAcceptHostingDeals), a => settings.Toggle(SettingKeys.AutoAcceptHostingDeals)));
