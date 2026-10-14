@@ -30,7 +30,7 @@ namespace Trainer_v5
 			{"8000%", 80}
 		};
 
-		public static Dictionary<string, bool> Settings { get; } = SettingKeys.CreateToggleDefaults();
+		public static Dictionary<string, bool> Settings { get; private set; }
 
 		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
 		{
@@ -41,14 +41,29 @@ namespace Trainer_v5
 			{"Designer", false}
 		};
 
-		public static Dictionary<string, object> StoresSettings { get; } = SettingKeys.CreateStoreDefaults();
+		public static Dictionary<string, object> StoresSettings { get; private set; }
+
+		// The game's mod loader mis-parses calls in member initializers, so they are assigned here.
+		static Helpers()
+		{
+			Settings = SettingKeys.CreateToggleDefaults();
+			StoresSettings = SettingKeys.CreateStoreDefaults();
+			_loggedUnregisteredKeys = new HashSet<string>();
+			_featureGuard = new FeatureGuard(
+				() => UnityEngine.Time.realtimeSinceStartup,
+				(featureId, ex) =>
+				{
+					ex.LogException(featureId);
+					UnityEngine.Debug.LogException(ex);
+				});
+		}
 
 		#region methods
 
 		// Keys reported as unregistered already, so a typo'd key hit every frame
 		// doesn't flood the console. Shared with Extensions so all the property
 		// accessors dedupe against the same set.
-		private static readonly HashSet<string> _loggedUnregisteredKeys = new HashSet<string>();
+		private static readonly HashSet<string> _loggedUnregisteredKeys;
 
 		// A missing key here means the caller asked for a key that was never added
 		// to the dictionary it's operating on, which happens when code references a
@@ -129,13 +144,7 @@ namespace Trainer_v5
 			}
 		}
 
-		private static readonly FeatureGuard _featureGuard = new FeatureGuard(
-			() => UnityEngine.Time.realtimeSinceStartup,
-			(featureId, ex) =>
-			{
-				ex.LogException(featureId);
-				UnityEngine.Debug.LogException(ex);
-			});
+		private static readonly FeatureGuard _featureGuard;
 
 		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
