@@ -27,20 +27,15 @@ namespace Trainer_v5
 			return r;
 		}
 
-		public static Button Button(string text, UnityAction action)
+		public static Button Button(string text, UnityAction action, string name = null)
 		{
 			var button = WindowManager.SpawnButton();
 			button.GetComponentInChildren<Text>().text = text;
 			button.onClick.AddListener(action);
-			return button;
-		}
-
-		public static Button UIButton(string text, string name, UnityAction action)
-		{
-			var button = WindowManager.SpawnButton();
-			button.GetComponentInChildren<Text>().text = text;
-			button.onClick.AddListener(action);
-			button.name = name;
+			if (name != null)
+			{
+				button.name = name;
+			}
 			return button;
 		}
 
@@ -53,11 +48,12 @@ namespace Trainer_v5
 			return toggle;
 		}
 
-		public static InputField MultilineInput()
+		public static InputField InputBox(string text, UnityAction<string> action)
 		{
-			var r = WindowManager.SpawnInputbox();
-			r.lineType = InputField.LineType.MultiLineNewline;
-			return r;
+			var inputBox = WindowManager.SpawnInputbox();
+			inputBox.text = text;
+			inputBox.onValueChanged.AddListener(action);
+			return inputBox;
 		}
 	}
 

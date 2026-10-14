@@ -10,40 +10,31 @@ namespace Trainer_v5
 	{
 		public static GameObject CreateLabel(string text = null, string name = null)
 		{
-			var control = WindowManager.SpawnLabel();
+			var control = UIFactory.Label(text.TextOrEmpty());
 			control.name = name.NameOrDefault("Text", text);
-			control.text = text.TextOrEmpty();
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateButton(string text, UnityAction action, string name = null)
 		{
-			var control = WindowManager.SpawnButton();
-			control.name = name.NameOrDefault("Button", text);
-			control.GetComponentInChildren<Text>().text = text.TextOrEmpty();
-			control.onClick.AddListener(action);
+			var control = UIFactory.Button(text.TextOrEmpty(), action, name.NameOrDefault("Button", text));
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateInputBox(string text, UnityAction<string> action, string name = null)
 		{
-			var control = WindowManager.SpawnInputbox();
+			var control = UIFactory.InputBox(text, action);
 			control.name = name.NameOrDefault("InputField", text);
-			control.text = text;
-			control.onValueChanged.AddListener(action);
 
 			return control.gameObject;
 		}
 
 		public static GameObject CreateToggle(string text, bool isOn, UnityAction<bool> action, string name = null)
 		{
-			var control = WindowManager.SpawnCheckbox();
+			var control = UIFactory.Toggle(text, isOn, action);
 			control.name = name.NameOrDefault("Toggle", text);
-			control.GetComponentInChildren<Text>().text = text;
-			control.isOn = isOn;
-			control.onValueChanged.AddListener(action);
 
 			return control.gameObject;
 		}
@@ -67,23 +58,20 @@ namespace Trainer_v5
 		{
 			for (int i = 0; i < gameObjects.Count; i++)
 			{
-				var gameObject = gameObjects[i];
-
-				WindowManager.AddElementToWindow(gameObject, window,
-						new Rect(column, (i - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && i % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT),
-						new Rect(0, 0, 0, 0));
+				WindowManager.AddElementToWindow(gameObjects[i], window, GetColumnSlot(i, column, isComboBox), new Rect(0, 0, 0, 0));
 			}
 		}
 
 		public static void SetWindowSize(this GUIWindow window, int rows, int xWindowSize)
 		{
-			window.MinSize.x = xWindowSize;
-			window.MinSize.y = (rows + 1) * Constants.ELEMENT_HEIGHT;
+			window.SetMinSize(xWindowSize, (rows + 1) * Constants.ELEMENT_HEIGHT);
 		}
 
-		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
-		private const float WINDOW_CHROME_HEIGHT = 200f;
-		private const int MIN_VISIBLE_ROWS = 6;
+		public static void SetMinSize(this GUIWindow window, int width, int height)
+		{
+			window.MinSize.x = width;
+			window.MinSize.y = height;
+		}
 
 		/// <summary>
 		/// Estimates how many rows of <paramref name="rowHeight"/> comfortably fit on screen for a
@@ -179,6 +167,15 @@ namespace Trainer_v5
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
 		}
 
+		internal static Rect GetColumnSlot(int index, int column, bool isComboBox)
+		{
+			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
+		}
+
+		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
+		private const float WINDOW_CHROME_HEIGHT = 200f;
+		private const int MIN_VISIBLE_ROWS = 6;
+
 		private static string NameOrDefault(this string name, string suffix, string text = null)
 		{
 			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + suffix;
@@ -195,11 +192,5 @@ namespace Trainer_v5
 				.Where(c => !char.IsWhiteSpace(c))
 				.ToArray());
 		}
-	}
-
-	public class ComboBox
-	{
-		public GameObject Label { get; set; }
-		public GameObject Dropdown { get; set; }
 	}
 }

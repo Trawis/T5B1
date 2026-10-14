@@ -4,19 +4,12 @@ using System.Linq;
 using Trainer_v5.SDK;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils = Trainer_v5.Utilities;
 
 namespace Trainer_v5.Window
 {
 	public class EmployeeTraitChangeWindow
 	{
 		public static EmployeeTraitChangeWindow Instance => _instance.Value;
-		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
-
-		private GUIWindow _window;
-		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
-		private Actor _actor;
-		private bool _isRefreshing;
 
 		public void Show()
 		{
@@ -51,6 +44,13 @@ namespace Trainer_v5.Window
 			_isRefreshing = false;
 		}
 
+		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
+
+		private GUIWindow _window;
+		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
+		private Actor _actor;
+		private bool _isRefreshing;
+
 		private void CreateWindow()
 		{
 			var self = this;
@@ -82,12 +82,12 @@ namespace Trainer_v5.Window
 			var col3 = new List<GameObject> { UIFactory.Label("Bad", WindowStyles.TitleStyle).gameObject };
 			col3.AddRange(badTraitsToggle);
 
-			Utils.CreateGameObjects(Constants.FIRST_COLUMN,  col1.ToArray(), window);
-			Utils.CreateGameObjects(Constants.SECOND_COLUMN, col2.ToArray(), window);
-			Utils.CreateGameObjects(Constants.THIRD_COLUMN,  col3.ToArray(), window);
+			col1.AddToWindow(window, Constants.FIRST_COLUMN);
+			col2.AddToWindow(window, Constants.SECOND_COLUMN);
+			col3.AddToWindow(window, Constants.THIRD_COLUMN);
 
 			var maxRows = new[] { col1.Count, col2.Count, col3.Count }.Max();
-			Utils.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1, window);
+			window.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1);
 
 			_window = window;
 			_traitsToggles = traits;
