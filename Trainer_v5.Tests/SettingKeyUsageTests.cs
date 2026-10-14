@@ -11,14 +11,12 @@ namespace Trainer_v5.Tests
 	// that can win overload resolution and fail to initialize outside Unity.
 	public class SettingKeyUsageTests
 	{
-		private static readonly Regex CommentLine = new Regex("^[ \\t]*//.*$", RegexOptions.Multiline | RegexOptions.Compiled);
-
 		private static readonly Regex ToggleKeyUsage = new Regex(
-			"(?:settings\\.(?:Get|Toggle)|Helpers\\.GetProperty\\((?:TrainerSettings|settings|Helpers\\.Settings)|ToggleJustEnabled|GetToggleTransition|Helpers\\.SetProperty\\((?:TrainerSettings|Helpers\\.Settings))\\(?[ ,]*\"(?<key>\\w+)\"",
+			"(?:settings\\s*\\.\\s*(?:Get|Toggle)|Helpers\\.GetProperty\\((?:TrainerSettings|settings|Helpers\\.Settings)|ToggleJustEnabled|GetToggleTransition|Helpers\\.SetProperty\\((?:TrainerSettings|Helpers\\.Settings))\\(?[\\s,]*\"(?<key>\\w+)\"",
 			RegexOptions.Compiled);
 
 		private static readonly Regex StoreKeyUsage = new Regex(
-			"(?:storesSettings\\.(?:Get|Set)|Helpers\\.GetProperty\\(Helpers\\.StoresSettings,)\\(?\\s*\"(?<key>\\w+)\"",
+			"(?:storesSettings\\s*\\.\\s*(?:Get|Set)|Helpers\\.GetProperty\\(Helpers\\.StoresSettings,)\\(?\\s*\"(?<key>\\w+)\"",
 			RegexOptions.Compiled);
 
 		private static List<KeyValuePair<string, string>> FindKeys(Regex usage)
@@ -26,7 +24,7 @@ namespace Trainer_v5.Tests
 			var found = new List<KeyValuePair<string, string>>();
 			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
 			{
-				var text = CommentLine.Replace(File.ReadAllText(file), string.Empty);
+				var text = SourceText.Strip(File.ReadAllText(file), keepStrings: true);
 				foreach (Match match in usage.Matches(text))
 				{
 					found.Add(new KeyValuePair<string, string>(Path.GetFileName(file), match.Groups["key"].Value));
@@ -41,6 +39,15 @@ namespace Trainer_v5.Tests
 			Assert.Single(ToggleKeyUsage.Matches("settings.Get(\"NoStress\")"));
 			Assert.Single(ToggleKeyUsage.Matches("GetToggleTransition(\"FreePrint\")"));
 			Assert.Single(StoreKeyUsage.Matches("storesSettings.Set(\"EfficiencyStore\", 1)"));
+			Assert.Single(ToggleKeyUsage.Matches("settings\n\t.Get(\n\t\"NoStress\")"));
+			Assert.Single(ToggleKeyUsage.Matches(SourceText.Strip("var x = 1; /* c */ settings.Get(\"NoStress\"); // t", keepStrings: true)));
+		}
+
+		[Fact]
+		public void TheScanIgnoresKeysThatAreOnlyMentionedInComments()
+		{
+			Assert.Empty(ToggleKeyUsage.Matches(SourceText.Strip("// settings.Get(\"NoStress\")\n/* settings.Get(\"NoStress\") */ settings.Get(SettingKeys.NoStress);", keepStrings: true)));
+			Assert.Empty(StoreKeyUsage.Matches(SourceText.Strip("var s = 1; // storesSettings.Get(\"EfficiencyStore\")", keepStrings: true)));
 		}
 
 		[Fact]
