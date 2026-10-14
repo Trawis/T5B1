@@ -1,4 +1,4 @@
-﻿namespace Trainer_v5
+namespace Trainer_v5
 {
 	public static class Notification
 	{
