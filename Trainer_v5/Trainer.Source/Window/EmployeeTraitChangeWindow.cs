@@ -54,10 +54,7 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = WindowManager.SpawnWindow();
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = "Edit traits for Nobody";
-			window.name = "EditTrait";
-			window.MainPanel.name = "EditTraitPanel";
+			var window = UIHelper.SpawnWindow("Edit traits for Nobody", "EditTrait", "EditTraitPanel");
 
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));

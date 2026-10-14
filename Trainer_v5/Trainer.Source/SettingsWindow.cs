@@ -32,10 +32,7 @@ namespace Trainer_v5
 			var storesSettings = Helpers.StoresSettings;
 			var efficiencySelectItems = Helpers.EfficiencySelectItems;
 
-			Window = WindowManager.SpawnWindow();
-			Window.InitialTitle = Window.TitleText.text = Window.NonLocTitle = _title;
-			Window.name = "TrainerSettings";
-			Window.MainPanel.name = "TrainerSettingsPanel";
+			Window = UIHelper.SpawnWindow(_title, "TrainerSettings", "TrainerSettingsPanel");
 
 			if (Window.name == "TrainerSettings")
 			{
