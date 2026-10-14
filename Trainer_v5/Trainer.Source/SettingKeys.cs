@@ -7,66 +7,66 @@ namespace Trainer_v5
 	public static class SettingKeys
 	{
 		private static readonly HashSet<string> _registeredKeys = new HashSet<string>();
-		private static readonly List<SettingKey<bool>> _toggles = new List<SettingKey<bool>>();
-		private static readonly List<SettingKey<object>> _stores = new List<SettingKey<object>>();
+		private static readonly List<ToggleKey> _toggles = new List<ToggleKey>();
+		private static readonly List<StoreKey> _stores = new List<StoreKey>();
 
-		public static readonly SettingKey<bool> NoStress = Toggle("NoStress");
-		public static readonly SettingKey<bool> NoVacation = Toggle("NoVacation");
-		public static readonly SettingKey<bool> FullRoomBrightness = Toggle("FullRoomBrightness");
-		public static readonly SettingKey<bool> CleanRooms = Toggle("CleanRooms");
-		public static readonly SettingKey<bool> FullEnvironment = Toggle("FullEnvironment");
-		public static readonly SettingKey<bool> NoiseReduction = Toggle("NoiseReduction");
-		public static readonly SettingKey<bool> FreeStaff = Toggle("FreeStaff");
-		public static readonly SettingKey<bool> TemperatureLock = Toggle("TemperatureLock");
-		public static readonly SettingKey<bool> NoWaterElectricity = Toggle("NoWaterElectricity");
-		public static readonly SettingKey<bool> NoNeeds = Toggle("NoNeeds");
-		public static readonly SettingKey<bool> FreeEmployees = Toggle("FreeEmployees");
-		public static readonly SettingKey<bool> LockAge = Toggle("LockAge");
-		public static readonly SettingKey<bool> MoreHostingDeals = Toggle("MoreHostingDeals");
-		public static readonly SettingKey<bool> IncreaseCourierCapacity = Toggle("IncreaseCourierCapacity");
-		public static readonly SettingKey<bool> ReduceISPCost = Toggle("ReduceISPCost");
-		public static readonly SettingKey<bool> IncreasePrintSpeed = Toggle("IncreasePrintSpeed");
-		public static readonly SettingKey<bool> FreePrint = Toggle("FreePrint");
-		public static readonly SettingKey<bool> IncreaseBookshelfSkill = Toggle("IncreaseBookshelfSkill");
-		public static readonly SettingKey<bool> NoMaintenance = Toggle("NoMaintenance");
-		public static readonly SettingKey<bool> NoSickness = Toggle("NoSickness");
-		public static readonly SettingKey<bool> FullSatisfaction = Toggle("FullSatisfaction");
-		public static readonly SettingKey<bool> DisableSkillDecay = Toggle("DisableSkillDecay");
-		public static readonly SettingKey<bool> DisableBurglars = Toggle("DisableBurglars");
-		public static readonly SettingKey<bool> DisableFires = Toggle("DisableFires");
-		public static readonly SettingKey<bool> NoServerCost = Toggle("NoServerCost");
-		public static readonly SettingKey<bool> ReduceExpansionCost = Toggle("ReduceExpansionCost");
-		public static readonly SettingKey<bool> NoEducationCost = Toggle("NoEducationCost");
-		public static readonly SettingKey<bool> IncreaseWalkSpeed = Toggle("IncreaseWalkSpeed");
-		public static readonly SettingKey<bool> AutoEndDesign = Toggle("AutoEndDesign");
-		public static readonly SettingKey<bool> AutoContractProgression = Toggle("AutoContractProgression");
-		public static readonly SettingKey<bool> AutoEndResearch = Toggle("AutoEndResearch");
-		public static readonly SettingKey<bool> AutoEndPatent = Toggle("AutoEndPatent");
-		public static readonly SettingKey<bool> ReduceBoxPrice = Toggle("ReduceBoxPrice");
-		public static readonly SettingKey<bool> DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
-		public static readonly SettingKey<bool> MoreInspiration = Toggle("MoreInspiration");
-		public static readonly SettingKey<bool> MoreCreativity = Toggle("MoreCreativity");
-		public static readonly SettingKey<bool> AutoResearchStart = Toggle("AutoResearchStart");
-		public static readonly SettingKey<bool> DigitalDistributionMonopol = Toggle("DigitalDistributionMonopol");
-		public static readonly SettingKey<bool> DisableFireInspection = Toggle("DisableFireInspection");
-		public static readonly SettingKey<bool> DisableForcePause = Toggle("DisableForcePause");
-		public static readonly SettingKey<bool> DisableForceFreeze = Toggle("DisableForceFreeze");
-		public static readonly SettingKey<bool> AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
-		public static readonly SettingKey<bool> AutoMaxMarketShare = Toggle("AutoMaxMarketShare");
-		public static readonly SettingKey<bool> Experimental = Toggle("Experimental");
-		public static readonly SettingKey<bool> ForceLights = Toggle("ForceLights");
-		public static readonly SettingKey<bool> ShowRoomCeilings = Toggle("ShowRoomCeilings");
-		public static readonly SettingKey<bool> UnlimitedSubsidiaries = Toggle("UnlimitedSubsidiaries");
-		public static readonly SettingKey<bool> NoMissedSupportTickets = Toggle("NoMissedSupportTickets");
-		public static readonly SettingKey<bool> NoInsuranceCost = Toggle("NoInsuranceCost");
-		public static readonly SettingKey<bool> NoLoanInterest = Toggle("NoLoanInterest");
-		public static readonly SettingKey<bool> AutoPorting = Toggle("AutoPorting");
-		public static readonly SettingKey<bool> FreeMarketing = Toggle("FreeMarketing");
-		public static readonly SettingKey<bool> NoOffshoreHeat = Toggle("NoOffshoreHeat");
-		public static readonly SettingKey<bool> NoFounderDividends = Toggle("NoFounderDividends");
+		public static readonly ToggleKey NoStress = Toggle("NoStress");
+		public static readonly ToggleKey NoVacation = Toggle("NoVacation");
+		public static readonly ToggleKey FullRoomBrightness = Toggle("FullRoomBrightness");
+		public static readonly ToggleKey CleanRooms = Toggle("CleanRooms");
+		public static readonly ToggleKey FullEnvironment = Toggle("FullEnvironment");
+		public static readonly ToggleKey NoiseReduction = Toggle("NoiseReduction");
+		public static readonly ToggleKey FreeStaff = Toggle("FreeStaff");
+		public static readonly ToggleKey TemperatureLock = Toggle("TemperatureLock");
+		public static readonly ToggleKey NoWaterElectricity = Toggle("NoWaterElectricity");
+		public static readonly ToggleKey NoNeeds = Toggle("NoNeeds");
+		public static readonly ToggleKey FreeEmployees = Toggle("FreeEmployees");
+		public static readonly ToggleKey LockAge = Toggle("LockAge");
+		public static readonly ToggleKey MoreHostingDeals = Toggle("MoreHostingDeals");
+		public static readonly ToggleKey IncreaseCourierCapacity = Toggle("IncreaseCourierCapacity");
+		public static readonly ToggleKey ReduceISPCost = Toggle("ReduceISPCost");
+		public static readonly ToggleKey IncreasePrintSpeed = Toggle("IncreasePrintSpeed");
+		public static readonly ToggleKey FreePrint = Toggle("FreePrint");
+		public static readonly ToggleKey IncreaseBookshelfSkill = Toggle("IncreaseBookshelfSkill");
+		public static readonly ToggleKey NoMaintenance = Toggle("NoMaintenance");
+		public static readonly ToggleKey NoSickness = Toggle("NoSickness");
+		public static readonly ToggleKey FullSatisfaction = Toggle("FullSatisfaction");
+		public static readonly ToggleKey DisableSkillDecay = Toggle("DisableSkillDecay");
+		public static readonly ToggleKey DisableBurglars = Toggle("DisableBurglars");
+		public static readonly ToggleKey DisableFires = Toggle("DisableFires");
+		public static readonly ToggleKey NoServerCost = Toggle("NoServerCost");
+		public static readonly ToggleKey ReduceExpansionCost = Toggle("ReduceExpansionCost");
+		public static readonly ToggleKey NoEducationCost = Toggle("NoEducationCost");
+		public static readonly ToggleKey IncreaseWalkSpeed = Toggle("IncreaseWalkSpeed");
+		public static readonly ToggleKey AutoEndDesign = Toggle("AutoEndDesign");
+		public static readonly ToggleKey AutoContractProgression = Toggle("AutoContractProgression");
+		public static readonly ToggleKey AutoEndResearch = Toggle("AutoEndResearch");
+		public static readonly ToggleKey AutoEndPatent = Toggle("AutoEndPatent");
+		public static readonly ToggleKey ReduceBoxPrice = Toggle("ReduceBoxPrice");
+		public static readonly ToggleKey DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
+		public static readonly ToggleKey MoreInspiration = Toggle("MoreInspiration");
+		public static readonly ToggleKey MoreCreativity = Toggle("MoreCreativity");
+		public static readonly ToggleKey AutoResearchStart = Toggle("AutoResearchStart");
+		public static readonly ToggleKey DigitalDistributionMonopol = Toggle("DigitalDistributionMonopol");
+		public static readonly ToggleKey DisableFireInspection = Toggle("DisableFireInspection");
+		public static readonly ToggleKey DisableForcePause = Toggle("DisableForcePause");
+		public static readonly ToggleKey DisableForceFreeze = Toggle("DisableForceFreeze");
+		public static readonly ToggleKey AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
+		public static readonly ToggleKey AutoMaxMarketShare = Toggle("AutoMaxMarketShare");
+		public static readonly ToggleKey Experimental = Toggle("Experimental");
+		public static readonly ToggleKey ForceLights = Toggle("ForceLights");
+		public static readonly ToggleKey ShowRoomCeilings = Toggle("ShowRoomCeilings");
+		public static readonly ToggleKey UnlimitedSubsidiaries = Toggle("UnlimitedSubsidiaries");
+		public static readonly ToggleKey NoMissedSupportTickets = Toggle("NoMissedSupportTickets");
+		public static readonly ToggleKey NoInsuranceCost = Toggle("NoInsuranceCost");
+		public static readonly ToggleKey NoLoanInterest = Toggle("NoLoanInterest");
+		public static readonly ToggleKey AutoPorting = Toggle("AutoPorting");
+		public static readonly ToggleKey FreeMarketing = Toggle("FreeMarketing");
+		public static readonly ToggleKey NoOffshoreHeat = Toggle("NoOffshoreHeat");
+		public static readonly ToggleKey NoFounderDividends = Toggle("NoFounderDividends");
 
-		public static readonly SettingKey<object> EfficiencyStore = Store("EfficiencyStore");
-		public static readonly SettingKey<object> LeadEfficiencyStore = Store("LeadEfficiencyStore");
+		public static readonly StoreKey EfficiencyStore = Store("EfficiencyStore");
+		public static readonly StoreKey LeadEfficiencyStore = Store("LeadEfficiencyStore");
 
 		internal static Dictionary<string, bool> CreateToggleDefaults()
 		{
@@ -88,16 +88,16 @@ namespace Trainer_v5
 			return defaults;
 		}
 
-		private static SettingKey<bool> Toggle(string key)
+		private static ToggleKey Toggle(string key)
 		{
-			var setting = new SettingKey<bool>(Register(key), false);
+			var setting = new ToggleKey(Register(key), false);
 			_toggles.Add(setting);
 			return setting;
 		}
 
-		private static SettingKey<object> Store(string key)
+		private static StoreKey Store(string key)
 		{
-			var setting = new SettingKey<object>(Register(key), null);
+			var setting = new StoreKey(Register(key), null);
 			_stores.Add(setting);
 			return setting;
 		}

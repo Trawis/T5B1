@@ -294,12 +294,12 @@ namespace Trainer_v5
 			}
 		}
 
-		private bool ToggleJustEnabled(SettingKey<bool> settingKey)
+		private bool ToggleJustEnabled(ToggleKey settingKey)
 		{
 			return GetToggleTransition(settingKey) == ToggleTransitionEnum.JustEnabled;
 		}
 
-		private ToggleTransitionEnum GetToggleTransition(SettingKey<bool> settingKey)
+		private ToggleTransitionEnum GetToggleTransition(ToggleKey settingKey)
 		{
 			return _toggleStates.Observe(settingKey.Key, Helpers.GetProperty(TrainerSettings, settingKey));
 		}

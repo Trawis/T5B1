@@ -102,9 +102,9 @@ namespace Trainer_v5
 			return null;
 		}
 
-		public static bool GetProperty(Dictionary<string, bool> properties, SettingKey<bool> key) => GetProperty(properties, key.Key);
+		public static bool GetProperty(Dictionary<string, bool> properties, ToggleKey key) => GetProperty(properties, key.Key);
 
-		public static object GetProperty(Dictionary<string, object> properties, SettingKey<object> key) => GetProperty(properties, key.Key);
+		public static object GetProperty(Dictionary<string, object> properties, StoreKey key) => GetProperty(properties, key.Key);
 
 		public static void SetProperty(Dictionary<string, bool> properties, string key, bool value)
 		{

@@ -234,7 +234,7 @@ namespace Trainer_v5
 			Window.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW);
 		}
 
-		private static GameObject CreateSettingToggle(Dictionary<string, bool> settings, string locKey, string defaultText, SettingKey<bool> key)
+		private static GameObject CreateSettingToggle(Dictionary<string, bool> settings, string locKey, string defaultText, ToggleKey key)
 		{
 			return UIHelper.CreateToggle(locKey.LocDef(defaultText), settings.Get(key), a => settings.Toggle(key));
 		}

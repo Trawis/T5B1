@@ -93,7 +93,7 @@ destructive or unverifiable toggles are not given fake restoration semantics.
 Trainer settings persist through the game's `WriteDictionary`/deserialize
 mechanism; serialized key compatibility must be preserved across releases.
 Every persisted setting is declared once in `SettingKeys` as a typed
-`SettingKey<T>` carrying its save key and default; `Helpers.Settings` and
+`ToggleKey` or `StoreKey` carrying its save key and default (not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types); `Helpers.Settings` and
 `Helpers.StoresSettings` are built from it, so serialization still reads and
 writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
