@@ -79,10 +79,8 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
 			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), CompanyFeatures.MaxMarketRecognition));
 			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductFeatures.RemoveSoft));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
-			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), ProductFeatures.MaxMarketShare));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
 			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), CompanyFeatures.UnlockAllSpace));
 			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
@@ -116,7 +114,6 @@ namespace Trainer_v5
 			column2.Add(CreateSettingToggle(settings, "AutoResearchStart", "Auto Research Start", SettingKeys.AutoResearchStart));
 			column2.Add(CreateSettingToggle(settings, "DigitalDistributionMonopol", "Digital Distribution Monopol", SettingKeys.DigitalDistributionMonopol));
 			column2.Add(CreateSettingToggle(settings, "DisableFireInspection", "Disable Fire Inspection", SettingKeys.DisableFireInspection));
-			//column2.Add(CreateSettingToggle(settings, "AutoMaxMarketShare", "Auto Max Market Share", SettingKeys.AutoMaxMarketShare));
 			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
 
 			#endregion
@@ -169,7 +166,6 @@ namespace Trainer_v5
 			column4.Add(CreateSettingToggle(settings, "ReduceInternetCost", "Reduce Internet Cost", SettingKeys.ReduceISPCost));
 			column4.Add(CreateSettingToggle(settings, "NoServerCost", "No Server Cost", SettingKeys.NoServerCost));
 			column4.Add(CreateSettingToggle(settings, "ReduceExpansionCost", "Reduce Expansion Cost", SettingKeys.ReduceExpansionCost));
-			//column4.Add(CreateSettingToggle(settings, "ReduceBoxPrice", "Reduce Box Price", SettingKeys.ReduceBoxPrice));
 			column4.Add(CreateSettingToggle(settings, "DisableForcePause", "Disable Force Pause", SettingKeys.DisableForcePause));
 			column4.Add(CreateSettingToggle(settings, "DisableForceFreeze", "Disable Force Freeze", SettingKeys.DisableForceFreeze));
 			column4.Add(CreateSettingToggle(settings, "AutoAcceptHostingDeals", "Auto Accept Hosting Deals", SettingKeys.AutoAcceptHostingDeals));
