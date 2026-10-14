@@ -209,11 +209,10 @@ namespace Trainer_v5
 			Settings.sRoomManager.AllFurniture.ForEach(x => x.CanSteal = false);
 		}
 
-		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow),
-		// Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon),
-		// and Cheats.InfiniteSubs (read in CompanyDetailWindow.TakeOverSub's subsidiary-count
-		// gate) are all consulted directly by the game whenever relevant, so the trainer binds
-		// the native flag the moment the setting changes instead of polling for it every frame.
+		// Cheats.ForceLights (read live in LampScript.UpdateNow / RoadLightScript.ToggleNow)
+		// and Cheats.CeilingMeshes (read live in Room.GenerateOuterWalls / GenerateInnerPolygon)
+		// are consulted directly by the game whenever relevant, so the trainer binds the native
+		// flag the moment the setting changes instead of polling for it every frame.
 		// Cheats.DisableDarkness has no readers anywhere in the vendored assembly and is
 		// intentionally left unexposed - setting it would have no observable effect.
 

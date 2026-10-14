@@ -25,9 +25,13 @@ namespace Trainer_v5
 			return baseline;
 		}
 
+		// Presets are shared for the whole game process, so every preset the trainer has halved is restored, not just the current one.
 		internal static void RestoreReduceISPCost()
 		{
-			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor();
+			foreach (KeyValuePair<EnvironmentPreset, float> baseline in _ispCostBaselines)
+			{
+				baseline.Key.ISPCostFactor = baseline.Value;
+			}
 		}
 
 		internal static void RestoreIncreaseCourierCapacity()
@@ -142,6 +146,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
+		// Cheats.InfiniteSubs is read directly by CompanyDetailWindow.TakeOverSub's subsidiary-count gate, so it is bound like the room flags in the environment domain.
 		public static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
 			Cheats.InfiniteSubs = enabled;

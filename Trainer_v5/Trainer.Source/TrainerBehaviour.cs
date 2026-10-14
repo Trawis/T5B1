@@ -695,20 +695,21 @@ namespace Trainer_v5
 				Helpers.TryExecute("MoreInspiration", EmployeeFeatures.ApplyMoreInspiration);
 			}
 
+			// Non-capturing lambdas are cached by the compiler; a method group would allocate a delegate every frame.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForcePause))
 			{
-				Helpers.TryExecute("DisableForcePause", CompanyFeatures.ApplyDisableForcePause);
+				Helpers.TryExecute("DisableForcePause", () => CompanyFeatures.ApplyDisableForcePause());
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DisableForceFreeze))
 			{
-				Helpers.TryExecute("DisableForceFreeze", CompanyFeatures.ApplyDisableForceFreeze);
+				Helpers.TryExecute("DisableForceFreeze", () => CompanyFeatures.ApplyDisableForceFreeze());
 			}
 
 			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoOffshoreHeat))
 			{
-				Helpers.TryExecute("NoOffshoreHeat", CompanyFeatures.ApplyNoOffshoreHeat);
+				Helpers.TryExecute("NoOffshoreHeat", () => CompanyFeatures.ApplyNoOffshoreHeat());
 			}
 
 			/*
