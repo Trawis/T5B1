@@ -8,6 +8,23 @@ namespace Trainer_v5
 {
 	public class TrainerBehaviour : ModBehaviour
 	{
+		public override void OnActivate()
+		{
+			SubscribeToSceneEvents();
+
+			// No sceneLoaded event fires on reactivation inside MainScene, so subscribe directly.
+			if (SceneManager.GetActiveScene().name == "MainScene")
+			{
+				SubscribeToEvents();
+			}
+		}
+
+		public override void OnDeactivate()
+		{
+			UnsubscribeFromEvents();
+			UnsubscribeFromSceneEvents();
+		}
+
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
@@ -163,7 +180,6 @@ namespace Trainer_v5
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.AutoMaxMarketShare))
 			{
 				// Disabled, see #150
-				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoMaintenance))
@@ -265,8 +281,7 @@ namespace Trainer_v5
 				Helpers.TryExecute("IncreaseCourierCapacity", CompanyFeatures.ApplyIncreaseCourierCapacity);
 			}
 
-			//Not working
-			//AI.BoxPrice = Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceBoxPrice) ? 62.5f : 125;
+			// Reduce Box Price is disabled: it does not work.
 
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.ReduceISPCost))
 			{
@@ -289,8 +304,7 @@ namespace Trainer_v5
 			return _toggleStates.Observe(settingKey.Key, Helpers.GetProperty(TrainerSettings, settingKey));
 		}
 
-		// Company.Bankrupt is recomputed daily (MarketSimulation.SimulateMonth runs from
-		// TimeOfDay.UpdateDay despite the name), not monthly.
+		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.DigitalDistributionMonopol))
@@ -389,10 +403,7 @@ namespace Trainer_v5
 				_oneTimeSettingsApplied = true;
 			}
 
-			// Cheats.* are plain static fields with no save-file backing, so they reset to false on every game
-			// process start regardless of what the trainer's own (persisted) settings say. Re-push them once per
-			// load so a setting that was enabled before a restart takes effect again; each is tracked independently
-			// so a transient failure in one only retries that one, without losing or re-running the others.
+			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{
 				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
@@ -507,7 +518,6 @@ namespace Trainer_v5
 			if (ToggleJustEnabled(SettingKeys.AutoMaxMarketShare))
 			{
 				// Disabled, see #150
-				//Settings.MyCompany.Products.ForEach(product => product.MarketShare = 1f);
 			}
 
 			if (ToggleJustEnabled(SettingKeys.AutoAcceptHostingDeals))
@@ -636,10 +646,7 @@ namespace Trainer_v5
 
 			_minuteWatcher.Poll();
 
-			// Each feature owns one TryExecute boundary around its own traversal. A failing feature can abort
-			// its own remaining work for this frame, but unrelated features and the next frame's retry are
-			// unaffected. A feature spanning more than one collection (e.g. NoSickness affecting both rooms
-			// and actors) still gets a single boundary, since isolating its parts from each other isn't required.
+			// One TryExecute boundary per feature; a failing feature does not stop unrelated ones.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoiseReduction))
 			{
 				Helpers.TryExecute("NoiseReduction", EnvironmentFeatures.ApplyNoiseReduction);
@@ -706,50 +713,12 @@ namespace Trainer_v5
 				Helpers.TryExecute("DisableForceFreeze", () => CompanyFeatures.ApplyDisableForceFreeze());
 			}
 
-			// AddHeat checks/triggers an audit synchronously, so clearing every frame is the tightest reactive window available.
+			// AddHeat triggers audits synchronously, so clear it every frame.
 			if (Helpers.GetProperty(TrainerSettings, SettingKeys.NoOffshoreHeat))
 			{
 				Helpers.TryExecute("NoOffshoreHeat", () => CompanyFeatures.ApplyNoOffshoreHeat());
 			}
 
-			/*
-			 foreach (Actor actor in GameSettings.Instance.sActorManager.Actors)
-			{
-			  actor.employee.BirthDate += months;
-			  actor.employee.Hired += months;
-			  actor.employee.LastWage += months;
-			  actor.employee.LastInpirationUse += months;
-			  actor.LastMeeting += months;
-			  actor.MeetingTime += months;
-			  actor.DriveTime += months;
-			  actor.DespawnTime += months;
-			  actor.LeaveTime += months;
-			  actor.LastSocial += months;
-			  actor.ForgetfulETA += months;
-			}
-			 * */
 		}
-
-		#region Overrides
-
-		public override void OnActivate()
-		{
-			SubscribeToSceneEvents();
-
-			// No fresh sceneLoaded event fires if we are reactivated while already
-			// in MainScene, so pick up the time-event subscriptions directly here.
-			if (SceneManager.GetActiveScene().name == "MainScene")
-			{
-				SubscribeToEvents();
-			}
-		}
-
-		public override void OnDeactivate()
-		{
-			UnsubscribeFromEvents();
-			UnsubscribeFromSceneEvents();
-		}
-
-		#endregion
 	}
 }
