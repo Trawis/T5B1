@@ -6,6 +6,17 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.2] - 2026-10-21
+
+- Internal cleanup with no intended behavior change: repeated toggle wiring in
+  the settings window and trainer window setup are centralized, feature class
+  members are consistently internal, and unreachable code and retired
+  commented-out controls are removed.
+- Added unit tests for the feature guard and made the source-scanning
+  architecture tests ignore comments and cover all feature files.
+- `dotnet format` baseline cleaned and enforced in CI; CI actions updated to
+  Node 24 releases.
+
 ## [5.3.1] - 2026-10-14
 
 - Internal refactor with no intended behavior change: `TrainerBehaviour` is
