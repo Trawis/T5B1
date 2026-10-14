@@ -24,10 +24,7 @@ namespace Trainer_v5
 
 		private static GUIWindow CreateWindow()
 		{
-			var window = WindowManager.SpawnWindow();
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = _title;
-			window.name = "EditEmployee";
-			window.MainPanel.name = "EditEmployeePanel";
+			var window = UIHelper.SpawnWindow(_title, "EditEmployee", "EditEmployeePanel");
 
 			var firstHeader = FirstColumnHeader();
 			var roleToggles = RoleToggles();

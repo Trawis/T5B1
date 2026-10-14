@@ -4,7 +4,7 @@ namespace Trainer_v5
 {
 	internal static class MarketFeatures
 	{
-		public static void InstantMarketing()
+		internal static void InstantMarketing()
 		{
 			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
 				.Where(plan => plan.Type == MarketingPlan.TaskType.PressRelease)
@@ -24,7 +24,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Press release campaigns have been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void PushReward()
+		internal static void PushReward()
 		{
 			var Deals = HUD.Instance.dealWindow.GetActiveDeals().Where(deal => deal.ToString() == "ServerDeal").ToArray();
 
@@ -41,7 +41,7 @@ namespace Trainer_v5
 			Helpers.RewardIsGained = true;
 		}
 
-		public static void PushDeal()
+		internal static void PushDeal()
 		{
 			SoftwareProduct[] Products = Settings.simulation.GetAllProducts(false).Where(pr =>
 				  MarketSimulation.Active.SoftwareTypes.ContainsKey(pr.Type.ToString())
