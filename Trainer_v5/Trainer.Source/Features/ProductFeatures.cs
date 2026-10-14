@@ -5,7 +5,7 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
-		public static void SellProductStock()
+		internal static void SellProductStock()
 		{
 			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
 				false, DialogWindow.DialogType.Information);
@@ -29,7 +29,7 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void SetProductPriceAction(float price)
+		internal static void SetProductPriceAction(float price)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -44,12 +44,12 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void SetProductPrice()
+		internal static void SetProductPrice()
 		{
 			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
 		}
 
-		public static void SetProductStockAction(uint stock)
+		internal static void SetProductStockAction(uint stock)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -64,12 +64,12 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void SetProductStock()
+		internal static void SetProductStock()
 		{
 			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
 		}
 
-		public static void AddActiveUsersAction(int users)
+		internal static void AddActiveUsersAction(int users)
 		{
 			string error;
 			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
@@ -84,7 +84,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void AddActiveUsers()
+		internal static void AddActiveUsers()
 		{
 			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
 		}

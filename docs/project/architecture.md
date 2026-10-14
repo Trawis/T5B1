@@ -77,6 +77,8 @@ The domain classes under `Features/` own only game-state mutations. They do
 not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
 cadence, the boundary, and the toggle transitions, and calls into them. UI
 buttons call the one-shot actions on the domain classes directly.
+The classes and their members are `internal`; each keeps its own one-line
+`Settings` accessor rather than sharing one, to avoid coupling them.
 
 ## Toggle Transitions
 
@@ -124,10 +126,11 @@ helpers. UI text is localized; translations live under
 - `dotnet format`/`dotnet build` are the local static checks.
 - `Trainer_v5.Tests` (xUnit, `net462`) runs in CI after the build. It covers
   setting keys and defaults, save serialization round-trips, input validation,
-  toggle transitions, and minute-event cadence. It runs the real trainer code
-  against the vendored assemblies outside Unity, so anything that calls into
-  live game objects (the `Features/` classes, window construction,
-  `Helpers.TryExecute`) is not covered and needs in-game validation.
+  toggle transitions, minute-event cadence, and the `FeatureGuard` behind
+  `Helpers.TryExecute` (return value and log throttling). It runs the real
+  trainer code against the vendored assemblies outside Unity, so anything that
+  calls into live game objects (the `Features/` classes, window construction)
+  is not covered and needs in-game validation.
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt

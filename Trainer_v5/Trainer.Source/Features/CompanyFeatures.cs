@@ -6,7 +6,7 @@ namespace Trainer_v5
 {
 	internal static class CompanyFeatures
 	{
-		public static void TransferOffshoreFunds()
+		internal static void TransferOffshoreFunds()
 		{
 			double amount = Settings.OffshoreAccount;
 			if (amount <= 0.0)
@@ -21,13 +21,13 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void ClearLoans()
+		internal static void ClearLoans()
 		{
 			Settings.Loans.Clear();
 			HUD.Instance.AddPopupMessage("Trainer: All loans are cleared!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void AIBankrupt()
+		internal static void AIBankrupt()
 		{
 			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.ToArray();
 
@@ -37,7 +37,7 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void UnlockAllSpace()
+		internal static void UnlockAllSpace()
 		{
 			if (!Helpers.IsGameReady()) return;
 
@@ -45,7 +45,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void UnlockFurniture()
+		internal static void UnlockFurniture()
 		{
 			if (!Helpers.IsGameReady()) return;
 
@@ -56,23 +56,23 @@ namespace Trainer_v5
 		}
 
 		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
-		public static void ApplyUnlimitedSubsidiaries(bool enabled)
+		internal static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
 			Cheats.InfiniteSubs = enabled;
 		}
 
-		public static void MonthDaysAction(int i)
+		internal static void MonthDaysAction(int i)
 		{
 			GameSettings.DaysPerMonth = i;
 			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
 		}
 
-		public static void MonthDays()
+		internal static void MonthDays()
 		{
 			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
 		}
 
-		public static void TakeoverCompanyAction(string input)
+		internal static void TakeoverCompanyAction(string input)
 		{
 			var simulatedCompany = Settings.simulation.Companies
 				.FirstOrDefault(simCompany => simCompany.Value.Name == input).Value;
@@ -102,12 +102,12 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
 		}
 
-		public static void TakeoverCompany()
+		internal static void TakeoverCompany()
 		{
 			WindowManager.SpawnInputDialog("Type company name:", "Takeover Company", "", TakeoverCompanyAction);
 		}
 
-		public static void SubDCompanyAction(string input)
+		internal static void SubDCompanyAction(string input)
 		{
 			SimulatedCompany Company =
 				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
@@ -121,12 +121,12 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Company " + Company.Name + " is now your subsidiary!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void SubDCompany()
+		internal static void SubDCompany()
 		{
 			WindowManager.SpawnInputDialog("Type company name:", "Subsidiary Company", "", SubDCompanyAction);
 		}
 
-		public static void ForceBankruptAction(string input)
+		internal static void ForceBankruptAction(string input)
 		{
 			SimulatedCompany Company =
 				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
@@ -141,23 +141,23 @@ namespace Trainer_v5
 			Company.Bankrupt = !Company.Bankrupt;
 		}
 
-		public static void ForceBankrupt()
+		internal static void ForceBankrupt()
 		{
 			WindowManager.SpawnInputDialog("Type company name:", "Force Bankrupt", "", ForceBankruptAction);
 		}
 
-		public static void IncreaseMoneyAction(int amount)
+		internal static void IncreaseMoneyAction(int amount)
 		{
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void IncreaseMoney()
+		internal static void IncreaseMoney()
 		{
 			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
 		}
 
-		public static void AddAIFundsAction(string input)
+		internal static void AddAIFundsAction(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
 				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
@@ -184,12 +184,12 @@ namespace Trainer_v5
 				}, 0, int.MaxValue);
 		}
 
-		public static void AddAIFunds()
+		internal static void AddAIFunds()
 		{
 			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
 		}
 
-		public static void MaxReputation()
+		internal static void MaxReputation()
 		{
 			Action<string> action = (input) =>
 			{
@@ -213,7 +213,7 @@ namespace Trainer_v5
 			areYouSure();
 		}
 
-		public static void MaxMarketRecognition()
+		internal static void MaxMarketRecognition()
 		{
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.Where(value => !value.OneClient).ToList();
 			foreach (var softwareType in softwareTypes)
@@ -227,7 +227,7 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
 		}
 
-		public static void UnlockAndClaimAllRewards()
+		internal static void UnlockAndClaimAllRewards()
 		{
 			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
 			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
