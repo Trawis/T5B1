@@ -6,7 +6,12 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## [5.3.2] - 2026-10-21
+## [5.3.3] - 2026-10-14
+
+- Fixed the Workshop (source) version failing to load in the game with a
+  CS1014 compile error.
+
+## [5.3.2] - 2026-10-14
 
 - Internal cleanup with no intended behavior change: repeated toggle wiring in
   the settings window and trainer window setup are centralized, feature class
