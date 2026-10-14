@@ -7,7 +7,7 @@ namespace Trainer_v5
 {
 	internal static class EmployeeFeatures
 	{
-		public static void SetSkillPerEmployeeAction(string input)
+		internal static void SetSkillPerEmployeeAction(string input)
 		{
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
 			var selectedRoles = Helpers.RolesList.Where(r => r.Value).ToList();
@@ -51,12 +51,12 @@ namespace Trainer_v5
 			}
 		}
 
-		public static void SetSkillPerEmployee()
+		internal static void SetSkillPerEmployee()
 		{
 			WindowManager.SpawnInputDialog("How many specialization stars do you want?\nMin = -3, Max = 3", "Stars amount", "3", SetSkillPerEmployeeAction);
 		}
 
-		public static void HREmployees()
+		internal static void HREmployees()
 		{
 			if (!Helpers.IsGameReady(requireSelector: true)) return;
 
@@ -77,7 +77,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: All leaders are now HRed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
 		}
 
-		public static void ResetAgeOfEmployees()
+		internal static void ResetAgeOfEmployees()
 		{
 			var currentTime = SDateTime.Now();
 			foreach (var actor in Settings.sActorManager.Actors)
@@ -89,7 +89,7 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		public static void EmployeesToMax()
+		internal static void EmployeesToMax()
 		{
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));

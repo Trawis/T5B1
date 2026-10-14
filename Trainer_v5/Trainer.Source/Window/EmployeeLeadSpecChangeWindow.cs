@@ -56,10 +56,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = WindowManager.SpawnWindow();
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = "Edit lead specialization for Nobody";
-			window.name = "EditLeadSpec";
-			window.MainPanel.name = "MainPanel";
+			var window = UIHelper.SpawnWindow("Edit lead specialization for Nobody", "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();

@@ -3,12 +3,12 @@ namespace Trainer_v5
 	internal static class EnvironmentFeatures
 	{
 		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
-		public static void ApplyForceLights(bool enabled)
+		internal static void ApplyForceLights(bool enabled)
 		{
 			Cheats.ForceLights = enabled;
 		}
 
-		public static void ApplyShowRoomCeilings(bool enabled)
+		internal static void ApplyShowRoomCeilings(bool enabled)
 		{
 			Cheats.CeilingMeshes = enabled;
 
