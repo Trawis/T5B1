@@ -6,6 +6,13 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.1] - 2026-10-14
+
+- Internal refactor with no intended behavior change: `TrainerBehaviour` is
+  split into orchestration plus domain feature classes, settings keys go
+  through a typed registry, and overlapping UI helper APIs are consolidated.
+- Added automated tests for game-independent trainer logic.
+
 ## [5.3.0] - 2026-10-13
 
 - Fixed one failing feature stopping other trainer features.
