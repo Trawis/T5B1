@@ -156,6 +156,22 @@ namespace Trainer_v5
 			}
 		}
 
+		public static void ShowDiscordInvite(bool displayAsPopup = false)
+		{
+			string message = $"Join us on our discord server\n{DiscordUrl}";
+			if (displayAsPopup)
+			{
+				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			}
+			else
+			{
+				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
+			}
+		}
+
+		internal static bool IsGameReady(bool requireSelector = false) =>
+			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
+
 		#endregion
 
 		#region extensions

@@ -68,44 +68,44 @@ namespace Trainer_v5
 
 			#region column1
 
-			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), TrainerBehaviour.IncreaseMoney));
-			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), TrainerBehaviour.AddAIFunds));
-			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), TrainerBehaviour.MaxFollowers));
+			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), CompanyFeatures.IncreaseMoney));
+			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), CompanyFeatures.AddAIFunds));
+			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), TrainerBehaviour.TakeoverCompany));
+			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyFeatures.TakeoverCompany));
 			column1.Add(UIHelper.CreateLabel());
 
-			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), TrainerBehaviour.AIBankrupt));
-			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), TrainerBehaviour.MonthDays));
-			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), TrainerBehaviour.ClearLoans));
-			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), TrainerBehaviour.MaxMarketRecognition));
-			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), TrainerBehaviour.EmployeesToMax));
-			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), TrainerBehaviour.RemoveSoft));
-			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), TrainerBehaviour.ResetAgeOfEmployees));
-			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), TrainerBehaviour.SellProductStock));
-			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), TrainerBehaviour.MaxMarketShare));
-			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), TrainerBehaviour.UnlockFurniture));
-			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), TrainerBehaviour.UnlockAllSpace));
-			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), TrainerBehaviour.ExtendDeadline));
-			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), TrainerBehaviour.UnlockAndClaimAllRewards));
+			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), CompanyFeatures.AIBankrupt));
+			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), CompanyFeatures.MonthDays));
+			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
+			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), CompanyFeatures.MaxMarketRecognition));
+			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
+			//column1.Add(UIHelper.CreateButton("RemoveProducts".LocDef("Remove Products"), ProductFeatures.RemoveSoft));
+			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
+			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
+			//column1.Add(UIHelper.CreateButton("MaxMarketShare".LocDef("Max Market Share"), ProductFeatures.MaxMarketShare));
+			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
+			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), CompanyFeatures.UnlockAllSpace));
+			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
+			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), CompanyFeatures.UnlockAndClaimAllRewards));
 
 			#endregion
 
 			#region column2
 
-			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), TrainerBehaviour.MaxReputation));
-			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), TrainerBehaviour.FixBugs));
-			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), TrainerBehaviour.InstantResearch));
-			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), TrainerBehaviour.InstantPorting));
-			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), TrainerBehaviour.InstantMarketing));
-			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), TrainerBehaviour.TransferOffshoreFunds));
-			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), TrainerBehaviour.OptimizeTeamAssignments));
+			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), CompanyFeatures.MaxReputation));
+			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), WorkItemFeatures.FixBugs));
+			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), WorkItemFeatures.InstantResearch));
+			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), WorkItemFeatures.InstantPorting));
+			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), MarketFeatures.InstantMarketing));
+			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), CompanyFeatures.TransferOffshoreFunds));
+			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), WorkItemFeatures.OptimizeTeamAssignments));
 			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), TrainerBehaviour.SetProductPrice));
+			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), ProductFeatures.SetProductPrice));
 			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), TrainerBehaviour.SubDCompany));
+			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), CompanyFeatures.SubDCompany));
 			column2.Add(UIHelper.CreateLabel());
 
 			column2.Add(UIHelper.CreateToggle("DisableNeeds".LocDef("Disable Needs"), settings.Get(SettingKeys.NoNeeds), a => settings.Toggle(SettingKeys.NoNeeds)));
@@ -120,7 +120,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateToggle("DigitalDistributionMonopol".LocDef("Digital Distribution Monopol"), settings.Get(SettingKeys.DigitalDistributionMonopol), a => settings.Toggle(SettingKeys.DigitalDistributionMonopol)));
 			column2.Add(UIHelper.CreateToggle("DisableFireInspection".LocDef("Disable Fire Inspection"), settings.Get(SettingKeys.DisableFireInspection), a => settings.Toggle(SettingKeys.DisableFireInspection)));
 			//column2.Add(UIHelper.CreateToggle("AutoMaxMarketShare".LocDef("Auto Max Market Share"), settings.Get(SettingKeys.AutoMaxMarketShare), a => settings.Toggle(SettingKeys.AutoMaxMarketShare)));
-			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); TrainerBehaviour.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
+			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
 
 			#endregion
 
@@ -129,9 +129,9 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
 			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), TrainerBehaviour.SetProductStock));
+			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), ProductFeatures.SetProductStock));
 			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), TrainerBehaviour.ForceBankrupt));
+			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), CompanyFeatures.ForceBankrupt));
 			column3.Add(UIHelper.CreateLabel());
 
 			column3.Add(UIHelper.CreateToggle("FullEnvironment".LocDef("Full Environment"), settings.Get(SettingKeys.FullEnvironment), a => settings.Toggle(SettingKeys.FullEnvironment)));
@@ -148,8 +148,8 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateToggle("AutoPatentEnd".LocDef("Auto Patent End"), settings.Get(SettingKeys.AutoEndPatent), a => settings.Toggle(SettingKeys.AutoEndPatent)));
 			column3.Add(UIHelper.CreateToggle("IncreaseWalkSpeed".LocDef("Increase Walk Speed"), settings.Get(SettingKeys.IncreaseWalkSpeed), a => settings.Toggle(SettingKeys.IncreaseWalkSpeed)));
 			column3.Add(UIHelper.CreateToggle("DisableFurnitureStealing".LocDef("Disable Furniture Stealing"), settings.Get(SettingKeys.DisableFurnitureStealing), a => settings.Toggle(SettingKeys.DisableFurnitureStealing)));
-			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); TrainerBehaviour.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
-			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); TrainerBehaviour.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
+			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); EnvironmentFeatures.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
+			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); EnvironmentFeatures.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
 
 			#endregion
 
@@ -158,7 +158,7 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), TrainerBehaviour.AddActiveUsers));
+			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), ProductFeatures.AddActiveUsers));
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
@@ -191,7 +191,7 @@ namespace Trainer_v5
 			#region column5
 
 			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => TrainerBehaviour.ShowDiscordInvite()));
+			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => Helpers.ShowDiscordInvite()));
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
 			column5.Add(UIHelper.CreateLabel());
@@ -224,7 +224,7 @@ namespace Trainer_v5
 			{
 				bool isOn = false;
 				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
-				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), TrainerBehaviour.TestButton));
+				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton));
 
 			}
 
