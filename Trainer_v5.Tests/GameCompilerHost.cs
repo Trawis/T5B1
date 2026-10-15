@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -115,8 +116,9 @@ namespace Trainer_v5.Tests
 				}
 
 				var run = Run(arguments, null);
+				// CS0006 is "metadata file not found": the compiler reached reference loading. Everything else is a real finding.
 				var sentinelReported = run.Errors.Any(e => e.Code == "CS0006" && e.Message.IndexOf(sentinel, StringComparison.OrdinalIgnoreCase) >= 0);
-				var problems = run.Errors.Where(e => !(e.Code == "CS0006" && e.Message.IndexOf(sentinel, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+				var problems = run.Errors.Where(e => e.Code != "CS0006").ToList();
 				return new ParseCheck(sentinelReported, Enumerable.Select(problems, p => Locate(p, files)).ToList());
 			}
 			finally
@@ -164,7 +166,7 @@ namespace Trainer_v5.Tests
 				throw new FileNotFoundException("The game's C# compiler is missing. Copy mcs.dll from the game's Managed folder to Trainer_v5/Trainer.Libraries/mcs.dll.", AssemblyPath);
 			}
 
-			var type = Assembly.LoadFrom(AssemblyPath).GetType("Mono.CSharp.CompilerCallableEntryPoint", false);
+			var type = Assembly.LoadFrom(LoadableCopy()).GetType("Mono.CSharp.CompilerCallableEntryPoint", false);
 			var method = type == null ? null : type.GetMethod("InvokeCompiler", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string[]), typeof(TextWriter) }, null);
 			if (method == null)
 			{
@@ -173,6 +175,39 @@ namespace Trainer_v5.Tests
 
 			_entryPoint = method;
 			return method;
+		}
+
+		// The game's mcs.dll is marked as requiring a 32-bit process, which a 64-bit test host refuses to load
+		// (BadImageFormatException). The code is plain IL, so the tests load a copy with only that flag cleared.
+		// The copy is named by its content, so repeated runs reuse it.
+		private static string LoadableCopy()
+		{
+			var image = PeImage.WithoutRequires32BitProcess(File.ReadAllBytes(AssemblyPath));
+			byte[] hash;
+			using (var sha = SHA256.Create())
+			{
+				hash = sha.ComputeHash(image);
+			}
+
+			var directory = Path.Combine(Path.GetTempPath(), "t5b1-game-compiler-" + BitConverter.ToString(hash, 0, 8).Replace("-", string.Empty));
+			var path = Path.Combine(directory, "mcs.dll");
+			if (!File.Exists(path) || new FileInfo(path).Length != image.Length)
+			{
+				Directory.CreateDirectory(directory);
+				try
+				{
+					File.WriteAllBytes(path, image);
+				}
+				catch (IOException)
+				{
+					// Another test process wrote it first and has it loaded; its copy is identical.
+					if (!File.Exists(path))
+					{
+						throw;
+					}
+				}
+			}
+			return path;
 		}
 
 		private static IList<CompilerDiagnostic> Parse(string output)

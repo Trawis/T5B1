@@ -28,6 +28,26 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void TheCopyOfTheGamesCompilerDiffersByTheBitnessFlagOnly()
+		{
+			// A 64-bit test host rejects an assembly marked as requiring 32 bits, so the compiler is loaded from a copy without the flag.
+			var original = File.ReadAllBytes(GameCompiler.AssemblyPath);
+			var copy = PeImage.WithoutRequires32BitProcess(original);
+
+			Assert.False(PeImage.Requires32BitProcess(copy));
+			Assert.Equal(original.Length, copy.Length);
+			var differing = 0;
+			for (var i = 0; i < original.Length; i++)
+			{
+				if (original[i] != copy[i])
+				{
+					differing++;
+				}
+			}
+			Assert.True(differing <= 1, "Only the 32-bit flag may change, but " + differing + " bytes differ.");
+		}
+
+		[Fact]
 		public void TheGamesCompilerIsAvailable()
 		{
 			GameCompiler.VerifyAvailable();

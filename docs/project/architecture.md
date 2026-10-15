@@ -138,8 +138,10 @@ injector's private methods are called by reflection from the tests only, and
 `GameSourceInjector.VerifyMirror` fails when the game's `InjectTryBlocks` stops
 calling what the tests repeat. `Trainer.Libraries/mcs.dll` is the compiler
 from the game's `Managed` folder (Unity's build of Mono's C# compiler). Only
-the tests use it: it is not referenced by the mod project or packaged.
-When the game updates, refresh it together with `Assembly-CSharp.dll`.
+the tests use it: it is not referenced by the mod project or packaged. The game
+marks it as requiring a 32-bit process, which a 64-bit test host rejects, so
+the tests load a temporary copy with that one flag cleared. When the game
+updates, refresh it together with `Assembly-CSharp.dll`.
 
 What the tests establish: the injected source parses with the game's compiler,
 every injected `try` wraps a method or constructor body, and each hazard above
