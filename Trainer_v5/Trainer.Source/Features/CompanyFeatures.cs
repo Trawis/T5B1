@@ -33,7 +33,7 @@ namespace Trainer_v5
 
 		internal static void AIBankrupt()
 		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(company => company != Settings.MyCompany).ToArray();
+			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(IsBankruptTarget).ToArray();
 
 			for (int i = 0; i < Companies.Length; i++)
 			{
@@ -135,7 +135,7 @@ namespace Trainer_v5
 		internal static void ForceBankruptAction(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
-				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
+				.Where(simCompany => simCompany.Name == input && IsBankruptTarget(simCompany))
 				.ToList();
 
 			if (matches.Count == 0)
@@ -158,13 +158,7 @@ namespace Trainer_v5
 			}
 
 			// One-way: the flag is only ever set, never toggled back.
-			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer =>
-			{
-				if (answer == "YES" && !company.Bankrupt)
-				{
-					company.Bankrupt = true;
-				}
-			});
+			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer => ConfirmForceBankrupt(company, answer));
 		}
 
 		internal static void ForceBankrupt()
@@ -186,7 +180,7 @@ namespace Trainer_v5
 		internal static void AddAIFundsAction(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
-				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
+				.Where(simCompany => simCompany.Name == input && IsBankruptTarget(simCompany))
 				.ToList();
 
 			if (matches.Count == 0)
@@ -380,6 +374,23 @@ namespace Trainer_v5
 		internal static void ApplyNoOffshoreHeat()
 		{
 			Settings.Heat = 0f;
+		}
+
+		// The player's own company and its subsidiaries are never bankrupted.
+		private static bool IsBankruptTarget(SimulatedCompany company)
+		{
+			return company != Settings.MyCompany && !company.IsPlayerOwned();
+		}
+
+		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
+		private static void ConfirmForceBankrupt(SimulatedCompany company, string answer)
+		{
+			SimulatedCompany current;
+			bool stillThere = Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company;
+			if (answer == "YES" && stillThere && IsBankruptTarget(company) && !company.Bankrupt)
+			{
+				company.Bankrupt = true;
+			}
 		}
 
 		private static float GetDefaultISPCostFactor()
