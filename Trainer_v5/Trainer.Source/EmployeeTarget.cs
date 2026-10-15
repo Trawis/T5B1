@@ -85,10 +85,17 @@ namespace Trainer_v5
 			return actor != null && actor.employee != null && !actor.employee.Dismissed;
 		}
 
-		// False once the actor is gone, dismissed, or carries a different Employee object than when resolved.
+		// False once the actor is gone, dismissed, replaced, or no longer part of the active game.
 		public bool IsStillValid()
 		{
-			return IsLive(Actor) && Actor.employee == Employee;
+			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
+		}
+
+		// A save reload or scene change leaves old actors referenced; only the current game's actors count.
+		private static bool IsInActiveGame(Actor actor)
+		{
+			var settings = GameSettings.Instance;
+			return settings != null && settings.sActorManager != null && settings.sActorManager.Actors.Contains(actor);
 		}
 
 		// DetailWindow.CurrentEmployee can stay set after the window closes, so it only counts while shown.

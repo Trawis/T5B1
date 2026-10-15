@@ -31,5 +31,18 @@ namespace Trainer_v5.Tests
 
 			Assert.True(body.IndexOf("actor.employee = newEmployee", System.StringComparison.Ordinal) < body.IndexOf("EmployeeReferenceMigration.Migrate(employee, newEmployee)", System.StringComparison.Ordinal));
 		}
+
+		[Fact]
+		public void AFailedMigrationIsRevertedAndReported()
+		{
+			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "DetailWindowTrainer.cs"));
+			var start = source.IndexOf("private static void SetCreativity", System.StringComparison.Ordinal);
+			var body = source.Substring(start, source.IndexOf("private static void SetInspiration", System.StringComparison.Ordinal) - start);
+
+			var migrate = body.IndexOf("EmployeeReferenceMigration.Migrate(employee, newEmployee)", System.StringComparison.Ordinal);
+			var revert = body.IndexOf("RevertCreativityEdit(actor, employee, newEmployee)", System.StringComparison.Ordinal);
+			Assert.True(migrate > 0 && revert > migrate, "the revert must follow the migration in a catch block");
+			Assert.Contains("catch (Exception failure)", body);
+		}
 	}
 }
