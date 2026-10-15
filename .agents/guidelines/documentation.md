@@ -30,9 +30,15 @@
 - one substantial proposed technical change:
   `docs/project/designs/<short-name>.md`, created from
   `docs/templates/tsd.template.md`
-- optional public capability index: `docs/project/features.md`
 
 Update only documents affected by verified behavior. Do not create documentation as busywork.
+
+`fsd.md`, `gdd.md`, `architecture.md`, and `user-guide.md` are on-demand
+documents: repo-seed makes their templates available for the profile but
+does not scaffold them automatically. Create one with
+`scripts/sync-docs.py --scaffold <name>` (`architecture`, `fsd`, `gdd`, or
+`user-guide`) only when the project actually needs it, not merely because
+the profile could provide it.
 
 ## Growth Without Reorganization
 
@@ -80,10 +86,11 @@ intended player experience, balance goals, or future design.
 
 ## Template Review
 
-Newly scaffolded Markdown contains source-path and content-hash markers. Sync
-may upgrade it only while those markers prove the live document is unchanged.
-Known older scaffolds may also be upgraded when their recorded provenance or
-an approved legacy content hash verifies the original content.
+Newly scaffolded Markdown contains source-path and content-hash markers.
+Current, valid provenance with unchanged content may be upgraded. Current
+provenance with changed or mismatched content is preserved as a customized,
+project-owned document. No recognized provenance is also preserved as
+project-owned; it is never identified as an old scaffold to migrate.
 
 When a live document cannot be verified, compare it manually with the managed
 template, using Git history when useful. Apply only relevant structural
