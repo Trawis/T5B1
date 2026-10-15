@@ -42,6 +42,7 @@ namespace Trainer_v5
 		public static readonly ToggleKey AutoContractProgression = Toggle("AutoContractProgression");
 		public static readonly ToggleKey AutoEndResearch = Toggle("AutoEndResearch");
 		public static readonly ToggleKey AutoEndPatent = Toggle("AutoEndPatent");
+		// Retired: no UI and no scheduled behavior. The key stays declared so old saves still deserialize (#270).
 		public static readonly ToggleKey ReduceBoxPrice = Toggle("ReduceBoxPrice");
 		public static readonly ToggleKey DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
 		public static readonly ToggleKey MoreInspiration = Toggle("MoreInspiration");
@@ -52,6 +53,7 @@ namespace Trainer_v5
 		public static readonly ToggleKey DisableForcePause = Toggle("DisableForcePause");
 		public static readonly ToggleKey DisableForceFreeze = Toggle("DisableForceFreeze");
 		public static readonly ToggleKey AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
+		// Retired (see #150): same as ReduceBoxPrice.
 		public static readonly ToggleKey AutoMaxMarketShare = Toggle("AutoMaxMarketShare");
 		public static readonly ToggleKey Experimental = Toggle("Experimental");
 		public static readonly ToggleKey ForceLights = Toggle("ForceLights");

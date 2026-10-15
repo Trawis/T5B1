@@ -113,6 +113,9 @@ writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
+`ReduceBoxPrice` and `AutoMaxMarketShare` are retired: still declared so old
+saves deserialize, but with no UI and no scheduled behavior
+(`RetiredSettingsTests`).
 
 ## Game API Compatibility
 
