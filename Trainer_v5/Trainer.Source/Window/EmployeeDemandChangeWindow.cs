@@ -95,14 +95,42 @@ namespace Trainer_v5.Window
 
 			var flag = (uint)(int)demand;
 			var sibling = (uint)(int)(choice.Choice1 == demand ? choice.Choice2 : choice.Choice1);
-			var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
-			var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
-			employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
-			employee.DemandsMet = next.Met;
-			employee.DemandsRequested = next.Requested;
+			var has = employee.HasDemanded(demand);
+
+			if (on && !has)
+			{
+				GrantDemand(employee, choice, demand, sibling);
+			}
+			else if (on || has)
+			{
+				// Already granted (repairs state an older trainer left half-written) or being removed: the game has
+				// no removal path, so the three bit sets are changed together.
+				var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
+				var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
+				employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
+				employee.DemandsMet = next.Met;
+				employee.DemandsRequested = next.Requested;
+			}
 
 			// Show what the game now reports, including the paired choice that was switched off.
 			Refresh();
+		}
+
+		// Granting goes through the game's own AcceptDemand, so the demand's effect runs (role change for Exclusive
+		// Lead, leaving the desk for Private Office) and the bits are set the way the game sets them. AcceptDemand
+		// also charges the employer for the Luxury Car; the trainer gives that money back.
+		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
+		{
+			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);
+
+			var index = choice.GetChoiceIndex(demand);
+			employee.AcceptDemand(choice, index, false);
+
+			var cost = index == 0 ? choice.Cost1 : choice.Cost2;
+			if (cost > 0f && employee.MyEmployer != null)
+			{
+				employee.MyEmployer.MakeTransaction(cost, Company.TransactionCategory.Deals);
+			}
 		}
 	}
 }
