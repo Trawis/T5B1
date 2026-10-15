@@ -46,18 +46,25 @@ namespace Trainer_v5
 		// transitions, so a plain "installed once" flag would permanently skip
 		// re-installation on every DetailWindow after the first one.
 		private static DetailWindow _installedOn;
-		private static Employee CurrentEmployee => HUD.Instance.DetailWindow?.CurrentEmployee?.employee;
 
 		private static void SetCreativity()
 		{
-			var employee = CurrentEmployee;
-			if (employee == null) return;
+			TargetSource source;
+			var target = EmployeeTarget.Resolve(out source);
+			if (source != TargetSource.DetailWindow) return;
+			var employee = target.Employee;
 
 			InputHelper.RequestFloat(
 				$"Current is {employee.Creativity}\nMin = 0, Max = 1.0",
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
+					if (!target.IsStillValid())
+					{
+						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						return;
+					}
+
 					var skills = new float[5];
 					for (int i = 0; i < 5; i++)
 					{
@@ -170,13 +177,24 @@ namespace Trainer_v5
 
 		private static void SetInspiration()
 		{
-			var employee = CurrentEmployee;
-			if (employee == null) return;
+			TargetSource source;
+			var target = EmployeeTarget.Resolve(out source);
+			if (source != TargetSource.DetailWindow) return;
+			var employee = target.Employee;
 
 			InputHelper.RequestFloat(
 				$"Current is {employee.Inspiration}\nMin = 0, Max = 2.0",
 				$"Set inspiration for {employee.Name}",
-				val => employee.Inspiration = val,
+				val =>
+				{
+					if (!target.IsStillValid())
+					{
+						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						return;
+					}
+
+					employee.Inspiration = val;
+				},
 				min: 0,
 				max: 2);
 		}

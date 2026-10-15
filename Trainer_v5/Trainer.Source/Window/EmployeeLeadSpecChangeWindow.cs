@@ -16,7 +16,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private GUIWindow _window;
 		private Dictionary<string, SoftwareType> _softwareTypes;
 		private Dictionary<string, Toggle> _specToggles;
-		private Actor _actor;
+		private EmployeeTarget _target;
 		private bool _isRefreshing;
 
 		public void Show()
@@ -33,15 +33,15 @@ namespace Trainer_v5.Trainer.Source.Window
 			var window = _window;
 			if (window == null || !window.Shown)
 			{
-				_actor = null;
+				_target = null;
 				return;
 			}
 
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
+			TargetSource source;
+			_target = EmployeeTarget.Resolve(out source);
 
-			var employee = _actor?.employee;
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {employee?.Name ?? "Nobody"}";
+			var employee = _target?.Employee;
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {EmployeeTarget.Describe(_target, source)}";
 
 			_isRefreshing = true;
 			foreach (var pair in _specToggles)
@@ -123,12 +123,13 @@ namespace Trainer_v5.Trainer.Source.Window
 
 		private void SetLeadSpec()
 		{
-			if (_actor == null)
+			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("Select an employee first.");
+				Notification.ShowError("Select an employee first (open one employee, then press Refresh).");
 				return;
 			}
-			var employee = _actor.employee;
+			var target = _target;
+			var employee = target.Employee;
 
 			var selectTypes = _specToggles
 				.Where(p => p.Value.isOn)
@@ -146,6 +147,12 @@ namespace Trainer_v5.Trainer.Source.Window
 				$"Set {selectTypes.Length} LeadSpec(s) for {employee.Name}",
 				val =>
 				{
+					if (!target.IsStillValid())
+					{
+						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						return;
+					}
+
 					foreach (var type in selectTypes)
 					{
 						employee.LeadSpecializationFix[type.ToString()] = val;
