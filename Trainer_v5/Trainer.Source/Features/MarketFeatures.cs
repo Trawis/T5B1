@@ -141,16 +141,29 @@ namespace Trainer_v5
 						mostPowerfulServerGroup = serverGroup;
 				}
 
-				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
+				var dealWindow = HUD.Instance.dealWindow;
+				var activeServerDeals = dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
 				foreach (var serverDeal in serverDeals)
 				{
-					if (!activeServerDeals.Contains(serverDeal))
+					// AllDeals also keeps cancelled deals until the game's cleanup. One that was accepted once has a
+					// timestamp; an invalid one would only be cancelled again by ActuallyAcceptDeal.
+					if (activeServerDeals.Contains(serverDeal) || HasBeenAccepted(serverDeal) || !serverDeal.StillValid(false))
 					{
-						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
+						continue;
+					}
+
+					dealWindow.ActuallyAcceptDeal(serverDeal, true);
+					if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
+					{
 						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 					}
 				}
 			}
+		}
+
+		private static bool HasBeenAccepted(ServerDeal deal)
+		{
+			return !deal.Accepted.Equals(default(SDateTime));
 		}
 
 		private static GameSettings Settings => GameSettings.Instance;
