@@ -17,6 +17,18 @@ namespace Trainer_v5
 				return "is a founder, whose ownership records are not migrated";
 			}
 
+			// Without an actor there is nothing to install the new employee on.
+			if (employee.MyActor == null)
+			{
+				return "has no actor in the office";
+			}
+
+			// Employees are synchronised by network id between players; a replacement is not tested for that.
+			if (SINetworking.NetworkManager.IsConnected)
+			{
+				return "is in a multiplayer game";
+			}
+
 			return null;
 		}
 	}

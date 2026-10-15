@@ -120,6 +120,8 @@ namespace Trainer_v5
 					newEmployee.Retired = employee.Retired;
 					newEmployee.MadeCEO = employee.MadeCEO;
 
+					newEmployee.NetworkID = employee.NetworkID;
+					newEmployee.SkillFact = employee.SkillFact;
 					newEmployee.Salary = employee.Salary;
 					newEmployee.CreativityKnown = 1f;
 					newEmployee.MyEmployer = employee.MyEmployer;
@@ -207,11 +209,29 @@ namespace Trainer_v5
 						}
 
 						// everything in the game that held the old object now holds the new one
-						EmployeeReferenceMigration.Migrate(employee, newEmployee);
+						try
+						{
+							EmployeeReferenceMigration.Migrate(employee, newEmployee);
+						}
+						catch (Exception failure)
+						{
+							RevertCreativityEdit(actor, employee, newEmployee);
+							failure.LogException("CreativityEdit");
+							Notification.ShowError("The creativity edit failed and was reverted.");
+						}
 					}
 				},
 				min: 0,
 				max: 1);
+		}
+
+		// Puts the original employee back on its actor and points the game's references at it again.
+		private static void RevertCreativityEdit(Actor actor, Employee original, Employee replacement)
+		{
+			actor.employee = original;
+			original.MyActor = actor;
+			replacement.MyActor = null;
+			EmployeeReferenceMigration.Migrate(replacement, original);
 		}
 
 		private static void SetInspiration()
