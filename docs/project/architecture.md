@@ -113,7 +113,9 @@ before the first override, or the game's own public recomputation);
 destructive or unverifiable toggles are not given fake restoration semantics.
 The observed toggle states are cleared when the game is left or the mod is
 deactivated, so each save load is a cold start: an enabled toggle runs its
-enable hook, a disabled one runs no restore.
+enable hook. A toggle that was on before the reset keeps that fact for its
+first observation, so one that is now off still runs its restore; this matters
+for state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
 
 ## Persistence and Settings
 
