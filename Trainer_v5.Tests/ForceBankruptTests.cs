@@ -21,9 +21,9 @@ namespace Trainer_v5.Tests
 
 			Assert.DoesNotContain("= !", body);
 			Assert.Contains("matches.Count > 1", body);
-			Assert.Contains("simCompany != Settings.MyCompany", body);
-			Assert.Contains("Bankrupt = true", body);
-			Assert.True(body.IndexOf("SpawnInputDialog", System.StringComparison.Ordinal) < body.IndexOf("Bankrupt = true", System.StringComparison.Ordinal));
+			Assert.Contains("IsBankruptTarget(simCompany)", body);
+			Assert.DoesNotContain("Bankrupt = true", body);
+			Assert.True(body.IndexOf("SpawnInputDialog", System.StringComparison.Ordinal) < body.IndexOf("ConfirmForceBankrupt", System.StringComparison.Ordinal));
 		}
 
 		[Fact]
@@ -31,7 +31,27 @@ namespace Trainer_v5.Tests
 		{
 			var body = Between("internal static void AIBankrupt", "internal static void UnlockAllSpace");
 
+			Assert.Contains("Where(IsBankruptTarget)", body);
+		}
+
+		[Fact]
+		public void TheEligibilityRuleSparesThePlayersCompanyAndItsSubsidiaries()
+		{
+			var body = Between("private static bool IsBankruptTarget", "private static void ConfirmForceBankrupt");
+
 			Assert.Contains("company != Settings.MyCompany", body);
+			Assert.Contains("!company.IsPlayerOwned()", body);
+		}
+
+		[Fact]
+		public void TheConfirmationChecksTheCompanyAgainBeforeSettingTheFlag()
+		{
+			var body = Between("private static void ConfirmForceBankrupt", "private static float GetDefaultISPCostFactor");
+
+			Assert.Contains("Companies.TryGetValue(company.ID", body);
+			Assert.Contains("IsBankruptTarget(company)", body);
+			Assert.Contains("!company.Bankrupt", body);
+			Assert.DoesNotContain("= !", body);
 		}
 	}
 }
