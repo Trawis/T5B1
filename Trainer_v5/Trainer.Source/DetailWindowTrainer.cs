@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
@@ -54,6 +55,19 @@ namespace Trainer_v5
 			if (source != TargetSource.DetailWindow) return;
 			var employee = target.Employee;
 
+			if (!CreativityEditGuard.IsEnabled())
+			{
+				Notification.ShowError("Editing creativity replaces the employee object and is experimental. Enable Experimental in the Trainer Settings first.");
+				return;
+			}
+
+			var blocked = CreativityEditGuard.FindBlockingReference(employee);
+			if (blocked != null)
+			{
+				Notification.ShowError($"{employee.Name} {blocked}, which the game would lose when the employee is replaced. Nothing was edited.");
+				return;
+			}
+
 			InputHelper.RequestFloat(
 				$"Current is {employee.Creativity}\nMin = 0, Max = 1.0",
 				$"Set creativity for {employee.Name}",
@@ -62,6 +76,18 @@ namespace Trainer_v5
 					if (!target.IsStillValid())
 					{
 						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						return;
+					}
+
+					if (Math.Abs(val - employee.Creativity) < 0.0001f)
+					{
+						return;
+					}
+
+					var stillBlocked = CreativityEditGuard.FindBlockingReference(employee);
+					if (stillBlocked != null)
+					{
+						Notification.ShowError($"{employee.Name} {stillBlocked}, which the game would lose when the employee is replaced. Nothing was edited.");
 						return;
 					}
 
