@@ -155,25 +155,26 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 
-		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
-		{
-			MarketingPlan.PressOption.Text,
-			MarketingPlan.PressOption.Image,
-			MarketingPlan.PressOption.Video,
-		};
-
 		// Only press-release campaigns have a finish state to force.
 		private static void CompletePressRelease(MarketingPlan plan)
 		{
-			for (int i = 0; i < PressReleaseOptions.Length; i++)
-			{
-				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
-				{
-					plan.Progress[i] = 1f;
-				}
-			}
+			MarkAllProgressComplete(plan.Progress);
 
 			plan.StopMarketing();
+		}
+
+		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
+		internal static void MarkAllProgressComplete(float[] progress)
+		{
+			if (progress == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < progress.Length; i++)
+			{
+				progress[i] = 1f;
+			}
 		}
 	}
 }
