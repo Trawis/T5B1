@@ -228,6 +228,17 @@ namespace Trainer_v5
 				});
 			}
 
+			ApplyProcessStaticSettings();
+
+			GetDispatcher().RunTransitions();
+
+			_minuteWatcher.Poll();
+
+			GetDispatcher().Run(FeatureTrigger.Frame);
+		}
+
+		private void ApplyProcessStaticSettings()
+		{
 			if (!_oneTimeSettingsApplied)
 			{
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
@@ -264,12 +275,6 @@ namespace Trainer_v5
 			{
 				Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
 			}
-
-			GetDispatcher().RunTransitions();
-
-			_minuteWatcher.Poll();
-
-			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
 	}
 }
