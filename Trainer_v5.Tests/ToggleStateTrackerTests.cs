@@ -63,5 +63,20 @@ namespace Trainer_v5.Tests
 			Assert.Equal(ToggleTransitionEnum.JustDisabled, tracker.Observe("FullEnvironment", false));
 			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("FullRoomBrightness", true));
 		}
+
+		[Fact]
+		public void ResettingMakesTheNextSaveAColdStart()
+		{
+			var tracker = new ToggleStateTracker();
+			tracker.Observe("FreePrint", true);
+			tracker.Observe("NoMaintenance", false);
+
+			tracker.Reset();
+
+			// The next save has FreePrint on again: the enable hook must run for it, not be skipped as unchanged.
+			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("FreePrint", true));
+			// A toggle that was on in the previous save and is off here must not run its restore hook.
+			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("NoMaintenance", false));
+		}
 	}
 }

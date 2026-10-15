@@ -21,6 +21,7 @@ namespace Trainer_v5
 
 		public override void OnDeactivate()
 		{
+			_toggleStates.Reset();
 			UnsubscribeFromEvents();
 			UnsubscribeFromSceneEvents();
 		}
@@ -95,6 +96,7 @@ namespace Trainer_v5
 			}
 
 			DetailWindowTrainer.Reset();
+			_toggleStates.Reset();
 			UnsubscribeFromEvents();
 		}
 
