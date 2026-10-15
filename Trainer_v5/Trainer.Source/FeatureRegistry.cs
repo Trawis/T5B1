@@ -9,6 +9,20 @@ namespace Trainer_v5
 	// TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
+		// Periodic features that deliberately have no Enabled row: switching them on changes nothing until the next
+		// tick of their cadence. Every other Minute, Hour, Day or Month feature must catch up when it is enabled,
+		// which FeatureScheduleTests checks, so a new toggle cannot omit the decision.
+		public static readonly string[] NoCatchUp =
+		{
+			"NoMissedSupportTickets",
+			"AutoPorting",
+			"NoInsuranceCost",
+			"FreeMarketing",
+			"LockAge",
+			"NoLoanInterest",
+			"NoFounderDividends"
+		};
+
 		public static List<FeatureEntry> Create()
 		{
 			var entries = new List<FeatureEntry>();
