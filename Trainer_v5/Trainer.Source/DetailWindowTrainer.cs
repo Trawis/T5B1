@@ -8,6 +8,12 @@ namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
 	{
+		// Tracks the specific DetailWindow instance the trainer controls were injected into.
+		// The game destroys and recreates DetailWindow on save reloads and some scene
+		// transitions, so a plain "installed once" flag would permanently skip
+		// re-installation on every DetailWindow after the first one.
+		private static DetailWindow _installedOn;
+
 		public static void Reset()
 		{
 			_installedOn = null;
@@ -16,7 +22,8 @@ namespace Trainer_v5
 		public static void Install()
 		{
 			var target = HUD.Instance?.DetailWindow;
-			if (target == null || target == _installedOn) return;
+			if (target == null || target == _installedOn)
+				return;
 
 			var components = new List<Component>
 			{
@@ -42,17 +49,12 @@ namespace Trainer_v5
 			_installedOn = target;
 		}
 
-		// Tracks the specific DetailWindow instance the trainer controls were injected into.
-		// The game destroys and recreates DetailWindow on save reloads and some scene
-		// transitions, so a plain "installed once" flag would permanently skip
-		// re-installation on every DetailWindow after the first one.
-		private static DetailWindow _installedOn;
-
 		private static void SetCreativity()
 		{
 			TargetSource source;
 			var target = EmployeeTarget.Resolve(out source);
-			if (source != TargetSource.DetailWindow) return;
+			if (source != TargetSource.DetailWindow)
+				return;
 			var employee = target.Employee;
 
 			if (!CreativityEditGuard.IsEnabled())
@@ -225,7 +227,8 @@ namespace Trainer_v5
 		{
 			TargetSource source;
 			var target = EmployeeTarget.Resolve(out source);
-			if (source != TargetSource.DetailWindow) return;
+			if (source != TargetSource.DetailWindow)
+				return;
 			var employee = target.Employee;
 
 			InputHelper.RequestFloat(

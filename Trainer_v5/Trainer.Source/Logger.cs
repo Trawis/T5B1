@@ -5,9 +5,6 @@ namespace Trainer_v5
 {
 	public static class Logger
 	{
-		private static void ConsoleLogWithPropertyName(string str) => DevConsole.Console.Log($"Trainer: {str}");
-		private static void ConsoleLog(string str) => DevConsole.Console.Log(str);
-
 		public static void Log(this string str, bool withPropertyName = true)
 		{
 			if (withPropertyName)
@@ -27,5 +24,8 @@ namespace Trainer_v5
 		public static void Log(this object str) => ConsoleLogWithPropertyName(str.ToString());
 		public static void LogException(this Exception ex) => ConsoleLog($"Trainer Exception: {ex.Message}");
 		public static void LogException(this Exception ex, string featureId) => ConsoleLog($"Trainer feature '{featureId}' failed: {ex.Message}");
+
+		private static void ConsoleLogWithPropertyName(string str) => DevConsole.Console.Log($"Trainer: {str}");
+		private static void ConsoleLog(string str) => DevConsole.Console.Log(str);
 	}
 }

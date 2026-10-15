@@ -10,14 +10,14 @@ namespace Trainer_v5.Trainer.Source.Window
 {
 	public class EmployeeLeadSpecChangeWindow
 	{
-		public static EmployeeLeadSpecChangeWindow Instance => _instance.Value;
 		private static readonly Lazy<EmployeeLeadSpecChangeWindow> _instance = new Lazy<EmployeeLeadSpecChangeWindow>(() => new EmployeeLeadSpecChangeWindow());
-
 		private GUIWindow _window;
 		private Dictionary<string, SoftwareType> _softwareTypes;
 		private Dictionary<string, Toggle> _specToggles;
 		private EmployeeTarget _target;
 		private bool _isRefreshing;
+
+		public static EmployeeLeadSpecChangeWindow Instance => _instance.Value;
 
 		public void Show()
 		{
