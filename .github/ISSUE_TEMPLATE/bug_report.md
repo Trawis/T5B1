@@ -1,33 +1,36 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: "[BUG]"
-labels: bug
-assignees: Trawis
-
+name: Bug Report
+about: Report a reproducible problem
+title: ""
+labels: ["type: bug"]
+assignees: ""
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Summary
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Describe the problem.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Steps to Reproduce
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+1.
+2.
+3.
 
-**Game details (please complete the following information):**
- - OS: [e.g. Linux/Windows]
- - Steam: [e.g. YES/NO]
- - Version [e.g. 1.7.10]
- - Branch [e.g. legacy/stable/unstable]
+## Expected Behavior
 
-**Additional context**
-Add any other context about the problem here.
+Describe what should happen.
+
+## Actual Behavior
+
+Describe what happens instead.
+
+## Environment
+
+- Trainer version or commit:
+- Game version and branch (if relevant):
+- Operating system:
+- Steam (yes/no):
+
+## Additional Context
+
+Include relevant logs or screenshots without exposing secrets.
