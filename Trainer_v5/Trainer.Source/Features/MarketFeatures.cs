@@ -48,7 +48,9 @@ namespace Trainer_v5
 				&& pr.Userbase > 0
 				&& pr.DevCompany.Name != Settings.MyCompany.Name
 				&& pr.ServerReq > 0
-				&& !pr.ExternalHostingActive)
+				&& !pr.ExternalHostingActive
+				&& !pr.DevCompany.IsSubsidiary()
+				&& SDateTime.GetMonths(pr.Release, SDateTime.Now()) <= MaxHostedProductAgeMonths)
 					  .ToArray();
 
 			if (Products.Length == 0)
@@ -58,8 +60,9 @@ namespace Trainer_v5
 			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
 			{
-				ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
-				deal.StillValid(true);
+				// Built like the game's own offers (MarketSimulation): the developer is the client. Setting Request
+				// afterwards would read the bidder, which this constructor leaves unset.
+				ServerDeal deal = new ServerDeal(Products[index]);
 				deal.PerPower *= 2f;
 
 				HUD.Instance.dealWindow.InsertDeal(deal);
@@ -152,6 +155,9 @@ namespace Trainer_v5
 				}
 			}
 		}
+
+		// ServerDeal.StillValid rejects a product released more than 24 months ago.
+		private const float MaxHostedProductAgeMonths = 24f;
 
 		private static GameSettings Settings => GameSettings.Instance;
 
