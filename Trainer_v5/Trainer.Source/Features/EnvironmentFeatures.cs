@@ -85,6 +85,11 @@ namespace Trainer_v5
 			}
 		}
 
+		// RepairMe adds one small step (scaled by this factor) to RepairTime and calls the private FixNow once it
+		// reaches 1 - Quality. FixNow restores quality, clears Broken and the broken-furniture list, so a large
+		// factor finishes the repair in one hour through the game's own path.
+		private const float RepairFactor = 1000000f;
+
 		internal static void ApplyNoMaintenance()
 		{
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
@@ -113,7 +118,7 @@ namespace Trainer_v5
 
 				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
 				{
-					furniture.upg.RepairMe();
+					furniture.upg.RepairMe(RepairFactor);
 				}
 			}
 		}
