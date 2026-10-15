@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Trainer_v5
@@ -6,6 +7,8 @@ namespace Trainer_v5
 	{
 		// ServerDeal.StillValid rejects a product released more than 24 months ago.
 		private const float MaxHostedProductAgeMonths = 24f;
+
+		private static bool _warnedAboutPendingList;
 
 		private static GameSettings Settings => GameSettings.Instance;
 
@@ -137,32 +140,38 @@ namespace Trainer_v5
 		internal static void ApplyAutoAcceptHostingDeals()
 		{
 			var serverGroups = Settings.GetAllServerGroups().ToList();
-			var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
-
-			if (serverGroups.Count > 0 && serverDeals.Count > 0)
+			if (serverGroups.Count == 0)
 			{
-				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
-				foreach (var serverGroup in serverGroups)
+				return;
+			}
+
+			var dealWindow = HUD.Instance.dealWindow;
+			var pending = FindPendingDeals(dealWindow);
+			if (pending == null)
+			{
+				WarnOnce("Auto Accept Hosting Deals: the pending deal list could not be identified, so no deal was accepted.");
+				return;
+			}
+
+			ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
+			foreach (var serverGroup in serverGroups)
+			{
+				if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
+					mostPowerfulServerGroup = serverGroup;
+			}
+
+			foreach (var serverDeal in pending.OfType<ServerDeal>().ToList())
+			{
+				// An invalid offer would only be cancelled again by ActuallyAcceptDeal.
+				if (!serverDeal.StillValid(false))
 				{
-					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
-						mostPowerfulServerGroup = serverGroup;
+					continue;
 				}
 
-				var dealWindow = HUD.Instance.dealWindow;
-				var activeServerDeals = dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
-				foreach (var serverDeal in serverDeals)
+				dealWindow.ActuallyAcceptDeal(serverDeal, true);
+				if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
 				{
-					// AllDeals keeps cancelled deals until cleanup: skip ones accepted before and ones the game would just cancel again.
-					if (activeServerDeals.Contains(serverDeal) || HasBeenAccepted(serverDeal) || !serverDeal.StillValid(false))
-					{
-						continue;
-					}
-
-					dealWindow.ActuallyAcceptDeal(serverDeal, true);
-					if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
-					{
-						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
-					}
+					Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 				}
 			}
 		}
@@ -181,9 +190,27 @@ namespace Trainer_v5
 			}
 		}
 
-		private static bool HasBeenAccepted(ServerDeal deal)
+		// Reads the deal window's own pending list through its list views; null if it cannot be told apart from the others.
+		private static List<Deal> FindPendingDeals(DealWindow dealWindow)
 		{
-			return !deal.Accepted.Equals(default(SDateTime));
+			var lists = new List<List<object>>();
+			foreach (var view in dealWindow.Window.GetComponentsInChildren<GUIListView>(true))
+			{
+				lists.Add(new List<object>(view.Items));
+			}
+
+			return PendingDeals.Select(lists, dealWindow.GetActiveDeals());
+		}
+
+		private static void WarnOnce(string message)
+		{
+			if (_warnedAboutPendingList)
+			{
+				return;
+			}
+
+			_warnedAboutPendingList = true;
+			message.Log();
 		}
 
 		// Only press-release campaigns have a finish state to force.

@@ -99,7 +99,7 @@ Toggle features stay active for as long as they are enabled.
 | Reduce Expansion Cost       | Halves expansion cost                                       |
 | Disable Force Pause         | Prevents the game from force-pausing                         |
 | Disable Force Freeze        | Prevents the game from force-freezing                        |
-| Auto Accept Hosting Deals   | Accepts valid server deals that were never accepted. Known limit: an offer you reject while it is pending can be offered again |
+| Auto Accept Hosting Deals   | Accepts valid server deals that are waiting in the deal list; offers you rejected or filtered out are skipped, and nothing is accepted if the list cannot be identified |
 | Auto Porting                | Automatically advances your active porting work toward completion |
 | More Inspiration            | Inspiration can be used without cooldown                     |
 | More Creativity             | Reveals full creativity for employees                        |
