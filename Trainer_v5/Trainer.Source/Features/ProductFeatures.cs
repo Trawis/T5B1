@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,10 +23,21 @@ namespace Trainer_v5
 			for (int i = 0; i < Products.Length; i++)
 			{
 				SoftwareProduct product = Products[i];
-				int st = (int)product.PhysicalCopies * (int)(product.Price / 2);
+				uint copies = product.PhysicalCopies;
+				if (copies == 0)
+				{
+					continue;
+				}
 
-				product.PhysicalCopies = 0;
-				Settings.MyCompany.MakeTransaction(st, Company.TransactionCategory.Sales);
+				// ChangeAllPhysicalStock also removes the stock of forced add-ons; its argument is an int.
+				for (uint left = copies; left > 0;)
+				{
+					int chunk = (int)Math.Min(left, (uint)int.MaxValue);
+					product.ChangeAllPhysicalStock(-chunk);
+					left -= (uint)chunk;
+				}
+
+				Settings.MyCompany.MakeTransaction(StockSale.Proceeds(copies, product.Price), Company.TransactionCategory.Sales);
 			}
 		}
 
