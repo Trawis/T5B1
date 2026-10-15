@@ -15,7 +15,7 @@ namespace Trainer_v5.Tests
 			var il = body.GetILAsByteArray();
 			var starts = new HashSet<int>();
 			var branches = new List<KeyValuePair<int, int>>();
-			Walk(il, (offset, code, operandOffset, length) =>
+			Walk(il, (offset, code, operandOffset, __) =>
 			{
 				starts.Add(offset);
 				if (code.OperandType == OperandType.ShortInlineBrTarget)
@@ -53,7 +53,7 @@ namespace Trainer_v5.Tests
 			var il = method.GetMethodBody().GetILAsByteArray();
 			var module = method.Module;
 			var called = new HashSet<string>();
-			Walk(il, (offset, code, operandOffset, length) =>
+			Walk(il, (_, code, operandOffset, __) =>
 			{
 				if (code != OpCodes.Call && code != OpCodes.Callvirt && code != OpCodes.Newobj)
 				{

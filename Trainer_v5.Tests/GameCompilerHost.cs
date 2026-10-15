@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -254,11 +255,9 @@ namespace Trainer_v5.Tests
 			{
 				Directory.Delete(directory, true);
 			}
-			catch (IOException)
+			catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
 			{
-			}
-			catch (UnauthorizedAccessException)
-			{
+				Trace.TraceWarning("Could not delete " + directory + ": " + ex.Message);
 			}
 		}
 	}

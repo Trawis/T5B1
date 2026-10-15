@@ -149,7 +149,7 @@ namespace Trainer_v5.Tests
 			{
 				throw new InvalidOperationException("Versioning." + property + " is missing from the vendored game assembly.");
 			}
-			return ((string)getter.Invoke(null, null)).ToUpper();
+			return ((string)getter.Invoke(null, null)).ToUpperInvariant();
 		}
 
 		private static int CountLines(string text)
