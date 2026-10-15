@@ -178,7 +178,7 @@ Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
 toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
-helpers. The Trait, Demand, LeadSpec, Creativity and Inspiration editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. UI text is localized; translations live under
+helpers. The Trait, Demand, LeadSpec, Creativity and Inspiration editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Demand editor changes `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set; it grants or removes the demand without the effect or cost the game's own `AcceptDemand` applies. UI text is localized; translations live under
 `Trainer_v5/Trainer.Localization/<language>/`.
 
 ## Validation
