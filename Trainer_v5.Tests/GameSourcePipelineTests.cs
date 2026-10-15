@@ -6,16 +6,10 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Steam Workshop build is source: Software Inc rewrites every file with its injector and compiles
-	// the result with its own bundled compiler. The SDK build cannot see problems that only exist there
-	// (#222: a call in a property initializer made the injector split a property; #225/#229: the compiler
-	// emits invalid IL for fields of generic types). These tests run the game's own injector and compiler
-	// over the real sources.
-	//
-	// What they establish: the injector's output parses with the game's compiler, and every try block it
-	// adds wraps a method or constructor body. What they cannot establish: that the types resolve (the
-	// vendored libraries are a subset of the game's assemblies), that the generated IL is valid, or that
-	// the mod runs in Unity. The SDK build covers type resolution; only the game covers the rest.
+	// The Workshop build is source the game rewrites and compiles itself (#222, #225). These tests run the
+	// game's injector and compiler over the real sources. They show the injected source parses and every
+	// injected try wraps a method or constructor body; type resolution is the SDK build's job and runtime
+	// behavior is the game's.
 	public class GameSourcePipelineTests
 	{
 		private static readonly Lazy<IList<InjectedSource>> Injected = new Lazy<IList<InjectedSource>>(InjectEverySourceFile);
@@ -30,7 +24,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheCopyOfTheGamesCompilerDiffersByTheBitnessFlagOnly()
 		{
-			// A 64-bit test host rejects an assembly marked as requiring 32 bits, so the compiler is loaded from a copy without the flag.
 			var original = File.ReadAllBytes(GameCompiler.AssemblyPath);
 			var copy = PeImage.WithoutRequires32BitProcess(original);
 
@@ -56,7 +49,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheGamesInjectorOnlyAddsText()
 		{
-			// The line mapping relies on it: every character of the original is still there, in order.
 			var offenders = Enumerable.Where(Injected.Value, file => !IsSubsequence(WithoutWhitespace(file.Stripped), WithoutWhitespace(file.Injected))).Select(file => file.Name).ToList();
 			Assert.True(offenders.Count == 0, "The injector dropped or reordered original text in: " + string.Join(", ", offenders));
 		}

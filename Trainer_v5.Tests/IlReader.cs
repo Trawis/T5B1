@@ -5,14 +5,11 @@ using System.Reflection.Emit;
 
 namespace Trainer_v5.Tests
 {
-	// Minimal IL walker for the game-compiler tests. It reads the metadata of an assembly that was
-	// only compiled, never executed, so a JIT or verifier difference between runtimes cannot hide
-	// a problem the way running the method would.
+	// Minimal IL walker, so compiled output is inspected rather than executed.
 	internal static class IlReader
 	{
 		private static readonly Dictionary<short, OpCode> OpCodesByValue = BuildOpCodeTable();
 
-		// Offsets of branch and leave instructions whose target is not the start of an instruction.
 		public static IList<string> InvalidBranchTargets(MethodBody body)
 		{
 			var il = body.GetILAsByteArray();
@@ -51,7 +48,6 @@ namespace Trainer_v5.Tests
 			return invalid;
 		}
 
-		// "Type.Method" of every method a method body calls, so a test can notice when the game's code changes what it calls.
 		public static ISet<string> CalledMethods(MethodBase method)
 		{
 			var il = method.GetMethodBody().GetILAsByteArray();

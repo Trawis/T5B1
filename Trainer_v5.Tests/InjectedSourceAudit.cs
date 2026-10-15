@@ -13,16 +13,12 @@ namespace Trainer_v5.Tests
 			Misplaced = misplaced;
 		}
 
-		// try blocks the game's injector added to this file.
 		public int TryBlocks { get; }
 
-		// Descriptions of injected try blocks that do not wrap a method or constructor body.
 		public IList<string> Misplaced { get; }
 	}
 
-	// Structural checks on what the game's injector produced and on source shapes that its compiler
-	// cannot turn into valid code. These look at text only; whether a Workshop build then runs is a
-	// separate question that only the game answers.
+	// Text-level checks on the injector's output and on source shapes its compiler mishandles.
 	internal static class InjectedSourceAudit
 	{
 		private static readonly Regex InjectedOpen = new Regex(@"\{[ \t]*\r?\n[ \t]*try \{[ \t]*\r?\n", RegexOptions.Compiled);
@@ -32,9 +28,7 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Return = new Regex(@"\breturn\b", RegexOptions.Compiled);
 		private static readonly Regex Throw = new Regex(@"^throw\b", RegexOptions.Compiled);
 
-		// Every injected try must sit directly after the opening brace of a method or constructor. A call in a
-		// property or field initializer makes the injector treat the next brace it finds as a method body, and a
-		// try inside an accessor can still parse, so this is checked on its own as well as through the compiler.
+		// Every injected try must follow the opening brace of a method or constructor (#222).
 		public static AuditResult Audit(InjectedSource source)
 		{
 			var misplaced = new List<string>();
@@ -53,9 +47,7 @@ namespace Trainer_v5.Tests
 			return new AuditResult(InjectedCatch.Matches(source.Injected).Count, misplaced);
 		}
 
-		// Methods and constructors whose body has no return and ends in a throw. Wrapped in the injected try, such a
-		// body leaves nothing after the protected region, and the game's compiler emits a leave to the end of the
-		// method with no instruction there, which is invalid IL (see the characterization test).
+		// Bodies with no return that end in a throw: wrapped, the game's compiler emits a leave past the method end (invalid IL).
 		public static IList<string> FindBodiesEndingInThrow(string name, string original)
 		{
 			var code = SourceText.Strip(original, keepStrings: false);
@@ -129,7 +121,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// The last statement at the top level of a body, or its trailing text when it does not end in a statement.
 		private static string LastStatement(string body)
 		{
 			var text = body.TrimEnd();

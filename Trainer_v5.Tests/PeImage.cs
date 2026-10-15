@@ -2,9 +2,7 @@ using System;
 
 namespace Trainer_v5.Tests
 {
-	// Just enough of the PE/COFF format to read and clear the CLR "requires 32-bit process" flag.
-	// The game's mcs.dll carries it; a 64-bit test host refuses such an assembly with a
-	// BadImageFormatException even though the code is plain IL (the game's other assemblies are not marked).
+	// Reads and clears the CLR "requires 32-bit process" flag, which only the game's mcs.dll carries.
 	internal static class PeImage
 	{
 		private const int ClrDataDirectory = 14;
@@ -16,7 +14,6 @@ namespace Trainer_v5.Tests
 			return (image[ClrFlagsOffset(image)] & Requires32BitFlag) != 0;
 		}
 
-		// A copy of the image with that one flag cleared; every other byte is unchanged.
 		public static byte[] WithoutRequires32BitProcess(byte[] image)
 		{
 			var copy = (byte[])image.Clone();

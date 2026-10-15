@@ -13,21 +13,17 @@ namespace Trainer_v5.Tests
 			Description = description;
 		}
 
-		// 1-based line and column in the file as it exists in the repository.
 		public int Line { get; }
 
 		public int Column { get; }
 
-		// True when the injector left that line untouched, so line and column are precise.
 		public bool Exact { get; }
 
 		public string Description { get; }
 	}
 
-	// Maps a position in the injected source back to the repository file. The injector only adds text
-	// (whole lines for the try and catch blocks, and it splits or rejoins lines around a body it wraps),
-	// so lines are aligned with a longest-common-subsequence over the injector's own input; lines that
-	// were rewritten are matched by prefix, and anything left is code the injector generated.
+	// Maps injected positions back to the repository file: lines are aligned by longest common subsequence,
+	// rewritten lines by prefix, and the rest is injector-generated code.
 	internal sealed class GameSourceMap
 	{
 		private readonly InjectedSource _source;

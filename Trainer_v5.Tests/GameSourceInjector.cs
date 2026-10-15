@@ -22,19 +22,15 @@ namespace Trainer_v5.Tests
 
 		public string Original { get; }
 
-		// What the injector parsed: the game's #define lines followed by the source with comments removed.
 		public string Stripped { get; }
 
 		public string Injected { get; }
 
-		// Lines the game prepends before the original first line.
 		public int PrefixLines { get; }
 	}
 
-	// Test-only bridge to the game's source-mod injector. ModController.InjectTryBlocks itself cannot
-	// run outside Unity because the Options static constructor it consults needs the engine, so the
-	// loop below repeats it step for step and VerifyMirror fails if the game's version stops matching.
-	// Reflection is confined to these tests; the mod never uses it.
+	// Test-only bridge to the game's injector. InjectTryBlocks cannot run outside Unity (its Options static
+	// constructor needs the engine), so Inject repeats its loop and VerifyMirror fails if the game's changes.
 	internal static class GameSourceInjector
 	{
 		public const string ModName = "t5b1tests";
@@ -43,10 +39,9 @@ namespace Trainer_v5.Tests
 
 		private static readonly Type ModControllerType = typeof(ModController);
 
-		// The injector's helpers are static methods of a game class; tests run in parallel, so calls into them are serialized.
+		// Serializes calls into the game's static helpers; tests run in parallel.
 		private static readonly object Gate = new object();
 
-		// The calls InjectTryBlocks makes into the game's own code; anything else is framework plumbing.
 		private static readonly string[] ExpectedGameCalls =
 		{
 			"ModController.FindNextClassOrStruct",
@@ -59,7 +54,6 @@ namespace Trainer_v5.Tests
 			"Versioning.get_TypeVersionString",
 		};
 
-		// Fails with an actionable message when the vendored game no longer matches the harness.
 		public static void VerifyMirror()
 		{
 			Require("InjectTryBlocks", typeof(string), typeof(string));
@@ -139,7 +133,6 @@ namespace Trainer_v5.Tests
 			return new InjectedSource(name, source, stripped, builder.ToString(), CountLines(prefix));
 		}
 
-		// The same three lines ModController.InjectTryBlocks prepends before anything else.
 		private static string VersionDefines()
 		{
 			var versioning = ModControllerType.Assembly.GetType("Versioning", true);

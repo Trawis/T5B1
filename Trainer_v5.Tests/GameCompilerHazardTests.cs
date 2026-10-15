@@ -6,13 +6,11 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Each failure the Workshop build has produced, or that the game's own tools are known to produce, is
-	// kept here as a small fixture run through the game's injector and compiler. They show that the checks
-	// in GameSourcePipelineTests would catch the problem, and they fail when a game update changes how the
-	// injector or compiler behaves, which is the cue to re-read the game's code.
+	// Known Workshop failures as small fixtures. They also fail when a game update changes the injector or
+	// compiler, which is the cue to re-read the game's code.
 	public class GameCompilerHazardTests
 	{
-		// The shape of Helpers.cs in v5.3.2: a call in a property initializer (#222, CS1014 at Helpers.cs(39,2) in game).
+		// Helpers.cs in v5.3.2: a call in a property initializer (#222).
 		private const string CallInPropertyInitializer =
 			"using System.Collections.Generic;\n" +
 			"\n" +
@@ -35,7 +33,7 @@ namespace Trainer_v5.Tests
 			"\t}\n" +
 			"}\n";
 
-		// The same type after the fix: the call moved into a static constructor.
+		// The fix: the call moved into a static constructor.
 		private const string CallInStaticConstructor =
 			"using System.Collections.Generic;\n" +
 			"\n" +
@@ -86,7 +84,6 @@ namespace Trainer_v5.Tests
 
 			Assert.False(check.Passed);
 			var problem = Enumerable.First(check.Problems, p => p.Diagnostic.Code == "CS1014");
-			// The game reports the broken accessor; the message maps it back to the property whose braces were rewritten.
 			Assert.Equal("Helpers.cs", problem.Source.Name);
 			Assert.InRange(problem.Position.Line, 7, 9);
 			Assert.Contains("Dictionary<string, bool>", problem.Position.Description);
@@ -200,8 +197,6 @@ namespace Trainer_v5.Tests
 			var check = Check("Many.cs", source);
 
 			Assert.False(check.Passed);
-			// Three bodies' worth of injected lines sit above the failure; the report still points into the
-			// method that holds the brace literal or the one the game then mangled, never at the injected offset.
 			var problem = check.Problems[0];
 			Assert.InRange(problem.Position.Line, 16, 19);
 			Assert.True(problem.Diagnostic.Line > 22, "the injected file is longer than the original");
@@ -230,7 +225,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheAuditFlagsATryBlockInsideAnAccessor()
 		{
-			// Nothing in the game's output is known to parse with a misplaced try, so the detector is shown on a hand-written case.
 			var injected =
 				"class A\n" +
 				"{\n" +
@@ -276,11 +270,9 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			// Only the bodies with no way out other than a throw: the injected leave has nowhere to land.
 			invalid.Sort(StringComparer.Ordinal);
 			Assert.Equal(new[] { "OnlyThrows", "ThrowsAfterWork" }, invalid);
 
-			// And the source check names exactly those.
 			var flagged = InjectedSourceAudit.FindBodiesEndingInThrow("Bodies.cs", ThrowingBodies);
 			Assert.Equal(2, flagged.Count);
 			Assert.Contains("OnlyThrows", flagged[0]);

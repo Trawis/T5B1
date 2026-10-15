@@ -48,14 +48,12 @@ namespace Trainer_v5.Tests
 
 		public IList<CompilerDiagnostic> Diagnostics { get; }
 
-		// The compiled assembly when the compiler produced one.
 		public byte[] Assembly { get; }
 
 		public IEnumerable<CompilerDiagnostic> Errors => Enumerable.Where(Diagnostics, d => d.IsError);
 	}
 
-	// Test-only host for the C# compiler the game bundles (Unity's mcs, loaded from Trainer.Libraries).
-	// Software Inc compiles Workshop source mods with this compiler, not with the SDK's.
+	// Test-only host for the game's bundled C# compiler (Trainer.Libraries/mcs.dll).
 	internal static class GameCompiler
 	{
 		private static readonly object Gate = new object();
@@ -65,7 +63,6 @@ namespace Trainer_v5.Tests
 
 		public static string AssemblyPath => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Libraries", "mcs.dll");
 
-		// Throws a descriptive exception when the compiler is missing or no longer has the entry point the game itself uses.
 		public static void VerifyAvailable()
 		{
 			lock (Gate)
@@ -93,11 +90,9 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// Parses the sources with the game's compiler and stops. The compiler reports syntax errors first and
-		// does not look at references until parsing succeeded, so pointing it at a reference that cannot exist
-		// leaves exactly one expected error when the sources are syntactically valid. That is all that can be
-		// checked here: the vendored libraries are only a subset of the game's assemblies, and the compiler
-		// cannot load the game's types without the rest, so type resolution stays with the SDK build.
+		// Syntax check only: mcs reports syntax errors before it loads references, so a reference that cannot
+		// exist leaves exactly one CS0006 when the sources parse. The vendored libraries are a subset of the
+		// game's assemblies, so mcs cannot resolve types here; the SDK build does that.
 		public static ParseCheck CheckSyntax(IList<InjectedSource> sources)
 		{
 			var directory = CreateTemporaryDirectory();
@@ -116,7 +111,6 @@ namespace Trainer_v5.Tests
 				}
 
 				var run = Run(arguments, null);
-				// CS0006 is "metadata file not found": the compiler reached reference loading. Everything else is a real finding.
 				var sentinelReported = run.Errors.Any(e => e.Code == "CS0006" && e.Message.IndexOf(sentinel, StringComparison.OrdinalIgnoreCase) >= 0);
 				var problems = run.Errors.Where(e => e.Code != "CS0006").ToList();
 				return new ParseCheck(sentinelReported, Enumerable.Select(problems, p => Locate(p, files)).ToList());
@@ -127,7 +121,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// Compiles self-contained sources to an assembly (references: the runtime's own libraries only).
 		public static CompilerRun CompileStandalone(string name, params string[] sources)
 		{
 			var directory = CreateTemporaryDirectory();
@@ -177,9 +170,7 @@ namespace Trainer_v5.Tests
 			return method;
 		}
 
-		// The game's mcs.dll is marked as requiring a 32-bit process, which a 64-bit test host refuses to load
-		// (BadImageFormatException). The code is plain IL, so the tests load a copy with only that flag cleared.
-		// The copy is named by its content, so repeated runs reuse it.
+		// mcs.dll is flagged 32-bit-only, which a 64-bit test host rejects; load a copy with that flag cleared.
 		private static string LoadableCopy()
 		{
 			var image = PeImage.WithoutRequires32BitProcess(File.ReadAllBytes(AssemblyPath));
@@ -200,7 +191,7 @@ namespace Trainer_v5.Tests
 				}
 				catch (IOException)
 				{
-					// Another test process wrote it first and has it loaded; its copy is identical.
+					// Another process wrote the identical copy first.
 					if (!File.Exists(path))
 					{
 						throw;
@@ -280,7 +271,6 @@ namespace Trainer_v5.Tests
 			Problems = problems;
 		}
 
-		// True when the compiler parsed every file and moved on to its references.
 		public bool ReachedReferenceLoading { get; }
 
 		public IList<MappedDiagnostic> Problems { get; }
