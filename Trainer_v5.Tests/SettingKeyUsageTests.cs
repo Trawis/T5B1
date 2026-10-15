@@ -5,10 +5,8 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Settings are referenced through SettingKeys so a misspelled key fails to compile. A raw key
-	// string would bypass that and only show up in-game as a logged warning and a dead feature.
-	// LINQ is avoided here: the game assembly's global Utilities class defines extension methods
-	// that can win overload resolution and fail to initialize outside Unity.
+	// Settings go through SettingKeys so a misspelled key fails to compile. LINQ is avoided: the game's global Utilities
+	// extensions can win overload resolution.
 	public class SettingKeyUsageTests
 	{
 		private static readonly Regex ToggleKeyUsage = new Regex(

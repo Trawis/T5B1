@@ -5,6 +5,8 @@ namespace Trainer_v5
 {
 	internal static class WorkItemFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+
 		internal static void OptimizeTeamAssignments()
 		{
 			int reassigned = 0;
@@ -118,7 +120,8 @@ namespace Trainer_v5
 			foreach (var work in Settings.MyCompany.WorkItems)
 			{
 				var contract = work.contract;
-				if (contract == null) continue;
+				if (contract == null)
+					continue;
 				var deadline = contract.Deadline;
 				contract.Deadline = new SDateTime(deadline.Year + 1, deadline.Month, deadline.Day);
 			}
@@ -151,14 +154,13 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
+				Notification.ShowError("No active (not paused) alpha named \"" + input + "\".");
 				return;
 			}
 
-			WorkItem.MaxFollowers += 1000000000;
+			// ReEvaluateMaxFollowers recomputes the cap and the setter clamps to it: fill it once, leave the daily change alone.
 			WorkItem.ReEvaluateMaxFollowers();
-
-			WorkItem.FollowerChange += 1000000000f;
-			WorkItem.Followers += 1000000000f;
+			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
 
 		internal static void MaxFollowers()
@@ -221,7 +223,7 @@ namespace Trainer_v5
 			});
 		}
 
-		// Same precondition as ApplyAutoEndDesign, limited to contract work; promoted items leave WorkItems, so nothing is promoted twice.
+		// Same precondition as ApplyAutoEndDesign, for contract work.
 		internal static void ApplyAutoContractProgression()
 		{
 			var contractDesigns = Settings.MyCompany.WorkItems
@@ -249,8 +251,8 @@ namespace Trainer_v5
 		{
 			var legalWorks = Settings.MyCompany.WorkItems
 							   .OfType<LegalWork>()
-							   .Where(lw => lw.CurrentStage() == "Finished" &&
-									lw.Type == LegalWork.WorkType.Patent)
+							   .Where(lw => lw.Type == LegalWork.WorkType.Patent &&
+									lw.Progress >= 1f)
 							   .ToList();
 
 			legalWorks.ForEach(legalWork =>
@@ -303,8 +305,6 @@ namespace Trainer_v5
 			}
 		}
 
-		private static GameSettings Settings => GameSettings.Instance;
-
 		// The RoleBit each type's own GetBoostRole checks; other types are left alone.
 		private static Employee.RoleBit? GetOptimizerRoleBit(WorkItem item)
 		{
@@ -331,7 +331,7 @@ namespace Trainer_v5
 			return team.GetEmployeesDirect().Count(actor => actor.employee.IsRole(roleBit, false));
 		}
 
-		// Same sequence as ResearchWork.FinishNow, minus the patent confirmation dialog.
+		// Same sequence as ResearchWork.FinishNow, minus the patent confirmation dialog and its achievement counter.
 		private static void CompleteResearchWork(ResearchWork researchWork)
 		{
 			Settings.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
@@ -339,9 +339,11 @@ namespace Trainer_v5
 			if (tech != null)
 			{
 				LegalWork legalWork = new LegalWork(tech);
-				Settings.MyCompany.WorkItems.Add(legalWork);
-				Settings.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+				Settings.MyCompany.AddWorkItem(legalWork);
+				// The game's key is the enum name ("PatentTeam"), not its number.
+				Settings.ApplyDefaultTeams(legalWork, legalWork.Type + "Team");
 			}
+			HUD.Instance.researchWindow.UpdateLists();
 			researchWork.Kill(false);
 		}
 

@@ -1,9 +1,17 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Trainer_v5
 {
 	internal static class MarketFeatures
 	{
+		// ServerDeal.StillValid rejects a product released more than 24 months ago.
+		private const float MaxHostedProductAgeMonths = 24f;
+
+		private static bool _warnedAboutPendingList;
+
+		private static GameSettings Settings => GameSettings.Instance;
+
 		internal static void InstantMarketing()
 		{
 			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
@@ -26,7 +34,7 @@ namespace Trainer_v5
 
 		internal static void PushReward()
 		{
-			var Deals = HUD.Instance.dealWindow.GetActiveDeals().Where(deal => deal.ToString() == "ServerDeal").ToArray();
+			var Deals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToArray();
 
 			if (!Deals.Any())
 			{
@@ -48,7 +56,9 @@ namespace Trainer_v5
 				&& pr.Userbase > 0
 				&& pr.DevCompany.Name != Settings.MyCompany.Name
 				&& pr.ServerReq > 0
-				&& !pr.ExternalHostingActive)
+				&& !pr.ExternalHostingActive
+				&& !pr.DevCompany.IsSubsidiary()
+				&& SDateTime.GetMonths(pr.Release, SDateTime.Now()) <= MaxHostedProductAgeMonths)
 					  .ToArray();
 
 			if (Products.Length == 0)
@@ -58,8 +68,8 @@ namespace Trainer_v5
 			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
 			{
-				ServerDeal deal = new ServerDeal(Products[index]) { Request = true };
-				deal.StillValid(true);
+				// Built like the game's own offers: the developer is the client. Setting Request later would read an unset bidder.
+				ServerDeal deal = new ServerDeal(Products[index]);
 				deal.PerPower *= 2f;
 
 				HUD.Instance.dealWindow.InsertDeal(deal);
@@ -130,48 +140,83 @@ namespace Trainer_v5
 		internal static void ApplyAutoAcceptHostingDeals()
 		{
 			var serverGroups = Settings.GetAllServerGroups().ToList();
-			var serverDeals = HUD.Instance.dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList();
-
-			if (serverGroups.Count > 0 && serverDeals.Count > 0)
+			if (serverGroups.Count == 0)
 			{
-				ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
-				foreach (var serverGroup in serverGroups)
+				return;
+			}
+
+			var dealWindow = HUD.Instance.dealWindow;
+			var pending = FindPendingDeals(dealWindow);
+			if (pending == null)
+			{
+				WarnOnce("Auto Accept Hosting Deals: the pending deal list could not be identified, so no deal was accepted.");
+				return;
+			}
+
+			ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
+			foreach (var serverGroup in serverGroups)
+			{
+				if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
+					mostPowerfulServerGroup = serverGroup;
+			}
+
+			foreach (var serverDeal in pending.OfType<ServerDeal>().ToList())
+			{
+				// An invalid offer would only be cancelled again by ActuallyAcceptDeal.
+				if (!serverDeal.StillValid(false))
 				{
-					if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
-						mostPowerfulServerGroup = serverGroup;
+					continue;
 				}
 
-				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
-				foreach (var serverDeal in serverDeals)
+				dealWindow.ActuallyAcceptDeal(serverDeal, true);
+				if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
 				{
-					if (!activeServerDeals.Contains(serverDeal))
-					{
-						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
-						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
-					}
+					Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 				}
 			}
 		}
 
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
+		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
+		internal static void MarkAllProgressComplete(float[] progress)
 		{
-			MarketingPlan.PressOption.Text,
-			MarketingPlan.PressOption.Image,
-			MarketingPlan.PressOption.Video,
-		};
+			if (progress == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < progress.Length; i++)
+			{
+				progress[i] = 1f;
+			}
+		}
+
+		// Reads the deal window's own pending list through its list views; null if it cannot be told apart from the others.
+		private static List<Deal> FindPendingDeals(DealWindow dealWindow)
+		{
+			var lists = new List<List<object>>();
+			foreach (var view in dealWindow.Window.GetComponentsInChildren<GUIListView>(true))
+			{
+				lists.Add(new List<object>(view.Items));
+			}
+
+			return PendingDeals.Select(lists, dealWindow.GetActiveDeals());
+		}
+
+		private static void WarnOnce(string message)
+		{
+			if (_warnedAboutPendingList)
+			{
+				return;
+			}
+
+			_warnedAboutPendingList = true;
+			message.Log();
+		}
 
 		// Only press-release campaigns have a finish state to force.
 		private static void CompletePressRelease(MarketingPlan plan)
 		{
-			for (int i = 0; i < PressReleaseOptions.Length; i++)
-			{
-				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
-				{
-					plan.Progress[i] = 1f;
-				}
-			}
+			MarkAllProgressComplete(plan.Progress);
 
 			plan.StopMarketing();
 		}

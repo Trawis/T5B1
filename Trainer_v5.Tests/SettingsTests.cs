@@ -7,8 +7,7 @@ namespace Trainer_v5.Tests
 	[Collection(SettingsCollection.Name)]
 	public class SettingsTests
 	{
-		// Every key below is persisted in player saves. Renaming or removing one silently resets
-		// that toggle for existing players, so a change here must be deliberate and add a migration.
+		// Every key below is persisted in saves: renaming or removing one resets that toggle for players, so it needs a migration.
 		internal static readonly string[] PersistedToggleKeys =
 		{
 			"NoStress", "NoVacation", "FullRoomBrightness", "CleanRooms", "FullEnvironment",

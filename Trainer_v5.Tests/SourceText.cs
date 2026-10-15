@@ -3,9 +3,7 @@ using System.Text;
 
 namespace Trainer_v5.Tests
 {
-	// Dependency-free scanner for architecture tests: drops comments and, optionally, string
-	// text, so a name mentioned in a comment or text is not mistaken for a code reference.
-	// Expressions inside interpolated strings are code and are always kept.
+	// Dependency-free scanner that drops comments and optionally string text; interpolated-string expressions are always kept.
 	internal static class SourceText
 	{
 		public static string Strip(string source, bool keepStrings)

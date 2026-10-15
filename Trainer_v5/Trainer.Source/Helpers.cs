@@ -6,8 +6,13 @@ namespace Trainer_v5
 {
 	public static class Helpers
 	{
+		// Keys already reported as unregistered, so a typo'd key hit every frame logs once. Shared with Extensions.
+		private static readonly HashSet<string> _loggedUnregisteredKeys;
+
+		private static readonly FeatureGuard _featureGuard;
+
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.3.4";
+		public static string Version => "5.3.5";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
@@ -60,26 +65,6 @@ namespace Trainer_v5
 
 		#region methods
 
-		// Keys reported as unregistered already, so a typo'd key hit every frame
-		// doesn't flood the console. Shared with Extensions so all the property
-		// accessors dedupe against the same set.
-		private static readonly HashSet<string> _loggedUnregisteredKeys;
-
-		// A missing key here means the caller asked for a key that was never added
-		// to the dictionary it's operating on, which happens when code references a
-		// setting name that doesn't exist (e.g. a typo). It is distinct from a
-		// registered key that is simply absent from an old save's serialized data -
-		// that case never reaches these accessors, since save deserialization only
-		// looks up keys it already enumerated from the live settings dictionary.
-		internal static void LogUnregisteredKey(string source, string key)
-		{
-			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
-			if (_loggedUnregisteredKeys.Add(message))
-			{
-				message.Log();
-			}
-		}
-
 		public static bool GetProperty(Dictionary<string, bool> properties, string key)
 		{
 			bool value;
@@ -102,9 +87,9 @@ namespace Trainer_v5
 			return null;
 		}
 
-		public static bool GetProperty(Dictionary<string, bool> properties, SettingKey<bool> key) => GetProperty(properties, key.Key);
+		public static bool GetProperty(Dictionary<string, bool> properties, ToggleKey key) => GetProperty(properties, key.Key);
 
-		public static object GetProperty(Dictionary<string, object> properties, SettingKey<object> key) => GetProperty(properties, key.Key);
+		public static object GetProperty(Dictionary<string, object> properties, StoreKey key) => GetProperty(properties, key.Key);
 
 		public static void SetProperty(Dictionary<string, bool> properties, string key, bool value)
 		{
@@ -126,27 +111,7 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		public static int GetIndex(List<KeyValuePair<string, object>> values, Dictionary<string, object> properties, string store, int valueType)
-		{
-			switch (valueType)
-			{
-				case 1:
-					return values.FindIndex(x => x.Value.MakeInt() == GetProperty(properties, store).MakeInt());
-				case 2:
-					return values.FindIndex(x => x.Value.MakeFloat() == GetProperty(properties, store).MakeFloat());
-				case 3:
-					return values.FindIndex(x => x.Value.MakeString() == GetProperty(properties, store).MakeString());
-				case 4:
-					return values.FindIndex(x => x.Value.MakeBool() == GetProperty(properties, store).MakeBool());
-				default:
-					"Method GetIndex received an unknown value type as parameter".Log();
-					return -1;
-			}
-		}
-
-		private static readonly FeatureGuard _featureGuard;
-
-		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
+		// Isolates one feature's exceptions (#123); returns whether the action completed without throwing.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
@@ -159,6 +124,16 @@ namespace Trainer_v5
 			else
 			{
 				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
+			}
+		}
+
+		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
+		internal static void LogUnregisteredKey(string source, string key)
+		{
+			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
+			if (_loggedUnregisteredKeys.Add(message))
+			{
+				message.Log();
 			}
 		}
 
@@ -180,10 +155,7 @@ namespace Trainer_v5
 
 		#endregion
 
-		// T5B1 targets whichever Software Inc Beta 1 build the assemblies under
-		// Trainer.Libraries/ were vendored from; there is no reliable way to
-		// read an exact build number from committed information, so this
-		// reports the current target generically instead of guessing one.
+		// No reliable build number is committed, so the vendored Beta 1 target is reported generically.
 		public static string GetGameVersion() => "Beta 1";
 	}
 }

@@ -1,20 +1,23 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: "[FEATURE]"
-labels: enhancement
-assignees: Trawis
-
+name: Feature Request
+about: Propose an implementation-ready capability
+title: ""
+labels: ["type: feature"]
+assignees: ""
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Summary
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+Describe the requested capability.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Goal
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+What problem should this solve?
+
+## Suggested approach
+
+<!-- Optional: Provide useful implementation direction when known. -->
+
+## Done when
+
+- Describe a concrete, observable outcome.

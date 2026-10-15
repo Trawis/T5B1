@@ -9,6 +9,12 @@ namespace Trainer_v5.Window
 {
 	public class EmployeeDemandChangeWindow
 	{
+		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
+		private GUIWindow _window;
+		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
+		private EmployeeTarget _target;
+		private bool _isRefreshing;
+
 		public static EmployeeDemandChangeWindow Instance => _instance.Value;
 
 		public void Show()
@@ -25,15 +31,15 @@ namespace Trainer_v5.Window
 			var window = _window;
 			if (window == null || !window.Shown)
 			{
-				_actor = null;
+				_target = null;
 				return;
 			}
 
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
-			var employee = _actor?.employee;
+			TargetSource source;
+			_target = EmployeeTarget.Resolve(out source);
+			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {employee?.Name ?? "Nobody"}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {EmployeeTarget.Describe(_target, source)}";
 
 			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
@@ -43,13 +49,6 @@ namespace Trainer_v5.Window
 			}
 			_isRefreshing = false;
 		}
-
-		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
-
-		private GUIWindow _window;
-		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
-		private Actor _actor;
-		private bool _isRefreshing;
 
 		private void CreateWindow()
 		{
@@ -74,17 +73,54 @@ namespace Trainer_v5.Window
 
 		private void ToggleDemand(LeadDesignDemands.Demand demand, bool on)
 		{
-			if (_actor == null)
+			if (_isRefreshing)
+				return;
+
+			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("Select an employee first.");
+					Notification.ShowError("The employee changed or is not available. Press Refresh.");
 				return;
 			}
-			var employee = _actor.employee;
+			var employee = _target.Employee;
 
-			var has = (employee.DemandResults & demand) > 0;
-			if (has != on)
-				employee.DemandResults ^= demand;
+			var choice = LeadDesignDemands.GetChoice(demand);
+			if (choice == null)
+			{
+				Notification.ShowError("The game has no demand choice for " + demand + ", so it was not changed.");
+				Refresh();
+				return;
+			}
+
+			var flag = (uint)(int)demand;
+			var sibling = (uint)(int)(choice.Choice1 == demand ? choice.Choice2 : choice.Choice1);
+			var has = employee.HasDemanded(demand);
+
+			if (on && !has)
+			{
+				GrantDemand(employee, choice, demand, sibling);
+			}
+			else if (on || has)
+			{
+				// Repairs half-written state or removes (the game has no removal path): the three bit sets change together.
+				var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
+				var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
+				employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
+				employee.DemandsMet = next.Met;
+				employee.DemandsRequested = next.Requested;
+			}
+
+			// Show what the game now reports, including the paired choice that was switched off.
+			Refresh();
+		}
+
+		// Grants via the game's AcceptDemand so the effect runs; its cost is charged as in the game (a refund would pay twice with the dismissal refund).
+		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
+		{
+			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);
+
+			var index = choice.GetChoiceIndex(demand);
+			employee.AcceptDemand(choice, index, false);
 		}
 	}
 }

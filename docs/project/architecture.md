@@ -50,7 +50,7 @@ dependencies.
 
 ## Runtime Architecture
 
-Startup subscribes to Unity scene-load events. Entering the main scene
+Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
 to the menu tears both down.
 
@@ -60,9 +60,22 @@ matched to how often the underlying game state can actually change.
 event. One-shot actions run from UI-triggered input dialogs rather than a
 scheduled cadence.
 
+Scheduled features are rows in `FeatureRegistry`: an id, the setting that
+gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
+trigger in registration order, each through `Helpers.TryExecute`. Triggers are
+Frame, Minute, Hour, Day and Month (while the setting is on) and Enabled and
+Disabled (once, on the frame a toggle changes; each toggle is observed once
+per frame). A feature with several cadences has several rows sharing its id.
+To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
+triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+A periodic feature (Minute, Hour, Day, Month) also has an Enabled row so it
+takes effect the moment it is switched on, unless it is listed in
+`FeatureRegistry.NoCatchUp`; `FeatureScheduleTests` enforces that, so a new
+toggle has to make the choice. A Disabled (restore) row needs an Enabled row.
+
 ## Runtime Feature Isolation
 
-Scheduling/orchestration (`TrainerBehaviour`) owns runtime error boundaries:
+Scheduling/orchestration (`FeatureDispatcher`) owns runtime error boundaries:
 
     Helpers.TryExecute(featureId, action);
 
@@ -73,9 +86,20 @@ features; repeated failures are rate-limited rather than flooding the log.
 `TryExecute`'s `bool` result is used only where orchestration needs success
 state for retryable one-time work.
 
+In the DLL build this isolates a failing feature. In the Workshop source build
+it only keeps the rest of the frame running: the game's injected handler runs
+first. Every named method body, which includes nearly every registry action,
+ends in `ModController.HandleException`, which shows the error window and
+unloads and deactivates the mod before `FeatureGuard` sees the resulting
+`ModException`. An inline lambda body is not wrapped, so a failure written
+directly in one reaches only the guard (`WorkshopExceptionBoundaryTests`
+simulate this with the game's injector and compiler). The handler's behavior
+comes from the game assembly and has not been run in the game (#241).
+
 The domain classes under `Features/` own only game-state mutations. They do
-not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
-cadence, the boundary, and the toggle transitions, and calls into them. UI
+not call `TryExecute` or decide when they run; `FeatureRegistry` and
+`FeatureDispatcher` own the cadence, the boundary, and the toggle transitions,
+and call into them. UI
 buttons call the one-shot actions on the domain classes directly.
 The classes and their members are `internal`; each keeps its own one-line
 `Settings` accessor rather than sharing one, to avoid coupling them.
@@ -87,18 +111,26 @@ toggles restore game state on disable only when the previous or current
 normal value can be recovered safely (a verified constant, a baseline captured
 before the first override, or the game's own public recomputation);
 destructive or unverifiable toggles are not given fake restoration semantics.
+The observed toggle states are cleared when the game is left or the mod is
+deactivated, so each save load is a cold start: an enabled toggle runs its
+enable hook. A toggle that was on before the reset keeps that fact for its
+first observation, so one that is now off still runs its restore; this matters
+for state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
 
 ## Persistence and Settings
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
 mechanism; serialized key compatibility must be preserved across releases.
 Every persisted setting is declared once in `SettingKeys` as a typed
-`SettingKey<T>` carrying its save key and default; `Helpers.Settings` and
+`ToggleKey` or `StoreKey` carrying its save key and default (not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types); `Helpers.Settings` and
 `Helpers.StoresSettings` are built from it, so serialization still reads and
 writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
+`ReduceBoxPrice` and `AutoMaxMarketShare` are retired: still declared so old
+saves deserialize, but with no UI and no scheduled behavior
+(`RetiredSettingsTests`).
 
 ## Game API Compatibility
 
@@ -110,13 +142,62 @@ new setting is one new declaration there plus its UI and behavior.
   fixing whatever source incompatibilities the refresh introduces.
 - `Helpers.Version` is the release version source of truth.
 
+## Workshop Source Build
+
+The Steam Workshop item is the trainer's source, not the DLL. When the game
+loads it, `ModController.InjectTryBlocks` prepends three `SWINC*` `#define`
+lines, strips comments and wraps every method and constructor body in
+`try`/`catch`, and the game's bundled C# 6 compiler (`mcs`) compiles the
+result. The SDK build cannot predict whether that succeeds, so the source has
+to stay inside what the injector and that compiler handle:
+
+- No call in a property or field initializer that is followed by a property
+  with accessors: the injector takes any `(` at member level for a method and
+  rewrites the wrong brace (v5.3.2, #222). Assign in a static constructor.
+- No `'{'` or `'}'` char literals, and no apostrophe inside a string before a
+  comment that contains a brace on the same line.
+- No parameter or local named `ex` in a method with a block body: it collides
+  with the injected catch variable (CS0136).
+- No fields in user-defined generic classes or structs (invalid IL, #225/#229).
+- No method or constructor body that has no `return` and ends in a `throw`: the
+  injected `try` leaves nothing after it and the compiler emits a branch past
+  the end of the method.
+- C# 6 only. The game's compiler rejects C# 7 syntax (CS1644).
+
+`GameSourcePipelineTests` and `GameCompilerHazardTests` in `Trainer_v5.Tests`
+run the game's own injector and compiler over `Trainer.Source` in CI. The
+injector's private methods are called by reflection from the tests only, and
+`GameSourceInjector.VerifyMirror` fails when the game's `InjectTryBlocks` stops
+calling what the tests repeat. `Trainer.Libraries/mcs.dll` is the compiler
+from the game's `Managed` folder (Unity's build of Mono's C# compiler). Only
+the tests use it: it is not referenced by the mod project or packaged. The game
+marks it as requiring a 32-bit process, which a 64-bit test host rejects, so
+the tests load a temporary copy with that one flag cleared. When the game
+updates, refresh it together with `Assembly-CSharp.dll`.
+
+What the tests establish: the injected source parses with the game's compiler,
+every injected `try` wraps a method or constructor body, and each hazard above
+is checked (the generic-field rule by `GameCompilerCompatibilityTests`), with
+failures reported against the repository file, line and column.
+What they cannot establish:
+
+- Type resolution and the rest of the semantic compile. The vendored
+  libraries are a subset of the game's assemblies and `mcs` cannot load the
+  game's types without the others, so the SDK build covers this.
+- Valid IL beyond the patterns listed above, and anything that only fails at
+  runtime in Unity (the generic-field failure is one). Those need the game or
+  the in-game checklist.
+- How the game's error handler behaves at runtime: the injected handler runs
+  before `FeatureGuard` sees a failure, and unloads the mod (see Runtime
+  Feature Isolation). Not verified in the game (#241).
+
 ## UI Architecture
 
 Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
-toggle/button grid; specialized editors (employee traits, demands, lead
+toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
-helpers. UI text is localized; translations live under
+helpers. The Trait, Demand, LeadSpec, Creativity and Inspiration editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Creativity editor installs a new `Employee` object (the game has no setter), so it is Experimental and is checked again when the dialog is confirmed (including that the actor still belongs to the active game). It refuses founders, employees without an actor and multiplayer games. `EmployeeReferenceMigration` first collects, then applies, the places the game holds the old object (friendship pairs, work-item lead work and lead designers, product and company lead designers, free leads, network employees, interaction memory); if applying fails the original employee is put back. Setting the current value is a no-op. `InitialLeadExperience` is set only by the constructor, so it restarts from zero. The migration is tested on real game objects created without their constructors; the edit itself is verified from the game assembly, not yet in the game. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. UI text is localized; translations live under
 `Trainer_v5/Trainer.Localization/<language>/`.
 
 ## Validation
@@ -131,6 +212,8 @@ helpers. UI text is localized; translations live under
   trainer code against the vendored assemblies outside Unity, so anything that
   calls into live game objects (the `Features/` classes, window construction)
   is not covered and needs in-game validation.
+- The Workshop source pipeline is checked with the game's own injector and
+  compiler (see Workshop Source Build).
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt

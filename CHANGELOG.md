@@ -6,6 +6,25 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.5] - 2026-10-15
+
+- Fixed the DLL version failing to load in the game.
+- Fixed Creativity edits losing friendships and lead work, and refused them
+  while the game still references the employee.
+- Fixed demands skipping their effects and refunding their cost.
+- Fixed Force Bankrupt and Bankrupt All affecting the player's own companies.
+- Fixed Auto Accept Hosting Deals accepting invalid or already answered deals.
+- Fixed Sell Product Stock paying out double.
+- Fixed Max Followers adding a billion followers.
+- Fixed Instant Research and Instant Marketing not finishing everything.
+- Fixed No Maintenance, No Sickness, and toggle restore after leaving the game.
+- Fixed trainer buttons in the employee detail window and the Lead Spec window
+  being cut off.
+- Fixed the Trainer Settings window opening and closing while its key is held.
+- Fixed furniture buttons not refreshing after Unlock and Claim Rewards.
+- Fixed lead role and finished patent detection in non-English languages.
+- Added missing English localization keys.
+
 ## [5.3.4] - 2026-10-14
 
 - Fixed the Workshop (source) version failing to load in the game with a
@@ -16,7 +35,7 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Fixed the Workshop (source) version failing to load in the game with a
   CS1014 compile error.
 
-## [5.3.2] - 2026-10-21
+## [5.3.2] - 2026-10-14
 
 - Internal cleanup with no intended behavior change: repeated toggle wiring in
   the settings window and trainer window setup are centralized, feature class

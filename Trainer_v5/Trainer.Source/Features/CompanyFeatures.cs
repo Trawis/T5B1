@@ -6,6 +6,10 @@ namespace Trainer_v5
 {
 	internal static class CompanyFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
+		private static float[] _defaultEdCost;
+
 		internal static void TransferOffshoreFunds()
 		{
 			double amount = Settings.OffshoreAccount;
@@ -29,7 +33,7 @@ namespace Trainer_v5
 
 		internal static void AIBankrupt()
 		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.ToArray();
+			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(IsBankruptTarget).ToArray();
 
 			for (int i = 0; i < Companies.Length; i++)
 			{
@@ -39,7 +43,8 @@ namespace Trainer_v5
 
 		internal static void UnlockAllSpace()
 		{
-			if (!Helpers.IsGameReady()) return;
+			if (!Helpers.IsGameReady())
+				return;
 
 			Example.TakeAllLand();
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -47,7 +52,8 @@ namespace Trainer_v5
 
 		internal static void UnlockFurniture()
 		{
-			if (!Helpers.IsGameReady()) return;
+			if (!Helpers.IsGameReady())
+				return;
 
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
@@ -128,17 +134,31 @@ namespace Trainer_v5
 
 		internal static void ForceBankruptAction(string input)
 		{
-			SimulatedCompany Company =
-				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
+			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
+				.Where(simCompany => simCompany.Name == input && IsBankruptTarget(simCompany))
+				.ToList();
 
-			DevConsole.Console.Log("input => " + input + " Company: " + Company);
-
-			if (Company == null)
+			if (matches.Count == 0)
 			{
+				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
 				return;
 			}
 
-			Company.Bankrupt = !Company.Bankrupt;
+			if (matches.Count > 1)
+			{
+				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			SimulatedCompany company = matches[0];
+			if (company.Bankrupt)
+			{
+				WindowManager.SpawnDialog("Trainer: " + company.Name + " is already going bankrupt.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			// One-way: the flag is only ever set, never toggled back.
+			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer => ConfirmForceBankrupt(company, answer));
 		}
 
 		internal static void ForceBankrupt()
@@ -160,7 +180,7 @@ namespace Trainer_v5
 		internal static void AddAIFundsAction(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
-				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
+				.Where(simCompany => simCompany.Name == input && IsBankruptTarget(simCompany))
 				.ToList();
 
 			if (matches.Count == 0)
@@ -232,6 +252,7 @@ namespace Trainer_v5
 			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
 			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
 			HUD.Instance.RefreshBuildButtons();
+			HUD.Instance.UpdateFurnitureButtons();
 
 			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
 		}
@@ -355,11 +376,22 @@ namespace Trainer_v5
 			Settings.Heat = 0f;
 		}
 
-		private static GameSettings Settings => GameSettings.Instance;
+		// The player's own company and its subsidiaries are never bankrupted.
+		private static bool IsBankruptTarget(SimulatedCompany company)
+		{
+			return company != Settings.MyCompany && !company.IsPlayerOwned();
+		}
 
-		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
-
-		private static float[] _defaultEdCost;
+		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
+		private static void ConfirmForceBankrupt(SimulatedCompany company, string answer)
+		{
+			SimulatedCompany current;
+			bool stillThere = Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company;
+			if (answer == "YES" && stillThere && IsBankruptTarget(company) && !company.Bankrupt)
+			{
+				company.Bankrupt = true;
+			}
+		}
 
 		private static float GetDefaultISPCostFactor()
 		{

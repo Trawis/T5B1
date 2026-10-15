@@ -2,6 +2,11 @@ namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
 	{
+		// RepairMe scales its repair step by this factor and calls the private FixNow when done: a large factor repairs in one pass.
+		private const float RepairFactor = 1000000f;
+
+		private static GameSettings Settings => GameSettings.Instance;
+
 		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
 		internal static void ApplyForceLights(bool enabled)
 		{
@@ -71,6 +76,9 @@ namespace Trainer_v5
 				ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
 			}
 
+			// The sick list is global to the day, not per actor: clear it once per pass.
+			TimeOfDay.Instance.Sick.Clear();
+
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				ApplyNoSicknessToActor(Settings.sActorManager.Actors[i]);
@@ -89,31 +97,14 @@ namespace Trainer_v5
 		{
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
-				switch (furniture.Type)
+				if (furniture.Type == "Chair" && furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
 				{
-					case "Chair":
-						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
-						{
-							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
-						}
-						goto case "Ventilation";
-					case "CCTV":
-					case "Computer":
-					case "Lamp":
-					case "Server":
-					case "Product Printer":
-					case "Radiator":
-					case "Sink":
-					case "Toilet":
-					case "Ventilation":
-						break;
-					default:
-						break;
+					furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
 				}
 
 				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
 				{
-					furniture.upg.RepairMe();
+					furniture.upg.RepairMe(RepairFactor);
 				}
 			}
 		}
@@ -201,8 +192,6 @@ namespace Trainer_v5
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
 		}
 
-		private static GameSettings Settings => GameSettings.Instance;
-
 		private static void ApplyCleanRoomsToRoom(Room room)
 		{
 			room.ClearDirt();
@@ -216,8 +205,6 @@ namespace Trainer_v5
 
 		private static void ApplyNoSicknessToActor(Actor actor)
 		{
-			TimeOfDay.Instance.Sick.Clear();
-
 			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
 				actor.SpecialState = Actor.HomeState.Default;

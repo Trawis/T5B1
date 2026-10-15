@@ -56,6 +56,8 @@ namespace Trainer_v5
 
 			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
 
+			var standardToggles = SettingToggleRows.Create();
+
 			List<GameObject> column1 = new List<GameObject>();
 			List<GameObject> column2 = new List<GameObject>();
 			List<GameObject> column3 = new List<GameObject>();
@@ -103,17 +105,7 @@ namespace Trainer_v5
 			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), CompanyFeatures.SubDCompany));
 			column2.Add(UIHelper.CreateLabel());
 
-			column2.Add(CreateSettingToggle(settings, "DisableNeeds", "Disable Needs", SettingKeys.NoNeeds));
-			column2.Add(CreateSettingToggle(settings, "DisableStress", "Disable Stress", SettingKeys.NoStress));
-			column2.Add(CreateSettingToggle(settings, "FreeEmployees", "Free Employees", SettingKeys.FreeEmployees));
-			column2.Add(CreateSettingToggle(settings, "FreeStaff", "Free Staff", SettingKeys.FreeStaff));
-			column2.Add(CreateSettingToggle(settings, "FullSatisfaction", "Full Satisfaction", SettingKeys.FullSatisfaction));
-			column2.Add(CreateSettingToggle(settings, "LockAge", "Lock Age of Employees", SettingKeys.LockAge));
-			column2.Add(CreateSettingToggle(settings, "NoVacation", "No Vacation", SettingKeys.NoVacation));
-			column2.Add(CreateSettingToggle(settings, "NoSickness", "No Sickness", SettingKeys.NoSickness));
-			column2.Add(CreateSettingToggle(settings, "AutoResearchStart", "Auto Research Start", SettingKeys.AutoResearchStart));
-			column2.Add(CreateSettingToggle(settings, "DigitalDistributionMonopol", "Digital Distribution Monopol", SettingKeys.DigitalDistributionMonopol));
-			column2.Add(CreateSettingToggle(settings, "DisableFireInspection", "Disable Fire Inspection", SettingKeys.DisableFireInspection));
+			AddStandardToggles(column2, standardToggles, 2, settings);
 			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
 
 			#endregion
@@ -128,20 +120,7 @@ namespace Trainer_v5
 			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), CompanyFeatures.ForceBankrupt));
 			column3.Add(UIHelper.CreateLabel());
 
-			column3.Add(CreateSettingToggle(settings, "FullEnvironment", "Full Environment", SettingKeys.FullEnvironment));
-			column3.Add(CreateSettingToggle(settings, "FullSunLight", "Full Sun Light", SettingKeys.FullRoomBrightness));
-			column3.Add(CreateSettingToggle(settings, "LockTemperature", "Lock Temperature To 21", SettingKeys.TemperatureLock));
-			column3.Add(CreateSettingToggle(settings, "NoMaintenance", "No Maintenance", SettingKeys.NoMaintenance));
-			column3.Add(CreateSettingToggle(settings, "NoiseReduction", "Noise Reduction", SettingKeys.NoiseReduction));
-			column3.Add(CreateSettingToggle(settings, "RoomsNeverDirty", "Rooms Never Dirty", SettingKeys.CleanRooms));
-			column3.Add(CreateSettingToggle(settings, "NoEducationCost", "No Education Cost", SettingKeys.NoEducationCost));
-			column3.Add(CreateSettingToggle(settings, "DisableFires", "Disable Fires", SettingKeys.DisableFires));
-			column3.Add(CreateSettingToggle(settings, "AutoDesignEnd", "Auto Design End", SettingKeys.AutoEndDesign));
-			column3.Add(CreateSettingToggle(settings, "AutoContractProgression", "Auto Contract Progression", SettingKeys.AutoContractProgression));
-			column3.Add(CreateSettingToggle(settings, "AutoResearchEnd", "Auto Research End", SettingKeys.AutoEndResearch));
-			column3.Add(CreateSettingToggle(settings, "AutoPatentEnd", "Auto Patent End", SettingKeys.AutoEndPatent));
-			column3.Add(CreateSettingToggle(settings, "IncreaseWalkSpeed", "Increase Walk Speed", SettingKeys.IncreaseWalkSpeed));
-			column3.Add(CreateSettingToggle(settings, "DisableFurnitureStealing", "Disable Furniture Stealing", SettingKeys.DisableFurnitureStealing));
+			AddStandardToggles(column3, standardToggles, 3, settings);
 			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); EnvironmentFeatures.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
 			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); EnvironmentFeatures.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
 
@@ -157,27 +136,7 @@ namespace Trainer_v5
 			column4.Add(UIHelper.CreateLabel());
 			column4.Add(UIHelper.CreateLabel());
 
-			column4.Add(CreateSettingToggle(settings, "FreePrint", "Free Print", SettingKeys.FreePrint));
-			column4.Add(CreateSettingToggle(settings, "FreeWaterElectricity", "Free Water & Electricity", SettingKeys.NoWaterElectricity));
-			column4.Add(CreateSettingToggle(settings, "IncreaseBookshelfSkill", "Increase Bookshelf Skill", SettingKeys.IncreaseBookshelfSkill));
-			column4.Add(CreateSettingToggle(settings, "IncreaseCourierCapacity", "Increase Courier Capacity", SettingKeys.IncreaseCourierCapacity));
-			column4.Add(CreateSettingToggle(settings, "IncreasePrintSpeed", "Increase Print Speed", SettingKeys.IncreasePrintSpeed));
-			column4.Add(CreateSettingToggle(settings, "MoreHostingDeals", "More Hosting Deals", SettingKeys.MoreHostingDeals));
-			column4.Add(CreateSettingToggle(settings, "ReduceInternetCost", "Reduce Internet Cost", SettingKeys.ReduceISPCost));
-			column4.Add(CreateSettingToggle(settings, "NoServerCost", "No Server Cost", SettingKeys.NoServerCost));
-			column4.Add(CreateSettingToggle(settings, "ReduceExpansionCost", "Reduce Expansion Cost", SettingKeys.ReduceExpansionCost));
-			column4.Add(CreateSettingToggle(settings, "DisableForcePause", "Disable Force Pause", SettingKeys.DisableForcePause));
-			column4.Add(CreateSettingToggle(settings, "DisableForceFreeze", "Disable Force Freeze", SettingKeys.DisableForceFreeze));
-			column4.Add(CreateSettingToggle(settings, "AutoAcceptHostingDeals", "Auto Accept Hosting Deals", SettingKeys.AutoAcceptHostingDeals));
-			column4.Add(CreateSettingToggle(settings, "AutoPorting", "Auto Porting", SettingKeys.AutoPorting));
-			column4.Add(CreateSettingToggle(settings, "MoreInspiration", "More Inspiration", SettingKeys.MoreInspiration));
-			column4.Add(CreateSettingToggle(settings, "MoreCreativity", "More Creativity", SettingKeys.MoreCreativity));
-			column4.Add(CreateSettingToggle(settings, "NoMissedSupportTickets", "No Missed Support Tickets", SettingKeys.NoMissedSupportTickets));
-			column4.Add(CreateSettingToggle(settings, "NoInsuranceCost", "No Insurance Cost", SettingKeys.NoInsuranceCost));
-			column4.Add(CreateSettingToggle(settings, "NoLoanInterest", "No Loan Interest", SettingKeys.NoLoanInterest));
-			column4.Add(CreateSettingToggle(settings, "FreeMarketing", "Free Marketing", SettingKeys.FreeMarketing));
-			column4.Add(CreateSettingToggle(settings, "NoOffshoreHeat", "No Offshore Heat", SettingKeys.NoOffshoreHeat));
-			column4.Add(CreateSettingToggle(settings, "NoFounderDividends", "No Founder Dividends", SettingKeys.NoFounderDividends));
+			AddStandardToggles(column4, standardToggles, 4, settings);
 
 			#endregion
 
@@ -234,7 +193,18 @@ namespace Trainer_v5
 			Window.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW);
 		}
 
-		private static GameObject CreateSettingToggle(Dictionary<string, bool> settings, string locKey, string defaultText, SettingKey<bool> key)
+		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)
+		{
+			foreach (var row in rows)
+			{
+				if (row.Column == columnNumber)
+				{
+					column.Add(CreateSettingToggle(settings, row.LocKey, row.DefaultText, row.Key));
+				}
+			}
+		}
+
+		private static GameObject CreateSettingToggle(Dictionary<string, bool> settings, string locKey, string defaultText, ToggleKey key)
 		{
 			return UIHelper.CreateToggle(locKey.LocDef(defaultText), settings.Get(key), a => settings.Toggle(key));
 		}

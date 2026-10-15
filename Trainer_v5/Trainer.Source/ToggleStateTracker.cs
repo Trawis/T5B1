@@ -13,11 +13,30 @@ namespace Trainer_v5
 	internal sealed class ToggleStateTracker
 	{
 		private readonly Dictionary<string, bool> _lastObserved = new Dictionary<string, bool>();
+		private readonly HashSet<string> _enabledBeforeReset = new HashSet<string>();
+
+		// Called when the game is left: the next observation is a cold start, but a toggle that was on still counts as on.
+		// Without that, a restore for state the game keeps across loads (AI.MaxBoxes, EdCost, Cheats.*) would never run.
+		public void Reset()
+		{
+			foreach (KeyValuePair<string, bool> observed in _lastObserved)
+			{
+				if (observed.Value)
+				{
+					_enabledBeforeReset.Add(observed.Key);
+				}
+			}
+			_lastObserved.Clear();
+		}
 
 		public ToggleTransitionEnum Observe(string settingKey, bool isEnabled)
 		{
 			bool wasEnabled;
-			_lastObserved.TryGetValue(settingKey, out wasEnabled);
+			if (!_lastObserved.TryGetValue(settingKey, out wasEnabled))
+			{
+				// Carried over: on again replays the apply, off runs the restore.
+				wasEnabled = _enabledBeforeReset.Remove(settingKey) && !isEnabled;
+			}
 			_lastObserved[settingKey] = isEnabled;
 
 			if (isEnabled == wasEnabled)
