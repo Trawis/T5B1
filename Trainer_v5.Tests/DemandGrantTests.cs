@@ -7,15 +7,14 @@ namespace Trainer_v5.Tests
 	public class DemandGrantTests
 	{
 		[Fact]
-		public void GrantingCallsAcceptDemandWithoutTheRefreshFlagAndRefundsTheCost()
+		public void GrantingCallsAcceptDemandWithoutTheRefreshFlagAndNeverRefundsTheCost()
 		{
 			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeDemandChangeWindow.cs"));
 			var start = source.IndexOf("private static void GrantDemand", System.StringComparison.Ordinal);
 			var body = source.Substring(start);
 
 			Assert.Contains("employee.AcceptDemand(choice, index, false)", body);
-			Assert.Contains("MyEmployer.MakeTransaction(cost, Company.TransactionCategory.Deals)", body);
-			Assert.True(body.IndexOf("AcceptDemand", System.StringComparison.Ordinal) < body.IndexOf("MakeTransaction", System.StringComparison.Ordinal));
+			Assert.DoesNotContain("MakeTransaction", body);
 		}
 
 		[Fact]

@@ -114,19 +114,13 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// Grants via the game's AcceptDemand so the effect runs; its Luxury Car charge is refunded.
+		// Grants via the game's AcceptDemand so the effect runs; its cost is charged as in the game (a refund would pay twice with the dismissal refund).
 		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
 		{
 			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);
 
 			var index = choice.GetChoiceIndex(demand);
 			employee.AcceptDemand(choice, index, false);
-
-			var cost = index == 0 ? choice.Cost1 : choice.Cost2;
-			if (cost > 0f && employee.MyEmployer != null)
-			{
-				employee.MyEmployer.MakeTransaction(cost, Company.TransactionCategory.Deals);
-			}
 		}
 	}
 }
