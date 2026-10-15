@@ -50,7 +50,7 @@ dependencies.
 
 ## Runtime Architecture
 
-Startup subscribes to Unity scene-load events. Entering the main scene
+Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
 to the menu tears both down.
 
@@ -60,9 +60,22 @@ matched to how often the underlying game state can actually change.
 event. One-shot actions run from UI-triggered input dialogs rather than a
 scheduled cadence.
 
+Scheduled features are rows in `FeatureRegistry`: an id, the setting that
+gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
+trigger in registration order, each through `Helpers.TryExecute`. Triggers are
+Frame, Minute, Hour, Day and Month (while the setting is on) and Enabled and
+Disabled (once, on the frame a toggle changes; each toggle is observed once
+per frame). A feature with several cadences has several rows sharing its id.
+To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
+triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+A periodic feature (Minute, Hour, Day, Month) also has an Enabled row so it
+takes effect the moment it is switched on, unless it is listed in
+`FeatureRegistry.NoCatchUp`; `FeatureScheduleTests` enforces that, so a new
+toggle has to make the choice. A Disabled (restore) row needs an Enabled row.
+
 ## Runtime Feature Isolation
 
-Scheduling/orchestration (`TrainerBehaviour`) owns runtime error boundaries:
+Scheduling/orchestration (`FeatureDispatcher`) owns runtime error boundaries:
 
     Helpers.TryExecute(featureId, action);
 
@@ -74,8 +87,9 @@ features; repeated failures are rate-limited rather than flooding the log.
 state for retryable one-time work.
 
 The domain classes under `Features/` own only game-state mutations. They do
-not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
-cadence, the boundary, and the toggle transitions, and calls into them. UI
+not call `TryExecute` or decide when they run; `FeatureRegistry` and
+`FeatureDispatcher` own the cadence, the boundary, and the toggle transitions,
+and call into them. UI
 buttons call the one-shot actions on the domain classes directly.
 The classes and their members are `internal`; each keeps its own one-line
 `Settings` accessor rather than sharing one, to avoid coupling them.
@@ -162,7 +176,7 @@ What they cannot establish:
 
 Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
-toggle/button grid; specialized editors (employee traits, demands, lead
+toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
 helpers. The Trait, Demand, LeadSpec, Creativity and Inspiration editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. UI text is localized; translations live under
 `Trainer_v5/Trainer.Localization/<language>/`.

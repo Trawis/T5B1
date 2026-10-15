@@ -232,6 +232,7 @@ namespace Trainer_v5
 			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
 			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
 			HUD.Instance.RefreshBuildButtons();
+			HUD.Instance.UpdateFurnitureButtons();
 
 			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
 		}
