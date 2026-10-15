@@ -176,7 +176,7 @@ What they cannot establish:
 
 Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
-toggle/button grid; specialized editors (employee traits, demands, lead
+toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
 helpers. UI text is localized; translations live under
 `Trainer_v5/Trainer.Localization/<language>/`.
