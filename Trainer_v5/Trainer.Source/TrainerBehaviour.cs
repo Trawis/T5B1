@@ -61,38 +61,41 @@ namespace Trainer_v5
 		{
 			if (isActiveAndEnabled)
 			{
-				switch (scene.name)
+				switch (SceneRoutes.For(scene.name))
 				{
-					case "MainMenu":
-						if (Main.TrainerButton != null)
-						{
-							Destroy(Main.TrainerButton.gameObject);
-							Main.TrainerButton = null;
-						}
-
-						if (Main.SkillChangeButton != null)
-						{
-							Destroy(Main.SkillChangeButton.gameObject);
-							Main.SkillChangeButton = null;
-						}
-
-						DetailWindowTrainer.Reset();
-						UnsubscribeFromEvents();
-						break;
-					case "MainScene":
+					case SceneRoute.MainScene:
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
 						DetailWindowTrainer.Install();
 						SubscribeToEvents();
 						break;
-					case "Customization":
+					case SceneRoute.Customization:
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
 						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000 };
 						break;
 					default:
-						goto case "MainMenu";
+						LeaveGame();
+						break;
 				}
 			}
+		}
+
+		private void LeaveGame()
+		{
+			if (Main.TrainerButton != null)
+			{
+				Destroy(Main.TrainerButton.gameObject);
+				Main.TrainerButton = null;
+			}
+
+			if (Main.SkillChangeButton != null)
+			{
+				Destroy(Main.SkillChangeButton.gameObject);
+				Main.SkillChangeButton = null;
+			}
+
+			DetailWindowTrainer.Reset();
+			UnsubscribeFromEvents();
 		}
 
 		private void SubscribeToSceneEvents()
