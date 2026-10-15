@@ -60,9 +60,18 @@ matched to how often the underlying game state can actually change.
 event. One-shot actions run from UI-triggered input dialogs rather than a
 scheduled cadence.
 
+Scheduled features are rows in `FeatureRegistry`: an id, the setting that
+gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
+trigger in registration order, each through `Helpers.TryExecute`. Triggers are
+Frame, Minute, Hour, Day and Month (while the setting is on) and Enabled and
+Disabled (once, on the frame a toggle changes; each toggle is observed once
+per frame). A feature with several cadences has several rows sharing its id.
+To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
+triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+
 ## Runtime Feature Isolation
 
-Scheduling/orchestration (`TrainerBehaviour`) owns runtime error boundaries:
+Scheduling/orchestration (`FeatureDispatcher`) owns runtime error boundaries:
 
     Helpers.TryExecute(featureId, action);
 
@@ -74,8 +83,9 @@ features; repeated failures are rate-limited rather than flooding the log.
 state for retryable one-time work.
 
 The domain classes under `Features/` own only game-state mutations. They do
-not call `TryExecute` or decide when they run; `TrainerBehaviour` owns the
-cadence, the boundary, and the toggle transitions, and calls into them. UI
+not call `TryExecute` or decide when they run; `FeatureRegistry` and
+`FeatureDispatcher` own the cadence, the boundary, and the toggle transitions,
+and call into them. UI
 buttons call the one-shot actions on the domain classes directly.
 The classes and their members are `internal`; each keeps its own one-line
 `Settings` accessor rather than sharing one, to avoid coupling them.
