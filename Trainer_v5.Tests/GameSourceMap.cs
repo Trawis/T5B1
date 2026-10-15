@@ -22,8 +22,7 @@ namespace Trainer_v5.Tests
 		public string Description { get; }
 	}
 
-	// Maps injected positions back to the repository file: lines are aligned by longest common subsequence,
-	// rewritten lines by prefix, and the rest is injector-generated code.
+	// Maps injected positions back to repository lines: LCS for aligned lines, prefix for rewritten ones, the rest is injector code.
 	internal sealed class GameSourceMap
 	{
 		private readonly InjectedSource _source;

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Creativity editor replaces the Employee object (#183); the guard needs the game's objects, so this checks it is wired in.
+	// Checks the Creativity editor is wired to the guard and the reference migration (#183).
 	public class CreativityEditGuardTests
 	{
 		[Fact]

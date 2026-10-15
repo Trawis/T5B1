@@ -158,8 +158,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			// ReEvaluateMaxFollowers recomputes the cap from the game's own rules (any earlier change to it is
-			// overwritten), and the Followers setter clamps to it: fill the cap, once, and leave the daily follower change alone.
+			// ReEvaluateMaxFollowers recomputes the cap and the setter clamps to it: fill it once, leave the daily change alone.
 			WorkItem.ReEvaluateMaxFollowers();
 			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
@@ -224,7 +223,7 @@ namespace Trainer_v5
 			});
 		}
 
-		// Same precondition as ApplyAutoEndDesign, limited to contract work; promoted items leave WorkItems, so nothing is promoted twice.
+		// Same precondition as ApplyAutoEndDesign, for contract work.
 		internal static void ApplyAutoContractProgression()
 		{
 			var contractDesigns = Settings.MyCompany.WorkItems

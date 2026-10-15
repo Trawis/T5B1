@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace Trainer_v5
 {
-	// Places the trainer buttons above the native employee detail window (#182). They stay in one row while that
-	// fits the window's width and wrap upward in further rows when it does not, so none sticks out sideways.
+	// Lays the trainer buttons above the detail window in one row, wrapping upward when the window is narrower (#182).
 	internal static class DetailButtonLayout
 	{
 		public static Rect[] Place(int count, float availableWidth, int width, int height, int spacing)

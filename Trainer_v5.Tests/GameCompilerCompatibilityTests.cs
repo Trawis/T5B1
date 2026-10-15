@@ -5,9 +5,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Workshop build is compiled by the game itself, and its compiler emits invalid IL for the fields
-	// of user-defined generic types (InvalidProgramException at the constructor). Generic methods and
-	// delegates are fine, so only generic classes and structs are rejected.
+	// The game's compiler emits invalid IL for fields of user-defined generic types; generic methods and delegates are fine.
 	public class GameCompilerCompatibilityTests
 	{
 		private static readonly Regex GenericType = new Regex(@"\b(class|struct)\s+\w+\s*<", RegexOptions.Compiled);

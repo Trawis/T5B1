@@ -13,8 +13,7 @@ namespace Trainer_v5
 		Ambiguous = 3
 	}
 
-	// The employee an editor acts on. It is resolved when the editor identifies it and checked again before
-	// every write, so a dismissed employee, a replaced Employee object or a reloaded save is never edited (#235).
+	// The employee an editor acts on: resolved once, checked again before every write (#235).
 	internal sealed class EmployeeTarget
 	{
 		public readonly Actor Actor;

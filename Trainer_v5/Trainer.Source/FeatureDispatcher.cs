@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Runs the registered features for a trigger, in registration order. The game-facing pieces (settings
-	// lookup, the guard) are passed in so this stays free of Unity calls.
+	// Runs a trigger's features in registration order; the settings lookup and guard are injected to stay Unity-free.
 	internal sealed class FeatureDispatcher
 	{
 		private readonly List<FeatureEntry>[] _byTrigger;

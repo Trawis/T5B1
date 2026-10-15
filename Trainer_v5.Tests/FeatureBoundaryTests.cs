@@ -5,8 +5,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Scheduling, error boundaries and toggle transitions belong to TrainerBehaviour; the domain
-	// classes under Features/ only mutate game state, and none of them depends on another.
+	// Scheduling lives in TrainerBehaviour; the Features/ classes only mutate game state and don't depend on each other.
 	public class FeatureBoundaryTests
 	{
 		private static string[] FeatureFiles()

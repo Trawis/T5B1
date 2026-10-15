@@ -91,9 +91,8 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// Syntax check only: mcs reports syntax errors before it loads references, so a reference that cannot
-		// exist leaves exactly one CS0006 when the sources parse. The vendored libraries are a subset of the
-		// game's assemblies, so mcs cannot resolve types here; the SDK build does that.
+		// Syntax check only: mcs reports syntax errors before loading references, so an impossible reference leaves one CS0006.
+		// Type resolution is the SDK build's job.
 		public static ParseCheck CheckSyntax(IList<InjectedSource> sources)
 		{
 			var directory = CreateTemporaryDirectory();

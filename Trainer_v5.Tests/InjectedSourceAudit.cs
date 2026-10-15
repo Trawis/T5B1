@@ -47,7 +47,7 @@ namespace Trainer_v5.Tests
 			return new AuditResult(InjectedCatch.Matches(source.Injected).Count, misplaced);
 		}
 
-		// Bodies with no return that end in a throw: wrapped, the game's compiler emits a leave past the method end (invalid IL).
+		// Bodies with no return that end in a throw compile to a branch past the method end (invalid IL) once wrapped.
 		public static IList<string> FindBodiesEndingInThrow(string name, string original)
 		{
 			var code = SourceText.Strip(original, keepStrings: false);

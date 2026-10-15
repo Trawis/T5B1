@@ -29,8 +29,7 @@ namespace Trainer_v5.Tests
 		public int PrefixLines { get; }
 	}
 
-	// Test-only bridge to the game's injector. InjectTryBlocks cannot run outside Unity (its Options static
-	// constructor needs the engine), so Inject repeats its loop and VerifyMirror fails if the game's changes.
+	// Test-only bridge to the game's injector, which cannot run outside Unity: Inject repeats its loop, VerifyMirror detects drift.
 	internal static class GameSourceInjector
 	{
 		public const string ModName = "t5b1tests";

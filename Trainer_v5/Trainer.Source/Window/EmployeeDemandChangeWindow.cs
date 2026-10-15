@@ -102,8 +102,7 @@ namespace Trainer_v5.Window
 			}
 			else if (on || has)
 			{
-				// Already granted (repairs state an older trainer left half-written) or being removed: the game has
-				// no removal path, so the three bit sets are changed together.
+				// Repairs half-written state or removes (the game has no removal path): the three bit sets change together.
 				var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
 				var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
 				employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
@@ -115,9 +114,7 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// Granting goes through the game's own AcceptDemand, so the demand's effect runs (role change for Exclusive
-		// Lead, leaving the desk for Private Office) and the bits are set the way the game sets them. AcceptDemand
-		// also charges the employer for the Luxury Car; the trainer gives that money back.
+		// Grants via the game's AcceptDemand so the effect runs; its Luxury Car charge is refunded.
 		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
 		{
 			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);

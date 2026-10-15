@@ -3,15 +3,11 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Every scheduled trainer feature: when it runs, under which FeatureGuard id, and what it calls. Order within a
-	// trigger is execution order. To add a feature, add its entries here.
-	// Not registered on purpose: the retired AutoMaxMarketShare (see #150) and ReduceBoxPrice, and the Cheats.* flags that
-	// TrainerBehaviour pushes once per load.
+	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order. Not registered: the retired
+	// AutoMaxMarketShare and ReduceBoxPrice, and the Cheats.* flags TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
-		// Periodic features that deliberately have no Enabled row: switching them on changes nothing until the next
-		// tick of their cadence. Every other Minute, Hour, Day or Month feature must catch up when it is enabled,
-		// which FeatureScheduleTests checks, so a new toggle cannot omit the decision.
+		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
 		public static readonly string[] NoCatchUp =
 		{
 			"NoMissedSupportTickets",

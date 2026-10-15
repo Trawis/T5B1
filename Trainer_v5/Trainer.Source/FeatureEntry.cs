@@ -16,8 +16,7 @@ namespace Trainer_v5
 		Disabled = 6
 	}
 
-	// One scheduled call: when Trigger fires, run Action under the FeatureGuard boundary named Id.
-	// A feature with several cadences has several entries that share its Id and key.
+	// One scheduled call. A feature with several cadences has several entries sharing its Id.
 	internal sealed class FeatureEntry
 	{
 		public readonly string Id;

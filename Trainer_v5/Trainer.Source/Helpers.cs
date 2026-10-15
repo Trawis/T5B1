@@ -6,9 +6,7 @@ namespace Trainer_v5
 {
 	public static class Helpers
 	{
-		// Keys reported as unregistered already, so a typo'd key hit every frame
-		// doesn't flood the console. Shared with Extensions so all the property
-		// accessors dedupe against the same set.
+		// Keys already reported as unregistered, so a typo'd key hit every frame logs once. Shared with Extensions.
 		private static readonly HashSet<string> _loggedUnregisteredKeys;
 
 		private static readonly FeatureGuard _featureGuard;
@@ -113,7 +111,7 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
+		// Isolates one feature's exceptions (#123); returns whether the action completed without throwing.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
@@ -129,12 +127,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// A missing key here means the caller asked for a key that was never added
-		// to the dictionary it's operating on, which happens when code references a
-		// setting name that doesn't exist (e.g. a typo). It is distinct from a
-		// registered key that is simply absent from an old save's serialized data -
-		// that case never reaches these accessors, since save deserialization only
-		// looks up keys it already enumerated from the live settings dictionary.
+		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
 		internal static void LogUnregisteredKey(string source, string key)
 		{
 			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
@@ -162,10 +155,7 @@ namespace Trainer_v5
 
 		#endregion
 
-		// T5B1 targets whichever Software Inc Beta 1 build the assemblies under
-		// Trainer.Libraries/ were vendored from; there is no reliable way to
-		// read an exact build number from committed information, so this
-		// reports the current target generically instead of guessing one.
+		// No reliable build number is committed, so the vendored Beta 1 target is reported generically.
 		public static string GetGameVersion() => "Beta 1";
 	}
 }

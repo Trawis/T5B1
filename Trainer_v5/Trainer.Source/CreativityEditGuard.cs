@@ -1,8 +1,6 @@
 namespace Trainer_v5
 {
-	// Creativity has no setter, so the editor installs a new Employee object (#183) and EmployeeReferenceMigration
-	// re-points everything the game holds. The edit stays Experimental, and is refused for the cases the migration
-	// does not cover.
+	// Creativity has no setter, so the edit installs a new Employee; the migration re-points the game's references (#183).
 	internal static class CreativityEditGuard
 	{
 		public static bool IsEnabled()
