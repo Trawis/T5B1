@@ -72,6 +72,23 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void ARestoreRunsWhenTheNextSaveHasTheToggleOffAfterTheTrackerWasReset()
+		{
+			var dispatcher = Create(
+				Entry("ReduceISPCost", FeatureTrigger.Enabled, SettingKeys.ReduceISPCost, "apply"),
+				Entry("ReduceISPCost", FeatureTrigger.Disabled, SettingKeys.ReduceISPCost, "restore"));
+			_on.Add(SettingKeys.ReduceISPCost.Key);
+			dispatcher.RunTransitions();
+
+			_tracker.Reset();
+			_on.Remove(SettingKeys.ReduceISPCost.Key);
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(new[] { "ReduceISPCost:apply", "ReduceISPCost:restore" }, _calls);
+		}
+
+		[Fact]
 		public void TransitionsAreObservedInTheOrderTheirKeysWereRegistered()
 		{
 			_on.Add(SettingKeys.NoVacation.Key);
