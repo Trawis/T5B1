@@ -8,24 +8,6 @@ namespace Trainer_v5
 {
 	public class TrainerBehaviour : ModBehaviour
 	{
-		public override void OnActivate()
-		{
-			SubscribeToSceneEvents();
-
-			// No sceneLoaded event fires on reactivation inside MainScene, so subscribe directly.
-			if (SceneManager.GetActiveScene().name == "MainScene")
-			{
-				SubscribeToEvents();
-			}
-		}
-
-		public override void OnDeactivate()
-		{
-			_toggleStates.Reset();
-			UnsubscribeFromEvents();
-			UnsubscribeFromSceneEvents();
-		}
-
 		private bool _sceneEventsSubscribed;
 		private bool _timeEventsSubscribed;
 
@@ -45,6 +27,24 @@ namespace Trainer_v5
 		private static GameSettings Settings => GameSettings.Instance;
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
 		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
+
+		public override void OnActivate()
+		{
+			SubscribeToSceneEvents();
+
+			// No sceneLoaded event fires on reactivation inside MainScene, so subscribe directly.
+			if (SceneManager.GetActiveScene().name == "MainScene")
+			{
+				SubscribeToEvents();
+			}
+		}
+
+		public override void OnDeactivate()
+		{
+			_toggleStates.Reset();
+			UnsubscribeFromEvents();
+			UnsubscribeFromSceneEvents();
+		}
 
 		private void Start()
 		{

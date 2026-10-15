@@ -6,6 +6,10 @@ namespace Trainer_v5
 {
 	internal static class CompanyFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
+		private static float[] _defaultEdCost;
+
 		internal static void TransferOffshoreFunds()
 		{
 			double amount = Settings.OffshoreAccount;
@@ -39,7 +43,8 @@ namespace Trainer_v5
 
 		internal static void UnlockAllSpace()
 		{
-			if (!Helpers.IsGameReady()) return;
+			if (!Helpers.IsGameReady())
+				return;
 
 			Example.TakeAllLand();
 			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
@@ -47,7 +52,8 @@ namespace Trainer_v5
 
 		internal static void UnlockFurniture()
 		{
-			if (!Helpers.IsGameReady()) return;
+			if (!Helpers.IsGameReady())
+				return;
 
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
@@ -375,12 +381,6 @@ namespace Trainer_v5
 		{
 			Settings.Heat = 0f;
 		}
-
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static readonly Dictionary<EnvironmentPreset, float> _ispCostBaselines = new Dictionary<EnvironmentPreset, float>();
-
-		private static float[] _defaultEdCost;
 
 		private static float GetDefaultISPCostFactor()
 		{

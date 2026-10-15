@@ -7,6 +7,11 @@ namespace Trainer_v5
 {
 	internal static class EmployeeFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+		private static bool _specializationsLoaded;
+
+		internal static bool SpecializationsLoaded => _specializationsLoaded;
+
 		internal static void SetSkillPerEmployeeAction(string input)
 		{
 			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
@@ -58,7 +63,8 @@ namespace Trainer_v5
 
 		internal static void HREmployees()
 		{
-			if (!Helpers.IsGameReady(requireSelector: true)) return;
+			if (!Helpers.IsGameReady(requireSelector: true))
+				return;
 
 			Actor[] Actors = Settings.sActorManager.Actors
 									 .Where(actor => actor.employee.IsRole(Employee.RoleBit.Lead))
@@ -94,7 +100,8 @@ namespace Trainer_v5
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
 
-			if (!Helpers.IsGameReady(requireSelector: true)) return;
+			if (!Helpers.IsGameReady(requireSelector: true))
+				return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -256,8 +263,6 @@ namespace Trainer_v5
 			_specializationsLoaded = true;
 		}
 
-		internal static bool SpecializationsLoaded => _specializationsLoaded;
-
 		internal static void ApplyIncreaseWalkSpeed()
 		{
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -270,10 +275,6 @@ namespace Trainer_v5
 		{
 			Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 		}
-
-		private static GameSettings Settings => GameSettings.Instance;
-
-		private static bool _specializationsLoaded;
 
 		private static void ApplyFullSatisfactionToActor(Actor actor)
 		{

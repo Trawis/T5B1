@@ -2,6 +2,13 @@ namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
 	{
+		// RepairMe adds one small step (scaled by this factor) to RepairTime and calls the private FixNow once it
+		// reaches 1 - Quality. FixNow restores quality, clears Broken and the broken-furniture list, so a large
+		// factor finishes the repair in one hour through the game's own path.
+		private const float RepairFactor = 1000000f;
+
+		private static GameSettings Settings => GameSettings.Instance;
+
 		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
 		internal static void ApplyForceLights(bool enabled)
 		{
@@ -88,35 +95,13 @@ namespace Trainer_v5
 			}
 		}
 
-		// RepairMe adds one small step (scaled by this factor) to RepairTime and calls the private FixNow once it
-		// reaches 1 - Quality. FixNow restores quality, clears Broken and the broken-furniture list, so a large
-		// factor finishes the repair in one hour through the game's own path.
-		private const float RepairFactor = 1000000f;
-
 		internal static void ApplyNoMaintenance()
 		{
 			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
 			{
-				switch (furniture.Type)
+				if (furniture.Type == "Chair" && furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
 				{
-					case "Chair":
-						if (furniture.Comfort < Constants.CHAIR_COMFORT_LOW)
-						{
-							furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
-						}
-						goto case "Ventilation";
-					case "CCTV":
-					case "Computer":
-					case "Lamp":
-					case "Server":
-					case "Product Printer":
-					case "Radiator":
-					case "Sink":
-					case "Toilet":
-					case "Ventilation":
-						break;
-					default:
-						break;
+					furniture.Comfort = Constants.CHAIR_COMFORT_HIGH;
 				}
 
 				if (furniture.HasUpg && (furniture.upg.Quality < 0.8f || furniture.upg.Broken))
@@ -208,8 +193,6 @@ namespace Trainer_v5
 		{
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
 		}
-
-		private static GameSettings Settings => GameSettings.Instance;
 
 		private static void ApplyCleanRoomsToRoom(Room room)
 		{

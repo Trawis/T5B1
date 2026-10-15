@@ -21,6 +21,54 @@ namespace Trainer_v5
 			}
 		}
 
+		public static bool ReplaceKey<TValue>(Dictionary<Employee, TValue> dictionary, Employee oldKey, Employee newKey)
+		{
+			return ReplaceKeyOf(dictionary, oldKey, newKey);
+		}
+
+		public static bool ReplaceKeyOf<TKey, TValue>(Dictionary<TKey, TValue> dictionary, TKey oldKey, TKey newKey)
+		{
+			TValue value;
+			if (dictionary == null || !dictionary.TryGetValue(oldKey, out value))
+			{
+				return false;
+			}
+
+			dictionary.Remove(oldKey);
+			dictionary[newKey] = value;
+			return true;
+		}
+
+		public static bool ReplaceInList<T>(List<T> list, T oldItem, T newItem)
+		{
+			if (list == null)
+			{
+				return false;
+			}
+
+			var replaced = false;
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (EqualityComparer<T>.Default.Equals(list[i], oldItem))
+				{
+					list[i] = newItem;
+					replaced = true;
+				}
+			}
+			return replaced;
+		}
+
+		public static bool ReplaceInSet<T>(HashSet<T> set, T oldItem, T newItem)
+		{
+			if (set == null || !set.Remove(oldItem))
+			{
+				return false;
+			}
+
+			set.Add(newItem);
+			return true;
+		}
+
 		// Friendships are keyed by object pairs (equality is by reference), so the old pairs are removed and set again.
 		private static void MigrateFriendships(Employee oldEmployee, Employee newEmployee)
 		{
@@ -125,54 +173,6 @@ namespace Trainer_v5
 			{
 				ReplaceInSet(actors[i].HasInteractedWith, oldEmployee, newEmployee);
 			}
-		}
-
-		public static bool ReplaceKey<TValue>(Dictionary<Employee, TValue> dictionary, Employee oldKey, Employee newKey)
-		{
-			return ReplaceKeyOf(dictionary, oldKey, newKey);
-		}
-
-		public static bool ReplaceKeyOf<TKey, TValue>(Dictionary<TKey, TValue> dictionary, TKey oldKey, TKey newKey)
-		{
-			TValue value;
-			if (dictionary == null || !dictionary.TryGetValue(oldKey, out value))
-			{
-				return false;
-			}
-
-			dictionary.Remove(oldKey);
-			dictionary[newKey] = value;
-			return true;
-		}
-
-		public static bool ReplaceInList<T>(List<T> list, T oldItem, T newItem)
-		{
-			if (list == null)
-			{
-				return false;
-			}
-
-			var replaced = false;
-			for (int i = 0; i < list.Count; i++)
-			{
-				if (EqualityComparer<T>.Default.Equals(list[i], oldItem))
-				{
-					list[i] = newItem;
-					replaced = true;
-				}
-			}
-			return replaced;
-		}
-
-		public static bool ReplaceInSet<T>(HashSet<T> set, T oldItem, T newItem)
-		{
-			if (set == null || !set.Remove(oldItem))
-			{
-				return false;
-			}
-
-			set.Add(newItem);
-			return true;
 		}
 	}
 }

@@ -8,6 +8,10 @@ namespace Trainer_v5
 {
 	public static class UIHelper
 	{
+		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
+		private const float WINDOW_CHROME_HEIGHT = 200f;
+		private const int MIN_VISIBLE_ROWS = 6;
+
 		public static GUIWindow SpawnWindow(string title, string name, string panelName)
 		{
 			var window = WindowManager.SpawnWindow();
@@ -181,10 +185,6 @@ namespace Trainer_v5
 		{
 			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
 		}
-
-		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
-		private const float WINDOW_CHROME_HEIGHT = 200f;
-		private const int MIN_VISIBLE_ROWS = 6;
 
 		private static string NameOrDefault(this string name, string suffix, string text = null)
 		{

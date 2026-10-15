@@ -6,6 +6,13 @@ namespace Trainer_v5
 {
 	public static class Helpers
 	{
+		// Keys reported as unregistered already, so a typo'd key hit every frame
+		// doesn't flood the console. Shared with Extensions so all the property
+		// accessors dedupe against the same set.
+		private static readonly HashSet<string> _loggedUnregisteredKeys;
+
+		private static readonly FeatureGuard _featureGuard;
+
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
 		public static string Version => "5.3.4";
 		public static string TrainerVersion => $"Trainer v{Version}";
@@ -60,26 +67,6 @@ namespace Trainer_v5
 
 		#region methods
 
-		// Keys reported as unregistered already, so a typo'd key hit every frame
-		// doesn't flood the console. Shared with Extensions so all the property
-		// accessors dedupe against the same set.
-		private static readonly HashSet<string> _loggedUnregisteredKeys;
-
-		// A missing key here means the caller asked for a key that was never added
-		// to the dictionary it's operating on, which happens when code references a
-		// setting name that doesn't exist (e.g. a typo). It is distinct from a
-		// registered key that is simply absent from an old save's serialized data -
-		// that case never reaches these accessors, since save deserialization only
-		// looks up keys it already enumerated from the live settings dictionary.
-		internal static void LogUnregisteredKey(string source, string key)
-		{
-			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
-			if (_loggedUnregisteredKeys.Add(message))
-			{
-				message.Log();
-			}
-		}
-
 		public static bool GetProperty(Dictionary<string, bool> properties, string key)
 		{
 			bool value;
@@ -126,8 +113,6 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		private static readonly FeatureGuard _featureGuard;
-
 		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
@@ -141,6 +126,21 @@ namespace Trainer_v5
 			else
 			{
 				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
+			}
+		}
+
+		// A missing key here means the caller asked for a key that was never added
+		// to the dictionary it's operating on, which happens when code references a
+		// setting name that doesn't exist (e.g. a typo). It is distinct from a
+		// registered key that is simply absent from an old save's serialized data -
+		// that case never reaches these accessors, since save deserialization only
+		// looks up keys it already enumerated from the live settings dictionary.
+		internal static void LogUnregisteredKey(string source, string key)
+		{
+			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
+			if (_loggedUnregisteredKeys.Add(message))
+			{
+				message.Log();
 			}
 		}
 

@@ -5,6 +5,8 @@ namespace Trainer_v5
 {
 	internal static class WorkItemFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+
 		internal static void OptimizeTeamAssignments()
 		{
 			int reassigned = 0;
@@ -118,7 +120,8 @@ namespace Trainer_v5
 			foreach (var work in Settings.MyCompany.WorkItems)
 			{
 				var contract = work.contract;
-				if (contract == null) continue;
+				if (contract == null)
+					continue;
 				var deadline = contract.Deadline;
 				contract.Deadline = new SDateTime(deadline.Year + 1, deadline.Month, deadline.Day);
 			}
@@ -302,8 +305,6 @@ namespace Trainer_v5
 				AdvanceSoftwarePort(port);
 			}
 		}
-
-		private static GameSettings Settings => GameSettings.Instance;
 
 		// The RoleBit each type's own GetBoostRole checks; other types are left alone.
 		private static Employee.RoleBit? GetOptimizerRoleBit(WorkItem item)

@@ -6,6 +6,8 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
+		private static GameSettings Settings => GameSettings.Instance;
+
 		internal static void SellProductStock()
 		{
 			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
@@ -115,8 +117,6 @@ namespace Trainer_v5
 		{
 			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
 		}
-
-		private static GameSettings Settings => GameSettings.Instance;
 
 		// Shared by the price, stock and active-users actions; rejects ambiguous names.
 		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)

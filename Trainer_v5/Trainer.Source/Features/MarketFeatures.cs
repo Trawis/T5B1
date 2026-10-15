@@ -4,6 +4,11 @@ namespace Trainer_v5
 {
 	internal static class MarketFeatures
 	{
+		// ServerDeal.StillValid rejects a product released more than 24 months ago.
+		private const float MaxHostedProductAgeMonths = 24f;
+
+		private static GameSettings Settings => GameSettings.Instance;
+
 		internal static void InstantMarketing()
 		{
 			var plans = Settings.MyCompany.WorkItems.OfType<MarketingPlan>()
@@ -164,24 +169,6 @@ namespace Trainer_v5
 			}
 		}
 
-		private static bool HasBeenAccepted(ServerDeal deal)
-		{
-			return !deal.Accepted.Equals(default(SDateTime));
-		}
-
-		// ServerDeal.StillValid rejects a product released more than 24 months ago.
-		private const float MaxHostedProductAgeMonths = 24f;
-
-		private static GameSettings Settings => GameSettings.Instance;
-
-		// Only press-release campaigns have a finish state to force.
-		private static void CompletePressRelease(MarketingPlan plan)
-		{
-			MarkAllProgressComplete(plan.Progress);
-
-			plan.StopMarketing();
-		}
-
 		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
 		internal static void MarkAllProgressComplete(float[] progress)
 		{
@@ -194,6 +181,19 @@ namespace Trainer_v5
 			{
 				progress[i] = 1f;
 			}
+		}
+
+		private static bool HasBeenAccepted(ServerDeal deal)
+		{
+			return !deal.Accepted.Equals(default(SDateTime));
+		}
+
+		// Only press-release campaigns have a finish state to force.
+		private static void CompletePressRelease(MarketingPlan plan)
+		{
+			MarkAllProgressComplete(plan.Progress);
+
+			plan.StopMarketing();
 		}
 	}
 }
