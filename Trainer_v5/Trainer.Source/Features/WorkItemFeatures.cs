@@ -249,8 +249,8 @@ namespace Trainer_v5
 		{
 			var legalWorks = Settings.MyCompany.WorkItems
 							   .OfType<LegalWork>()
-							   .Where(lw => lw.CurrentStage() == "Finished" &&
-									lw.Type == LegalWork.WorkType.Patent)
+							   .Where(lw => lw.Type == LegalWork.WorkType.Patent &&
+									lw.Progress >= 1f)
 							   .ToList();
 
 			legalWorks.ForEach(legalWork =>

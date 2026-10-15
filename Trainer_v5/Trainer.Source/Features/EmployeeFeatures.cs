@@ -61,7 +61,7 @@ namespace Trainer_v5
 			if (!Helpers.IsGameReady(requireSelector: true)) return;
 
 			Actor[] Actors = Settings.sActorManager.Actors
-									 .Where(actor => actor.employee.RoleString.Contains("Lead"))
+									 .Where(actor => actor.employee.IsRole(Employee.RoleBit.Lead))
 									 .ToArray();
 
 			if (Actors.Length == 0)
@@ -150,7 +150,7 @@ namespace Trainer_v5
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
-				if (actor.employee.RoleString.Contains("Lead"))
+				if (actor.employee.IsRole(Employee.RoleBit.Lead))
 				{
 					actor.Effectiveness = value;
 				}
@@ -163,7 +163,7 @@ namespace Trainer_v5
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
-				if (!actor.employee.RoleString.Contains("Lead"))
+				if (!actor.employee.IsRole(Employee.RoleBit.Lead))
 				{
 					actor.Effectiveness = value;
 				}

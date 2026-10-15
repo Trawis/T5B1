@@ -204,12 +204,12 @@ namespace Trainer_v5
 				return;
 			}
 
-			if (Input.GetKey(KeyCode.F1))
+			if (Input.GetKeyDown(KeyCode.F1))
 			{
 				Main.OpenSettingsWindow();
 			}
 
-			if (Input.GetKey(KeyCode.F2))
+			if (Input.GetKeyDown(KeyCode.F2))
 			{
 				Main.CloseSettingsWindow();
 			}
