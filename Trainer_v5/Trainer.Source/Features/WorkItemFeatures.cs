@@ -156,7 +156,7 @@ namespace Trainer_v5
 			}
 
 			// ReEvaluateMaxFollowers recomputes the cap from the game's own rules (any earlier change to it is
-			// overwritten), and the Followers setter clamps to it: fill the cap, once, and leave FollowerChange alone.
+			// overwritten), and the Followers setter clamps to it: fill the cap, once, and leave the daily follower change alone.
 			WorkItem.ReEvaluateMaxFollowers();
 			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
