@@ -74,6 +74,9 @@ namespace Trainer_v5.Window
 
 		private void ToggleDemand(LeadDesignDemands.Demand demand, bool on)
 		{
+			if (_isRefreshing)
+				return;
+
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
@@ -82,9 +85,24 @@ namespace Trainer_v5.Window
 			}
 			var employee = _target.Employee;
 
-			var has = (employee.DemandResults & demand) > 0;
-			if (has != on)
-				employee.DemandResults ^= demand;
+			var choice = LeadDesignDemands.GetChoice(demand);
+			if (choice == null)
+			{
+				Notification.ShowError("The game has no demand choice for " + demand + ", so it was not changed.");
+				Refresh();
+				return;
+			}
+
+			var flag = (uint)(int)demand;
+			var sibling = (uint)(int)(choice.Choice1 == demand ? choice.Choice2 : choice.Choice1);
+			var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
+			var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
+			employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
+			employee.DemandsMet = next.Met;
+			employee.DemandsRequested = next.Requested;
+
+			// Show what the game now reports, including the paired choice that was switched off.
+			Refresh();
 		}
 	}
 }

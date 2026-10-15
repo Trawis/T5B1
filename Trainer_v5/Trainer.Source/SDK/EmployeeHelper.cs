@@ -38,8 +38,9 @@ namespace Trainer_v5.SDK
 
 		#region LeadDesign Demands
 
+		// Fire is the zero value the game uses to mean "no demand"; a bitwise toggle can never change it.
 		public static IEnumerable<LeadDesignDemands.Demand> Demands
-			=> Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>();
+			=> Enum.GetValues(typeof(LeadDesignDemands.Demand)).Cast<LeadDesignDemands.Demand>().Where(d => d != LeadDesignDemands.Demand.Fire);
 
 		#endregion
 	}
