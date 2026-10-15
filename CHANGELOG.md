@@ -6,6 +6,38 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.3.5] - 2026-10-15
+
+- Fixed the DLL version failing to load in the game because of a reference to
+  `SINetworking.NetworkManager`.
+- Fixed Creativity edits: the replacement employee is now planned, applied and
+  reverted safely, keeps friendships and lead work, and is refused while the
+  game still references the employee.
+- Fixed demands: they are granted through the game's own accept path so their
+  effects run, no longer refund their cost when the editor grants one, and
+  keep the demand bit sets consistent.
+- Fixed Force Bankrupt: it is one-way and confirmed, and spares the player's
+  subsidiaries; Bankrupt All also spares the player.
+- Fixed Auto Accept Hosting Deals: it only accepts valid, unanswered deals
+  from the game's pending list and does nothing when that list is unclear.
+- Fixed Sell Product Stock paying out double proceeds.
+- Fixed Max Followers adding a billion followers; it now fills the game's cap
+  once.
+- Fixed Instant Research not finishing through the company and not refreshing
+  the research list.
+- Fixed Instant Marketing missing some press release progress slots.
+- Fixed No Maintenance, No Sickness, and toggles that were on before leaving
+  the game: furniture is repaired in one pass, the global sick list is cleared
+  once per pass, and toggle restore now runs correctly after a reset.
+- Fixed the employee detail window trainer buttons not wrapping to the window
+  width, and the Lead Spec window cutting off its footer buttons.
+- Fixed the Trainer Settings window opening and closing repeatedly while its
+  key is held.
+- Fixed furniture buttons not refreshing after Unlock and Claim Rewards.
+- Fixed lead role and finished patent work detection in non-English game
+  languages.
+- Added missing English localization keys.
+
 ## [5.3.4] - 2026-10-14
 
 - Fixed the Workshop (source) version failing to load in the game with a
