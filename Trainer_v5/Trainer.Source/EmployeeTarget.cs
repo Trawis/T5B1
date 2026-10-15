@@ -1,0 +1,107 @@
+using System.Collections.Generic;
+
+namespace Trainer_v5
+{
+	internal enum TargetSource
+	{
+		None = 0,
+		// The employee shown in the open detail window: the editors are opened from it.
+		DetailWindow = 1,
+		// Exactly one employee selected while no detail window is open.
+		Selection = 2,
+		// Several selected and no detail window: there is no single intended employee.
+		Ambiguous = 3
+	}
+
+	// The employee an editor acts on. It is resolved when the editor identifies it and checked again before
+	// every write, so a dismissed employee, a replaced Employee object or a reloaded save is never edited (#235).
+	internal sealed class EmployeeTarget
+	{
+		public readonly Actor Actor;
+		public readonly Employee Employee;
+
+		private EmployeeTarget(Actor actor)
+		{
+			Actor = actor;
+			Employee = actor.employee;
+		}
+
+		// An open detail window is the context the editor buttons live in, so it wins over a wider selection.
+		public static TargetSource Decide(bool detailWindowHasLiveEmployee, int liveSelectedCount)
+		{
+			if (detailWindowHasLiveEmployee)
+			{
+				return TargetSource.DetailWindow;
+			}
+
+			if (liveSelectedCount == 1)
+			{
+				return TargetSource.Selection;
+			}
+
+			return liveSelectedCount > 1 ? TargetSource.Ambiguous : TargetSource.None;
+		}
+
+		public static EmployeeTarget Resolve(out TargetSource source)
+		{
+			var detailActor = ShownDetailActor();
+			var selected = new List<Actor>();
+			var selection = SelectorController.Instance != null ? SelectorController.Instance.Selected : null;
+			if (selection != null)
+			{
+				foreach (var item in selection)
+				{
+					var actor = item as Actor;
+					if (IsLive(actor))
+					{
+						selected.Add(actor);
+					}
+				}
+			}
+
+			source = Decide(IsLive(detailActor), selected.Count);
+			switch (source)
+			{
+				case TargetSource.DetailWindow:
+					return new EmployeeTarget(detailActor);
+				case TargetSource.Selection:
+					return new EmployeeTarget(selected[0]);
+				default:
+					return null;
+			}
+		}
+
+		public static string Describe(EmployeeTarget target, TargetSource source)
+		{
+			if (target != null)
+			{
+				return target.Employee.Name;
+			}
+
+			return source == TargetSource.Ambiguous ? "one employee (several are selected)" : "Nobody";
+		}
+
+		public static bool IsLive(Actor actor)
+		{
+			return actor != null && actor.employee != null && !actor.employee.Dismissed;
+		}
+
+		// False once the actor is gone, dismissed, or carries a different Employee object than when resolved.
+		public bool IsStillValid()
+		{
+			return IsLive(Actor) && Actor.employee == Employee;
+		}
+
+		// DetailWindow.CurrentEmployee can stay set after the window closes, so it only counts while shown.
+		private static Actor ShownDetailActor()
+		{
+			var detail = HUD.Instance != null ? HUD.Instance.DetailWindow : null;
+			if (detail == null || detail.Window == null || !detail.Window.Shown)
+			{
+				return null;
+			}
+
+			return detail.CurrentEmployee;
+		}
+	}
+}

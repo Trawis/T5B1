@@ -25,15 +25,15 @@ namespace Trainer_v5.Window
 			var window = _window;
 			if (window == null || !window.Shown)
 			{
-				_actor = null;
+				_target = null;
 				return;
 			}
 
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
-			var employee = _actor?.employee;
+			TargetSource source;
+			_target = EmployeeTarget.Resolve(out source);
+			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {employee?.Name ?? "Nobody"}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {EmployeeTarget.Describe(_target, source)}";
 
 			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
@@ -48,7 +48,7 @@ namespace Trainer_v5.Window
 
 		private GUIWindow _window;
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
-		private Actor _actor;
+		private EmployeeTarget _target;
 		private bool _isRefreshing;
 
 		private void CreateWindow()
@@ -92,13 +92,13 @@ namespace Trainer_v5.Window
 
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{
-			if (_actor == null)
+			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("Select an employee first.");
+					Notification.ShowError("The employee changed or is not available. Press Refresh.");
 				return;
 			}
-			var employee = _actor.employee;
+			var employee = _target.Employee;
 
 			var hasTrait = (employee.Traits & trait) > 0;
 			if (hasTrait != on)

@@ -25,15 +25,15 @@ namespace Trainer_v5.Window
 			var window = _window;
 			if (window == null || !window.Shown)
 			{
-				_actor = null;
+				_target = null;
 				return;
 			}
 
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>();
-			_actor = selectedActors.FirstOrDefault() ?? HUD.Instance.DetailWindow?.CurrentEmployee;
-			var employee = _actor?.employee;
+			TargetSource source;
+			_target = EmployeeTarget.Resolve(out source);
+			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {employee?.Name ?? "Nobody"}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {EmployeeTarget.Describe(_target, source)}";
 
 			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
@@ -48,7 +48,7 @@ namespace Trainer_v5.Window
 
 		private GUIWindow _window;
 		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
-		private Actor _actor;
+		private EmployeeTarget _target;
 		private bool _isRefreshing;
 
 		private void CreateWindow()
@@ -74,13 +74,13 @@ namespace Trainer_v5.Window
 
 		private void ToggleDemand(LeadDesignDemands.Demand demand, bool on)
 		{
-			if (_actor == null)
+			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("Select an employee first.");
+					Notification.ShowError("The employee changed or is not available. Press Refresh.");
 				return;
 			}
-			var employee = _actor.employee;
+			var employee = _target.Employee;
 
 			var has = (employee.DemandResults & demand) > 0;
 			if (has != on)

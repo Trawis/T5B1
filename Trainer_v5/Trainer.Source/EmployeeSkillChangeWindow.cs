@@ -118,7 +118,7 @@ namespace Trainer_v5
 				InputHelper.RequestFloat(
 					"How many base skill do you want?\nMin = 0, Max = 1.0",
 					$"Set base skill for {selectedActors.Count} actor(s)",
-					val => selectedActors.ForEach(actor => selectedRoles.ForEach(role =>
+					val => selectedActors.Where(EmployeeTarget.IsLive).ToList().ForEach(actor => selectedRoles.ForEach(role =>
 					{
 						actor.employee.SkillCeiling = 1f;
 						actor.employee.ChangeSkillDirect(role, val);
