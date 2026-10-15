@@ -86,6 +86,16 @@ features; repeated failures are rate-limited rather than flooding the log.
 `TryExecute`'s `bool` result is used only where orchestration needs success
 state for retryable one-time work.
 
+In the DLL build this isolates a failing feature. In the Workshop source build
+it only keeps the rest of the frame running: the game's injected handler runs
+first. Every named method body, which includes nearly every registry action,
+ends in `ModController.HandleException`, which shows the error window and
+unloads and deactivates the mod before `FeatureGuard` sees the resulting
+`ModException`. An inline lambda body is not wrapped, so a failure written
+directly in one reaches only the guard (`WorkshopExceptionBoundaryTests`
+simulate this with the game's injector and compiler). The handler's behavior
+comes from the game assembly and has not been run in the game (#241).
+
 The domain classes under `Features/` own only game-state mutations. They do
 not call `TryExecute` or decide when they run; `FeatureRegistry` and
 `FeatureDispatcher` own the cadence, the boundary, and the toggle transitions,
@@ -175,8 +185,9 @@ What they cannot establish:
 - Valid IL beyond the patterns listed above, and anything that only fails at
   runtime in Unity (the generic-field failure is one). Those need the game or
   the in-game checklist.
-- How exceptions behave at runtime: the injected handler reports through the
-  game's error handler before `FeatureGuard` sees the failure (#241).
+- How the game's error handler behaves at runtime: the injected handler runs
+  before `FeatureGuard` sees a failure, and unloads the mod (see Runtime
+  Feature Isolation). Not verified in the game (#241).
 
 ## UI Architecture
 
