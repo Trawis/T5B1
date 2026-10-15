@@ -26,13 +26,13 @@ namespace Trainer_v5
 				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 			};
 
-			// add components to DetailWindow
+			// add components to DetailWindow, above it and within its width
 			const int width = 80, height = 32, spacing = 4;
+			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
+			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);
 			for (var i = 0; i < components.Count; i++)
 			{
-				var x = i * (width + spacing);
-				const int y = 0 - spacing - height;
-				components[i].gameObject.AddToElement("DetailWindow", new Rect(x, y, width, height));
+				components[i].gameObject.AddToElement("DetailWindow", slots[i]);
 			}
 
 			// Only mark this instance as installed once the loop above completes
