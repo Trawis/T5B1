@@ -151,14 +151,14 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
+				Notification.ShowError("No active (not paused) alpha named \"" + input + "\".");
 				return;
 			}
 
-			WorkItem.MaxFollowers += 1000000000;
+			// ReEvaluateMaxFollowers recomputes the cap from the game's own rules (any earlier change to it is
+			// overwritten), and the Followers setter clamps to it: fill the cap, once, and leave FollowerChange alone.
 			WorkItem.ReEvaluateMaxFollowers();
-
-			WorkItem.FollowerChange += 1000000000f;
-			WorkItem.Followers += 1000000000f;
+			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
 
 		internal static void MaxFollowers()
