@@ -151,14 +151,14 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
+				Notification.ShowError("No active (not paused) alpha named \"" + input + "\".");
 				return;
 			}
 
-			WorkItem.MaxFollowers += 1000000000;
+			// ReEvaluateMaxFollowers recomputes the cap from the game's own rules (any earlier change to it is
+			// overwritten), and the Followers setter clamps to it: fill the cap, once, and leave the daily follower change alone.
 			WorkItem.ReEvaluateMaxFollowers();
-
-			WorkItem.FollowerChange += 1000000000f;
-			WorkItem.Followers += 1000000000f;
+			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
 
 		internal static void MaxFollowers()
@@ -331,7 +331,7 @@ namespace Trainer_v5
 			return team.GetEmployeesDirect().Count(actor => actor.employee.IsRole(roleBit, false));
 		}
 
-		// Same sequence as ResearchWork.FinishNow, minus the patent confirmation dialog.
+		// Same sequence as ResearchWork.FinishNow, minus the patent confirmation dialog and its achievement counter.
 		private static void CompleteResearchWork(ResearchWork researchWork)
 		{
 			Settings.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
@@ -339,9 +339,11 @@ namespace Trainer_v5
 			if (tech != null)
 			{
 				LegalWork legalWork = new LegalWork(tech);
-				Settings.MyCompany.WorkItems.Add(legalWork);
-				Settings.ApplyDefaultTeams(legalWork, ((int)legalWork.Type).ToString() + "Team");
+				Settings.MyCompany.AddWorkItem(legalWork);
+				// The game's key is the enum name ("PatentTeam"), not its number.
+				Settings.ApplyDefaultTeams(legalWork, legalWork.Type + "Team");
 			}
+			HUD.Instance.researchWindow.UpdateLists();
 			researchWork.Kill(false);
 		}
 

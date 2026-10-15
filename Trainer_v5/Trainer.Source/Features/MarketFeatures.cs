@@ -144,16 +144,29 @@ namespace Trainer_v5
 						mostPowerfulServerGroup = serverGroup;
 				}
 
-				var activeServerDeals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
+				var dealWindow = HUD.Instance.dealWindow;
+				var activeServerDeals = dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
 				foreach (var serverDeal in serverDeals)
 				{
-					if (!activeServerDeals.Contains(serverDeal))
+					// AllDeals also keeps cancelled deals until the game's cleanup. One that was accepted once has a
+					// timestamp; an invalid one would only be cancelled again by ActuallyAcceptDeal.
+					if (activeServerDeals.Contains(serverDeal) || HasBeenAccepted(serverDeal) || !serverDeal.StillValid(false))
 					{
-						HUD.Instance.dealWindow.ActuallyAcceptDeal(serverDeal, true);
+						continue;
+					}
+
+					dealWindow.ActuallyAcceptDeal(serverDeal, true);
+					if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
+					{
 						Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
 					}
 				}
 			}
+		}
+
+		private static bool HasBeenAccepted(ServerDeal deal)
+		{
+			return !deal.Accepted.Equals(default(SDateTime));
 		}
 
 		// ServerDeal.StillValid rejects a product released more than 24 months ago.
@@ -161,25 +174,26 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 
-		private static readonly MarketingPlan.PressOption[] PressReleaseOptions =
-		{
-			MarketingPlan.PressOption.Text,
-			MarketingPlan.PressOption.Image,
-			MarketingPlan.PressOption.Video,
-		};
-
 		// Only press-release campaigns have a finish state to force.
 		private static void CompletePressRelease(MarketingPlan plan)
 		{
-			for (int i = 0; i < PressReleaseOptions.Length; i++)
-			{
-				if ((plan.PressOptions & PressReleaseOptions[i]) != 0)
-				{
-					plan.Progress[i] = 1f;
-				}
-			}
+			MarkAllProgressComplete(plan.Progress);
 
 			plan.StopMarketing();
+		}
+
+		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
+		internal static void MarkAllProgressComplete(float[] progress)
+		{
+			if (progress == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < progress.Length; i++)
+			{
+				progress[i] = 1f;
+			}
 		}
 	}
 }

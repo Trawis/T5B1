@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
@@ -26,13 +27,13 @@ namespace Trainer_v5
 				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 			};
 
-			// add components to DetailWindow
+			// add components to DetailWindow, above it and within its width
 			const int width = 80, height = 32, spacing = 4;
+			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
+			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);
 			for (var i = 0; i < components.Count; i++)
 			{
-				var x = i * (width + spacing);
-				const int y = 0 - spacing - height;
-				components[i].gameObject.AddToElement("DetailWindow", new Rect(x, y, width, height));
+				components[i].gameObject.AddToElement("DetailWindow", slots[i]);
 			}
 
 			// Only mark this instance as installed once the loop above completes
@@ -54,6 +55,19 @@ namespace Trainer_v5
 			if (source != TargetSource.DetailWindow) return;
 			var employee = target.Employee;
 
+			if (!CreativityEditGuard.IsEnabled())
+			{
+				Notification.ShowError("Editing creativity replaces the employee object and is experimental. Enable Experimental in the Trainer Settings first.");
+				return;
+			}
+
+			var blocked = CreativityEditGuard.FindBlockingReference(employee);
+			if (blocked != null)
+			{
+				Notification.ShowError($"{employee.Name} {blocked}, which the game would lose when the employee is replaced. Nothing was edited.");
+				return;
+			}
+
 			InputHelper.RequestFloat(
 				$"Current is {employee.Creativity}\nMin = 0, Max = 1.0",
 				$"Set creativity for {employee.Name}",
@@ -62,6 +76,18 @@ namespace Trainer_v5
 					if (!target.IsStillValid())
 					{
 						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						return;
+					}
+
+					if (Math.Abs(val - employee.Creativity) < 0.0001f)
+					{
+						return;
+					}
+
+					var stillBlocked = CreativityEditGuard.FindBlockingReference(employee);
+					if (stillBlocked != null)
+					{
+						Notification.ShowError($"{employee.Name} {stillBlocked}, which the game would lose when the employee is replaced. Nothing was edited.");
 						return;
 					}
 
