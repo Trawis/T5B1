@@ -71,6 +71,9 @@ namespace Trainer_v5
 				ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
 			}
 
+			// The sick list is global to the day, not per actor: clear it once per pass.
+			TimeOfDay.Instance.Sick.Clear();
+
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				ApplyNoSicknessToActor(Settings.sActorManager.Actors[i]);
@@ -216,8 +219,6 @@ namespace Trainer_v5
 
 		private static void ApplyNoSicknessToActor(Actor actor)
 		{
-			TimeOfDay.Instance.Sick.Clear();
-
 			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
 				actor.SpecialState = Actor.HomeState.Default;
