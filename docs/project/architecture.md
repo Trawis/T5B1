@@ -101,6 +101,9 @@ toggles restore game state on disable only when the previous or current
 normal value can be recovered safely (a verified constant, a baseline captured
 before the first override, or the game's own public recomputation);
 destructive or unverifiable toggles are not given fake restoration semantics.
+The observed toggle states are cleared when the game is left or the mod is
+deactivated, so each save load is a cold start: an enabled toggle runs its
+enable hook, a disabled one runs no restore.
 
 ## Persistence and Settings
 
