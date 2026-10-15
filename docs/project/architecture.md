@@ -50,7 +50,7 @@ dependencies.
 
 ## Runtime Architecture
 
-Startup subscribes to Unity scene-load events. Entering the main scene
+Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
 to the menu tears both down.
 
