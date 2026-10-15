@@ -15,7 +15,7 @@ namespace Trainer_v5.Tests
 			var il = body.GetILAsByteArray();
 			var starts = new HashSet<int>();
 			var branches = new List<KeyValuePair<int, int>>();
-			Walk(il, (offset, code, operandOffset, __) =>
+			Walk(il, (offset, code, operandOffset) =>
 			{
 				starts.Add(offset);
 				if (code.OperandType == OperandType.ShortInlineBrTarget)
@@ -53,7 +53,7 @@ namespace Trainer_v5.Tests
 			var il = method.GetMethodBody().GetILAsByteArray();
 			var module = method.Module;
 			var called = new HashSet<string>();
-			Walk(il, (_, code, operandOffset, __) =>
+			Walk(il, (_, code, operandOffset) =>
 			{
 				if (code != OpCodes.Call && code != OpCodes.Callvirt && code != OpCodes.Newobj)
 				{
@@ -66,7 +66,7 @@ namespace Trainer_v5.Tests
 			return called;
 		}
 
-		private delegate void Visitor(int offset, OpCode code, int operandOffset, int length);
+		private delegate void Visitor(int offset, OpCode code, int operandOffset);
 
 		private static void Walk(byte[] il, Visitor visit)
 		{
@@ -88,7 +88,7 @@ namespace Trainer_v5.Tests
 
 				var operandOffset = position;
 				position += OperandSize(code, il, position);
-				visit(start, code, operandOffset, position - start);
+				visit(start, code, operandOffset);
 			}
 		}
 
