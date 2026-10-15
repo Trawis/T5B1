@@ -26,7 +26,7 @@ namespace Trainer_v5
 
 		internal static void PushReward()
 		{
-			var Deals = HUD.Instance.dealWindow.GetActiveDeals().Where(deal => deal.ToString() == "ServerDeal").ToArray();
+			var Deals = HUD.Instance.dealWindow.GetActiveDeals().OfType<ServerDeal>().ToArray();
 
 			if (!Deals.Any())
 			{
