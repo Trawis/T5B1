@@ -110,6 +110,54 @@ new setting is one new declaration there plus its UI and behavior.
   fixing whatever source incompatibilities the refresh introduces.
 - `Helpers.Version` is the release version source of truth.
 
+## Workshop Source Build
+
+The Steam Workshop item is the trainer's source, not the DLL. When the game
+loads it, `ModController.InjectTryBlocks` prepends three `SWINC*` `#define`
+lines, strips comments and wraps every method and constructor body in
+`try`/`catch`, and the game's bundled C# 6 compiler (`mcs`) compiles the
+result. The SDK build cannot predict whether that succeeds, so the source has
+to stay inside what the injector and that compiler handle:
+
+- No call in a property or field initializer that is followed by a property
+  with accessors: the injector takes any `(` at member level for a method and
+  rewrites the wrong brace (v5.3.2, #222). Assign in a static constructor.
+- No `'{'` or `'}'` char literals, and no apostrophe inside a string before a
+  comment that contains a brace on the same line.
+- No parameter or local named `ex` in a method with a block body: it collides
+  with the injected catch variable (CS0136).
+- No fields in user-defined generic classes or structs (invalid IL, #225/#229).
+- No method or constructor body that has no `return` and ends in a `throw`: the
+  injected `try` leaves nothing after it and the compiler emits a branch past
+  the end of the method.
+- C# 6 only. The game's compiler rejects C# 7 syntax (CS1644).
+
+`GameSourcePipelineTests` and `GameCompilerHazardTests` in `Trainer_v5.Tests`
+run the game's own injector and compiler over `Trainer.Source` in CI. The
+injector's private methods are called by reflection from the tests only, and
+`GameSourceInjector.VerifyMirror` fails when the game's `InjectTryBlocks` stops
+calling what the tests repeat. `Trainer.Libraries/mcs.dll` is the compiler
+from the game's `Managed` folder (Unity's build of Mono's C# compiler). Only
+the tests use it: it is not referenced by the mod project or packaged. The game
+marks it as requiring a 32-bit process, which a 64-bit test host rejects, so
+the tests load a temporary copy with that one flag cleared. When the game
+updates, refresh it together with `Assembly-CSharp.dll`.
+
+What the tests establish: the injected source parses with the game's compiler,
+every injected `try` wraps a method or constructor body, and each hazard above
+is checked (the generic-field rule by `GameCompilerCompatibilityTests`), with
+failures reported against the repository file, line and column.
+What they cannot establish:
+
+- Type resolution and the rest of the semantic compile. The vendored
+  libraries are a subset of the game's assemblies and `mcs` cannot load the
+  game's types without the others, so the SDK build covers this.
+- Valid IL beyond the patterns listed above, and anything that only fails at
+  runtime in Unity (the generic-field failure is one). Those need the game or
+  the in-game checklist.
+- How exceptions behave at runtime: the injected handler reports through the
+  game's error handler before `FeatureGuard` sees the failure (#241).
+
 ## UI Architecture
 
 Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
@@ -131,6 +179,8 @@ helpers. UI text is localized; translations live under
   trainer code against the vendored assemblies outside Unity, so anything that
   calls into live game objects (the `Features/` classes, window construction)
   is not covered and needs in-game validation.
+- The Workshop source pipeline is checked with the game's own injector and
+  compiler (see Workshop Source Build).
 - Runtime behavior depends on the actual game and needs in-game validation.
 
 ## Architectural Debt
