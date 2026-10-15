@@ -5,7 +5,7 @@ namespace Trainer_v5
 {
 	// Every scheduled trainer feature: when it runs, under which FeatureGuard id, and what it calls. Order within a
 	// trigger is execution order. To add a feature, add its entries here.
-	// Not registered on purpose: AutoMaxMarketShare (disabled, see #150) and the Cheats.* flags that
+	// Not registered on purpose: the retired AutoMaxMarketShare (see #150) and ReduceBoxPrice, and the Cheats.* flags that
 	// TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
