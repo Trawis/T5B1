@@ -29,7 +29,7 @@ namespace Trainer_v5
 
 		internal static void AIBankrupt()
 		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.ToArray();
+			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(company => company != Settings.MyCompany).ToArray();
 
 			for (int i = 0; i < Companies.Length; i++)
 			{
@@ -128,17 +128,37 @@ namespace Trainer_v5
 
 		internal static void ForceBankruptAction(string input)
 		{
-			SimulatedCompany Company =
-				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
+			List<SimulatedCompany> matches = Settings.simulation.Companies.Values
+				.Where(simCompany => simCompany.Name == input && simCompany != Settings.MyCompany)
+				.ToList();
 
-			DevConsole.Console.Log("input => " + input + " Company: " + Company);
-
-			if (Company == null)
+			if (matches.Count == 0)
 			{
+				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
 				return;
 			}
 
-			Company.Bankrupt = !Company.Bankrupt;
+			if (matches.Count > 1)
+			{
+				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			SimulatedCompany company = matches[0];
+			if (company.Bankrupt)
+			{
+				WindowManager.SpawnDialog("Trainer: " + company.Name + " is already going bankrupt.", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			// One-way: the flag is only ever set, never toggled back.
+			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer =>
+			{
+				if (answer == "YES" && !company.Bankrupt)
+				{
+					company.Bankrupt = true;
+				}
+			});
 		}
 
 		internal static void ForceBankrupt()
