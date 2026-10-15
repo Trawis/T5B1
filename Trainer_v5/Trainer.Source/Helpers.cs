@@ -126,24 +126,6 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		public static int GetIndex(List<KeyValuePair<string, object>> values, Dictionary<string, object> properties, string store, int valueType)
-		{
-			switch (valueType)
-			{
-				case 1:
-					return values.FindIndex(x => x.Value.MakeInt() == GetProperty(properties, store).MakeInt());
-				case 2:
-					return values.FindIndex(x => x.Value.MakeFloat() == GetProperty(properties, store).MakeFloat());
-				case 3:
-					return values.FindIndex(x => x.Value.MakeString() == GetProperty(properties, store).MakeString());
-				case 4:
-					return values.FindIndex(x => x.Value.MakeBool() == GetProperty(properties, store).MakeBool());
-				default:
-					"Method GetIndex received an unknown value type as parameter".Log();
-					return -1;
-			}
-		}
-
 		private static readonly FeatureGuard _featureGuard;
 
 		// Isolates one trainer feature so its exceptions can't stop unrelated features running after it. Returns whether the action completed without throwing. See #123.
