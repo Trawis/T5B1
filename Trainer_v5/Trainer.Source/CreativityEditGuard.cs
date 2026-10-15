@@ -24,7 +24,8 @@ namespace Trainer_v5
 			}
 
 			// Employees are synchronised by network id between players; a replacement is not tested for that.
-			if (SINetworking.NetworkManager.IsConnected)
+			// The game-wide flag is used because the DLL mod loader prohibits the network manager type.
+			if (GameData.MultiplayerMode)
 			{
 				return "is in a multiplayer game";
 			}
