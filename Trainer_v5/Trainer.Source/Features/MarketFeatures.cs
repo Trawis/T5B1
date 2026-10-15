@@ -65,8 +65,7 @@ namespace Trainer_v5
 			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
 			{
-				// Built like the game's own offers (MarketSimulation): the developer is the client. Setting Request
-				// afterwards would read the bidder, which this constructor leaves unset.
+				// Built like the game's own offers: the developer is the client. Setting Request later would read an unset bidder.
 				ServerDeal deal = new ServerDeal(Products[index]);
 				deal.PerPower *= 2f;
 
@@ -153,8 +152,7 @@ namespace Trainer_v5
 				var activeServerDeals = dealWindow.GetActiveDeals().OfType<ServerDeal>().ToList();
 				foreach (var serverDeal in serverDeals)
 				{
-					// AllDeals also keeps cancelled deals until the game's cleanup. One that was accepted once has a
-					// timestamp; an invalid one would only be cancelled again by ActuallyAcceptDeal.
+					// AllDeals keeps cancelled deals until cleanup: skip ones accepted before and ones the game would just cancel again.
 					if (activeServerDeals.Contains(serverDeal) || HasBeenAccepted(serverDeal) || !serverDeal.StillValid(false))
 					{
 						continue;

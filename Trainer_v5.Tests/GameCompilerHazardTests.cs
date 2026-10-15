@@ -6,8 +6,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Known Workshop failures as small fixtures. They also fail when a game update changes the injector or
-	// compiler, which is the cue to re-read the game's code.
+	// Known Workshop failures as fixtures; they also fail when a game update changes the injector or compiler.
 	public class GameCompilerHazardTests
 	{
 		// Helpers.cs in v5.3.2: a call in a property initializer (#222).

@@ -8,10 +8,7 @@ namespace Trainer_v5
 {
 	internal static class DetailWindowTrainer
 	{
-		// Tracks the specific DetailWindow instance the trainer controls were injected into.
-		// The game destroys and recreates DetailWindow on save reloads and some scene
-		// transitions, so a plain "installed once" flag would permanently skip
-		// re-installation on every DetailWindow after the first one.
+		// The DetailWindow the controls were injected into; the game recreates it on save reloads.
 		private static DetailWindow _installedOn;
 
 		public static void Reset()
@@ -43,9 +40,7 @@ namespace Trainer_v5
 				components[i].gameObject.AddToElement("DetailWindow", slots[i]);
 			}
 
-			// Only mark this instance as installed once the loop above completes
-			// successfully, so a mid-loop exception leaves retry possible instead of
-			// permanently blocking installation.
+			// Marked installed only after the loop succeeds, so an exception leaves a retry possible.
 			_installedOn = target;
 		}
 
@@ -105,7 +100,6 @@ namespace Trainer_v5
 						skills[i] = employee.GetSkillI(i);
 					}
 
-					// clone employee with new creativity value
 					var newEmployee = new Employee(
 						currentTime: SDateTime.Now(),
 						female: employee.Female,
@@ -120,8 +114,7 @@ namespace Trainer_v5
 						forceBrain: employee.HiredFor
 					);
 
-					// transfer properties
-					// This constructor overload also generates founder characters, so it always sets Founder = true.
+					// This overload always sets Founder = true, so the previous value is restored.
 					newEmployee.Founder = employee.Founder;
 					newEmployee.Dismissed = employee.Dismissed;
 					newEmployee.Retired = employee.Retired;
@@ -178,20 +171,19 @@ namespace Trainer_v5
 					newEmployee.InteractedWithBestFriend = employee.InteractedWithBestFriend;
 					newEmployee.HadProperFood = employee.HadProperFood;
 
-					// Friendships/LeadSpecialization/LeadProjects are obsolete; superseded by the Fix-suffixed fields.
+					// Friendships/LeadSpecialization/LeadProjects are obsolete (superseded by the Fix-suffixed fields).
 					newEmployee.LeadProjectsFix = employee.LeadProjectsFix;
 					newEmployee.DemandsMet = employee.DemandsMet;
 					newEmployee.DemandsRequested = employee.DemandsRequested;
 					newEmployee.DemandResults = employee.DemandResults;
 					newEmployee.LastDemandScore = employee.LastDemandScore;
 
-					// transfer lead specs
 					foreach (var kvp in employee.LeadSpecializationFix)
 					{
 						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
 					}
 
-					// specialization experience and the creativity history are saved per employee but not set by the constructor
+					// Not set by the constructor: specialization experience and creativity history.
 					for (var role = 0; role < Employee.RoleCount; role++)
 					{
 						newEmployee.SetSpecExperience((Employee.EmployeeRole)role, employee.GetSpecExperience((Employee.EmployeeRole)role));
@@ -205,7 +197,6 @@ namespace Trainer_v5
 					var actor = employee.MyActor;
 					if (actor != null)
 					{
-						// update actor references
 						employee.MyActor = null;
 						actor.employee = newEmployee;
 						newEmployee.MyActor = actor;

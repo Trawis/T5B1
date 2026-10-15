@@ -2,9 +2,7 @@ namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
 	{
-		// RepairMe adds one small step (scaled by this factor) to RepairTime and calls the private FixNow once it
-		// reaches 1 - Quality. FixNow restores quality, clears Broken and the broken-furniture list, so a large
-		// factor finishes the repair in one hour through the game's own path.
+		// RepairMe scales its repair step by this factor and calls the private FixNow when done: a large factor repairs in one pass.
 		private const float RepairFactor = 1000000f;
 
 		private static GameSettings Settings => GameSettings.Instance;

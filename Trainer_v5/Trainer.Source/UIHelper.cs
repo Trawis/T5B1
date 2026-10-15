@@ -87,11 +87,7 @@ namespace Trainer_v5
 			window.MinSize.y = height;
 		}
 
-		/// <summary>
-		/// Estimates how many rows of <paramref name="rowHeight"/> comfortably fit on screen for a
-		/// window, after reserving space for window chrome (title bar/margins) and any fixed,
-		/// non-scrolling rows (<paramref name="reservedRows"/>) the caller will also place.
-		/// </summary>
+		/// <summary>Estimates how many rows of rowHeight fit on screen after window chrome and reservedRows.</summary>
 		public static int GetMaxVisibleRows(int rowHeight, int reservedRows)
 		{
 			float canvasHeight = FALLBACK_CANVAS_HEIGHT;
@@ -107,12 +103,7 @@ namespace Trainer_v5
 			return Mathf.Max(MIN_VISIBLE_ROWS, availableRows);
 		}
 
-		/// <summary>
-		/// Lays out a column made of a fixed header, a list of rows that only scrolls when it would
-		/// otherwise exceed <paramref name="maxVisibleRows"/>, and a fixed footer that always stays
-		/// visible right below the (bounded-height) scroll area. Returns the total height, in window
-		/// units, the column occupies below <paramref name="origin"/>.y.
-		/// </summary>
+		/// <summary>Lays out a header, scrolling rows (up to maxVisibleRows) and a footer; returns the column height.</summary>
 		public static int CreateScrollableColumn(GUIWindow window, Rect origin, GameObject[] header, GameObject[] scrollableItems, GameObject[] footer, int itemHeight, int gap, int maxVisibleRows)
 		{
 			var zeroAnchors = new Rect(0, 0, 0, 0);

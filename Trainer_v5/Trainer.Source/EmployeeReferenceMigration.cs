@@ -2,9 +2,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Creativity has no setter, so the editor installs a new Employee object (#183). The game keeps employees in
-	// collections by object identity, so every holder of the old object has to be pointed at the new one. Each
-	// holder below was found in the game assembly; everything goes through public members.
+	// Creativity edits install a new Employee; every game holder of the old object is re-pointed here (public members only).
 	internal static class EmployeeReferenceMigration
 	{
 		public static void Migrate(Employee oldEmployee, Employee newEmployee)
@@ -164,8 +162,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// The interaction memory is a per-actor set of employees. (Complaint objects are notifications, not state kept
-		// on the employee: Employee.ActiveComplaint is only a flag.)
+		// Complaints are notifications (ActiveComplaint is only a flag); the interaction memory is a per-actor set.
 		private static void MigrateActors(Employee oldEmployee, Employee newEmployee)
 		{
 			var actors = GameSettings.Instance.sActorManager.Actors;

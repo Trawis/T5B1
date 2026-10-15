@@ -6,10 +6,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Workshop build is source the game rewrites and compiles itself (#222, #225). These tests run the
-	// game's injector and compiler over the real sources. They show the injected source parses and every
-	// injected try wraps a method or constructor body; type resolution is the SDK build's job and runtime
-	// behavior is the game's.
+	// Runs the game's injector and compiler over the real sources (#222, #225): parsing and try placement only.
 	public class GameSourcePipelineTests
 	{
 		private static readonly Lazy<IList<InjectedSource>> Injected = new Lazy<IList<InjectedSource>>(InjectEverySourceFile);
