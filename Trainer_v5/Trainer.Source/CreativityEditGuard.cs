@@ -1,7 +1,8 @@
 namespace Trainer_v5
 {
-	// Creativity has no setter, so the editor replaces the Employee object (#183). Game collections keyed by or
-	// holding the old object are not migrated, so the edit is refused while one of them still holds it.
+	// Creativity has no setter, so the editor installs a new Employee object (#183) and EmployeeReferenceMigration
+	// re-points everything the game holds. The edit stays Experimental, and is refused for the cases the migration
+	// does not cover.
 	internal static class CreativityEditGuard
 	{
 		public static bool IsEnabled()
@@ -9,36 +10,13 @@ namespace Trainer_v5
 			return Helpers.GetProperty(Helpers.Settings, SettingKeys.Experimental) || Helpers.IsDebug;
 		}
 
-		// A reason the employee must not be replaced, or null when no known reference would go stale.
+		// A reason the employee must not be replaced, or null when the migration covers it.
 		public static string FindBlockingReference(Employee employee)
 		{
-			var company = GameSettings.Instance != null ? GameSettings.Instance.MyCompany : null;
-			if (company != null && company.WorkItems != null)
+			// Founders are held by the company's share holders and by the owner flow; that is not migrated.
+			if (employee.Founder)
 			{
-				foreach (var item in company.WorkItems)
-				{
-					var work = item as SoftwareWorkItem;
-					if (work == null)
-					{
-						continue;
-					}
-
-					if (work.LeadWork != null && work.LeadWork.ContainsKey(employee))
-					{
-						return "has lead work in progress on a work item";
-					}
-
-					if (work.NewWorking != null && work.NewWorking.ContainsKey(employee))
-					{
-						return "is working on a feature of a work item";
-					}
-				}
-			}
-
-			var market = MarketSimulation.Active;
-			if (market != null && market.FreeLeads != null && market.FreeLeads.Contains(employee))
-			{
-				return "is listed as a free lead in the market simulation";
+				return "is a founder, whose ownership records are not migrated";
 			}
 
 			return null;

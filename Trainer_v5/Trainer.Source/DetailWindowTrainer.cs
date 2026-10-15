@@ -64,7 +64,7 @@ namespace Trainer_v5
 			var blocked = CreativityEditGuard.FindBlockingReference(employee);
 			if (blocked != null)
 			{
-				Notification.ShowError($"{employee.Name} {blocked}, which the game would lose when the employee is replaced. Nothing was edited.");
+				Notification.ShowError($"{employee.Name} {blocked}. Nothing was edited.");
 				return;
 			}
 
@@ -73,6 +73,12 @@ namespace Trainer_v5
 				$"Set creativity for {employee.Name}",
 				val =>
 				{
+					if (!CreativityEditGuard.IsEnabled())
+					{
+						Notification.ShowError("Experimental was switched off. Nothing was edited.");
+						return;
+					}
+
 					if (!target.IsStillValid())
 					{
 						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
@@ -87,7 +93,7 @@ namespace Trainer_v5
 					var stillBlocked = CreativityEditGuard.FindBlockingReference(employee);
 					if (stillBlocked != null)
 					{
-						Notification.ShowError($"{employee.Name} {stillBlocked}, which the game would lose when the employee is replaced. Nothing was edited.");
+						Notification.ShowError($"{employee.Name} {stillBlocked}. Nothing was edited.");
 						return;
 					}
 
@@ -183,6 +189,17 @@ namespace Trainer_v5
 						newEmployee.LeadSpecializationFix[kvp.Key] = kvp.Value;
 					}
 
+					// specialization experience and the creativity history are saved per employee but not set by the constructor
+					for (var role = 0; role < Employee.RoleCount; role++)
+					{
+						newEmployee.SetSpecExperience((Employee.EmployeeRole)role, employee.GetSpecExperience((Employee.EmployeeRole)role));
+					}
+
+					if (employee.LastCreatity != null)
+					{
+						newEmployee.LastCreatity = (float[])employee.LastCreatity.Clone();
+					}
+
 					var actor = employee.MyActor;
 					if (actor != null)
 					{
@@ -195,6 +212,9 @@ namespace Trainer_v5
 						{
 							HUD.Instance.DetailWindow.CurrentEmployee.employee = newEmployee;
 						}
+
+						// everything in the game that held the old object now holds the new one
+						EmployeeReferenceMigration.Migrate(employee, newEmployee);
 					}
 				},
 				min: 0,
