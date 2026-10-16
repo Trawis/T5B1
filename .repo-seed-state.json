@@ -63,8 +63,5 @@
   "pack_version": "5.12.0",
   "profile": "library",
   "schema_version": 2,
-  "tombstones": {
-    "docs/templates/.github/bug-report.template.md": "979b60631f87cfdb029ef284f2c94656e4ec44b6e88d8a92786ca881017c70e7",
-    "docs/templates/.github/feature-request.template.md": "6d53a8159fc4f5288dcb8e0788520798dfffb3de87bac2f61b769a7739838d1f"
-  }
+  "tombstones": {}
 }
