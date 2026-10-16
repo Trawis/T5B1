@@ -30,8 +30,11 @@ SCAFFOLD_HASH_PATTERN = re.compile(
     r"^<!-- Scaffolded content SHA-256: (?P<hash>[0-9a-f]{64}) -->\r?\n?",
     re.MULTILINE,
 )
-LEGACY_LABEL_PATTERN = re.compile(r"^labels:\s*(.+)$", re.MULTILINE)
+LABELS_KEY_PATTERN = re.compile(r"^labels:[ \t]*(?P<inline>.*)$", re.MULTILINE)
+LABEL_LIST_ITEM_PATTERN = re.compile(r"^[ \t]*-[ \t]+(?P<label>.+)$")
 LEGACY_LABEL_VALUES = {"bug", "enhancement"}
+ISSUE_TEMPLATE_DIRECTORY = ".github/ISSUE_TEMPLATE"
+ISSUE_TEMPLATE_SUFFIXES = {".md", ".yml", ".yaml"}
 PRE_5_0_STATE_ERROR = (
     "This repository uses a pre-5.0 repo-seed state without explicit conventions.\n"
     "Rerun with --conventions <list>."
@@ -444,12 +447,9 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
     if not isinstance(raw.get("profile"), str) or not raw["profile"]:
         raise ValueError("Managed state profile must be a non-empty string")
 
-    # A path recorded here does not need to exist in the current manifest: a
-    # future pack version may remove a managed asset entirely, and the state
-    # file is sufficient historical ownership evidence on its own. Safety is
-    # enforced by path validation below, not by manifest membership; a path
-    # no longer in the manifest is handled conservatively by
-    # prune_stale_assets (preserved and tombstoned, never auto-deleted).
+    # Recorded paths may be missing from the current manifest. Later packs can
+    # remove assets, so safety comes from path validation, not manifest
+    # membership. prune_stale_assets preserves and tombstones such paths.
     def hash_map(key: str) -> dict[str, str]:
         value = raw.get(key)
         if not isinstance(value, dict):
@@ -471,16 +471,12 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
     if set(managed_files).intersection(tombstones):
         raise ValueError("Managed state paths cannot be both active and tombstoned")
 
-    # Schema 1 is the one small pre-5.0 bridge: it never records conventions,
-    # so `conventions` stays None to signal that an explicit --conventions is
-    # required before this state can be synced. Schema 2 always records them.
+    # Schema 1 is the pre-5.0 bridge. It records no conventions, so
+    # `conventions` stays None and an explicit --conventions is required.
     #
-    # A persisted convention id is not required to exist in the current
-    # manifest: state is historical ownership/configuration evidence, and a
-    # future pack may legitimately remove a convention. Callers that need a
-    # convention selection made only of currently known ids (synchronize(),
-    # audit_target()) are responsible for checking that and failing clearly;
-    # this parser only validates shape.
+    # A persisted convention id may be missing from the current manifest.
+    # synchronize() and audit_target() check for known ids; this parser
+    # only validates shape.
     conventions: frozenset[str] | None = None
     if schema_version == 2:
         raw_conventions = raw.get("conventions")
@@ -562,10 +558,8 @@ def prune_stale_assets(
             actions.append(SyncAction("preserve", path, "stale path is now project-owned"))
             continue
         if path not in known_paths:
-            # No longer a managed asset in the current manifest at all. The
-            # state file is the only historical evidence for it, so it is
-            # never auto-deleted merely because its hash matches; it stays
-            # tombstoned for manual review until the file itself is removed.
+            # Not in the manifest any more. Never auto-delete it; keep the
+            # tombstone for manual review until the file is removed.
             actions.append(SyncAction("preserve", path, "historical managed path is no longer in the manifest"))
             tombstones[path] = expected_hash
             continue
@@ -654,12 +648,65 @@ def render_scaffold(source_root: Path, asset: Asset) -> str:
     return body
 
 
+def issue_template_labels(path: Path, content: str) -> list[str]:
+    """Labels an issue template applies, from Markdown front matter or a form key.
+
+    Reads inline (`labels: bug`, `labels: [bug, "type: bug"]`) and block lists.
+    Anything unreadable yields no labels instead of an error.
+    """
+    if path.suffix.lower() == ".md":
+        if not content.startswith("---"):
+            return []
+        closing = content.find("\n---", 3)
+        if closing < 0:
+            return []
+        content = content[:closing]
+    match = LABELS_KEY_PATTERN.search(content)
+    if match is None:
+        return []
+    inline = match.group("inline").split("#", 1)[0].strip()
+    if inline:
+        values = inline.strip("[]").split(",")
+    else:
+        values = []
+        for line in content[match.end():].splitlines()[1:]:
+            item = LABEL_LIST_ITEM_PATTERN.match(line)
+            if item is None:
+                if line.strip():
+                    break
+                continue
+            values.append(item.group("label").split("#", 1)[0])
+    return [value.strip().strip("\"'").strip() for value in values if value.strip().strip("\"'").strip()]
+
+
+def legacy_label_findings(target_root: Path) -> list[str]:
+    """Legacy `bug`/`enhancement` labels in the target's issue templates."""
+    directory = target_root / ISSUE_TEMPLATE_DIRECTORY
+    if not directory.is_dir() or directory.is_symlink():
+        return []
+    findings: list[str] = []
+    for path in sorted(directory.iterdir()):
+        if path.suffix.lower() not in ISSUE_TEMPLATE_SUFFIXES or path.is_symlink() or not path.is_file():
+            continue
+        try:
+            content = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for label in issue_template_labels(path, content):
+            if label in LEGACY_LABEL_VALUES:
+                findings.append(
+                    f"legacy label: {ISSUE_TEMPLATE_DIRECTORY}/{path.name} uses '{label}' "
+                    "instead of a canonical type: label"
+                )
+    return findings
+
+
 def verified_current_scaffold(content: str, asset: Asset) -> bool | None:
     """Whether `content` carries valid, matching repo-seed scaffold provenance.
 
-    Returns True when the markers are present and the content is unchanged,
-    False when markers are present but do not match (customized or invalid),
-    and None when there is no repo-seed provenance to evaluate at all.
+    Returns True when markers are present and the content is unchanged.
+    Returns False when markers are present but do not match.
+    Returns None when there is no repo-seed provenance.
     """
     source_matches = list(SCAFFOLD_SOURCE_PATTERN.finditer(content))
     hash_matches = list(SCAFFOLD_HASH_PATTERN.finditer(content))
@@ -683,13 +730,11 @@ def write_scaffold(target: Path, content: str, dry_run: bool) -> None:
 
 
 def upgrade_scaffold_asset(source_root: Path, target_root: Path, asset: Asset, dry_run: bool) -> SyncAction | None:
-    """Upgrade an existing scaffold in place, if and only if it is safe.
+    """Upgrade an existing scaffold in place, only when it is safe.
 
-    - Valid, unchanged repo-seed provenance: refresh it to the current template.
+    - Valid, unchanged provenance: refresh it to the current template.
     - Provenance present but not matching (customized): preserve it, report why.
-    - No provenance at all: return None; the caller treats it as project-owned
-      and leaves it alone. There is no attempt to identify older, unmarked
-      scaffolds from earlier repo-seed generations.
+    - No provenance: return None; the caller treats it as project-owned.
     """
     if asset.scaffold_target is None:
         raise ValueError(f"Template has no scaffold target: {asset.path}")
@@ -738,8 +783,7 @@ def audit_target(
 ) -> list[str]:
     """Report drift diagnostics for a target without writing any files.
 
-    This is a local, file-based diagnostic: it never contacts GitHub and
-    never requires network access.
+    This is a local diagnostic; it needs no network or GitHub access.
     """
     source_root = source_root.expanduser().resolve()
     target_root = target_root.expanduser().resolve()
@@ -806,12 +850,12 @@ def audit_target(
         elif managed_file_hash(target) != managed_file_hash(source):
             lines.append(f"drift: {asset.path} differs from the current managed content")
 
-    # .agents/project.md is project-owned and optional: a repository with no
-    # meaningful project-specific instructions legitimately has none. This is
-    # informational only, never a drift/failure finding.
+    # .agents/project.md is project-owned and optional, so this is only info.
     project_guidance = safe_child(target_root, ".agents/project.md", "project guidance path")
     if not project_guidance.is_file():
         lines.append("info: .agents/project.md not present")
+
+    lines.extend(legacy_label_findings(target_root))
 
     for asset in selected:
         if asset.asset_type != "template" or asset.scaffold_target is None:
@@ -821,17 +865,8 @@ def audit_target(
         scaffold = safe_child(target_root, asset.scaffold_target, "scaffold target")
         if not scaffold.is_file():
             continue
-        content = scaffold.read_text(encoding="utf-8")
-        match = LEGACY_LABEL_PATTERN.search(content)
-        if match and match.group(1).strip() in LEGACY_LABEL_VALUES:
-            lines.append(
-                f"legacy label: {asset.scaffold_target} uses '{match.group(1).strip()}' "
-                "instead of a canonical type: label"
-            )
-        # Reuse the same verification the sync path uses to decide whether a
-        # scaffold may be upgraded, so "outdated" is reported only when there
-        # is reliable evidence of an unchanged repo-seed scaffold, never for
-        # an ordinary customized project-owned document.
+        # Reuse the sync path's check so "outdated" is reported only for
+        # verified unchanged scaffolds, never for customized documents.
         upgrade_status = upgrade_scaffold_asset(source_root, target_root, asset, dry_run=True)
         if upgrade_status is not None and upgrade_status.action == "upgrade":
             lines.append(
@@ -859,10 +894,9 @@ def audit_target(
                     f"(selected conventions: {', '.join(sorted(active_conventions)) or 'none'})"
                 )
 
-    # A tombstone means stale managed content was preserved and still needs
-    # manual review; a state-owned path no longer in the manifest at all is
-    # the same situation before a normal sync has moved it into tombstones.
-    # Report both, without touching state (audit never writes anything).
+    # A tombstone is stale managed content awaiting manual review. A state-owned
+    # path missing from the manifest is the same case before a sync tombstones it.
+    # Report both without touching state.
     known_paths = {asset.path for asset in manifest.assets}
     reported_stale_paths: set[str] = set()
     for path in sorted(state.tombstones):
@@ -927,8 +961,7 @@ def synchronize(
             raise ValueError(format_unavailable_conventions_error(unavailable))
         resolved_conventions = managed_state.conventions
     elif managed_state.exists:
-        # Schema 1: the one small pre-5.0 bridge. Require an explicit choice
-        # rather than inferring one from the filesystem.
+        # Schema 1 (pre-5.0): require an explicit choice, never infer one.
         raise ValueError(PRE_5_0_STATE_ERROR)
     else:
         resolved_conventions = frozenset()
@@ -1003,14 +1036,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--target", default=".", help="Target repository. Defaults to the current directory.")
     parser.add_argument(
         "--profile",
-        help="Profile name (minimal, library, app, game). Required on first sync; later syncs reuse the recorded profile when omitted.",
+        help="Profile name (minimal, library, app, game). Required on first sync; later syncs reuse the recorded one.",
     )
     parser.add_argument(
         "--conventions",
         help=(
-            "Comma-separated language/tool convention ids to install, e.g. 'csharp,unity' "
+            "Comma-separated convention ids to install, e.g. 'csharp,unity' "
             "(known: csharp, python, scripts, shell, unity). Later syncs reuse the recorded "
-            "selection when omitted, except a pre-5.0 state, which requires this once."
+            "selection; a pre-5.0 state requires this once."
         ),
     )
     parser.add_argument(

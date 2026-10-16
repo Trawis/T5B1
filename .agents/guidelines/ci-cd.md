@@ -14,13 +14,13 @@ Use this guidance for workflows, releases, deployments, or infrastructure automa
 - Never print secrets or guess secret names.
 - Do not weaken required checks or approvals.
 
-For a new small project, start with checkout, dependency restore, build, tests, and configured lint or format checks. Add publishing or deployment only when its target, trigger, credentials, rollback, and validation are documented.
+A new small project starts with checkout, dependency restore, build, tests, and configured lint or format checks. Add publishing or deployment only when its target, trigger, credentials, rollback, and validation are documented.
 
 ## Validation
 
 - Check workflow syntax when possible.
 - Run equivalent local commands when practical.
 - Recheck triggers, paths, permissions, environments, and branch targets.
-- State which behavior still requires hosted verification.
+- State which behavior still needs hosted verification.
 
 Update project documentation when a change affects build commands, releases, deployment, secrets, environments, or approval steps.

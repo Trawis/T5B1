@@ -4,13 +4,13 @@
 **Sync destination**: `.agents/conventions/shell.md`
 **Local editing**: Do not customize this synced copy
 
-Apply repository-specific rules first and use this with `.agents/conventions/scripts.md`.
+Apply repository rules first. Use this with `.agents/conventions/scripts.md`.
 
 ## Style and Safety
 
 - Preserve local indentation and shell choice.
-- Prefer POSIX `sh` for simple portable scripts; use Bash when its features improve safety.
-- For compatible Bash scripts, use `set -euo pipefail`.
+- Prefer POSIX `sh` for simple portable scripts. Use Bash when its features improve safety.
+- Use `set -euo pipefail` in compatible Bash scripts.
 - Quote variables unless splitting is intentional.
 - Validate commands, arguments, and paths before bulk or destructive operations.
 - Print errors to stderr and return non-zero on failure.
