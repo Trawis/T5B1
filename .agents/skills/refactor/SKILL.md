@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: Refactors existing code while preserving intended behavior and reducing unnecessary complexity, duplication, legacy paths, or weak abstractions. Use for cleanup, architectural simplification, modernization, compatibility removal, API-internal restructuring, or explicit refactoring work.
+description: Refactors existing code while preserving supported behavior and reducing unnecessary complexity, duplication, legacy paths, or weak abstractions. Use for cleanup, architectural simplification, modernization, compatibility removal, API-internal restructuring, or explicit refactoring work. For local readability tidy-ups use code-simplification.
 ---
 
 # Refactor

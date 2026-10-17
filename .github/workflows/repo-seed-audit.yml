@@ -1,0 +1,18 @@
+# Checks weekly whether this repository's repo-seed files are behind the latest
+# release or have drifted, and keeps one issue open while they have. It changes
+# no files. The tag below is the pack release that created this file. Dependabot
+# can keep it current only if this repository has its own
+# .github/dependabot.yml with a github-actions entry. Delete this file to turn the check off.
+name: repo-seed audit
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    permissions:
+      contents: read
+      issues: write
+    uses: Trawis/repo-seed/.github/workflows/audit.yml@v5.18.2

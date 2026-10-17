@@ -2,9 +2,6 @@ name: Feature Request
 description: Propose an implementation-ready capability
 labels: ["type: feature"]
 body:
-  - type: markdown
-    attributes:
-      value: "Not implementation-ready yet? Ask a maintainer to record it as `type: idea` instead."
   - type: textarea
     id: summary
     attributes:

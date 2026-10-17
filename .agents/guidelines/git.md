@@ -26,9 +26,9 @@ Fetching or pruning remotes, inspecting protected branches, and reviewing
 recent pull requests are not required when the model and target are clear.
 
 If the base branch, PR target, current branch family, or branch-name convention
-is unclear, stop and resolve it before branch or PR work. Unknown base branch,
-wrong branch family, wrong PR target, and missing branch-name convention are
-blocking. Do not create missing long-lived branches implicitly. Do not infer
+is unclear, resolve it before branch or PR work; if inspection cannot resolve
+the model, use the unknown-model fallback below and report it. A wrong branch
+family or wrong PR target is blocking. Do not create missing long-lived branches implicitly. Do not infer
 GitHub Flow only because the hosted default branch is `main` or `master` when
 the repository clearly uses `develop` or `dev`.
 
@@ -47,8 +47,14 @@ the repository clearly uses `develop` or `dev`.
 - Use the discovered branching model and naming conventions.
 - Keep commits focused: one logical change each.
 - Keep PR titles and descriptions concise and use the repository template.
+- Commit, push, open a PR, merge, or delete a branch only when the task asks
+  for it.
 - Never force-push a long-lived branch, bypass protection, auto-merge, or approve your own PR.
-- Do not include assistant, model, or tool names in repository history or release text.
+- Do not add AI attribution (assistant or model names, co-author trailers,
+  "generated with" lines) to commit messages, PR descriptions, or release text.
+  If the repository
+  or the agent host requires an attribution trailer, use exactly that and
+  nothing more.
 
 ## Merging
 
@@ -59,12 +65,14 @@ Merge only when the task asks for it. Pick the method by branch type:
 | `feature/*` into `develop` (GitFlow) or `main` (GitHub Flow) | Squash |
 | `release/*` or `hotfix/*` into `main` | Merge commit |
 | `main` back into `develop` after a release or hotfix | Merge commit |
+| `hotfix/*` into an open `release/*` branch (GitFlow) | Merge commit |
 
 - Never squash or rebase across the `develop` and `main` boundary. A merge
   commit keeps shared ancestry, so both branches stay in sync.
 - Squash messages use the PR title and a short body. Follow the commit rules
   above.
-- Delete merged feature, release, and hotfix branches. Never delete `develop`,
+- When asked to merge, also delete the merged feature, release, and hotfix
+  branch unless the task says to keep it. Never delete `develop`,
   `dev`, `main`, or `master`.
 - Resolve conflicts by merging the base branch into your branch. Do not rebase
   or force-push a shared branch.

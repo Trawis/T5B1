@@ -1,6 +1,6 @@
 ---
 name: technical-design
-description: Investigates and writes a scoped technical design for a substantial proposed codebase change. Use when explicitly asked for a technical design/specification or when planning a change involving multiple components, public contracts, persistence, migration, security, concurrency, deployment, compatibility, high uncertainty, or difficult rollback.
+description: Investigates and writes a scoped technical design for a substantial proposed change. Use when explicitly asked for a technical design or specification, or when a change spans multiple components, public contracts, persistence, migration, security, concurrency, compatibility, or difficult rollback. To review existing architecture instead, use architecture-review.
 ---
 
 # Technical Design

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import re
@@ -15,10 +16,11 @@ from pathlib import Path, PurePosixPath
 MANIFEST_FILE = "manifest.json"
 FILES_DIRECTORY = "files"
 DEFAULT_STATE_FILE = ".repo-seed-state.json"
+VERSION_PLACEHOLDER = "__PACK_VERSION__"
 TEMPLATE_METADATA_START = "repo-seed-template:start"
 TEMPLATE_METADATA_END = "repo-seed-template:end"
 VALID_TYPES = {"managed", "template"}
-VALID_SCAFFOLD_GROUPS = {"project", "optional", "github", "editorconfig"}
+VALID_SCAFFOLD_GROUPS = {"project", "optional", "github", "editorconfig", "workflows"}
 PROJECT_OWNED_TREES = (".github/workflows",)
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -32,12 +34,14 @@ SCAFFOLD_HASH_PATTERN = re.compile(
 )
 LABELS_KEY_PATTERN = re.compile(r"^labels:[ \t]*(?P<inline>.*)$", re.MULTILINE)
 LABEL_LIST_ITEM_PATTERN = re.compile(r"^[ \t]*-[ \t]+(?P<label>.+)$")
-LEGACY_LABEL_VALUES = {"bug", "enhancement"}
+LEGACY_LABEL_VALUES = {"bug", "enhancement", "type: decision", "type: idea"}
 ISSUE_TEMPLATE_DIRECTORY = ".github/ISSUE_TEMPLATE"
 ISSUE_TEMPLATE_SUFFIXES = {".md", ".yml", ".yaml"}
 PRE_5_0_STATE_ERROR = (
-    "This repository uses a pre-5.0 repo-seed state without explicit conventions.\n"
-    "Rerun with --conventions <list>."
+    "This repository uses a pre-5.0 repo-seed state (schema_version 1), which this version\n"
+    "no longer converts. Run the repo-seed 5.13.2 pack once with --conventions <list>:\n"
+    "https://github.com/Trawis/repo-seed/releases/tag/v5.13.2\n"
+    "Then use this version."
 )
 
 
@@ -75,11 +79,12 @@ class SyncAction:
     action: str
     path: str
     detail: str
+    diff: str = ""
+    no_baseline: bool = False
 
 
 @dataclass(frozen=True)
 class ManagedState:
-    schema_version: int | None
     pack_version: str | None
     profile: str | None
     conventions: frozenset[str] | None
@@ -234,7 +239,7 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
         reject_project_owned_tree_path(path, f"{context}.path")
         if path in paths:
             raise ValueError(f"Duplicate asset path: {path}")
-        if asset_type not in VALID_TYPES:
+        if not isinstance(asset_type, str) or asset_type not in VALID_TYPES:
             raise ValueError(f"{context}.type must be managed or template")
         if not set(asset_profiles).issubset(profile_set):
             raise ValueError(f"{context}.profiles contains an unknown profile")
@@ -246,7 +251,9 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
         if asset_type == "template":
             if (scaffold_group is None) != (scaffold_target is None):
                 raise ValueError(f"{context} must define both scaffold fields or neither")
-            if scaffold_group is not None and scaffold_group not in VALID_SCAFFOLD_GROUPS:
+            if scaffold_group is not None and (
+                not isinstance(scaffold_group, str) or scaffold_group not in VALID_SCAFFOLD_GROUPS
+            ):
                 raise ValueError(
                     f"{context}.scaffold_group must be one of: {', '.join(sorted(VALID_SCAFFOLD_GROUPS))}"
                 )
@@ -256,10 +263,16 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
                 if not isinstance(scaffold_target, str) or not scaffold_target:
                     raise ValueError(f"{context}.scaffold_target must be a non-empty string")
                 relative_path(scaffold_target, f"{context}.scaffold_target")
-                reject_project_owned_tree_path(
-                    scaffold_target,
-                    f"{context}.scaffold_target",
-                )
+                if scaffold_group == "workflows":
+                    # The only group that may create a file in a project-owned tree,
+                    # and only once, when missing. Everything else is still rejected.
+                    if not any(scaffold_target.startswith(f"{tree}/") for tree in PROJECT_OWNED_TREES):
+                        raise ValueError(f"{context}.scaffold_target must be under .github/workflows")
+                else:
+                    reject_project_owned_tree_path(
+                        scaffold_target,
+                        f"{context}.scaffold_target",
+                    )
                 if scaffold_target in scaffold_targets:
                     raise ValueError(f"Duplicate scaffold target: {scaffold_target}")
                 scaffold_targets.add(scaffold_target)
@@ -346,7 +359,10 @@ def discover_source_root() -> Path | None:
     script_candidate = Path(__file__).resolve().parents[2]
     candidates = (script_candidate, Path.cwd().resolve(), Path.cwd().resolve() / "pack")
     for candidate in candidates:
-        if (candidate / MANIFEST_FILE).is_file() and (candidate / FILES_DIRECTORY).is_dir():
+        if (
+            (candidate / MANIFEST_FILE).is_file()
+            and (candidate / FILES_DIRECTORY / "scripts" / "sync-docs.py").is_file()
+        ):
             return candidate
     return None
 
@@ -361,8 +377,10 @@ def read_state_version(target_root: Path) -> str | None:
         raise ValueError(f"Managed state is not a file: {DEFAULT_STATE_FILE}")
     try:
         raw = json.loads(state_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as ex:
+    except (json.JSONDecodeError, RecursionError) as ex:
         raise ValueError(f"Managed state is not valid JSON: {ex}") from ex
+    if not isinstance(raw, dict):
+        raise ValueError("Managed state must be a JSON object")
     version = raw.get("pack_version")
     if version is None:
         return None
@@ -423,7 +441,6 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
         raise ValueError(f"Managed state cannot be a symbolic link: {manifest.state_file}")
     if not state_path.exists():
         return ManagedState(
-            schema_version=None,
             pack_version=None,
             profile=None,
             conventions=None,
@@ -436,11 +453,12 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
 
     try:
         raw = json.loads(state_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as ex:
+    except (json.JSONDecodeError, RecursionError) as ex:
         raise ValueError(f"Managed state is not valid JSON: {ex}") from ex
-    if not isinstance(raw, dict) or raw.get("schema_version") not in (1, 2):
-        raise ValueError("Managed state must use schema_version 1 or 2")
-    schema_version = raw["schema_version"]
+    if isinstance(raw, dict) and raw.get("schema_version") == 1:
+        raise ValueError(PRE_5_0_STATE_ERROR)
+    if not isinstance(raw, dict) or raw.get("schema_version") != 2:
+        raise ValueError("Managed state must use schema_version 2")
     if not isinstance(raw.get("pack_version"), str):
         raise ValueError("Managed state pack_version must be a string")
     version_key(raw["pack_version"], "managed state pack_version")
@@ -471,25 +489,19 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
     if set(managed_files).intersection(tombstones):
         raise ValueError("Managed state paths cannot be both active and tombstoned")
 
-    # Schema 1 is the pre-5.0 bridge. It records no conventions, so
-    # `conventions` stays None and an explicit --conventions is required.
-    #
     # A persisted convention id may be missing from the current manifest.
     # synchronize() and audit_target() check for known ids; this parser
     # only validates shape.
-    conventions: frozenset[str] | None = None
-    if schema_version == 2:
-        raw_conventions = raw.get("conventions")
-        if not isinstance(raw_conventions, list) or not all(
-            isinstance(item, str) and item for item in raw_conventions
-        ):
-            raise ValueError("Managed state conventions must be a non-empty-string array")
-        if len(raw_conventions) != len(set(raw_conventions)):
-            raise ValueError("Managed state conventions contains duplicates")
-        conventions = frozenset(raw_conventions)
+    raw_conventions = raw.get("conventions")
+    if not isinstance(raw_conventions, list) or not all(
+        isinstance(item, str) and item for item in raw_conventions
+    ):
+        raise ValueError("Managed state conventions must be a non-empty-string array")
+    if len(raw_conventions) != len(set(raw_conventions)):
+        raise ValueError("Managed state conventions contains duplicates")
+    conventions = frozenset(raw_conventions)
 
     return ManagedState(
-        schema_version=schema_version,
         pack_version=raw["pack_version"],
         profile=raw["profile"],
         conventions=conventions,
@@ -507,20 +519,65 @@ def target_resolves_within_root(target_root: Path, target: Path) -> bool:
     return True
 
 
-def copy_asset(source_root: Path, target_root: Path, asset: Asset, dry_run: bool) -> SyncAction:
+def require_utf8_text(target_root: Path, relative: str) -> None:
+    """Fail before any write if an existing file the sync will compare is not UTF-8 text."""
+    try:
+        path = safe_child(target_root, relative, "sync target")
+    except ValueError:
+        return
+    if path.is_symlink() or not path.is_file():
+        return
+    try:
+        path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as ex:
+        raise ValueError(
+            f"{relative} is not valid UTF-8 text ({ex.reason}), so nothing was changed. "
+            "Convert or move the file, then run the sync again."
+        ) from ex
+
+
+def local_changes_diff(source: Path, target: Path, path: str) -> str:
+    """Unified diff from the pack's file to the local one. '+' lines exist only locally."""
+    pack_lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
+    local_lines = target.read_text(encoding="utf-8").splitlines(keepends=True)
+    return "".join(difflib.unified_diff(pack_lines, local_lines, fromfile=f"pack/{path}", tofile=f"local/{path}"))
+
+
+def copy_asset(
+    source_root: Path,
+    target_root: Path,
+    asset: Asset,
+    dry_run: bool,
+    recorded_hash: str | None = None,
+    include_diff: bool = False,
+) -> SyncAction:
     source = safe_child(source_root / FILES_DIRECTORY, asset.path, "asset path")
     target = safe_child(target_root, asset.path, "asset target")
     existed = target.is_file()
     if existed and managed_file_hash(source) == managed_file_hash(target):
         return SyncAction("unchanged", asset.path, "managed copy already matches")
+
+    # Compare with the hash recorded at the last sync: a different local file means
+    # the overwrite discards local edits. With no recorded hash there is no baseline.
+    note = ""
+    local_edits = False
+    if existed:
+        if recorded_hash is None:
+            note = "; no recorded baseline"
+        elif managed_file_hash(target) != recorded_hash:
+            local_edits = True
+            note = " and discard local changes" if dry_run else " and discarded local changes"
+    no_baseline = existed and recorded_hash is None
+    diff = local_changes_diff(source, target, asset.path) if include_diff and (local_edits or no_baseline) else ""
+
     if dry_run:
-        detail = "would overwrite managed copy" if existed else "would create managed copy"
-        return SyncAction("copy", asset.path, detail)
+        detail = f"would overwrite managed copy{note}" if existed else "would create managed copy"
+        return SyncAction("copy", asset.path, detail, diff, no_baseline)
 
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, target)
-    detail = "overwrote managed copy" if existed else "created managed copy"
-    return SyncAction("copy", asset.path, detail)
+    detail = f"overwrote managed copy{note}" if existed else "created managed copy"
+    return SyncAction("copy", asset.path, detail, diff, no_baseline)
 
 
 def prune_stale_assets(
@@ -645,6 +702,8 @@ def render_scaffold(source_root: Path, asset: Asset) -> str:
     body = template_body(source)
     if asset.scaffold_target and Path(asset.scaffold_target).suffix.lower() == ".md":
         return add_source_marker(body, asset.path)
+    if VERSION_PLACEHOLDER in body:
+        body = body.replace(VERSION_PLACEHOLDER, load_manifest(source_root, validate_sources=False).pack_version)
     return body
 
 
@@ -820,14 +879,6 @@ def audit_target(
             unresolved_reason = "recorded convention no longer available"
         else:
             active_conventions = state.conventions
-    elif state.schema_version == 1:
-        lines.append(
-            "info: pre-5.0 state has no explicit convention selection; "
-            "pass --conventions to audit convention state"
-        )
-        active_conventions = frozenset()
-        conventions_resolved = False
-        unresolved_reason = "pre-5.0 state"
     else:
         active_conventions = frozenset()
     lines.append(
@@ -838,21 +889,30 @@ def audit_target(
 
     selected = assets_for_profile(manifest, active_profile, active_conventions)
     for asset in selected:
-        target = safe_child(target_root, asset.path, "asset target")
         source = safe_child(source_root / FILES_DIRECTORY, asset.path, "asset path")
         try:
+            target = safe_child(target_root, asset.path, "asset target")
             validate_managed_destination(target_root, asset)
         except ValueError as ex:
             lines.append(f"drift: {ex}")
             continue
         if not target.is_file():
             lines.append(f"missing: {asset.path} (expected managed file for profile '{active_profile}')")
-        elif managed_file_hash(target) != managed_file_hash(source):
+            continue
+        try:
+            differs = managed_file_hash(target) != managed_file_hash(source)
+        except UnicodeDecodeError:
+            lines.append(f"drift: {asset.path} is not valid UTF-8 text")
+            continue
+        if differs:
             lines.append(f"drift: {asset.path} differs from the current managed content")
 
     # .agents/project.md is project-owned and optional, so this is only info.
-    project_guidance = safe_child(target_root, ".agents/project.md", "project guidance path")
-    if not project_guidance.is_file():
+    try:
+        project_guidance = safe_child(target_root, ".agents/project.md", "project guidance path")
+    except ValueError:
+        project_guidance = None
+    if project_guidance is None or not project_guidance.is_file():
         lines.append("info: .agents/project.md not present")
 
     lines.extend(legacy_label_findings(target_root))
@@ -862,12 +922,20 @@ def audit_target(
             continue
         if not asset.scaffold_target.endswith(".md"):
             continue
-        scaffold = safe_child(target_root, asset.scaffold_target, "scaffold target")
+        try:
+            scaffold = safe_child(target_root, asset.scaffold_target, "scaffold target")
+        except ValueError as ex:
+            lines.append(f"drift: {ex}")
+            continue
         if not scaffold.is_file():
             continue
         # Reuse the sync path's check so "outdated" is reported only for
         # verified unchanged scaffolds, never for customized documents.
-        upgrade_status = upgrade_scaffold_asset(source_root, target_root, asset, dry_run=True)
+        try:
+            upgrade_status = upgrade_scaffold_asset(source_root, target_root, asset, dry_run=True)
+        except UnicodeDecodeError:
+            lines.append(f"info: {asset.scaffold_target} is not valid UTF-8 text; treated as a project-owned document")
+            continue
         if upgrade_status is not None and upgrade_status.action == "upgrade":
             lines.append(
                 f"outdated scaffold: {asset.scaffold_target} is a verified unchanged repo-seed "
@@ -887,7 +955,10 @@ def audit_target(
         for convention, asset in convention_assets(manifest).items():
             if convention in active_conventions:
                 continue
-            target = safe_child(target_root, asset.path, "asset target")
+            try:
+                target = safe_child(target_root, asset.path, "asset target")
+            except ValueError:
+                continue
             if target.is_file():
                 lines.append(
                     f"unused managed convention: {asset.path} "
@@ -896,23 +967,20 @@ def audit_target(
 
     # A tombstone is stale managed content awaiting manual review. A state-owned
     # path missing from the manifest is the same case before a sync tombstones it.
-    # Report both without touching state.
+    # Report both without touching state. A path that resolves outside the
+    # repository is reported, not followed, so one bad path cannot abort the audit.
     known_paths = {asset.path for asset in manifest.assets}
-    reported_stale_paths: set[str] = set()
-    for path in sorted(state.tombstones):
-        if path in reported_stale_paths:
+    stale_paths = sorted(state.tombstones) + sorted(
+        path for path in state.managed_files if path not in known_paths
+    )
+    for path in stale_paths:
+        try:
+            target = safe_child(target_root, path, "stale managed target")
+        except ValueError:
+            lines.append(f"tombstone: {path} (resolves outside the repository; review manually)")
             continue
-        target = safe_child(target_root, path, "tombstone target")
         if target.is_file():
             lines.append(f"tombstone: {path} (preserved stale managed content requires review)")
-            reported_stale_paths.add(path)
-    for path in sorted(state.managed_files):
-        if path in reported_stale_paths or path in known_paths:
-            continue
-        target = safe_child(target_root, path, "historical managed target")
-        if target.is_file():
-            lines.append(f"tombstone: {path} (preserved stale managed content requires review)")
-            reported_stale_paths.add(path)
 
     findings = [
         line
@@ -941,8 +1009,10 @@ def synchronize(
     scaffold_project_files: bool = False,
     scaffold_github_templates: bool = False,
     scaffold_editorconfig: bool = False,
+    scaffold_workflows: bool = False,
     scaffold_names: tuple[str, ...] = (),
     dry_run: bool = False,
+    show_diff: bool = False,
 ) -> list[SyncAction]:
     source_root = source_root.expanduser().resolve()
     target_root = target_root.expanduser().resolve()
@@ -960,9 +1030,6 @@ def synchronize(
         if unavailable:
             raise ValueError(format_unavailable_conventions_error(unavailable))
         resolved_conventions = managed_state.conventions
-    elif managed_state.exists:
-        # Schema 1 (pre-5.0): require an explicit choice, never infer one.
-        raise ValueError(PRE_5_0_STATE_ERROR)
     else:
         resolved_conventions = frozenset()
 
@@ -975,6 +1042,8 @@ def synchronize(
         requested_groups.add("github")
     if scaffold_editorconfig:
         requested_groups.add("editorconfig")
+    if scaffold_workflows:
+        requested_groups.add("workflows")
 
     group_scaffold_assets = [
         asset
@@ -1002,9 +1071,32 @@ def synchronize(
     state_path = safe_child(target_root, manifest.state_file, "managed state path")
     validate_parent_directory(state_path, target_root, "Managed state")
 
+    # Read every existing file the sync will compare before the first write, so a
+    # file that is not UTF-8 text stops the run before anything is changed.
+    comparable = {asset.path for asset in selected}
+    comparable.update(
+        asset.scaffold_target
+        for asset in scaffold_assets
+        if asset.scaffold_target and asset.scaffold_target.endswith(".md")
+    )
+    comparable.update(managed_state.managed_files)
+    comparable.update(managed_state.tombstones)
+    for relative in sorted(comparable):
+        require_utf8_text(target_root, relative)
+
     prune_actions, tombstones = prune_stale_assets(target_root, manifest, selected, managed_state, dry_run)
     actions: list[SyncAction] = list(prune_actions)
-    actions.extend(copy_asset(source_root, target_root, asset, dry_run) for asset in selected)
+    actions.extend(
+        copy_asset(
+            source_root,
+            target_root,
+            asset,
+            dry_run,
+            recorded_hash=managed_state.managed_files.get(asset.path),
+            include_diff=show_diff,
+        )
+        for asset in selected
+    )
     for asset in scaffold_assets:
         upgrade_action = upgrade_scaffold_asset(source_root, target_root, asset, dry_run)
         actions.append(
@@ -1043,7 +1135,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Comma-separated convention ids to install, e.g. 'csharp,unity' "
             "(known: csharp, python, scripts, shell, unity). Later syncs reuse the recorded "
-            "selection; a pre-5.0 state requires this once."
+            "selection."
         ),
     )
     parser.add_argument(
@@ -1055,6 +1147,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--scaffold-github-templates",
         action="store_true",
         help="Create missing GitHub files or upgrade verified unchanged Markdown.",
+    )
+    parser.add_argument(
+        "--scaffold-workflows",
+        action="store_true",
+        help=(
+            "Create the optional repo-seed drift-check workflow in .github/workflows when it is missing. "
+            "An existing file is never changed."
+        ),
     )
     parser.add_argument(
         "--scaffold-editorconfig",
@@ -1074,6 +1174,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--dry-run", action="store_true", help="Validate and show operations without writing files.")
     parser.add_argument(
+        "--diff",
+        action="store_true",
+        help=(
+            "Like --dry-run, and also print a diff for each managed file whose local changes would be "
+            "discarded. '+' lines exist only in the local file; '-' lines come from the pack."
+        ),
+    )
+    parser.add_argument(
         "--version",
         action="store_true",
         help="Show the detected pack version and exit.",
@@ -1081,7 +1189,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--audit",
         action="store_true",
-        help="Report drift diagnostics for the target without writing any files.",
+        help=(
+            "Report drift diagnostics for the target without writing any files. Exits 0 even when it "
+            "reports findings; the last line is 'no drift detected' or 'N finding(s) reported above'."
+        ),
     )
     return parser
 
@@ -1089,6 +1200,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    dry_run = args.dry_run or args.diff
     try:
         if args.version:
             print(f"{parser.prog} {resolve_cli_version(args.source, args.target)}")
@@ -1134,8 +1246,10 @@ def main(argv: list[str] | None = None) -> int:
             scaffold_project_files=args.scaffold_project_files,
             scaffold_github_templates=args.scaffold_github_templates,
             scaffold_editorconfig=args.scaffold_editorconfig,
+            scaffold_workflows=args.scaffold_workflows,
             scaffold_names=tuple(args.scaffold_names or ()),
-            dry_run=args.dry_run,
+            dry_run=dry_run,
+            show_diff=args.diff,
         )
     except (OSError, ValueError) as ex:
         print(f"error: {ex}", file=sys.stderr)
@@ -1146,6 +1260,23 @@ def main(argv: list[str] | None = None) -> int:
     print(f"profile        {profile}")
     for action in actions:
         print(f"{action.action:<14} {action.path} ({action.detail})")
+        if action.diff:
+            print(action.diff, end="" if action.diff.endswith("\n") else "\n")
+
+    unverified = [action.path for action in actions if action.no_baseline]
+    if unverified:
+        listing = ", ".join(unverified)
+        if dry_run:
+            print(
+                f"NOTE: {len(unverified)} existing managed file(s) differ from the pack and have no recorded "
+                f"baseline, so a sync would overwrite them: {listing}. Run with --diff to see the differences. "
+                "Move your own rules into .agents/project.md and commit first."
+            )
+        else:
+            print(
+                f"NOTE: {len(unverified)} existing managed file(s) were overwritten without a recorded "
+                f"baseline: {listing}. Recover earlier content from version control if you need it."
+            )
 
     copies = sum(action.action == "copy" for action in actions)
     removals = sum(action.action == "remove" for action in actions)
@@ -1154,7 +1285,7 @@ def main(argv: list[str] | None = None) -> int:
     state_updates = sum(action.action == "state" for action in actions)
     unchanged = sum(action.action == "unchanged" for action in actions)
     preserved = sum(action.action in {"preserve", "skip"} for action in actions)
-    mode = "Dry run" if args.dry_run else "Sync"
+    mode = "Dry run" if dry_run else "Sync"
     print(
         f"{mode} complete. Removals: {removals}. Upgrades: {upgrades}. "
         f"Managed copies: {copies}. Scaffolds: {scaffolds}. "
