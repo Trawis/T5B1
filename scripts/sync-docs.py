@@ -17,6 +17,8 @@ MANIFEST_FILE = "manifest.json"
 FILES_DIRECTORY = "files"
 DEFAULT_STATE_FILE = ".repo-seed-state.json"
 VERSION_PLACEHOLDER = "__PACK_VERSION__"
+SKILL_SOURCE_TREE = ".agents/skills/"
+SKILL_GENERATED_TREE = ".claude/skills/"
 TEMPLATE_METADATA_START = "repo-seed-template:start"
 TEMPLATE_METADATA_END = "repo-seed-template:end"
 VALID_TYPES = {"managed", "template"}
@@ -62,6 +64,12 @@ class Asset:
     scaffold_group: str | None = None
     scaffold_target: str | None = None
     convention: str | None = None
+    # Pack file to copy from when it differs from `path`.
+    source: str | None = None
+
+    @property
+    def source_path(self) -> str:
+        return self.source or self.path
 
 
 @dataclass(frozen=True)
@@ -237,6 +245,8 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
 
         relative_path(path, f"{context}.path")
         reject_project_owned_tree_path(path, f"{context}.path")
+        if path.startswith(SKILL_GENERATED_TREE):
+            raise ValueError(f"{context}.path cannot be under {SKILL_GENERATED_TREE}; it is generated from {SKILL_SOURCE_TREE}")
         if path in paths:
             raise ValueError(f"Duplicate asset path: {path}")
         if not isinstance(asset_type, str) or asset_type not in VALID_TYPES:
@@ -264,8 +274,7 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
                     raise ValueError(f"{context}.scaffold_target must be a non-empty string")
                 relative_path(scaffold_target, f"{context}.scaffold_target")
                 if scaffold_group == "workflows":
-                    # The only group that may create a file in a project-owned tree,
-                    # and only once, when missing. Everything else is still rejected.
+                    # The only group allowed to create a file in a project-owned tree.
                     if not any(scaffold_target.startswith(f"{tree}/") for tree in PROJECT_OWNED_TREES):
                         raise ValueError(f"{context}.scaffold_target must be under .github/workflows")
                 else:
@@ -299,6 +308,19 @@ def load_manifest(source_root: Path, validate_sources: bool = True) -> PackManif
                 convention=convention if isinstance(convention, str) else None,
             )
         )
+
+    # Claude Code reads .claude/skills; derive it from the authored .agents/skills.
+    assets.extend(
+        Asset(
+            path=SKILL_GENERATED_TREE + asset.path[len(SKILL_SOURCE_TREE) :],
+            asset_type=asset.asset_type,
+            profiles=asset.profiles,
+            source=asset.path,
+        )
+        for asset in list(assets)
+        if asset.asset_type == "managed" and asset.path.startswith(SKILL_SOURCE_TREE)
+    )
+    paths.update(asset.path for asset in assets)
 
     collisions = paths.intersection(scaffold_targets)
     if collisions:
@@ -465,9 +487,7 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
     if not isinstance(raw.get("profile"), str) or not raw["profile"]:
         raise ValueError("Managed state profile must be a non-empty string")
 
-    # Recorded paths may be missing from the current manifest. Later packs can
-    # remove assets, so safety comes from path validation, not manifest
-    # membership. prune_stale_assets preserves and tombstones such paths.
+    # Recorded paths may be gone from the manifest; safety comes from path validation.
     def hash_map(key: str) -> dict[str, str]:
         value = raw.get(key)
         if not isinstance(value, dict):
@@ -489,9 +509,7 @@ def read_managed_state(target_root: Path, manifest: PackManifest) -> ManagedStat
     if set(managed_files).intersection(tombstones):
         raise ValueError("Managed state paths cannot be both active and tombstoned")
 
-    # A persisted convention id may be missing from the current manifest.
-    # synchronize() and audit_target() check for known ids; this parser
-    # only validates shape.
+    # Shape only; synchronize() and audit_target() check that the id is known.
     raw_conventions = raw.get("conventions")
     if not isinstance(raw_conventions, list) or not all(
         isinstance(item, str) and item for item in raw_conventions
@@ -551,14 +569,13 @@ def copy_asset(
     recorded_hash: str | None = None,
     include_diff: bool = False,
 ) -> SyncAction:
-    source = safe_child(source_root / FILES_DIRECTORY, asset.path, "asset path")
+    source = safe_child(source_root / FILES_DIRECTORY, asset.source_path, "asset path")
     target = safe_child(target_root, asset.path, "asset target")
     existed = target.is_file()
     if existed and managed_file_hash(source) == managed_file_hash(target):
         return SyncAction("unchanged", asset.path, "managed copy already matches")
 
-    # Compare with the hash recorded at the last sync: a different local file means
-    # the overwrite discards local edits. With no recorded hash there is no baseline.
+    # A local file that differs from the recorded hash holds edits; no hash means no baseline.
     note = ""
     local_edits = False
     if existed:
@@ -615,8 +632,7 @@ def prune_stale_assets(
             actions.append(SyncAction("preserve", path, "stale path is now project-owned"))
             continue
         if path not in known_paths:
-            # Not in the manifest any more. Never auto-delete it; keep the
-            # tombstone for manual review until the file is removed.
+            # No longer in the manifest: keep the tombstone for manual review.
             actions.append(SyncAction("preserve", path, "historical managed path is no longer in the manifest"))
             tombstones[path] = expected_hash
             continue
@@ -655,7 +671,7 @@ def write_managed_state(
         "conventions": sorted(conventions),
         "managed_files": {
             asset.path: managed_file_hash(
-                safe_child(source_root / FILES_DIRECTORY, asset.path, "asset path")
+                safe_child(source_root / FILES_DIRECTORY, asset.source_path, "asset path")
             )
             for asset in selected
         },
@@ -889,7 +905,7 @@ def audit_target(
 
     selected = assets_for_profile(manifest, active_profile, active_conventions)
     for asset in selected:
-        source = safe_child(source_root / FILES_DIRECTORY, asset.path, "asset path")
+        source = safe_child(source_root / FILES_DIRECTORY, asset.source_path, "asset path")
         try:
             target = safe_child(target_root, asset.path, "asset target")
             validate_managed_destination(target_root, asset)
@@ -929,8 +945,7 @@ def audit_target(
             continue
         if not scaffold.is_file():
             continue
-        # Reuse the sync path's check so "outdated" is reported only for
-        # verified unchanged scaffolds, never for customized documents.
+        # Report "outdated" only for verified unchanged scaffolds.
         try:
             upgrade_status = upgrade_scaffold_asset(source_root, target_root, asset, dry_run=True)
         except UnicodeDecodeError:
@@ -965,10 +980,7 @@ def audit_target(
                     f"(selected conventions: {', '.join(sorted(active_conventions)) or 'none'})"
                 )
 
-    # A tombstone is stale managed content awaiting manual review. A state-owned
-    # path missing from the manifest is the same case before a sync tombstones it.
-    # Report both without touching state. A path that resolves outside the
-    # repository is reported, not followed, so one bad path cannot abort the audit.
+    # Tombstones and state-owned paths missing from the manifest are reported, not followed.
     known_paths = {asset.path for asset in manifest.assets}
     stale_paths = sorted(state.tombstones) + sorted(
         path for path in state.managed_files if path not in known_paths
@@ -1071,8 +1083,7 @@ def synchronize(
     state_path = safe_child(target_root, manifest.state_file, "managed state path")
     validate_parent_directory(state_path, target_root, "Managed state")
 
-    # Read every existing file the sync will compare before the first write, so a
-    # file that is not UTF-8 text stops the run before anything is changed.
+    # Read every comparable file first so a non-UTF-8 file stops the run before any write.
     comparable = {asset.path for asset in selected}
     comparable.update(
         asset.scaffold_target

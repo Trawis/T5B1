@@ -56,15 +56,16 @@
     "docs/templates/.github/feature-request.template.yml": "ba5d74080db5619d51f2111fd8676b72960e1911144cbd62d5509072803ac9a4",
     "docs/templates/.github/pull-request.template.md": "c19c3073d56bd06d0d6730962fbd90349f4fd95771e615c0c2fc6ba10b747dfb",
     "docs/templates/.github/repo-seed-audit.template.yml": "eec01a2f1220c29f2266dc8a2d3cff3e23b4506e2c91757257a56de38d044a77",
+    "docs/templates/.github/repo-seed-sync.template.yml": "2eda0254b570de0fc5f0a877624451763ee3b9b624e2678ca5c99298ce5a6d2a",
     "docs/templates/.github/tech-debt.template.yml": "5209430f90cf14ed3527c31edf305a66274398adbca94a4ae9d8ea92a568e039",
     "docs/templates/architecture.template.md": "9ea28f9bde325a3d8de6966189bacfbdabba2046670fc1cf884f3553d3cebeea",
     "docs/templates/changelog.template.md": "8086dd2b6969feb1d489fc2a18a84054eaf0d24fe69bddaafc8a5fd4eabec92c",
     "docs/templates/editorconfig.template": "74b219dcd26beaefc51a9892f5e74b136ac30ff0b04ef70039fbaa9903ead77a",
     "docs/templates/readme.template.md": "656ae4b0a9e24cfab74c6209420d0a46745f2869cfb2ff6f591e72aaffa67e46",
     "docs/templates/tsd.template.md": "e5458fc3eab8778c6648f62a28ddb6e237c06bbf83191be02d09c7e165cf2c90",
-    "scripts/sync-docs.py": "8669cddb48e07fcc1d4299d625d3d825ff01e68bc12a8e425a4fbedfad133e89"
+    "scripts/sync-docs.py": "d010b5c76f457aa01ee6ba5ee6a8756cfec7e20dacd6decc181378dde1774ead"
   },
-  "pack_version": "5.18.2",
+  "pack_version": "5.19.2",
   "profile": "library",
   "schema_version": 2,
   "tombstones": {}
