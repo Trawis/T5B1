@@ -26,7 +26,7 @@
     ".agents/skills/issue-implementation/SKILL.md": "31ca39eaaddce0dd4be73b6078fa94cb8fd394401a8c00d27f290c377befab9e",
     ".agents/skills/refactor/SKILL.md": "03e394319b5ea4bec71f4c9934989759f0db8b2c6e086a34ad75f66208063daa",
     ".agents/skills/repository-audit/SKILL.md": "84a1a17d797743b701422643cb4d122e8f23ac92cb12666d069b2ade22dc7897",
-    ".agents/skills/repository-bootstrap/SKILL.md": "4f195919e38fb3a01ac2f6dc833f9a2096368136f98b130b6d234e885663cd31",
+    ".agents/skills/repository-bootstrap/SKILL.md": "4aa2b06832bb009eb88e3e3c0f605e59fb9cb6824e796c8721a09360c02746ff",
     ".agents/skills/repository-upgrade/SKILL.md": "f978462404b1818b0ed94d2149d923fb978bb9898b2ef63c094bbbb85188b621",
     ".agents/skills/technical-design/SKILL.md": "b81366ba3e8f24ae779859e3dc7bacbd23d4aca25e6a0608390c350f6a2e905e",
     ".agents/skills/test-driven-development/NOTICE.md": "97ed382927d8ef6cbd7940479aef666096b0499f0cdcb598de45862ae46bc28c",
@@ -43,7 +43,7 @@
     ".claude/skills/issue-implementation/SKILL.md": "31ca39eaaddce0dd4be73b6078fa94cb8fd394401a8c00d27f290c377befab9e",
     ".claude/skills/refactor/SKILL.md": "03e394319b5ea4bec71f4c9934989759f0db8b2c6e086a34ad75f66208063daa",
     ".claude/skills/repository-audit/SKILL.md": "84a1a17d797743b701422643cb4d122e8f23ac92cb12666d069b2ade22dc7897",
-    ".claude/skills/repository-bootstrap/SKILL.md": "4f195919e38fb3a01ac2f6dc833f9a2096368136f98b130b6d234e885663cd31",
+    ".claude/skills/repository-bootstrap/SKILL.md": "4aa2b06832bb009eb88e3e3c0f605e59fb9cb6824e796c8721a09360c02746ff",
     ".claude/skills/repository-upgrade/SKILL.md": "f978462404b1818b0ed94d2149d923fb978bb9898b2ef63c094bbbb85188b621",
     ".claude/skills/technical-design/SKILL.md": "b81366ba3e8f24ae779859e3dc7bacbd23d4aca25e6a0608390c350f6a2e905e",
     ".claude/skills/test-driven-development/NOTICE.md": "97ed382927d8ef6cbd7940479aef666096b0499f0cdcb598de45862ae46bc28c",
@@ -63,9 +63,9 @@
     "docs/templates/editorconfig.template": "74b219dcd26beaefc51a9892f5e74b136ac30ff0b04ef70039fbaa9903ead77a",
     "docs/templates/readme.template.md": "656ae4b0a9e24cfab74c6209420d0a46745f2869cfb2ff6f591e72aaffa67e46",
     "docs/templates/tsd.template.md": "e5458fc3eab8778c6648f62a28ddb6e237c06bbf83191be02d09c7e165cf2c90",
-    "scripts/sync-docs.py": "d010b5c76f457aa01ee6ba5ee6a8756cfec7e20dacd6decc181378dde1774ead"
+    "scripts/sync-docs.py": "194cc31913d11a28774e21d24558239f000456b1d1629f244774d381b83fbf50"
   },
-  "pack_version": "5.19.3",
+  "pack_version": "5.19.4",
   "profile": "library",
   "schema_version": 2,
   "tombstones": {}
