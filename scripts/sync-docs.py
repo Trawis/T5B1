@@ -1163,7 +1163,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--scaffold-workflows",
         action="store_true",
         help=(
-            "Create the optional repo-seed drift-check workflow in .github/workflows when it is missing. "
+            "Create two optional workflow callers in .github/workflows when missing: repo-seed-audit.yml "
+            "(opens a drift issue) and repo-seed-sync.yml (opens a sync pull request; needs write access). "
             "An existing file is never changed."
         ),
     )
