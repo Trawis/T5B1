@@ -65,7 +65,7 @@
     "docs/templates/tsd.template.md": "e5458fc3eab8778c6648f62a28ddb6e237c06bbf83191be02d09c7e165cf2c90",
     "scripts/sync-docs.py": "d010b5c76f457aa01ee6ba5ee6a8756cfec7e20dacd6decc181378dde1774ead"
   },
-  "pack_version": "5.19.2",
+  "pack_version": "5.19.3",
   "profile": "library",
   "schema_version": 2,
   "tombstones": {}
