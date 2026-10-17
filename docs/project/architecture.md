@@ -6,7 +6,7 @@
 
 This document describes the current implemented architecture. Proposed
 changes belong under `docs/project/designs/`; individual features belong in
-`FEATURES.md`.
+`features.md`.
 
 ## Purpose
 

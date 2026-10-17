@@ -90,13 +90,13 @@ button (or F1).
 
 Open the trainer with the **Trainer** button or **F1** (**F2** closes it). The
 **Skill Change** button on the actor window and extra buttons on the employee
-detail window edit selected employees. See [`FEATURES.md`](FEATURES.md) for the
+detail window edit selected employees. See [`docs/project/features.md`](docs/project/features.md) for the
 full feature list.
 
 ## Documentation
 
 - [`docs/project/architecture.md`](docs/project/architecture.md) - architecture and technical overview
-- [`FEATURES.md`](FEATURES.md) - feature list
+- [`docs/project/features.md`](docs/project/features.md) - feature list
 - [`CHANGELOG.md`](CHANGELOG.md) - version history
 
 ## Known Limitations
