@@ -1,6 +1,6 @@
 ---
 name: repository-upgrade
-description: Upgrades a repository that already uses repo-seed to a newer pack using that pack's sync script, with a dry run first and verification afterwards. Use when asked to update, upgrade, migrate, bring managed files to the latest pack, or resolve repo-seed version drift. For first-time adoption use repository-bootstrap.
+description: Upgrades a repository that already uses repo-seed to a newer pack using that pack's sync script, with a dry run first and verification afterwards. Use when asked to update, upgrade, migrate, or bring managed files to the latest pack. For first-time adoption use repository-bootstrap; for a read-only check use repository-audit.
 ---
 
 # Repository Upgrade
@@ -28,26 +28,32 @@ script lacks, report that rather than improvising.
    are reused when you omit `--profile` and `--conventions`; omit them for a
    normal upgrade and do not change the recorded selection unless the user asks.
 4. If the script stops and asks for an explicit selection, such as a
-   `--conventions` list for an older state schema, do not choose for the user.
-   Show what the script says, explain what each option would install or remove,
-   and ask.
+   `--conventions` list because a recorded convention is no longer in the pack,
+   do not choose for the user. Show what the script says, explain what each
+   option would install or remove, and ask. If it refuses an old state file,
+   report its error to the user and ask; do not work around it and do not
+   download a pack without permission.
 5. Run the intended command with `--dry-run` first, and read every line: managed
    files it would replace, files it would remove, modified files it would
    preserve, tombstones, state changes, and any scaffold effects. Resolve
-   anything unexpected before continuing, and show the user the plan.
-6. Managed files the pack no longer selects are removed only when unchanged.
-   A locally modified one, or one the pack dropped from its manifest
-   altogether, is preserved and tombstoned for review, not overwritten or
-   deleted. Project-owned files are never changed. Do not force a change to
-   any of these.
+   anything unexpected before continuing, and show the user the plan. A copy
+   line marked `and discard local changes` overwrites local edits: run the same
+   command with `--diff` instead of `--dry-run`, show the user those diffs, and
+   get their go-ahead before applying.
+6. A `remove` line is a managed file the pack no longer selects and that is
+   unchanged. A `preserve` line, sometimes also reported as a tombstone, is a
+   file the script deliberately keeps: locally modified, dropped from the
+   manifest, or now project-owned. Do not force a change to files the script
+   preserves, never edit project-owned files by hand, and report each preserved
+   file for review.
 7. Apply by running the same command without `--dry-run` only after the dry run
    is acceptable and the user wants the upgrade.
-8. Verify: the state file is on the schema the newer pack writes and records the
-   intended pack version, profile, and conventions; expected managed guidance and
+8. Verify: the state file records the intended pack version, profile, and
+   conventions; expected managed guidance and
    skills are present; removals happened only for unchanged files repo-seed
    owned; project-owned and locally modified files are intact; and a repeat
    `--dry-run` is clean or every remaining line is explained. Run the script
-   with `--audit` as a final check when available and explain its findings.
+   with `--audit` as a final check and explain its findings.
 9. Review the resulting diff with the user before anything is committed.
 
 ## Completion
