@@ -28,10 +28,13 @@ namespace Trainer_v5
 			}
 		}
 
+		// HashList.GetEnumerator boxes a list enumerator, so the per-frame furniture passes index the list instead of using foreach.
 		internal static void ApplyNoiseReduction()
 		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			HashList<Furniture> allFurniture = Settings.sRoomManager.AllFurniture;
+			for (int i = 0; i < allFurniture.Count; i++)
 			{
+				Furniture furniture = allFurniture[i];
 				furniture.ActorNoise = 0f;
 				furniture.EnvironmentNoise = 0f;
 				furniture.FinalNoise = 0f;
@@ -46,8 +49,10 @@ namespace Trainer_v5
 
 		internal static void ApplyDisableActiveFires()
 		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			HashList<Furniture> allFurniture = Settings.sRoomManager.AllFurniture;
+			for (int i = 0; i < allFurniture.Count; i++)
 			{
+				Furniture furniture = allFurniture[i];
 				if (!furniture.Parent.IsOnFire)
 				{
 					continue;

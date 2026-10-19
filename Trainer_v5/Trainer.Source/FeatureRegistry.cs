@@ -107,7 +107,9 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.ApplyReduceExpansionCost);
 			Add(entries, FeatureTrigger.Disabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.RestoreReduceExpansionCost);
 
-			// Frame
+			// Frame: values the game recomputes or overwrites faster than the Minute cadence (#88, #157), so a slower
+			// trigger would let them degrade between runs; none was moved without in-game verification (#361).
+			// Passes must stay allocation-free: index loops, no LINQ, ToList or per-frame delegates.
 			Add(entries, FeatureTrigger.Frame, "NoiseReduction", SettingKeys.NoiseReduction, EnvironmentFeatures.ApplyNoiseReduction);
 			Add(entries, FeatureTrigger.Frame, "DisableFires", SettingKeys.DisableFires, EnvironmentFeatures.ApplyDisableActiveFires);
 			Add(entries, FeatureTrigger.Frame, "CleanRooms", SettingKeys.CleanRooms, EnvironmentFeatures.ApplyCleanRooms);

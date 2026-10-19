@@ -68,6 +68,10 @@ Disabled (once, on the frame a toggle changes; each toggle is observed once
 per frame). A feature with several cadences has several rows sharing its id.
 To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
 triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+Frame rows are reserved for values the game overwrites faster than the minute
+cadence, and their passes stay allocation-free (index loops; `HashList`'s
+`foreach` boxes an enumerator, and `Thoughts.Values` is the live list, so it is
+walked backwards instead of copied).
 A periodic feature (Minute, Hour, Day, Month) also has an Enabled row so it
 takes effect the moment it is switched on, unless it is listed in
 `FeatureRegistry.NoCatchUp`; `FeatureScheduleTests` enforces that, so a new
