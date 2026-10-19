@@ -1,4 +1,3 @@
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Xunit;
@@ -32,7 +31,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheHelperKeepsEveryPartInTheConstructorOrderAndAddsOnlyOneYear()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "WorkItemFeatures.cs"));
+			var source = SourceCode.Read("Features", "WorkItemFeatures.cs");
 
 			Assert.Contains("new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1)", source);
 			Assert.DoesNotContain("new SDateTime(deadline.Year", source);
@@ -41,9 +40,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheActionSkipsWorkItemsWithoutAContractAndUsesTheHelper()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "WorkItemFeatures.cs"));
-			var start = source.IndexOf("internal static void ExtendDeadline()", System.StringComparison.Ordinal);
-			var body = source.Substring(start, source.IndexOf("internal static SDateTime ExtendedByYear", System.StringComparison.Ordinal) - start);
+			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void ExtendDeadline()");
 
 			Assert.Contains("if (contract == null)", body);
 			Assert.Contains("continue;", body);

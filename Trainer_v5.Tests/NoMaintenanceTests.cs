@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -9,7 +8,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void RepairIsRequestedWithAFactorNotAsASingleDefaultStep()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "EnvironmentFeatures.cs"));
+			var source = SourceCode.Read("Features", "EnvironmentFeatures.cs");
 
 			Assert.Contains("RepairMe(RepairFactor)", source);
 			Assert.DoesNotContain("RepairMe()", source);

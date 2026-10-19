@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -9,7 +8,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void LeavingTheGameAndDeactivatingResetTheToggleTracker()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "TrainerBehaviour.cs"));
+			var source = SourceCode.Read("TrainerBehaviour.cs");
 
 			Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(source, @"_toggleStates\.Reset\(\)").Count);
 		}

@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -9,9 +8,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void GrantingCallsAcceptDemandWithoutTheRefreshFlagAndNeverRefundsTheCost()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeDemandChangeWindow.cs"));
-			var start = source.IndexOf("private static void GrantDemand", System.StringComparison.Ordinal);
-			var body = source.Substring(start);
+			var body = SourceCode.Body(SourceCode.Read("Window", "EmployeeDemandChangeWindow.cs"), "private static void GrantDemand");
 
 			Assert.Contains("employee.AcceptDemand(choice, index, false)", body);
 			Assert.DoesNotContain("MakeTransaction", body);
@@ -20,7 +17,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void AnAlreadyGrantedDemandIsNeverAcceptedTwice()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeDemandChangeWindow.cs"));
+			var source = SourceCode.Read("Window", "EmployeeDemandChangeWindow.cs");
 
 			Assert.Contains("if (on && !has)", source);
 			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"GrantDemand\(employee, choice"));
