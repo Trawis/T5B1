@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Trainer_v5
 {
 	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order. Not registered: the retired
-	// AutoMaxMarketShare and ReduceBoxPrice, and the Cheats.* flags TrainerBehaviour pushes once per load.
+	// AutoMaxMarketShare, MoreCreativity and ReduceBoxPrice, and the Cheats.* flags TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
 		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
@@ -57,7 +57,6 @@ namespace Trainer_v5
 
 			// Month
 			Add(entries, FeatureTrigger.Month, "FreeEmployees", SettingKeys.FreeEmployees, EmployeeFeatures.ApplyFreeEmployees);
-			Add(entries, FeatureTrigger.Month, "MoreCreativity", SettingKeys.MoreCreativity, EmployeeFeatures.ApplyMoreCreativity);
 			Add(entries, FeatureTrigger.Month, "DisableBurglars", SettingKeys.DisableBurglars, EnvironmentFeatures.ApplyDisableBurglars);
 			Add(entries, FeatureTrigger.Month, "DisableFireInspection", SettingKeys.DisableFireInspection, EnvironmentFeatures.ApplyDisableFireInspection);
 			Add(entries, FeatureTrigger.Month, "DisableFurnitureStealing", SettingKeys.DisableFurnitureStealing, EnvironmentFeatures.ApplyDisableFurnitureStealing);
@@ -88,7 +87,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
 			Add(entries, FeatureTrigger.Enabled, "AutoAcceptHostingDeals", SettingKeys.AutoAcceptHostingDeals, MarketFeatures.ApplyAutoAcceptHostingDeals);
 			Add(entries, FeatureTrigger.Enabled, "FreeEmployees", SettingKeys.FreeEmployees, EmployeeFeatures.ApplyFreeEmployees);
-			Add(entries, FeatureTrigger.Enabled, "MoreCreativity", SettingKeys.MoreCreativity, EmployeeFeatures.ApplyMoreCreativity);
 			Add(entries, FeatureTrigger.Enabled, "DisableBurglars", SettingKeys.DisableBurglars, EnvironmentFeatures.ApplyDisableBurglars);
 			Add(entries, FeatureTrigger.Enabled, "DisableFireInspection", SettingKeys.DisableFireInspection, EnvironmentFeatures.ApplyDisableFireInspection);
 			Add(entries, FeatureTrigger.Enabled, "FreePrint", SettingKeys.FreePrint, ProductFeatures.ApplyFreePrint);

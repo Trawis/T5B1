@@ -42,6 +42,8 @@ namespace Trainer_v5.Tests
 			{
 				Assert.Contains("UIFactory.Button(" + label, source);
 			}
+			Assert.DoesNotContain("Creativity", source);
+			Assert.DoesNotContain("new Employee(", source);
 		}
 	}
 }

@@ -65,7 +65,6 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(4, "AutoAcceptHostingDeals", "Auto Accept Hosting Deals", SettingKeys.AutoAcceptHostingDeals));
 			rows.Add(new SettingToggleRow(4, "AutoPorting", "Auto Porting", SettingKeys.AutoPorting));
 			rows.Add(new SettingToggleRow(4, "MoreInspiration", "More Inspiration", SettingKeys.MoreInspiration));
-			rows.Add(new SettingToggleRow(4, "MoreCreativity", "More Creativity", SettingKeys.MoreCreativity));
 			rows.Add(new SettingToggleRow(4, "NoMissedSupportTickets", "No Missed Support Tickets", SettingKeys.NoMissedSupportTickets));
 			rows.Add(new SettingToggleRow(4, "NoInsuranceCost", "No Insurance Cost", SettingKeys.NoInsuranceCost));
 			rows.Add(new SettingToggleRow(4, "NoLoanInterest", "No Loan Interest", SettingKeys.NoLoanInterest));

@@ -8,6 +8,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
+- Removed the Creativity editor from the employee detail window and the More
+  Creativity setting. Saves that contain the setting still load.
 - Added a Founder toggle to the employee detail window. It turns the flag on
   or off, which also frees employees that an older Creativity edit marked as
   founders.
