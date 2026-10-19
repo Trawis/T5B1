@@ -1,0 +1,32 @@
+name: Feature Request
+description: Propose an implementation-ready capability
+labels: ["type: feature"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the requested capability.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested approach
+      description: Optional. Provide useful implementation direction when known.
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: List concrete, observable acceptance conditions.
+      placeholder: |
+        - Concrete, observable outcome.
+    validations:
+      required: true

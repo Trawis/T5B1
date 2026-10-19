@@ -46,6 +46,7 @@ namespace Trainer_v5
 		public static readonly ToggleKey ReduceBoxPrice = Toggle("ReduceBoxPrice");
 		public static readonly ToggleKey DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
 		public static readonly ToggleKey MoreInspiration = Toggle("MoreInspiration");
+		// Retired (#374): same as ReduceBoxPrice.
 		public static readonly ToggleKey MoreCreativity = Toggle("MoreCreativity");
 		public static readonly ToggleKey AutoResearchStart = Toggle("AutoResearchStart");
 		public static readonly ToggleKey DigitalDistributionMonopol = Toggle("DigitalDistributionMonopol");

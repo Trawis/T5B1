@@ -1,0 +1,29 @@
+# Opens or updates one pull request on chore/repo-seed-sync whenever a newer
+# repo-seed release changes this repository's managed files. It never touches
+# project-owned files. The tag below is the pack release that created this file.
+# Dependabot can keep it current only if this repository has its own
+# .github/dependabot.yml with a github-actions entry. Delete this file to turn
+# the sync off.
+#
+# Needs the repository setting "Allow GitHub Actions to create and approve pull
+# requests". A pull request opened with the default token does not start other
+# workflows, so required checks will not run on it. To run them, store a
+# personal access token or GitHub App token as a secret and uncomment the
+# secrets block below.
+name: repo-seed sync
+
+on:
+  schedule:
+    - cron: "43 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Trawis/repo-seed/.github/workflows/sync.yml@v6.0.0
+    # with:
+    #   pack-version: "6.0.0"   # pin the pack instead of using the latest release
+    # secrets:
+    #   token: ${{ secrets.REPO_SEED_TOKEN }}

@@ -14,31 +14,11 @@ this file.
 Use newest entries first. Do not dump raw git commits here.
 
 Use semantic versions when the project defines a versioned public interface.
-Use direct bullets that state changed items only. Remove filler and empty
-categories before publishing.
+
+Write each entry as short prose, with no category headings or bullet lists.
+Order the sentences added, changed, fixed, removed, and leave out any that do
+not apply. Name the changed items; do not explain reasoning or history.
 
 ## Version - YYYY-MM-DD
 
-### Added
-
--
-
-### Changed
-
--
-
-### Fixed
-
--
-
-### Removed
-
--
-
-### Deprecated
-
--
-
-### Security
-
--
+Added, changed, fixed, and removed items as one short prose paragraph.

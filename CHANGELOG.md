@@ -6,6 +6,14 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.4.0] - 2026-10-19
+
+- Removed the Creativity editor from the employee detail window and the More
+  Creativity setting. Saves that contain the setting still load.
+- Added a Founder toggle to the employee detail window. It turns the flag on
+  or off, which also frees employees that an older Creativity edit marked as
+  founders.
+
 ## [5.3.5] - 2026-10-15
 
 - Fixed the DLL version failing to load in the game.

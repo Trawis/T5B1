@@ -11,10 +11,10 @@
 - Never edit target templates or copy placeholders and unverified claims into live documents.
 - An untouched scaffold is not a requirement. Treat `Draft`, inferred, and
   placeholder content as non-authoritative until the project confirms it.
-- An accepted FSD or GDD controls intended behavior. Architecture describes the
-  verified current technical system. An accepted technical design controls only
-  its scoped change.
-- Keep docs current-state focused. Do not narrate history, rationale,
+- An accepted FSD or GDD controls intended behavior.
+- Architecture describes the verified current technical system.
+- An accepted technical design controls only its scoped change.
+- Keep docs focused on current state. Do not narrate history, rationale,
   consolidation, replacement, or agent decision-making unless the file is
   explicitly a changelog or design record.
 
@@ -30,15 +30,20 @@
 - one substantial proposed technical change:
   `docs/project/designs/<short-name>.md`, created from
   `docs/templates/tsd.template.md`
-- optional public capability index: `docs/project/features.md`
 
 Update only documents affected by verified behavior. Do not create documentation as busywork.
+
+`fsd.md`, `gdd.md`, `architecture.md`, and `user-guide.md` are on-demand
+documents. repo-seed offers their templates but does not scaffold them
+automatically. Create one with `scripts/sync-docs.py --scaffold <name>`
+(`architecture`, `fsd`, `gdd`, or `user-guide`) only when the project needs it,
+not merely because the profile could provide it.
 
 ## Growth Without Reorganization
 
 Keep `fsd.md`, `gdd.md`, `architecture.md`, and `user-guide.md` as stable
-entry points. When one becomes difficult to navigate, retain a concise overview
-there and link detail under the applicable folder:
+entry points. When one gets hard to navigate, keep a concise overview there and
+link detail under the matching folder:
 
 - functional detail: `docs/project/functional/`
 - gameplay detail: `docs/project/game-design/`
@@ -53,11 +58,11 @@ Do not create empty folders or index files preemptively.
 Create a design only for a change involving multiple components, public
 contracts, persistence or migration, security, concurrency, deployment,
 compatibility, high uncertainty, or difficult rollback. Routine fixes and
-localized refactors do not need one.
+localized refactors need none.
 
 Use `Proposed`, `Accepted`, `Implemented`, `Superseded`, or `Rejected` status.
-After implementation, update architecture with the current state. Current truth
-must not remain only in a design record.
+After implementation, update architecture with the current state. Do not leave
+current truth only in a design record.
 
 ## Existing-Project Bootstrap
 
@@ -80,14 +85,17 @@ intended player experience, balance goals, or future design.
 
 ## Template Review
 
-Newly scaffolded Markdown contains source-path and content-hash markers. Sync
-may upgrade it only while those markers prove the live document is unchanged.
-Known older scaffolds may also be upgraded when their recorded provenance or
-an approved legacy content hash verifies the original content.
+Newly scaffolded Markdown contains source-path and content-hash markers.
+
+- Current, valid provenance with unchanged content may be upgraded.
+- Current provenance with changed or mismatched content is preserved as a
+  customized, project-owned document.
+- No recognized provenance is also preserved as project-owned. Never identify
+  it as an old scaffold to migrate.
 
 When a live document cannot be verified, compare it manually with the managed
 template, using Git history when useful. Apply only relevant structural
-improvements and preserve verified project content.
+improvements. Preserve verified project content.
 
 ## Style
 
@@ -95,20 +103,19 @@ Documentation style:
 
 - Describe the current truth.
 - Use the shortest structure that makes the content clear.
-- Use bullets for lists, scope, requirements, constraints, tasks, and
-  changelogs.
-- Use short prose when explaining overview, intent, product direction, or
-  design.
-- Do not require bullets everywhere.
+- Use bullets for lists, scope, requirements, constraints, and tasks.
+- Use short prose for overview, intent, product direction, or design. Do not
+  require bullets everywhere.
 - Do not narrate agent reasoning, consolidation, replacement, or redesign
-  history.
-- Do not explain why a previous doc changed.
+  history. Do not explain why a previous doc changed.
 - Do not write agent/process phrases such as "we decided", "this replaces",
   "the old system", "consolidated", "tighter redesign", or "because the
   previous version".
-- Keep changelogs factual: what changed, not the agent's reasoning.
+- Write changelog entries as short prose under a version heading, without
+  category headings or bullets. Order the sentences added, changed, fixed,
+  removed, skipping any that do not apply. Keep them factual: what changed,
+  not the agent's reasoning.
 - Keep decision rationale only in files explicitly meant for decisions or ADRs.
-
 - Be concise, factual, and example-driven.
 - Link to detailed documents instead of duplicating them.
 - Keep living documents focused on current design, scope, rules, and decisions.

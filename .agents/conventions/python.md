@@ -4,13 +4,13 @@
 **Sync destination**: `.agents/conventions/python.md`
 **Local editing**: Do not customize this synced copy
 
-Apply repository-specific rules first and use this with `.agents/conventions/scripts.md`.
+Apply repository rules first. Use this with `.agents/conventions/scripts.md`.
 
 ## Style and Structure
 
-- Preserve existing formatting; use four spaces for new files when no local rule exists.
-- Keep imports at the top and prefer the standard library before adding dependencies.
-- Use small functions, `argparse` for non-trivial CLIs, and `pathlib` for filesystem paths.
+- Preserve existing formatting. Use four spaces for new files when no local rule exists.
+- Keep imports at the top. Prefer the standard library before adding dependencies.
+- Use small functions, `argparse` for non-trivial CLIs, and `pathlib` for paths.
 - Keep side effects out of import time.
 - Return an exit code from `main()` and call it with `raise SystemExit(main())`.
 - Use explicit text encodings and readable type hints where useful.
@@ -18,9 +18,9 @@ Apply repository-specific rules first and use this with `.agents/conventions/scr
 ## Reliability
 
 - Validate paths and inputs before writing.
-- Raise or report specific errors; avoid broad exception handling that hides failures.
+- Raise or report specific errors. Avoid broad exception handling that hides failures.
 - Avoid mutable default arguments.
-- Do not silently overwrite files unless the documented interface explicitly permits it.
+- Do not silently overwrite files unless the documented interface allows it.
 - Keep comments and docstrings for public contracts, constraints, and non-obvious behavior.
 
 ## Validation

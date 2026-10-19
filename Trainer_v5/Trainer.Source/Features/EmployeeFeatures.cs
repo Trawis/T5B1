@@ -230,14 +230,6 @@ namespace Trainer_v5
 			}
 		}
 
-		internal static void ApplyMoreCreativity()
-		{
-			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
-			{
-				Settings.sActorManager.Actors[i].employee.RevealCreativity(1f);
-			}
-		}
-
 		internal static void LoadSpecializations()
 		{
 			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)

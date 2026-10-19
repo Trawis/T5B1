@@ -12,39 +12,40 @@ Repository-level instructions for coding agents.
 3. Read the nearest child `AGENTS.md` when working in its scope.
 4. Load specialized guidance only when its subject is relevant to the operation.
 5. Read project requirements or documentation only when the task refers to them,
-   they govern the affected behavior, or they are needed to resolve a concrete
+   they govern the affected behavior, or you need them to resolve a concrete
    uncertainty. Do not scan `docs/project/` by default.
 
-Instruction precedence is: user request, closest child `AGENTS.md`,
-`.agents/project.md`, this file, then supporting guidance. Report meaningful
-conflicts instead of guessing.
+Precedence: user request, closest child `AGENTS.md`, `.agents/project.md`,
+this file, then supporting guidance. Report meaningful conflicts instead of
+guessing.
 
 ## Ownership and Documentation Authority
 
 - `docs/project/` is authoritative, project-owned documentation.
-- `docs/templates/` contains managed, read-only reference material. Never edit
-  target templates or treat placeholders as live requirements.
+- `docs/templates/` is managed, read-only reference material. Never edit target
+  templates or treat placeholders as live requirements.
 - `.agents/project.md`, child `AGENTS.md` files, project documentation,
-  workflows, and other project-owned paths remain project-owned.
-- Repo-seed managed files, including this file, `CLAUDE.md`, selected
-  `.agents/` guidance, templates, and `scripts/sync-docs.py`, must not be
-  customized directly in target repositories.
-- `.repo-seed-state.json` is managed sync state; do not edit it manually.
+  workflows, and other project-owned paths stay project-owned.
+- Add a child `AGENTS.md` only when a subtree needs narrower instructions. It
+  overrides this file within its scope, not the reverse.
+- Do not customize repo-seed managed files in target repositories. These
+  include this file, `CLAUDE.md`, selected `.agents/` guidance, templates, and
+  `scripts/sync-docs.py`.
+- `.repo-seed-state.json` is managed sync state. Do not edit it manually.
 - Untouched scaffolds and unconfirmed Draft or inferred content are not
   authoritative requirements.
 
-If a change makes existing project-owned documentation inaccurate, update the
-affected documentation.
+If a change makes project-owned documentation inaccurate, update it.
 
 ## Working Rules
 
 - Inspect the affected implementation and nearby tests before editing. Follow
-  nearby established patterns. Consult additional project documentation,
-  configuration, or conventions only when relevant to the change or needed to
-  resolve an uncertainty.
+  nearby established patterns. Consult other documentation, configuration, or
+  conventions only when relevant to the change or needed to resolve an
+  uncertainty.
 - Make the smallest safe change that satisfies the task. Do not reformat,
   rename, or clean up unrelated code.
-- Prefer source files over generated output, and keep comments focused on
+- Prefer source files over generated output. Keep comments focused on
   constraints or non-obvious intent.
 - Add or update relevant tests for behavior changes when practical.
 - For review or diagnosis, report evidence without changing files unless a fix
@@ -59,21 +60,34 @@ affected documentation.
 
 ## Specialized Guidance
 
-Load only the guidance relevant to the task:
+Use native repository skills when the agent supports them for repeatable
+workflows such as code review, bug fixing, refactoring, dependency upgrades,
+technical design, and existing-project documentation bootstrap. Skills
+supplement these instructions; they do not replace project-specific rules or
+the guidance below.
+
+Load only the additional guidance relevant to the task:
 
 - language or script work: `.agents/conventions/`
-- Git, branches, commits, or pull requests: `.agents/guidelines/git.md`
+- Git, branches, commits, pull requests, or PR descriptions:
+  `.agents/guidelines/git.md`
 - CI/CD or releases: `.agents/guidelines/ci-cd.md`
 - substantial documentation work, including creation, restructuring,
   bootstrapping, technical designs or specifications, and significant
   maintenance: `.agents/guidelines/documentation.md`
+- issue creation, labels, issue structure, or triage:
+  `.agents/guidelines/issues.md`
+
+Do not scan skill directories or supporting guidance merely because they exist.
+Agents without native skill discovery should use these core rules and load the
+guidance relevant to the task.
 
 Repository-specific rules and nearby code take precedence over managed
 conventions. Do not create or materially alter workflows, permissions,
 publishing, deployment, or infrastructure unless explicitly requested.
 
-When provided, explicit acceptance criteria and tickets define task scope;
-FSDs govern observable application behavior; GDDs govern gameplay intent; and
+When provided, explicit acceptance criteria and tickets define task scope.
+FSDs govern observable application behavior, GDDs govern gameplay intent, and
 accepted technical designs govern only their scoped changes. Report conflicts
 between requirement sources before implementing.
 
@@ -86,6 +100,6 @@ check. Do not run irrelevant language or project checks.
 Before completion, review the final diff against the request for scope,
 correctness, applicable local conventions, ownership boundaries, and relevant
 validation. Check branch and pull-request requirements only when performing Git
-or pull-request operations. Report what changed and was validated, along with
+or pull-request operations. Report what changed and was validated, plus
 skipped or blocked checks and remaining risks. Never claim an action or check
 succeeded unless it did.

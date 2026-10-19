@@ -1,0 +1,39 @@
+# repo-seed-template:start
+# Document role: Managed project-file template
+# Template source: docs/templates/.github/tech-debt.template.yml
+# Scaffold destination: .github/ISSUE_TEMPLATE/tech_debt.yml
+# Scaffold behavior: The live file is project-owned and never overwritten by sync
+# repo-seed-template:end
+
+name: Tech Debt
+description: Refactor, simplify, or clean up the project's own code or architecture
+labels: ["type: tech-debt"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the structural problem in the code or architecture.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be true after this work is complete?
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested approach
+      description: Optional. Provide useful implementation direction when known.
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: List concrete, observable acceptance conditions.
+      placeholder: |
+        - Concrete, observable outcome.
+    validations:
+      required: true

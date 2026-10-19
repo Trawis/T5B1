@@ -69,14 +69,14 @@ jobs:
         run: Compress-Archive -Path release/* -DestinationPath Trainer_v5_${{ steps.version.outputs.version }}.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Trainer_v5_${{ steps.version.outputs.version }}
           path: Trainer_v5_${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
       - name: Create versioned release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: Trainer v${{ steps.version.outputs.version }}
