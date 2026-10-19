@@ -65,10 +65,11 @@ namespace Trainer_v5
 				switch (SceneRoutes.For(scene.name))
 				{
 					case SceneRoute.MainScene:
-						Main.CreateUIButtons();
-						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
-						DetailWindowTrainer.Install();
+						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
+						Main.CreateUIButtons();
+						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
+						DetailWindowTrainer.Install();
 						break;
 					case SceneRoute.Customization:
 						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
