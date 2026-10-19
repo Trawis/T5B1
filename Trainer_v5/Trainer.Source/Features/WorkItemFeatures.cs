@@ -122,9 +122,14 @@ namespace Trainer_v5
 				var contract = work.contract;
 				if (contract == null)
 					continue;
-				var deadline = contract.Deadline;
-				contract.Deadline = new SDateTime(deadline.Year + 1, deadline.Month, deadline.Day);
+				contract.Deadline = ExtendedByYear(contract.Deadline);
 			}
+		}
+
+		// The game calendar has a fixed number of days per month and no leap days, so the same day and month is always valid.
+		internal static SDateTime ExtendedByYear(SDateTime deadline)
+		{
+			return new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1);
 		}
 
 		internal static void FixBugsAction(string input)
