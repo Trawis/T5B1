@@ -6,6 +6,11 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## Unreleased
+
+- Fixed the trainer not receiving game time events for a load when its buttons
+  could not be added to the game interface.
+
 ## [5.4.0] - 2026-10-19
 
 - Removed the Creativity editor from the employee detail window and the More
