@@ -140,6 +140,7 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
+				WindowManager.SpawnDialog("Trainer: No product named " + input + " is in beta!", false, DialogWindow.DialogType.Information);
 				return;
 			}
 
