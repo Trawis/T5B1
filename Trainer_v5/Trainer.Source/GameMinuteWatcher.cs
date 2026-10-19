@@ -11,6 +11,12 @@ namespace Trainer_v5
 
 		public void Poll()
 		{
+			// TimeOfDay is absent during scene transitions; that is "not ready", not an error.
+			if (TimeOfDay.Instance == null)
+			{
+				return;
+			}
+
 			Observe((int)TimeOfDay.Instance.Minute);
 		}
 
