@@ -12,8 +12,8 @@ namespace Trainer_v5.Tests
 			var turnOn = FounderToggle.BuildPrompt("Ann", true);
 			var turnOff = FounderToggle.BuildPrompt("Ann", false);
 
-			Assert.Contains("Ann: Founder is off, change it to on?", turnOn);
-			Assert.Contains("Ann: Founder is on, change it to off?", turnOff);
+			Assert.Contains("Ann: Founder off -> on", turnOn);
+			Assert.Contains("Ann: Founder on -> off", turnOff);
 			Assert.Contains("Type YES to confirm", turnOn);
 		}
 

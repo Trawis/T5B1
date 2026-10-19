@@ -1,14 +1,11 @@
 namespace Trainer_v5
 {
-	// Flips Employee.Founder on the shown employee (#190), also the way to undo a Founder flag left by an old Creativity edit.
-	// A founder is unpaid and cannot be fired (Actor.WorksForFree, DetailWindow.UpdateFireButton); nothing else on the employee changes.
+	// Flips Employee.Founder on the shown employee (#190). A founder is unpaid and cannot be fired.
 	internal static class FounderToggle
 	{
 		public static string BuildPrompt(string name, bool founder)
 		{
-			return $"{name}: Founder is {Label(!founder)}, change it to {Label(founder)}?\n"
-				+ "A founder is not paid and cannot be fired. Salary, roles and everything else stay as they are.\n"
-				+ "Type YES to confirm.";
+			return $"{name}: Founder {Label(!founder)} -> {Label(founder)}\nType YES to confirm.";
 		}
 
 		public static void Start()
@@ -27,14 +24,10 @@ namespace Trainer_v5
 
 			var employee = target.Employee;
 			var shown = employee.Founder;
-			WindowManager.SpawnInputDialog(
-				BuildPrompt(employee.Name, !shown),
-				"Toggle Founder",
-				"YES",
-				answer => Apply(target, shown, answer));
+			WindowManager.SpawnInputDialog(BuildPrompt(employee.Name, !shown), "Toggle Founder", "YES", answer => Apply(target, shown, answer));
 		}
 
-		// The dialog stays open while the game runs, so everything is checked again before the flag is written.
+		// The dialog stays open while the game runs, so the target is checked again before writing.
 		private static void Apply(EmployeeTarget target, bool shown, string answer)
 		{
 			if (answer != "YES")
@@ -49,7 +42,7 @@ namespace Trainer_v5
 
 			if (target.Employee.Founder != shown)
 			{
-				Notification.ShowError($"{target.Employee.Name} changed while the question was open. Nothing was edited.");
+				Notification.ShowError("The employee changed. Nothing was edited.");
 				return;
 			}
 
@@ -57,7 +50,6 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog($"{target.Employee.Name}: Founder is now {Label(!shown)}. Select the employee again to refresh the Fire button.", false, DialogWindow.DialogType.Information);
 		}
 
-		// A reason the toggle must not run, or null when the shown employee may be changed.
 		private static string FindBlocker(EmployeeTarget target)
 		{
 			if (!target.IsStillValid())
@@ -65,10 +57,9 @@ namespace Trainer_v5
 				return "The employee changed or is not available. Nothing was edited.";
 			}
 
-			// Employees are synchronised between players; the flag change is not tested for that.
 			if (GameData.MultiplayerMode)
 			{
-				return $"{target.Employee.Name} is in a multiplayer game. Nothing was edited.";
+				return "Not available in multiplayer.";
 			}
 
 			return null;
