@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload artifact
         if: steps.check.outputs.has_commits == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Trainer_v5_${{ steps.version.outputs.version }}
           path: Trainer_v5_${{ steps.version.outputs.version }}.zip
