@@ -208,7 +208,6 @@ namespace Trainer_v5
 			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
 				actor.SpecialState = Actor.HomeState.Default;
-				actor.WasSick = true;
 			}
 
 			actor.GermAdd = 0f;

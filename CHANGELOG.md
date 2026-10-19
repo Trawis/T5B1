@@ -8,6 +8,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
+- Fixed No Sickness leaving employees with the reduced efficiency the game applies
+  after an illness.
 - Fixed Auto Accept Hosting Deals accepting deals when no server group could
   take them; deals now stay pending until a real server group exists.
 - Fixed Extend Deadline setting a wrong date instead of moving the contract
