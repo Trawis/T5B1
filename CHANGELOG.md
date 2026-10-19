@@ -8,6 +8,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
+- Fixed the trainer not receiving game time events for a load when its buttons
+  could not be added to the game interface.
 - Fixed trainer settings carrying over from a previously loaded save when the
   next save does not contain them.
 

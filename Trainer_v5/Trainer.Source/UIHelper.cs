@@ -63,9 +63,18 @@ namespace Trainer_v5
 			return comboBox;
 		}
 
-		public static void AddToElement(this GameObject gameObject, string elementPath, Rect location)
+		// False when the game has no element at the path, which the game's own lookup reports as null.
+		public static bool AddToElement(this GameObject gameObject, string elementPath, Rect location)
 		{
-			WindowManager.AddElementToElement(gameObject, WindowManager.FindElementPath(elementPath).gameObject, location, new Rect(0, 0, 0, 0));
+			var parent = WindowManager.FindElementPath(elementPath);
+			if (parent == null)
+			{
+				$"UI element '{elementPath}' was not found; the control was not added.".Log();
+				return false;
+			}
+
+			WindowManager.AddElementToElement(gameObject, parent.gameObject, location, new Rect(0, 0, 0, 0));
+			return true;
 		}
 
 		public static void AddToWindow(this List<GameObject> gameObjects, GUIWindow window, int column, bool isComboBox = false)
