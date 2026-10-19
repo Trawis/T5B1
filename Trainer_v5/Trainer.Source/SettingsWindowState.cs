@@ -8,5 +8,12 @@ namespace Trainer_v5
 		{
 			return string.IsNullOrEmpty(currentName) ? hint : currentName;
 		}
+
+		// Rows the window shows at once: the scrolling columns are capped at maxVisibleRows, but the window never
+		// gets shorter than the columns that do not scroll.
+		public static int VisibleRows(int tallestScrollingColumn, int otherColumnsRows, int maxVisibleRows)
+		{
+			return System.Math.Max(System.Math.Min(tallestScrollingColumn, maxVisibleRows), otherColumnsRows);
+		}
 	}
 }

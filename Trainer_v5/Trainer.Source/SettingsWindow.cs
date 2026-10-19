@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -183,16 +184,63 @@ namespace Trainer_v5
 
 			#endregion
 
-			column1.AddToWindow(Window, Constants.FIRST_COLUMN);
-			column2.AddToWindow(Window, Constants.SECOND_COLUMN);
-			column3.AddToWindow(Window, Constants.THIRD_COLUMN);
-			column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
+			var scrollingColumns = new[] { column1, column2, column3, column4 };
+			int tallestScrollingColumn = scrollingColumns.Max(c => c.Count);
+			int otherRows = Math.Max(column5.Count, column6.Count);
+			int maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 0);
+			int visibleRows = SettingsWindowState.VisibleRows(tallestScrollingColumn, otherRows, maxVisibleRows);
+
+			if (tallestScrollingColumn > visibleRows)
+			{
+				AddScrollingColumns(Window, scrollingColumns, visibleRows);
+			}
+			else
+			{
+				column1.AddToWindow(Window, Constants.FIRST_COLUMN);
+				column2.AddToWindow(Window, Constants.SECOND_COLUMN);
+				column3.AddToWindow(Window, Constants.THIRD_COLUMN);
+				column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
+			}
+
 			column5.AddToWindow(Window, Constants.FIFTH_COLUMN, isComboBox: true);
 			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
-			int maxRowsCount = new[] { column1.Count, column2.Count, column3.Count, column4.Count, column5.Count, column6.Count }.Max();
-			Window.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW);
+			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
 			SetTestControlsActive(settings, testToggle, testButton);
+		}
+
+		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
+		// tallest column. Columns 5 and 6 stay outside it so the combo box drop-downs are not clipped.
+		private static void AddScrollingColumns(GUIWindow window, List<GameObject>[] columns, int visibleRows)
+		{
+			var zeroAnchors = new Rect(0, 0, 0, 0);
+			int width = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
+			int contentHeight = columns.Max(column => column.Count) * Constants.ELEMENT_HEIGHT;
+
+			var viewport = WindowManager.SpawnPanel();
+			viewport.gameObject.name = "ScrollViewport";
+			WindowManager.AddElementToWindow(viewport.gameObject, window, new Rect(Constants.FIRST_COLUMN, 0, width, visibleRows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			viewport.gameObject.AddComponent<RectMask2D>();
+			var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
+
+			var content = WindowManager.SpawnPanel();
+			content.gameObject.name = "ScrollContent";
+			WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, width, contentHeight), zeroAnchors);
+
+			for (int c = 0; c < columns.Length; c++)
+			{
+				var columnX = Constants.FIRST_COLUMN + c * (Constants.SECOND_COLUMN - Constants.FIRST_COLUMN);
+				for (int i = 0; i < columns[c].Count; i++)
+				{
+					WindowManager.AddElementToElement(columns[c][i], content.gameObject, UIHelper.GetColumnSlot(i, columnX - Constants.FIRST_COLUMN, false), zeroAnchors);
+				}
+			}
+
+			scrollRect.content = content;
+			scrollRect.horizontal = false;
+			scrollRect.vertical = true;
+			scrollRect.movementType = ScrollRect.MovementType.Clamped;
+			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
 		}
 
 		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testToggle, GameObject testButton)
