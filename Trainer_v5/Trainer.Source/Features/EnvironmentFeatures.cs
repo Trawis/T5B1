@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
@@ -137,20 +139,12 @@ namespace Trainer_v5
 
 		internal static void ApplyDisableBurglars()
 		{
-			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-			{
-				burglar.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(burglar);
-			}
+			RemoveActorsOfGroup("Burglars");
 		}
 
 		internal static void ApplyDisableFireInspection()
 		{
-			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
-			{
-				fireInspector.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
-			}
+			RemoveActorsOfGroup("FireInspector");
 
 			Settings.ActiveFireReport.Reset();
 			Settings.PassedFireInspection = true;
@@ -190,6 +184,17 @@ namespace Trainer_v5
 		internal static void ApplyDisableFiresFireStarter()
 		{
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
+		}
+
+		// Despawned only matters for employees, so burglars and inspectors are removed with Writeable.DestroyGO (what AI.GuestDespawn calls); Actor.OnDestroy then unregisters them from ActorManager.Others.
+		private static void RemoveActorsOfGroup(string group)
+		{
+			var actors = new List<Actor>(Settings.sActorManager.Others[group]);
+			for (int i = 0; i < actors.Count; i++)
+			{
+				Settings.sActorManager.RemoveFromAwaiting(actors[i]);
+				actors[i].DestroyGO();
+			}
 		}
 
 		private static void ApplyCleanRoomsToRoom(Room room)
