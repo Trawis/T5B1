@@ -81,7 +81,7 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void Deserialize_KeepsCurrentValuesForKeysMissingFromAnOlderSave()
+		public void Deserialize_ResetsKeysMissingFromAnOlderSaveToTheirDefaults()
 		{
 			using (new SettingsSnapshot())
 			{
@@ -94,8 +94,64 @@ namespace Trainer_v5.Tests
 				Deserialize(olderSave);
 
 				Assert.True(Helpers.Settings["FreePrint"]);
-				Assert.True(Helpers.Settings["NoFounderDividends"]);
-				Assert.Equal(10, Helpers.StoresSettings["EfficiencyStore"]);
+				Assert.False(Helpers.Settings["NoFounderDividends"]);
+				Assert.Null(Helpers.StoresSettings["EfficiencyStore"]);
+			}
+		}
+
+		[Fact]
+		public void Deserialize_ConsecutiveSavesDoNotShareSettings()
+		{
+			using (new SettingsSnapshot())
+			{
+				SettingsTests.ResetToDefaults();
+				var first = new WriteDictionary();
+				first["NoStress"] = true;
+				first["EfficiencyStore"] = 7;
+				var second = new WriteDictionary();
+				second["FreePrint"] = true;
+
+				Deserialize(first);
+				Assert.True(Helpers.Settings["NoStress"]);
+				Assert.Equal(7, Helpers.StoresSettings["EfficiencyStore"]);
+
+				Deserialize(second);
+				Assert.False(Helpers.Settings["NoStress"]);
+				Assert.True(Helpers.Settings["FreePrint"]);
+				Assert.Null(Helpers.StoresSettings["EfficiencyStore"]);
+			}
+		}
+
+		[Fact]
+		public void Deserialize_KeepsAnExplicitlySavedFalseOverAnEarlierTrue()
+		{
+			using (new SettingsSnapshot())
+			{
+				SettingsTests.ResetToDefaults();
+				Helpers.Settings["FreePrint"] = true;
+				var save = new WriteDictionary();
+				save["FreePrint"] = false;
+
+				Deserialize(save);
+
+				Assert.False(Helpers.Settings["FreePrint"]);
+			}
+		}
+
+		[Fact]
+		public void Deserialize_PartialLoadsKeepTheValuesInUse()
+		{
+			using (new SettingsSnapshot())
+			{
+				SettingsTests.ResetToDefaults();
+				Helpers.Settings["AutoPorting"] = true;
+				Helpers.StoresSettings["LeadEfficiencyStore"] = 40;
+
+				new Main().Deserialize(new WriteDictionary(), GameReader.LoadMode.Building);
+				new Main().Deserialize(new WriteDictionary(), GameReader.LoadMode.Company);
+
+				Assert.True(Helpers.Settings["AutoPorting"]);
+				Assert.Equal(40, Helpers.StoresSettings["LeadEfficiencyStore"]);
 			}
 		}
 
@@ -119,7 +175,7 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void Deserialize_OfAnEmptySaveChangesNothing()
+		public void Deserialize_OfAnEmptyFullSaveRestoresTheDefaults()
 		{
 			using (new SettingsSnapshot())
 			{
@@ -129,8 +185,8 @@ namespace Trainer_v5.Tests
 
 				Deserialize(new WriteDictionary());
 
-				Assert.True(Helpers.Settings["AutoPorting"]);
-				Assert.Equal(40, Helpers.StoresSettings["LeadEfficiencyStore"]);
+				Assert.All(Helpers.Settings, pair => Assert.False(pair.Value, pair.Key));
+				Assert.All(Helpers.StoresSettings, pair => Assert.Null(pair.Value));
 			}
 		}
 	}
