@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings", "Experimental" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
-		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare" };
+		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity" };
 
 		[Fact]
 		public void EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow()
@@ -42,7 +42,7 @@ namespace Trainer_v5.Tests
 
 			Assert.All(rows, row => Assert.InRange(row.Column, 2, 4));
 			Assert.Equal(rows.Count, Enumerable.Count(Enumerable.Distinct(Enumerable.Select(rows, row => row.LocKey))));
-			Assert.Equal(new[] { 11, 14, 21 }, Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column))));
+			Assert.Equal(new[] { 11, 14, 20 }, Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column))));
 		}
 
 		[Fact]

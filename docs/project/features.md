@@ -102,7 +102,6 @@ Toggle features stay active for as long as they are enabled.
 | Auto Accept Hosting Deals   | Accepts valid server deals that are waiting in the deal list; offers you rejected or filtered out are skipped, and nothing is accepted if the list cannot be identified |
 | Auto Porting                | Automatically advances your active porting work toward completion |
 | More Inspiration            | Inspiration can be used without cooldown                     |
-| More Creativity             | Reveals full creativity for employees                        |
 | Force Lights                | Building and street lights stay on regardless of time of day |
 | Show Room Ceilings          | Rooms render a ceiling mesh instead of being open from above |
 | Unlimited Subsidiaries      | Removes the limit on how many companies you can take over as subsidiaries |
@@ -128,6 +127,5 @@ the game's employee detail window let you edit selected employees.
 | Trait          | Toggles an employee's traits                                       |
 | Demand         | Toggles a lead's design demands                                    |
 | LeadSpec       | Sets lead specialization values per software type                  |
-| Creativity     | Sets an employee's creativity (0 to 1.0)                           |
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
 | Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) |
