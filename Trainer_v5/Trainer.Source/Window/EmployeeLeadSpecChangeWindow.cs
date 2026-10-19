@@ -126,7 +126,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		{
 			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("Select an employee first (open one employee, then press Refresh).");
+				Notification.ShowError("Select an employee first (select one employee, then close and reopen this window).");
 				return;
 			}
 			var target = _target;
