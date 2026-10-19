@@ -11,6 +11,7 @@ namespace Trainer_v5
 		private const float FALLBACK_CANVAS_HEIGHT = 1080f;
 		private const float WINDOW_CHROME_HEIGHT = 200f;
 		private const int MIN_VISIBLE_ROWS = 6;
+		private const int TITLE_BAR_HEIGHT = Constants.ELEMENT_HEIGHT;
 
 		public static GUIWindow SpawnWindow(string title, string name, string panelName)
 		{
@@ -179,6 +180,12 @@ namespace Trainer_v5
 			}
 
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
+		}
+
+		/// <summary>Window height for two scrollable columns: the taller column, the offset its origin sits below the top (0 when it starts at y = 0), and one title-bar row; without that row the footer falls outside the window.</summary>
+		internal static int GetColumnWindowHeight(int firstColumnHeight, int secondColumnHeight, int columnOriginY)
+		{
+			return System.Math.Max(firstColumnHeight, secondColumnHeight) + columnOriginY + TITLE_BAR_HEIGHT;
 		}
 
 		internal static Rect GetColumnSlot(int index, int column, bool isComboBox)
