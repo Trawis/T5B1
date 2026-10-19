@@ -54,8 +54,6 @@ namespace Trainer_v5
 				}
 			}
 
-			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
-
 			var standardToggles = SettingToggleRows.Create();
 
 			List<GameObject> column1 = new List<GameObject>();
@@ -168,17 +166,20 @@ namespace Trainer_v5
 			#endregion
 
 			#region column6
-			column6.Add(CreateSettingToggle(settings, "Experimental", "Experimental", SettingKeys.Experimental));
-			column6.Add(UIHelper.CreateLabel("After toggle re-open the window"));
-			column6.Add(UIHelper.CreateLabel());
-
-			if (experimental)
+			bool testIsOn = false;
+			var testToggle = UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), testIsOn, a => testIsOn = !testIsOn);
+			var testButton = UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton);
+			var experimentalToggle = UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a =>
 			{
-				bool isOn = false;
-				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
-				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton));
+				settings.Toggle(SettingKeys.Experimental);
+				SetTestControlsActive(settings, testToggle, testButton);
+			});
 
-			}
+			column6.Add(experimentalToggle);
+			column6.Add(UIHelper.CreateLabel("Shows the Test controls below"));
+			column6.Add(UIHelper.CreateLabel());
+			column6.Add(testToggle);
+			column6.Add(testButton);
 
 			#endregion
 
@@ -191,6 +192,14 @@ namespace Trainer_v5
 
 			int maxRowsCount = new[] { column1.Count, column2.Count, column3.Count, column4.Count, column5.Count, column6.Count }.Max();
 			Window.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW);
+			SetTestControlsActive(settings, testToggle, testButton);
+		}
+
+		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testToggle, GameObject testButton)
+		{
+			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
+			testToggle.SetActive(experimental);
+			testButton.SetActive(experimental);
 		}
 
 		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)
