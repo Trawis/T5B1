@@ -869,8 +869,13 @@ def audit_target(
         f"pack version (source): {manifest.pack_version}",
         f"pack version (target): {state.pack_version or 'not recorded'}",
     ]
-    if state.pack_version and state.pack_version != manifest.pack_version:
-        lines.append("drift: target pack version is behind the source pack")
+    if state.pack_version:
+        target_version = version_key(state.pack_version, "target pack version")
+        source_version = version_key(manifest.pack_version, "source pack version")
+        if target_version < source_version:
+            lines.append("drift: target pack version is behind the source pack")
+        elif target_version > source_version:
+            lines.append("drift: target pack version is ahead of the source pack")
 
     active_profile = profile or state.profile
     if active_profile is None:

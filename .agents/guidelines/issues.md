@@ -25,8 +25,7 @@ Required form fields enforce the minimum issue contract:
 - Feature Request, Tech Debt, and Chore require Summary, Goal, and Done when.
   Suggested approach is optional.
 
-Forms do not add Priority, Area, Dependencies, Risks, or implementation-note
-fields. Forms only apply in the web UI. Issues created through the API, the
+Forms do not add Dependencies, Risks, or implementation-note fields. Forms only apply in the web UI. Issues created through the API, the
 GitHub CLI, or by maintainers can bypass them, so the structures below still
 apply.
 
@@ -62,23 +61,6 @@ Labels named here may not exist on the hosted repository. Applying a missing
 label through the API or CLI can fail or create an unstyled label; check the
 hosted list first (see GitHub-Hosted Labels below).
 
-## Priority Labels
-
-Priority is optional. Do not require it, and do not add a priority field or
-question to forms or issue bodies. Priority belongs only in a `priority:*`
-label.
-
-- `priority: critical`
-- `priority: high`
-- `priority: medium`
-- `priority: low`
-
-## Area Labels
-
-Do not establish a mandatory shared `area:*` taxonomy. A project may add a few
-component or area labels when they give real filtering value. Do not add one
-just for completeness.
-
 ## Unresolved Choices
 
 Settle a choice that blocks implementation before work starts. List the
@@ -110,8 +92,8 @@ Optional implementation direction when useful.
 
 `Suggested approach` is optional. Small issues may use only `Summary`, `Goal`,
 and `Done when`. Make acceptance conditions observable or testable where
-practical. Do not force Context, Scope, Dependencies, Risks, Priority,
-Requirements, or Implementation Notes onto every issue. Add one only when that
+practical. Do not force Context, Scope, Dependencies, Risks, Requirements, or
+Implementation Notes onto every issue. Add one only when that
 issue benefits.
 
 Bug reports keep a dedicated diagnostic structure with reproduction, expected,
@@ -132,10 +114,7 @@ automatically. Migrate them deliberately, as a separate step.
 | `bug`         | `type: bug` |
 | `enhancement` | `type: feature` |
 | `feature`     | `type: feature` |
-| `critical`    | `priority: critical` |
-| `high`        | `priority: high` |
-| `medium`      | `priority: medium` |
-| `low`         | `priority: low` |
-| `lowest`      | `priority: low` |
+| `critical`, `high`, `medium`, `low`, `lowest` | none (priority is not tracked by labels) |
+| `priority: critical`, `priority: high`, `priority: medium`, `priority: low` | none (retired) |
 | `type: decision` | `type: feature`, `type: tech-debt`, or `type: chore` (re-triage) |
 | `type: idea` | `type: feature`, `type: tech-debt`, or `type: chore` (re-triage) |

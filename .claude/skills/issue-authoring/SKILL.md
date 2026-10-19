@@ -41,8 +41,7 @@ without the explicit authorization described under Hosted Writes.
    can tell when it is complete without inventing product decisions. Describe
    behavior and contracts rather than file paths or line numbers that will go
    stale. Include `Suggested approach` only when repository evidence supports
-   it, and add optional sections only when this issue benefits. Do not add a
-   priority unless asked.
+   it, and add optional sections only when this issue benefits.
 9. Present the draft with a short evidence summary: what was inspected, any
    duplicates or related work found, assumptions, and open questions that could
    change the issue.
