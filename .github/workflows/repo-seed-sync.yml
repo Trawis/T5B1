@@ -14,7 +14,7 @@ name: repo-seed sync
 
 on:
   schedule:
-    - cron: "43 6 * * 1"
+    - cron: "43 1 * * *"
   workflow_dispatch:
 
 jobs:
