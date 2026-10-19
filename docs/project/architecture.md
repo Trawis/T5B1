@@ -117,6 +117,18 @@ enable hook. A toggle that was on before the reset keeps that fact for its
 first observation, so one that is now off still runs its restore; this matters
 for state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
 
+An Enabled/Disabled entry whose guarded call fails is not consumed: the
+dispatcher keeps the failed entries of the toggle's latest transition and
+retries only those on the following frames (every frame for the first 60, then
+every 60th), so entries that succeeded never repeat. The next transition of the
+same toggle, a reversal included, replaces what is pending; pending retries
+survive the tracker reset, so a restore that failed is still run in the next
+game. This is safe because every Enabled/Disabled action is an idempotent
+write of an absolute value or baseline, or a catch-up scan of unfinished work;
+an action with a lasting one-off side effect must not be registered on these
+triggers. Retries do not make the Workshop build recover from an exception: a
+named method that throws still unloads the mod through the injected handler.
+
 ## Persistence and Settings
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
