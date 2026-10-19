@@ -128,6 +128,7 @@ writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
+A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
 `ReduceBoxPrice`, `AutoMaxMarketShare` and `MoreCreativity` are retired: still declared so old
 saves deserialize, but with no UI and no scheduled behavior
 (`RetiredSettingsTests`).
