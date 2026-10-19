@@ -6,6 +6,11 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## Unreleased
+
+- Fixed Auto Accept Hosting Deals accepting deals when no server group could
+  take them; deals now stay pending until a real server group exists.
+
 ## [5.4.0] - 2026-10-19
 
 - Removed the Creativity editor from the employee detail window and the More

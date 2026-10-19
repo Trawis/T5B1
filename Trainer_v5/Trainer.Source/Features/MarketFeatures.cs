@@ -139,11 +139,15 @@ namespace Trainer_v5
 
 		internal static void ApplyAutoAcceptHostingDeals()
 		{
-			var serverGroups = Settings.GetAllServerGroups().ToList();
-			if (serverGroups.Count == 0)
+			// The game attaches a server item only to a group it finds by name; any other name leaves the item unsupported.
+			var serverGroups = Settings.GetAllServerGroups().Where(group => Settings.GetServerGroup(group.Name) != null).ToList();
+			var strongest = FindStrongestIndex(serverGroups.Select(group => group.PowerSum).ToList());
+			if (strongest < 0)
 			{
 				return;
 			}
+
+			var targetGroup = serverGroups[strongest];
 
 			var dealWindow = HUD.Instance.dealWindow;
 			var pending = FindPendingDeals(dealWindow);
@@ -151,13 +155,6 @@ namespace Trainer_v5
 			{
 				WarnOnce("Auto Accept Hosting Deals: the pending deal list could not be identified, so no deal was accepted.");
 				return;
-			}
-
-			ServerGroup mostPowerfulServerGroup = new ServerGroup("TRAINER") { PowerSum = 0f };
-			foreach (var serverGroup in serverGroups)
-			{
-				if (serverGroup.PowerSum > mostPowerfulServerGroup.PowerSum)
-					mostPowerfulServerGroup = serverGroup;
 			}
 
 			foreach (var serverDeal in pending.OfType<ServerDeal>().ToList())
@@ -171,9 +168,24 @@ namespace Trainer_v5
 				dealWindow.ActuallyAcceptDeal(serverDeal, true);
 				if (serverDeal.Active && dealWindow.GetActiveDeals().Contains(serverDeal))
 				{
-					Settings.RegisterWithServer(mostPowerfulServerGroup.Name, serverDeal);
+					Settings.RegisterWithServer(targetGroup.Name, serverDeal);
 				}
 			}
+		}
+
+		// Index of the highest power; the first wins a tie, so groups at zero power are still chosen. -1 without groups.
+		internal static int FindStrongestIndex(IList<float> powers)
+		{
+			var strongest = -1;
+			for (var i = 0; i < powers.Count; i++)
+			{
+				if (strongest < 0 || powers[i] > powers[strongest])
+				{
+					strongest = i;
+				}
+			}
+
+			return strongest;
 		}
 
 		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
