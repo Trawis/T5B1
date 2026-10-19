@@ -20,8 +20,8 @@ Button features are applied once when clicked.
 | Max Followers          | Product Name           | Maxes followers for the specified product in development    |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
-| Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
-| AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
+| Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a typed YES confirmation; one-way, and your own company and its subsidiaries are not accepted |
+| AI Bankrupt All        | None                   | Marks every simulated company as going bankrupt except your own company and companies you own (subsidiaries) |
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
@@ -32,7 +32,6 @@ Button features are applied once when clicked.
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
-| Max Market Share       | None                   | Sets market share to 100% for all your products             |
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
@@ -73,7 +72,6 @@ Toggle features stay active for as long as they are enabled.
 | Auto Research Start         | Automatically starts research for available tech levels      |
 | Digital Distribution Monopol| Shuts down rival digital distribution platforms              |
 | Disable Fire Inspection     | Removes fire inspectors and passes inspections               |
-| Auto Max Market Share       | Keeps all your products at 100% market share                 |
 | Full Environment            | Rooms have maximum furniture environment                     |
 | Full Sun Light              | Rooms are fully lit                                          |
 | Lock Temperature To 21      | Room temperatures are locked to 21 C                         |
