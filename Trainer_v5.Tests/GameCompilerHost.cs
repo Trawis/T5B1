@@ -181,24 +181,7 @@ namespace Trainer_v5.Tests
 			}
 
 			var directory = Path.Combine(Path.GetTempPath(), "t5b1-game-compiler-" + BitConverter.ToString(hash, 0, 8).Replace("-", string.Empty));
-			var path = Path.Combine(directory, "mcs.dll");
-			if (!File.Exists(path) || new FileInfo(path).Length != image.Length)
-			{
-				Directory.CreateDirectory(directory);
-				try
-				{
-					File.WriteAllBytes(path, image);
-				}
-				catch (IOException)
-				{
-					// Another process wrote the identical copy first.
-					if (!File.Exists(path))
-					{
-						throw;
-					}
-				}
-			}
-			return path;
+			return CompilerImageCache.Ensure(directory, "mcs.dll", image);
 		}
 
 		private static IList<CompilerDiagnostic> Parse(string output)
