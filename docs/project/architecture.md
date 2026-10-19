@@ -52,7 +52,10 @@ dependencies.
 
 Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
-to the menu tears both down.
+to the menu tears both down. Leaving the game and entering the main scene also
+reset the per-game caches (`TrainerBehaviour.ResetPerGameState`: the settings and
+skill-change window references, the specialization list, the hosting timing flags
+and the pending-list warning); persisted settings are never part of that reset.
 
 Features are scheduled at per-frame, minute, hour, day, or month cadence,
 matched to how often the underlying game state can actually change.

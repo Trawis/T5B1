@@ -22,6 +22,12 @@ namespace Trainer_v5
 			}
 		}
 
+		// The window's toggles are bound to the specialization list of one game, so both go together.
+		public static void Reset()
+		{
+			Window = null;
+		}
+
 		private static GUIWindow CreateWindow()
 		{
 			var window = UIHelper.SpawnWindow(_title, "EditEmployee", "EditEmployeePanel");
