@@ -34,9 +34,20 @@ namespace Trainer_v5
 			const int width = 80, height = 32, spacing = 4;
 			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
 			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);
+			var placed = true;
 			for (var i = 0; i < components.Count; i++)
 			{
-				components[i].gameObject.AddToElement("DetailWindow", slots[i]);
+				placed &= components[i].gameObject.AddToElement("DetailWindow", slots[i]);
+			}
+
+			// Without the window element the controls are dropped, so the next attempt starts clean.
+			if (!placed)
+			{
+				for (var i = 0; i < components.Count; i++)
+				{
+					Object.Destroy(components[i].gameObject);
+				}
+				return;
 			}
 
 			// Marked installed only after the loop succeeds, so an exception leaves a retry possible.
