@@ -8,6 +8,8 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## Unreleased
 
+- Fixed Extend Deadline setting a wrong date instead of moving the contract
+  deadline one year later.
 - Fixed the trainer not receiving game time events for a load when its buttons
   could not be added to the game interface.
 - Fixed trainer settings carrying over from a previously loaded save when the
