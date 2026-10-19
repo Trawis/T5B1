@@ -12,7 +12,7 @@ namespace Trainer_v5
 		private static readonly FeatureGuard _featureGuard;
 
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.3.5";
+		public static string Version => "5.4.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
