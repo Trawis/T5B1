@@ -71,7 +71,7 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), CompanyFeatures.AddAIFunds));
 			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
+			column1.Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyFeatures.TakeoverCompany));
 			column1.Add(UIHelper.CreateLabel());
