@@ -130,3 +130,4 @@ the game's employee detail window let you edit selected employees.
 | LeadSpec       | Sets lead specialization values per software type                  |
 | Creativity     | Sets an employee's creativity (0 to 1.0)                           |
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
+| Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) |
