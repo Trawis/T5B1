@@ -1,0 +1,39 @@
+name: Release Version Guard
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  version-guard:
+    name: Check release version is unused
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Check Helpers.Version against existing tags
+        shell: bash
+        run: |
+          version=$(sed -nE 's/.*public[[:space:]]+static[[:space:]]+string[[:space:]]+Version[[:space:]]*=>[[:space:]]*"([0-9]+\.[0-9]+\.[0-9]+)";.*/\1/p' Trainer_v5/Trainer.Source/Helpers.cs | head -n 1)
+
+          if [ -z "$version" ]; then
+            echo "::error::Could not read a semantic version from Helpers.Version."
+            exit 1
+          fi
+
+          tag="v$version"
+
+          if [ -n "$(git tag --list "$tag")" ]; then
+            echo "::error::Tag $tag already exists, so merging this pull request would fail the Release workflow. Increase Helpers.Version in Trainer_v5/Trainer.Source/Helpers.cs before merging to main."
+            exit 1
+          fi
+
+          echo "Tag $tag is not used yet; Helpers.Version $version can be released."
