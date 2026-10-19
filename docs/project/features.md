@@ -113,6 +113,37 @@ Toggle features stay active for as long as they are enabled.
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
+**Switching toggles off**
+
+Switching a toggle off stops its effect from being applied again. Only these
+toggles also undo what they changed: No Education Cost, Free Print, Full
+Environment, Full Sun Light, Increase Walk Speed, Increase Courier Capacity,
+Reduce Internet Cost and Reduce Expansion Cost. Force Lights, Show Room
+Ceilings and Unlimited Subsidiaries follow the setting directly. Every other
+toggle leaves its changes as described below. "Not captured" means the original
+value is not recorded, so the trainer cannot put it back.
+
+|  Toggle                      | After switching off                                           |
+|:----------------------------:|:-------------------------------------------------------------|
+| Increase Bookshelf Skill     | Bookshelves keep the boosted aura value; the original per-bookshelf value is not captured. The value is not part of the furniture's save data, so loading the save drops it |
+| No Maintenance               | Chairs raised to high comfort keep it (previous comfort not captured; not saved, so a reload drops it); furniture that was repaired stays repaired (quality is saved) |
+| Free Water & Electricity     | Furniture water and wattage stay at 0 (previous values not captured; not saved, so a reload drops them); the water, electricity and gas bills are written by the game again |
+| Noise Reduction              | Furniture base noisiness stays at 0 (not captured; not saved, so a reload drops it); the noise values the game recalculates and employee noisiness are written by the game again |
+| Increase Print Speed         | Printers keep the doubled print speed (original speed not captured; not saved, so a reload drops it) |
+| Disable Furniture Stealing   | Furniture stays unstealable (not saved, so a reload drops it) |
+| Disable Fires                | The fire-starting chance of furniture stays at 0 (not saved, so a reload drops it); fires already put out stay out |
+| Free Employees               | Salaries and salary demands stay at 0 and employees no longer negotiate salary; the previous values are not captured and are saved with the employee |
+| Lock Age of Employees        | Employee birth dates stay shifted; ages are not restored |
+| No Vacation                  | Next vacation dates stay pushed back and employees already called back from vacation stay back; the game sets new vacation dates through its own scheduling, when not determined |
+| Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
+| No Missed Support Tickets    | Ticket ages stay reset |
+| Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
+| More Hosting Deals           | Deals and rewards already added stay |
+| Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
+| Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
+| No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
+| Disable Needs, Disable Stress, Lock Temperature To 21, Rooms Never Dirty, No Sickness, More Inspiration, No Offshore Heat, No Server Cost, Free Staff, Disable Force Pause, Disable Force Freeze | The last applied values stay until the game writes them again; how soon that happens is not determined. Sickness, dirt and similar states already cleared stay cleared |
+
 ---
 
 **Employee editing**

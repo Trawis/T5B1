@@ -117,6 +117,45 @@ enable hook. A toggle that was on before the reset keeps that fact for its
 first observation, so one that is now off still runs its restore; this matters
 for state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
 
+### Non-restoring toggles
+
+A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
+off and does not undo earlier writes. `docs/project/features.md` lists the
+player-visible result per toggle. Restoring toggles are `NoEducationCost`,
+`FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
+`IncreaseCourierCapacity`, `ReduceISPCost` and `ReduceExpansionCost`; the
+`Cheats.*` toggles are bound to their setting when it changes. The rest fall
+into these groups (checked against the vendored `Assembly-CSharp.dll`):
+
+- Furniture and printer fields that are not part of the saved data and have no
+  game writer: `Furniture.AuraValues` (`IncreaseBookshelfSkill`),
+  `Furniture.Comfort` (`NoMaintenance`), `Furniture.Water` and `Wattage`
+  (`NoWaterElectricity`), `Furniture.Noisiness` (`NoiseReduction`),
+  `Furniture.CanSteal` (`DisableFurnitureStealing`),
+  `Upgradable.FireStarter` (`DisableFires`) and `ProductPrinter.PrintSpeed`
+  (`IncreasePrintSpeed`). `Furniture.SerializeMe` and
+  `ProductPrinter.SerializeMe` do not write them, so they stay changed for the
+  loaded objects and come from the object definition after a load. The
+  original values are per furniture type or item and are not captured.
+- Saved state with no recorded original: `Employee` salary fields
+  (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
+  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  ticket timestamps, work items advanced or started by
+  the `Auto*` toggles, deals added by `MoreHostingDeals`, closed or removed
+  distribution platforms (`DigitalDistributionMonopol`), despawned burglars and
+  inspectors, `PassedFireInspection`, and money refunded by the cost-refund
+  toggles.
+- Values the game writes itself: `Furniture.ActorNoise`, `EnvironmentNoise`
+  and `FinalNoise`, `Actor.Noisiness`, `Actor.Effectiveness`, `Employee.Stress`
+  and needs, `Employee.JobSatisfaction`, `Room.Temperature`, `GermCount` and
+  `Smell`, `GameSettings.ServerCost`, `StaffSalaryDue`, the utility bills,
+  `Heat` and `ForcePause`. The assembly has a writer for each; how soon it
+  replaces the last trainer value is not determined.
+
+No public game method that recomputes the first two groups was identified, and
+the calling conditions of the game's salary and vacation writers for player
+employees were not traced. The settings window does not mark one-way toggles.
+
 ## Persistence and Settings
 
 Trainer settings persist through the game's `WriteDictionary`/deserialize
