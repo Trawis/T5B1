@@ -10,6 +10,12 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 - Fixed Auto Accept Hosting Deals accepting deals when no server group could
   take them; deals now stay pending until a real server group exists.
+- Fixed Extend Deadline setting a wrong date instead of moving the contract
+  deadline one year later.
+- Fixed the trainer not receiving game time events for a load when its buttons
+  could not be added to the game interface.
+- Fixed trainer settings carrying over from a previously loaded save when the
+  next save does not contain them.
 
 ## [5.4.0] - 2026-10-19
 

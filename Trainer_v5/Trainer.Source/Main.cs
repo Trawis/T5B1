@@ -67,16 +67,23 @@ namespace Trainer_v5
 
 		public override void Deserialize(WriteDictionary data, GameReader.LoadMode mode)
 		{
+			// A full load replaces the whole game, so a key the save lacks takes its declared default; building and
+			// company loads are partial and keep the values already in use.
+			var isFullLoad = mode == GameReader.LoadMode.Full;
+			var toggleDefaults = SettingKeys.CreateToggleDefaults();
 			var settings = Helpers.Settings.Keys.ToList();
 			foreach (var setting in settings)
 			{
-				Helpers.SetProperty(Helpers.Settings, setting, data.Get(setting, Helpers.GetProperty(Helpers.Settings, setting)));
+				var fallback = isFullLoad ? toggleDefaults[setting] : Helpers.GetProperty(Helpers.Settings, setting);
+				Helpers.SetProperty(Helpers.Settings, setting, data.Get(setting, fallback));
 			}
 
+			var storeDefaults = SettingKeys.CreateStoreDefaults();
 			var stores = Helpers.StoresSettings.Keys.ToList();
 			foreach (var store in stores)
 			{
-				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, Helpers.GetProperty(Helpers.StoresSettings, store)));
+				var fallback = isFullLoad ? storeDefaults[store] : Helpers.GetProperty(Helpers.StoresSettings, store);
+				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, fallback));
 			}
 		}
 	}
