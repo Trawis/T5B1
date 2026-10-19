@@ -79,8 +79,8 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), CompanyFeatures.AIBankrupt));
 			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), CompanyFeatures.MonthDays));
 			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
-			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max market recognition"), CompanyFeatures.MaxMarketRecognition));
-			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max Skill of employees"), EmployeeFeatures.EmployeesToMax));
+			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max Market Recognition"), CompanyFeatures.MaxMarketRecognition));
+			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max skill of employees"), EmployeeFeatures.EmployeesToMax));
 			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
 			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
 			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
