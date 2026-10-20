@@ -49,6 +49,13 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   exists, and the nightly prerelease is published as a draft with its asset
   attached.
 - Tests are safer under parallel runs and no longer depend on exact source text.
+- Removed the Test Button from the Trainer Settings window.
+- Moved Enable Experimental Features from the Trainer Settings window to the
+  trainer's section in the game's mod Options. It is off by default and applies
+  to every save; no experimental features are available yet, and an old saved
+  Experimental setting no longer enables anything.
+- Retired the Reduce Expansion Cost toggle: it changed a value the game never
+  reads, so it had no effect on plot prices. Saves that had it on still load.
 
 ## [5.4.0] - 2026-10-19
 
