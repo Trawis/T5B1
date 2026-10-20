@@ -33,11 +33,25 @@ namespace Trainer_v5
 
 		public static void CreateUIButtons()
 		{
+			// Both buttons are tracked in the statics as soon as they exist, so a retry after a failure (or a second
+			// scene load) removes what is left before creating a new pair instead of stacking a second one.
+			DestroyUIButtons();
+
 			TrainerButton = UIFactory.Button(Helpers.TrainerVersion, () => SettingsWindow.Toggle(), "TrainerButton");
 			SkillChangeButton = UIFactory.Button("Skill Change", () => EmployeeSkillChangeWindow.Show(), "EmployeeSkillButton");
 
-			TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32));
-			SkillChangeButton.gameObject.AddToElement("ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32));
+			// A button whose parent element is missing is dropped rather than left loose in the scene.
+			if (!TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32)))
+			{
+				DestroyButton(TrainerButton);
+				TrainerButton = null;
+			}
+
+			if (!SkillChangeButton.gameObject.AddToElement("ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32)))
+			{
+				DestroyButton(SkillChangeButton);
+				SkillChangeButton = null;
+			}
 		}
 
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)
@@ -85,6 +99,20 @@ namespace Trainer_v5
 				var fallback = isFullLoad ? storeDefaults[store] : Helpers.GetProperty(Helpers.StoresSettings, store);
 				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, fallback));
 			}
+		}
+
+		private static void DestroyUIButtons()
+		{
+			DestroyButton(TrainerButton);
+			TrainerButton = null;
+			DestroyButton(SkillChangeButton);
+			SkillChangeButton = null;
+		}
+
+		private static void DestroyButton(Button button)
+		{
+			if (button != null)
+				Object.Destroy(button.gameObject);
 		}
 	}
 }
