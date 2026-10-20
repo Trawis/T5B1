@@ -182,7 +182,7 @@ namespace Trainer_v5
 		{
 			var tab = SettingsTab.Actions + index;
 			var button = UIFactory.Button(label, () => SetActiveTab(tab), name);
-			WindowManager.AddElementToWindow(button.gameObject, Window, UIHelper.GetGridSlot(index, SettingsWindowState.Columns, 0), new Rect(0, 0, 0, 0));
+			UIHelper.PlaceInWindow(button.gameObject, Window, UIHelper.GetGridSlot(index, SettingsWindowState.Columns, 0));
 			return button;
 		}
 
@@ -250,36 +250,32 @@ namespace Trainer_v5
 		// Efficiency controls come first: the order PlaceSettingsPage lays them out in.
 		private static void BuildEfficiency(List<GameObject> settingsCells)
 		{
+			_efficiencyComboBox = AddEfficiencyRow(settingsCells, "EfficiencyLabel".LocDef("Efficiency"), SettingKeys.EfficiencyStore);
+			_leadEfficiencyComboBox = AddEfficiencyRow(settingsCells, "LeadEfficiencyLabel".LocDef("Lead Efficiency"), SettingKeys.LeadEfficiencyStore);
+		}
+
+		private static GUICombobox AddEfficiencyRow(List<GameObject> settingsCells, string label, StoreKey key)
+		{
 			var storesSettings = Helpers.StoresSettings;
 			var efficiencySelectItems = Helpers.EfficiencySelectItems;
 
-			settingsCells.Add(UIHelper.CreateLabel("EfficiencyLabel".LocDef("Efficiency")));
-			_efficiencyComboBox = UIHelper.CreateComboBox(
+			settingsCells.Add(UIHelper.CreateLabel(label));
+			var comboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.EfficiencyStore, 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, key, 2)
 			);
-			var efficiency = _efficiencyComboBox;
-			efficiency.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.EfficiencyStore, efficiencySelectItems.GetAt(efficiency.Selected).Value));
-			settingsCells.Add(efficiency.gameObject);
-
-			settingsCells.Add(UIHelper.CreateLabel("LeadEfficiencyLabel".LocDef("Lead Efficiency")));
-			_leadEfficiencyComboBox = UIHelper.CreateComboBox(
-				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.LeadEfficiencyStore, 2)
-			);
-			var leadEfficiency = _leadEfficiencyComboBox;
-			leadEfficiency.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.LeadEfficiencyStore, efficiencySelectItems.GetAt(leadEfficiency.Selected).Value));
-			settingsCells.Add(leadEfficiency.gameObject);
+			comboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(key, efficiencySelectItems.GetAt(comboBox.Selected).Value));
+			settingsCells.Add(comboBox.gameObject);
+			return comboBox;
 		}
 
 		// The drop-downs open from a fixed place because this page never scrolls.
 		private static void PlaceSettingsPage(GameObject container, List<GameObject> settingsCells)
 		{
-			var zeroAnchors = new Rect(0, 0, 0, 0);
 			for (int i = 0; i < settingsCells.Count; i++)
 			{
 				int row = i < 4 ? i : i + 1;
-				WindowManager.AddElementToElement(settingsCells[i], container, UIHelper.GetGridSlot(row, 1, 0), zeroAnchors);
+				UIHelper.PlaceInElement(settingsCells[i], container, UIHelper.GetGridSlot(row, 1, 0));
 			}
 		}
 
@@ -307,7 +303,6 @@ namespace Trainer_v5
 
 		private static void PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order)
 		{
-			var zeroAnchors = new Rect(0, 0, 0, 0);
 			int headerWidth = UIHelper.GetGridColumnX(SettingsWindowState.Columns - 1) + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
 			int row = 0;
 			foreach (var domain in order)
@@ -320,12 +315,12 @@ namespace Trainer_v5
 
 				var header = UIFactory.Label(DomainLabel(domain), new TextStyle { Alignment = TextAnchor.MiddleCenter, FontStyle = FontStyle.Bold });
 				header.name = domain + "_Header";
-				WindowManager.AddElementToElement(header.gameObject, container, new Rect(Constants.FIRST_COLUMN, row * Constants.ELEMENT_HEIGHT, headerWidth, Constants.ELEMENT_HEIGHT), zeroAnchors);
+				UIHelper.PlaceInElement(header.gameObject, container, new Rect(Constants.FIRST_COLUMN, row * Constants.ELEMENT_HEIGHT, headerWidth, Constants.ELEMENT_HEIGHT));
 				row++;
 
 				for (int i = 0; i < cells.Count; i++)
 				{
-					WindowManager.AddElementToElement(cells[i], container, UIHelper.GetGridSlot(i, SettingsWindowState.Columns, row), zeroAnchors);
+					UIHelper.PlaceInElement(cells[i], container, UIHelper.GetGridSlot(i, SettingsWindowState.Columns, row));
 				}
 
 				row += SettingsWindowState.SectionRows(cells.Count, SettingsWindowState.Columns);
@@ -354,27 +349,19 @@ namespace Trainer_v5
 		// A page taller than the window scrolls on its own; one that fits gets no scroll area.
 		private static TabPage CreateTabPage(string name, int rows, int visibleRows)
 		{
-			var zeroAnchors = new Rect(0, 0, 0, 0);
 			var viewport = WindowManager.SpawnPanel();
 			viewport.gameObject.name = name;
-			WindowManager.AddElementToWindow(viewport.gameObject, Window, new Rect(0, Constants.ELEMENT_HEIGHT, SettingsWindowState.WindowWidth, visibleRows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			UIHelper.PlaceInWindow(viewport.gameObject, Window, new Rect(0, Constants.ELEMENT_HEIGHT, SettingsWindowState.WindowWidth, visibleRows * Constants.ELEMENT_HEIGHT));
 			if (rows <= visibleRows)
 			{
 				return new TabPage(viewport.gameObject, viewport.gameObject);
 			}
 
-			viewport.gameObject.AddComponent<RectMask2D>();
-			var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
-
 			var content = WindowManager.SpawnPanel();
 			content.gameObject.name = name + "Content";
-			WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, SettingsWindowState.WindowWidth, rows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			UIHelper.PlaceInElement(content.gameObject, viewport.gameObject, new Rect(0, 0, SettingsWindowState.WindowWidth, rows * Constants.ELEMENT_HEIGHT));
 
-			scrollRect.content = content;
-			scrollRect.horizontal = false;
-			scrollRect.vertical = true;
-			scrollRect.movementType = ScrollRect.MovementType.Clamped;
-			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
+			UIHelper.MakeVerticallyScrollable(viewport.gameObject, content, Constants.ELEMENT_HEIGHT);
 
 			return new TabPage(viewport.gameObject, content.gameObject);
 		}
