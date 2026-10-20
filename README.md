@@ -63,12 +63,15 @@ adding compatibility configurations or conditional code paths.
 dotnet test "Trainer v5 - Beta 1.sln"
 ```
 
-`Trainer_v5.Tests` (xUnit, `net462`) covers the logic that runs without the
-game: setting keys, defaults and save round-trips, input validation, toggle
-transitions, and the minute-event cadence. CI runs it after the build.
+`Trainer_v5.Tests` (xUnit, `net462`) references the vendored game assemblies
+and covers the logic that runs outside Unity: setting keys, defaults and save
+round-trips, input validation, toggle transitions, and the minute-event
+cadence. It also runs the game's own source injector and C# compiler over the
+trainer source (see [Workshop Source Build](docs/project/architecture.md#workshop-source-build)).
+CI runs it after the build.
 
-Anything that touches live game objects is not covered; validate it by loading
-the mod in the game.
+Most live game objects cannot be created in the test host, so anything that
+touches them is not covered; validate it by loading the mod in the game.
 
 ## Run
 
@@ -106,8 +109,8 @@ full feature list.
   build and require refreshing the assemblies under
   `Trainer_v5/Trainer.Libraries/` (see
   [`docs/project/architecture.md`](docs/project/architecture.md)).
-- Automated tests cover only game-independent logic; behavior that touches
-  live game objects is validated by loading the mod in the game.
+- Automated tests do not create live game objects; behavior that touches them
+  is validated by loading the mod in the game.
 
 ## Help and Contributing
 
@@ -143,13 +146,16 @@ conventions.
 |---------|----------|--------|
 | Push or PR to `develop` | CI | Build check |
 | Daily schedule or manual dispatch | Nightly | Build + versioned RC artifact + prerelease |
+| PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
 | Push to `main` | Release | Build + versioned zip artifact + versioned GitHub Release |
 
 The release workflow reads the semantic version from `Helpers.Version`. A release
 creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the
 downloadable archive name. Increase `Helpers.Version` before merging another
-release to `main`. The nightly workflow appends the workflow run number as an RC
-suffix, producing versions such as `5.2.6-rc123`; nightly prereleases do not
+release to `main`; the Release Version Guard check fails a pull request to `main`
+whose `Helpers.Version` tag already exists, and a push to `main` without a bump
+is still expected to fail the Release workflow. The nightly workflow appends the workflow run number as an RC
+suffix, producing versions such as `5.4.0-rc123` (tag `v5.4.0-rc123`); nightly prereleases do not
 replace the latest stable release.
 
 ## Maintainers

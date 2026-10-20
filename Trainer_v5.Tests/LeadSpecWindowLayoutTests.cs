@@ -7,11 +7,21 @@ namespace Trainer_v5.Tests
 	public class LeadSpecWindowLayoutTests
 	{
 		[Fact]
-		public void TheWindowHeightIncludesTheTitleBarRow()
+		public void TheWindowHeightComesFromTheSharedColumnHeightCalculation()
 		{
 			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeLeadSpecChangeWindow.cs"));
 
-			Assert.Contains("Mathf.Max(col1Height, col2Height) + padding + Constants.ELEMENT_HEIGHT", source);
+			Assert.Contains("UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding)", source);
+		}
+
+		[Fact]
+		public void TheNoEmployeeMessageOnlyMentionsControlsTheWindowHas()
+		{
+			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeLeadSpecChangeWindow.cs"));
+
+			Assert.DoesNotContain("press Refresh", source);
+			Assert.DoesNotContain("UIFactory.Button(\"Refresh\"", source);
+			Assert.Contains("close and reopen this window", source);
 		}
 	}
 }

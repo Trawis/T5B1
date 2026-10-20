@@ -6,7 +6,7 @@ namespace Trainer_v5
 		public const int ELEMENT_HEIGHT = 32;
 
 		public const int X_SETTINGS_WINDOW = 982;
-		public const int X_EMPLOYEESKILLCHANGE_WINDOW = 300;
+		public const int X_EMPLOYEESKILLCHANGE_WINDOW = SECOND_COLUMN + ELEMENT_WIDTH + FIRST_COLUMN;
 
 		public const int FIRST_COLUMN = 1;
 		public const int SECOND_COLUMN = 161;

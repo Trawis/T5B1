@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
+	// Pins the invariant culture on purpose; the culture-dependent parsing it hides is tracked in #337 and this fixture changes with it.
 	public class InputValidationTests : System.IDisposable
 	{
 		private readonly CultureInfo _originalCulture = Thread.CurrentThread.CurrentCulture;

@@ -4,6 +4,7 @@ using Xunit;
 namespace Trainer_v5.Tests
 {
 	// Retired toggles keep their save keys but must stay unavailable and inert (#270).
+	[Collection(SettingsCollection.Name)]
 	public class RetiredSettingsTests
 	{
 		private static readonly string[] Retired = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity" };

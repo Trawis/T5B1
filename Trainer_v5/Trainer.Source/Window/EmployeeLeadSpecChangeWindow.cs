@@ -99,8 +99,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
 
 			int totalWidth = padding * 2 + colWidth * 2 + colGap;
-			// One extra row for the title bar, as the Skill Change window does; without it the footer buttons fall outside the window.
-			int totalHeight = Mathf.Max(col1Height, col2Height) + padding + Constants.ELEMENT_HEIGHT;
+			int totalHeight = UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding);
 			window.SetMinSize(totalWidth, totalHeight);
 
 			_window = window;
@@ -126,7 +125,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		{
 			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("Select an employee first (open one employee, then press Refresh).");
+				Notification.ShowError("Select an employee first (select one employee, then close and reopen this window).");
 				return;
 			}
 			var target = _target;

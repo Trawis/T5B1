@@ -10,26 +10,16 @@ namespace Trainer_v5
 
 		internal static void SellProductStock()
 		{
-			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
-				false, DialogWindow.DialogType.Information);
-
 			SoftwareProduct[] Products = Settings.MyCompany.Products
-												 .Where(product => product.Userbase == 0)
+												 .Where(product => product.Userbase == 0 && product.PhysicalCopies > 0)
 												 .ToArray();
 
-			if (Products.Length == 0)
-			{
-				return;
-			}
-
+			double total = 0;
 			for (int i = 0; i < Products.Length; i++)
 			{
 				SoftwareProduct product = Products[i];
 				uint copies = product.PhysicalCopies;
-				if (copies == 0)
-				{
-					continue;
-				}
+				double proceeds = StockSale.Proceeds(copies, product.Price);
 
 				// ChangeAllPhysicalStock also removes the stock of forced add-ons; its argument is an int.
 				for (uint left = copies; left > 0;)
@@ -39,8 +29,12 @@ namespace Trainer_v5
 					left -= (uint)chunk;
 				}
 
-				Settings.MyCompany.MakeTransaction(StockSale.Proceeds(copies, product.Price), Company.TransactionCategory.Sales);
+				Settings.MyCompany.MakeTransaction(proceeds, Company.TransactionCategory.Sales);
+				total += proceeds;
 			}
+
+			// Reported after selling, so the player is never told about a sale that did not happen.
+			WindowManager.SpawnDialog(StockSale.Summary(Products.Length, total), false, DialogWindow.DialogType.Information);
 		}
 
 		internal static void SetProductPriceAction(float price)

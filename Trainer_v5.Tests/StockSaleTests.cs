@@ -30,5 +30,23 @@ namespace Trainer_v5.Tests
 		{
 			Assert.Equal(0.0, StockSale.Proceeds(0, 50f));
 		}
+
+		[Fact]
+		public void NothingToSellIsReportedAsNothingSold()
+		{
+			var text = StockSale.Summary(0, 0);
+
+			Assert.Contains("Nothing was sold", text);
+		}
+
+		[Fact]
+		public void ASaleStatesTheProductCountAndTheTotal()
+		{
+			var text = StockSale.Summary(2, 1234567.0);
+
+			Assert.Contains("2 product(s)", text);
+			Assert.Contains("1,234,567", text);
+			Assert.DoesNotContain("Nothing was sold", text);
+		}
 	}
 }
