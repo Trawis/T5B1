@@ -287,19 +287,31 @@ namespace Trainer_v5
 			Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 		}
 
+		// Walks backwards so removing an entry never shifts one still to be visited, and copies nothing (Thoughts.Values is the live list).
+		internal static void RemoveUnwantedThoughts(DictionaryList<string, Employee.ThoughtEffect> thoughts)
+		{
+			for (int i = thoughts.Count - 1; i >= 0; i--)
+			{
+				Employee.ThoughtEffect thought = thoughts[i];
+				if (IsUnwantedThought(thought.Mood))
+				{
+					thoughts.Remove(thought.Thought);
+				}
+			}
+		}
+
+		internal static bool IsUnwantedThought(MoodEffect mood)
+		{
+			return mood.Negative || mood.Sue || !string.IsNullOrEmpty(mood.QuitReason);
+		}
+
 		private static void ApplyFullSatisfactionToActor(Actor actor)
 		{
 			Employee employee = actor.employee;
 
 			employee.JobSatisfaction = 2f;
 			employee.ActiveComplaint = false;
-			foreach (var thought in employee.Thoughts.Values.ToList())
-			{
-				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-				{
-					employee.Thoughts.Remove(thought.Thought);
-				}
-			}
+			RemoveUnwantedThoughts(employee.Thoughts);
 
 			employee.SetMood("LoveWork", actor, 1f);
 		}
