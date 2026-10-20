@@ -35,6 +35,7 @@ namespace Trainer_v5
 		public static readonly ToggleKey DisableBurglars = Toggle("DisableBurglars");
 		public static readonly ToggleKey DisableFires = Toggle("DisableFires");
 		public static readonly ToggleKey NoServerCost = Toggle("NoServerCost");
+		// Retired (#354): same as ReduceBoxPrice; the only write was GameSettings.ExpansionCost, which the game never reads.
 		public static readonly ToggleKey ReduceExpansionCost = Toggle("ReduceExpansionCost");
 		public static readonly ToggleKey NoEducationCost = Toggle("NoEducationCost");
 		public static readonly ToggleKey IncreaseWalkSpeed = Toggle("IncreaseWalkSpeed");

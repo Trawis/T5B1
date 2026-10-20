@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings", "Experimental" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
-		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity" };
+		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost" };
 
 		[Fact]
 		public void EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow()
