@@ -142,8 +142,8 @@ A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
 off and does not undo earlier writes. `docs/project/features.md` lists the
 player-visible result per toggle. Restoring toggles are `NoEducationCost`,
 `FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
-`IncreaseCourierCapacity`, `IncreasePrintSpeed`, `ReduceISPCost` and
-`ReduceExpansionCost`. `FreePrint` restores the constructor value of
+`IncreaseCourierCapacity`, `IncreasePrintSpeed` and `ReduceISPCost`.
+`FreePrint` restores the constructor value of
 `ProductPrinter.PrintPrice` (`0.1`, the only game write). `IncreasePrintSpeed`
 restores a per-printer baseline of `ProductPrinter.PrintSpeed`, which has no
 game writer and no constructor value, so its native value is only readable
@@ -195,9 +195,12 @@ writes the same string keys. Code references settings through `SettingKeys`
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
 A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
-`ReduceBoxPrice`, `AutoMaxMarketShare` and `MoreCreativity` are retired: still declared so old
-saves deserialize, but with no UI and no scheduled behavior
-(`RetiredSettingsTests`).
+`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity` and `ReduceExpansionCost` are retired: still
+declared so old saves deserialize, but with no UI and no scheduled behavior
+(`RetiredSettingsTests`). `ReduceExpansionCost` only wrote `GameSettings.ExpansionCost`, which nothing in the
+game reads; the real plot price is `PlotArea.Price` (`PricePerSqm * Area + AddonCost`), and `PricePerSqm` is saved
+with the plot and also feeds selling refunds and company worth, so a baseline-based reduction could not be restored
+safely after a reload (#354).
 
 ## Maintaining Persistent Features
 

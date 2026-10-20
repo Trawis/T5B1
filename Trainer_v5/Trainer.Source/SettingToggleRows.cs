@@ -59,7 +59,6 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(4, "MoreHostingDeals", "More Hosting Deals", SettingKeys.MoreHostingDeals));
 			rows.Add(new SettingToggleRow(4, "ReduceInternetCost", "Reduce Internet Cost", SettingKeys.ReduceISPCost));
 			rows.Add(new SettingToggleRow(4, "NoServerCost", "No Server Cost", SettingKeys.NoServerCost));
-			rows.Add(new SettingToggleRow(4, "ReduceExpansionCost", "Reduce Expansion Cost", SettingKeys.ReduceExpansionCost));
 			rows.Add(new SettingToggleRow(4, "DisableForcePause", "Disable Force Pause", SettingKeys.DisableForcePause));
 			rows.Add(new SettingToggleRow(4, "DisableForceFreeze", "Disable Force Freeze", SettingKeys.DisableForceFreeze));
 			rows.Add(new SettingToggleRow(4, "AutoAcceptHostingDeals", "Auto Accept Hosting Deals", SettingKeys.AutoAcceptHostingDeals));

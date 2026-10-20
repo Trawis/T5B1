@@ -7,7 +7,7 @@ namespace Trainer_v5.Tests
 	[Collection(SettingsCollection.Name)]
 	public class RetiredSettingsTests
 	{
-		private static readonly string[] Retired = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity" };
+		private static readonly string[] Retired = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost" };
 
 		[Fact]
 		public void RetiredKeysAreStillDeclaredWithTheirOriginalNamesAndDefaultOff()
@@ -18,7 +18,10 @@ namespace Trainer_v5.Tests
 			Assert.False(SettingKeys.AutoMaxMarketShare.DefaultValue);
 			Assert.Equal("MoreCreativity", SettingKeys.MoreCreativity.Key);
 			Assert.False(SettingKeys.MoreCreativity.DefaultValue);
+			Assert.Equal("ReduceExpansionCost", SettingKeys.ReduceExpansionCost.Key);
+			Assert.False(SettingKeys.ReduceExpansionCost.DefaultValue);
 			Assert.True(Helpers.Settings.ContainsKey("MoreCreativity"));
+			Assert.True(Helpers.Settings.ContainsKey("ReduceExpansionCost"));
 			Assert.True(Helpers.Settings.ContainsKey("ReduceBoxPrice"));
 			Assert.True(Helpers.Settings.ContainsKey("AutoMaxMarketShare"));
 		}
