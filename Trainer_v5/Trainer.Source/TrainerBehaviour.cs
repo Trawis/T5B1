@@ -73,8 +73,8 @@ namespace Trainer_v5
 						DetailWindowTrainer.Install();
 						break;
 					case SceneRoute.Customization:
-						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
-						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000 };
+						ActorCustomization.StartYears = Constants.CUSTOMIZATION_START_YEARS;
+						ActorCustomization.StartLoans = Constants.CUSTOMIZATION_START_LOANS;
 						break;
 					default:
 						LeaveGame();
