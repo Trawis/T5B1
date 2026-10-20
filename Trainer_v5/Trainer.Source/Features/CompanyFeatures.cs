@@ -15,20 +15,20 @@ namespace Trainer_v5
 			double amount = Settings.OffshoreAccount;
 			if (amount <= 0.0)
 			{
-				WindowManager.SpawnDialog("NoOffshoreFunds".LocDef("Trainer: No offshore funds to transfer!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoOffshoreFunds".LocDef("Trainer: No offshore funds to transfer!"));
 				return;
 			}
 
 			// The game has no transfer method; it adjusts this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
-			HUD.Instance.AddPopupMessage("OffshoreFundsTransferred".LocDef("Trainer: Offshore funds transferred!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("OffshoreFundsTransferred".LocDef("Trainer: Offshore funds transferred!"));
 		}
 
 		internal static void ClearLoans()
 		{
 			Settings.Loans.Clear();
-			HUD.Instance.AddPopupMessage("AllLoansCleared".LocDef("Trainer: All loans are cleared!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("AllLoansCleared".LocDef("Trainer: All loans are cleared!"));
 		}
 
 		internal static void AIBankrupt()
@@ -47,7 +47,7 @@ namespace Trainer_v5
 				return;
 
 			Example.TakeAllLand();
-			HUD.Instance.AddPopupMessage("AllPlotsUnlocked".LocDef("Trainer: All plots has been unlocked!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("AllPlotsUnlocked".LocDef("Trainer: All plots has been unlocked!"));
 		}
 
 		internal static void UnlockFurniture()
@@ -58,7 +58,7 @@ namespace Trainer_v5
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
 			HUD.Instance.UpdateFurnitureButtons();
-			HUD.Instance.AddPopupMessage("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"));
 		}
 
 		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
@@ -70,7 +70,7 @@ namespace Trainer_v5
 		internal static void MonthDaysAction(int i)
 		{
 			GameSettings.DaysPerMonth = i;
-			WindowManager.SpawnDialog("DaysPerMonthRestart".LocDef("You have changed days per month. Please restart the game."), false, DialogWindow.DialogType.Warning);
+			Notification.ShowWarning("DaysPerMonthRestart".LocDef("You have changed days per month. Please restart the game."));
 		}
 
 		internal static void MonthDays()
@@ -85,13 +85,13 @@ namespace Trainer_v5
 
 			if (simulatedCompany == null)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
 				return;
 			}
 
 			if (!simulatedCompany.CanBuyOut(Settings.MyCompany))
 			{
-				WindowManager.SpawnDialog("CompanyCannotBeBought".LocDef("Trainer: Company can't be bought!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowError("CompanyCannotBeBought".LocDef("Trainer: Company can't be bought!"));
 				return;
 			}
 
@@ -105,7 +105,7 @@ namespace Trainer_v5
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			WindowManager.SpawnDialog(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), input), false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), input));
 		}
 
 		internal static void TakeoverCompany()
@@ -120,19 +120,19 @@ namespace Trainer_v5
 
 			if (Company == null)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
 				return;
 			}
 
 			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
 			if (!IsBankruptTarget(Company))
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyAlreadyYours".LocDef("Trainer: {0} already belongs to you."), Company.Name), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo(string.Format("CompanyAlreadyYours".LocDef("Trainer: {0} already belongs to you."), Company.Name));
 				return;
 			}
 
 			Company.MakeSubsidiary(Settings.MyCompany, SDateTime.Now());
-			HUD.Instance.AddPopupMessage(string.Format("CompanySubsidiary".LocDef("Trainer: Company {0} is now your subsidiary!"), Company.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("CompanySubsidiary".LocDef("Trainer: Company {0} is now your subsidiary!"), Company.Name));
 		}
 
 		internal static void SubDCompany()
@@ -148,20 +148,20 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input));
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
 			if (company.Bankrupt)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), company.Name), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo(string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), company.Name));
 				return;
 			}
 
@@ -177,7 +177,7 @@ namespace Trainer_v5
 		internal static void IncreaseMoneyAction(int amount)
 		{
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
-			HUD.Instance.AddPopupMessage("MoneyAddedDeals".LocDef("Trainer: Money has been added in category Deals!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("MoneyAddedDeals".LocDef("Trainer: Money has been added in category Deals!"));
 		}
 
 		internal static void IncreaseMoney()
@@ -193,13 +193,13 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input));
 				return;
 			}
 
@@ -208,7 +208,7 @@ namespace Trainer_v5
 				amount =>
 				{
 					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
-					HUD.Instance.AddPopupMessage(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+					Notification.Popup(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name));
 				}, 0, int.MaxValue);
 		}
 
@@ -229,7 +229,7 @@ namespace Trainer_v5
 					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
 					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
 					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-					WindowManager.SpawnDialog("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"), false, DialogWindow.DialogType.Information);
+					Notification.ShowInfo("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"));
 				}
 			};
 
@@ -252,7 +252,7 @@ namespace Trainer_v5
 				}
 			}
 
-			WindowManager.SpawnDialog("MaxMarketRecognitionApplied".LocDef("Trainer: Max market recognition is applied to all software types and categories."), false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo("MaxMarketRecognitionApplied".LocDef("Trainer: Max market recognition is applied to all software types and categories."));
 		}
 
 		internal static void UnlockAndClaimAllRewards()
@@ -262,7 +262,7 @@ namespace Trainer_v5
 			HUD.Instance.RefreshBuildButtons();
 			HUD.Instance.UpdateFurnitureButtons();
 
-			WindowManager.SpawnDialog("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."), false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
 		}
 
 		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.

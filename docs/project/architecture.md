@@ -365,6 +365,16 @@ window (`DetailButtonLayout`).
   dismissal) and removes by changing `DemandResults`, `DemandsMet` and
   `DemandsRequested` together (`DemandBits`), because the native detail window
   shows demands only while `DemandsMet` is set.
+- Messages (#451) go through `Notification`, the only code that calls the
+  game's popup and dialog APIs. `Notification.Popup` shows a HUD popup (Cogs
+  icon) whose text starts with `Trainer: ` exactly once: text that already
+  starts with it, as the English popup values do, is left alone, so a translation
+  may include it or not. `ShowInfo`, `ShowWarning` and `ShowError` open
+  non-modal dialogs without a prefix; a refusal (unknown or ambiguous name,
+  invalid input) is an error, a completed action or a nothing-to-do notice is
+  information. Input dialogs (`SpawnInputDialog`, `InputHelper`) are separate:
+  their title and prompt are never prefixed. Logging stays in `Logger`.
+  `NotificationTests` enforces this.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and
   labels are English-only.
