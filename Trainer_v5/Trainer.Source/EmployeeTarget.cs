@@ -77,7 +77,7 @@ namespace Trainer_v5
 				return target.Employee.Name;
 			}
 
-			return source == TargetSource.Ambiguous ? "one employee (several are selected)" : "Nobody";
+			return source == TargetSource.Ambiguous ? "EmployeeSeveralSelected".LocDef("one employee (several are selected)") : "EmployeeNobody".LocDef("Nobody");
 		}
 
 		public static bool IsLive(Actor actor)

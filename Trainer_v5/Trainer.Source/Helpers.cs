@@ -116,7 +116,7 @@ namespace Trainer_v5
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
 		{
-			string message = $"Join us on our discord server\n{DiscordUrl}";
+			string message = string.Format("DiscordInvite".LocDef("Join us on our discord server\n{0}"), DiscordUrl);
 			if (displayAsPopup)
 			{
 				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);

@@ -36,9 +36,9 @@ namespace Trainer_v5.Tests
 		{
 			var source = SourceCode.Read("DetailWindowTrainer.cs");
 
-			foreach (var label in new[] { "\"Trait\"", "\"Demand\"", "\"Inspiration\"", "\"LeadSpec\"", "\"Founder\"" })
+			foreach (var label in new[] { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder" })
 			{
-				Assert.Contains("UIFactory.Button(" + label, source);
+				Assert.Contains("UIFactory.Button(\"Detail" + label + "Button\".LocDef(\"" + label + "\")", source);
 			}
 			Assert.DoesNotContain("Creativity", source);
 			Assert.DoesNotContain("new Employee(", source);

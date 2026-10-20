@@ -273,11 +273,16 @@ Architecture, Toggle Transitions and Persistence and Settings.
 4. Localize the text. The label is looked up with the localization key and the
    in-code default text (`"Key".LocDef("Default text")`). Add the key and the
    same English text to `Trainer.Localization/English/Trainer.tyd`; other
-   language files are not required to contain it. Enforced by
+   language files are not required to contain it. A message that includes a
+   runtime value keeps a numbered placeholder in the text and is filled in with
+   `string.Format("Key".LocDef("Name: {0}"), value)`; a literal `\n` in the
+   text is a line break. Enforced by
    `SettingToggleRowsTests.EveryRowDefaultTextMatchesTheEnglishFile` and
    `LocalizationTests` (`EveryKeyTheCodeLooksUpExistsInEnglish`,
    `CodeFallbackTextMatchesTheEnglishFile`, `EveryLanguageKeyAlsoExistsInEnglish`,
-   `NoLanguageDefinesAKeyTwice`, `EveryLocalizationFileEndsWithANewline`).
+   `NoLanguageDefinesAKeyTwice`, `EveryLocalizationFileEndsWithANewline`,
+   `ActiveMessagesAndLabelsGoThroughLocDef`,
+   `MessagesWithPlaceholdersAreFormattedByTheCode`).
 5. Choose the cadence and add `FeatureRegistry` rows: a Frame, Minute, Hour, Day
    or Month row for the toggle, whose action lives on a `Features/*Features`
    class and does not catch errors itself. The row id is the one error boundary

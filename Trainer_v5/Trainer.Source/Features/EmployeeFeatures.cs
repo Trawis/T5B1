@@ -36,7 +36,7 @@ namespace Trainer_v5
 			}
 			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
 			{
-				WindowManager.SpawnDialog("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3", false, DialogWindow.DialogType.Error);
+				WindowManager.SpawnDialog("InvalidStarsInput".LocDef("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3"), false, DialogWindow.DialogType.Error);
 				return;
 			}
 			else
@@ -58,7 +58,7 @@ namespace Trainer_v5
 
 		internal static void SetSkillPerEmployee()
 		{
-			WindowManager.SpawnInputDialog("How many specialization stars do you want?\nMin = -3, Max = 3", "Stars amount", "3", SetSkillPerEmployeeAction);
+			WindowManager.SpawnInputDialog("StarsPrompt".LocDef("How many specialization stars do you want?\nMin = -3, Max = 3"), "StarsTitle".LocDef("Stars amount"), "3", SetSkillPerEmployeeAction);
 		}
 
 		internal static void HREmployees()
