@@ -33,7 +33,6 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "LockAge", "Lock Age of Employees", SettingKeys.LockAge));
 			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "NoVacation", "No Vacation", SettingKeys.NoVacation));
 			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "NoSickness", "No Sickness", SettingKeys.NoSickness));
-			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "NoForgetfulSkillLoss", "No Forgetful Skill Loss (Untested)", SettingKeys.NoForgetfulSkillLoss));
 			rows.Add(new SettingToggleRow(TrainerDomain.Work, "AutoResearchStart", "Auto Research Start", SettingKeys.AutoResearchStart));
 			rows.Add(new SettingToggleRow(TrainerDomain.Product, "DigitalDistributionMonopol", "Digital Distribution Monopol", SettingKeys.DigitalDistributionMonopol));
 			rows.Add(new SettingToggleRow(TrainerDomain.Environment, "DisableFireInspection", "Disable Fire Inspection", SettingKeys.DisableFireInspection));

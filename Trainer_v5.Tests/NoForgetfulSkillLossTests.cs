@@ -1,15 +1,23 @@
-using System.Collections.Generic;
 using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// #457: the toggle only postpones Actor.ForgetfulETA ahead of the game's own check in AI.Despawn; it never touches the
-	// specialization, the trait or the popup itself.
+	// #457: experimental. It only postpones Actor.ForgetfulETA ahead of the game's own check in AI.Despawn and has no
+	// Trainer Settings control; it never touches the specialization, the trait or the popup itself.
 	public class NoForgetfulSkillLossTests
 	{
 		private static string Action()
 		{
-			return SourceCode.Body(SourceCode.Read("Features", "EmployeeFeatures.cs"), "internal static void ApplyNoForgetfulSkillLoss");
+			return SourceCode.Body(SourceCode.Read("Experimental", "NoForgetfulSkillLoss.cs"), "internal static void Apply()");
+		}
+
+		[Fact]
+		public void ItDoesNothingUnlessTheExperimentalOptionIsOn()
+		{
+			var action = Action();
+
+			Assert.Contains("!ExperimentalOptions.Enabled", action);
+			SourceCode.AssertInOrder(action, "ExperimentalOptions.Enabled", "actor.ForgetfulETA = now", "the option gates every write");
 		}
 
 		[Fact]
@@ -26,7 +34,8 @@ namespace Trainer_v5.Tests
 		{
 			var action = Action();
 
-			SourceCode.AssertInOrder(action, "if (TimeOfDay.Instance == null) return;", "SDateTime.Now()", "Now() is the year 0 default without a clock");
+			Assert.Contains("TimeOfDay.Instance == null", action);
+			SourceCode.AssertInOrder(action, "TimeOfDay.Instance == null", "SDateTime.Now()", "Now() is the year 0 default without a clock");
 		}
 
 		[Fact]
@@ -53,29 +62,20 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheToggleHasItsOwnKeyAndNotTheRetiredOne()
+		public void ItHasNoSettingKeyToggleRowOrRegistryEntry()
 		{
-			Assert.Equal("NoForgetfulSkillLoss", SettingKeys.NoForgetfulSkillLoss.Key);
-			Assert.NotEqual(SettingKeys.DisableSkillDecay.Key, SettingKeys.NoForgetfulSkillLoss.Key);
-			Assert.False(SettingKeys.NoForgetfulSkillLoss.DefaultValue);
+			Assert.DoesNotContain("NoForgetfulSkillLoss", SourceCode.Read("SettingKeys.cs"));
+			Assert.DoesNotContain("NoForgetfulSkillLoss", SourceCode.Read("SettingToggleRows.cs"));
+			Assert.DoesNotContain("NoForgetfulSkillLoss", SourceCode.Read("FeatureRegistry.cs"));
 		}
 
 		[Fact]
-		public void TheRegistryRunsItMonthlyAndOnEnablingAndNeverRestores()
+		public void ItRunsMonthlyAndWhenTheGameIsReady()
 		{
-			var triggers = new List<FeatureTrigger>();
-			foreach (var entry in FeatureRegistry.Create())
-			{
-				if (entry.Id == "NoForgetfulSkillLoss")
-				{
-					Assert.Same(SettingKeys.NoForgetfulSkillLoss, entry.Toggle);
-					triggers.Add(entry.Trigger);
-				}
-			}
+			var source = SourceCode.Read("TrainerBehaviour.cs");
 
-			Assert.Equal(2, triggers.Count);
-			Assert.Contains(FeatureTrigger.Month, triggers);
-			Assert.Contains(FeatureTrigger.Enabled, triggers);
+			Assert.Contains("NoForgetfulSkillLoss.Apply", SourceCode.Body(source, "private void OnMonthPassed("));
+			Assert.Contains("NoForgetfulSkillLoss.Apply", SourceCode.Body(source, "private void OnGameReady("));
 		}
 	}
 }

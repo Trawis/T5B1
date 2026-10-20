@@ -23,7 +23,7 @@ namespace Trainer_v5.Tests
 			"DisableForceFreeze", "AutoAcceptHostingDeals",
 			"ForceLights", "ShowRoomCeilings", "UnlimitedSubsidiaries", "NoMissedSupportTickets",
 			"NoInsuranceCost", "NoLoanInterest", "AutoPorting", "FreeMarketing", "NoOffshoreHeat",
-			"NoFounderDividends", "NoForgetfulSkillLoss"
+			"NoFounderDividends"
 		};
 
 		internal static readonly string[] PersistedStoreKeys = { "EfficiencyStore", "LeadEfficiencyStore" };

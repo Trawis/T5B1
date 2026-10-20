@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Trainer_v5.Experimental;
 using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -179,6 +180,7 @@ namespace Trainer_v5
 
 			DetailWindowTrainer.Install();
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
+			Helpers.TryExecute("NoForgetfulSkillLoss", NoForgetfulSkillLoss.Apply);
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -225,6 +227,7 @@ namespace Trainer_v5
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
 			GetDispatcher().Run(FeatureTrigger.Month);
+			Helpers.TryExecute("NoForgetfulSkillLoss", NoForgetfulSkillLoss.Apply);
 		}
 
 		private void Update()

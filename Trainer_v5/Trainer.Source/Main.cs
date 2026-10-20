@@ -68,7 +68,7 @@ namespace Trainer_v5
 			}
 
 			Text note = WindowManager.SpawnLabel();
-			note.text = "ExperimentalNone".LocDef("No experimental features are available yet, so turning this on changes nothing today. The choice applies to every save game.");
+			note.text = "ExperimentalNone".LocDef("Unfinished features: No Forgetful Skill Loss (Forgetful employees keep their specialization stars). The choice applies to every save game.");
 			WindowManager.AddElementToElement(note.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
 				new Rect(0, 0, 0, 0));
 			y += 64;
