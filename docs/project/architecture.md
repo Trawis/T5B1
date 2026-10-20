@@ -195,13 +195,16 @@ writes the same string keys. Code references settings through `SettingKeys`
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
 A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
-`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity` and `ReduceExpansionCost` are retired: still declared so old
-saves deserialize, but with no UI and no scheduled behavior
-(`RetiredSettingsTests`). `ReduceExpansionCost` only wrote `GameSettings.ExpansionCost`, which nothing in the
+`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`, `ReduceExpansionCost` and the old per-save `Experimental` are
+retired (`RetiredSettingsTests`): they are declared with `SettingKeys.Retired(...)`, which reserves the name and keeps
+the declaration but leaves the key out of `Helpers.Settings`, `Serialize` and `Deserialize` (#439). New saves do not
+contain them, and a `true` stored in an older save is ignored, so it cannot restore removed behavior; the other keys
+in such a save load as usual. An older trainer build that loads a new save finds these keys missing and falls back to
+its default or in-memory value (all five are off by default and had no working effect in the last release), so
+downgrading loses at most a stale `true` of a setting that does nothing. `ReduceExpansionCost` only wrote `GameSettings.ExpansionCost`, which nothing in the
 game reads; the real plot price is `PlotArea.Price` (`PricePerSqm * Area + AddonCost`), and `PricePerSqm` is saved
 with the plot and also feeds selling refunds and company worth, so a baseline-based reduction could not be restored
-safely after a reload (#354). `Experimental` is retired the same way (#245): its
-saved value is kept and written back unchanged but nothing reads it, so an old
+safely after a reload (#354). `Experimental` is retired the same way (#245): nothing reads a saved value, so an old
 save with `Experimental` true cannot enable experiments.
 
 ### Experimental opt-in (mod Options)
@@ -304,10 +307,11 @@ Architecture, Toggle Transitions and Persistence and Settings.
    toggle that was on before leaving the game is off in the next one
    (`ToggleStateTrackerTests`, `FeatureDispatcherTests.ARestoreRunsWhenTheNextSaveHasTheToggleOffAfterTheTrackerWasReset`,
    `TransitionResetWiringTests`).
-7. Keep a retired toggle declared. Removing the UI and the rows is allowed;
-   removing or renaming the key is not, so old saves keep deserializing. Add it
-   to `RetiredSettingsTests` (declared with its original name and default off,
-   no `FeatureRegistry` row, no Settings window row) and keep it in
+7. Keep a retired toggle declared, but through `Retired(...)` in `SettingKeys`
+   so its name stays reserved and it is no longer written or loaded. Removing
+   the UI and the rows is allowed; renaming the key is not. Add it to
+   `RetiredSettingsTests` (original name, default off, no `FeatureRegistry`
+   row, no Settings window row, absent from new saves) and remove it from
    `PersistedToggleKeys`.
 8. Keep the code inside the Workshop source build rules (see Workshop Source
    Build). `GameSourcePipelineTests` (`EverySourceFileParsesWithTheGamesCompilerAfterInjection`,

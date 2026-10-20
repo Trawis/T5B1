@@ -35,20 +35,21 @@ namespace Trainer_v5
 		public static readonly ToggleKey DisableBurglars = Toggle("DisableBurglars");
 		public static readonly ToggleKey DisableFires = Toggle("DisableFires");
 		public static readonly ToggleKey NoServerCost = Toggle("NoServerCost");
-		// Retired (#354): same as ReduceBoxPrice; the only write was GameSettings.ExpansionCost, which the game never reads.
-		public static readonly ToggleKey ReduceExpansionCost = Toggle("ReduceExpansionCost");
+		// Retired (#354): same as ReduceBoxPrice (#439: not persisted); the only write was GameSettings.ExpansionCost, which the game never reads.
+		public static readonly ToggleKey ReduceExpansionCost = Retired("ReduceExpansionCost");
 		public static readonly ToggleKey NoEducationCost = Toggle("NoEducationCost");
 		public static readonly ToggleKey IncreaseWalkSpeed = Toggle("IncreaseWalkSpeed");
 		public static readonly ToggleKey AutoEndDesign = Toggle("AutoEndDesign");
 		public static readonly ToggleKey AutoContractProgression = Toggle("AutoContractProgression");
 		public static readonly ToggleKey AutoEndResearch = Toggle("AutoEndResearch");
 		public static readonly ToggleKey AutoEndPatent = Toggle("AutoEndPatent");
-		// Retired: no UI and no scheduled behavior. The key stays declared so old saves still deserialize (#270).
-		public static readonly ToggleKey ReduceBoxPrice = Toggle("ReduceBoxPrice");
+		// Retired: no UI and no scheduled behavior (#270). #439: the name stays reserved but is no longer persisted or loaded, so
+		// new saves omit it and a true stored in an old save is ignored.
+		public static readonly ToggleKey ReduceBoxPrice = Retired("ReduceBoxPrice");
 		public static readonly ToggleKey DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
 		public static readonly ToggleKey MoreInspiration = Toggle("MoreInspiration");
 		// Retired (#374): same as ReduceBoxPrice.
-		public static readonly ToggleKey MoreCreativity = Toggle("MoreCreativity");
+		public static readonly ToggleKey MoreCreativity = Retired("MoreCreativity");
 		public static readonly ToggleKey AutoResearchStart = Toggle("AutoResearchStart");
 		public static readonly ToggleKey DigitalDistributionMonopol = Toggle("DigitalDistributionMonopol");
 		public static readonly ToggleKey DisableFireInspection = Toggle("DisableFireInspection");
@@ -56,10 +57,10 @@ namespace Trainer_v5
 		public static readonly ToggleKey DisableForceFreeze = Toggle("DisableForceFreeze");
 		public static readonly ToggleKey AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
 		// Retired (see #150): same as ReduceBoxPrice.
-		public static readonly ToggleKey AutoMaxMarketShare = Toggle("AutoMaxMarketShare");
+		public static readonly ToggleKey AutoMaxMarketShare = Retired("AutoMaxMarketShare");
 		// Retired (#245): the Experimental opt-in moved to the mod Options (ExperimentalOptions). The key stays declared so old
-		// saves deserialize, but nothing reads it, so a saved true cannot enable experiments.
-		public static readonly ToggleKey Experimental = Toggle("Experimental");
+		// saves load, but nothing reads it, so a saved true cannot enable experiments.
+		public static readonly ToggleKey Experimental = Retired("Experimental");
 		public static readonly ToggleKey ForceLights = Toggle("ForceLights");
 		public static readonly ToggleKey ShowRoomCeilings = Toggle("ShowRoomCeilings");
 		public static readonly ToggleKey UnlimitedSubsidiaries = Toggle("UnlimitedSubsidiaries");
@@ -99,6 +100,13 @@ namespace Trainer_v5
 			var setting = new ToggleKey(Register(key), false);
 			_toggles.Add(setting);
 			return setting;
+		}
+
+		// A retired setting keeps its declaration and reserved name but is not a live toggle: it is left out of the
+		// defaults, Helpers.Settings, Serialize and Deserialize.
+		private static ToggleKey Retired(string key)
+		{
+			return new ToggleKey(Register(key), false);
 		}
 
 		private static StoreKey Store(string key)

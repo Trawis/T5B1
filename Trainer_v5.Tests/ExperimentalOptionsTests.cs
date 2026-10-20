@@ -55,17 +55,15 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void ALegacySavedTrueCannotEnableIt()
 		{
-			var legacy = Helpers.Settings["Experimental"];
-			try
+			using (new SettingsSnapshot())
 			{
 				ExperimentalOptions.Load(new Dictionary<string, string>());
-				Helpers.Settings["Experimental"] = true;
+				var legacy = new WriteDictionary();
+				legacy["Experimental"] = true;
+				new Main().Deserialize(legacy, GameReader.LoadMode.Full);
 
+				Assert.DoesNotContain("Experimental", Helpers.Settings.Keys);
 				Assert.False(ExperimentalOptions.Enabled);
-			}
-			finally
-			{
-				Helpers.Settings["Experimental"] = legacy;
 			}
 		}
 
