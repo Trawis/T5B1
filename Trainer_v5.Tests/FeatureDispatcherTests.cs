@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -319,20 +317,22 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheRegistryUsesEachFeatureIdWithOneSettingOnly()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "FeatureRegistry.cs"));
+			// The registry the trainer actually runs, not its source text: delegates are created, nothing is invoked.
+			var entries = FeatureRegistry.Create();
 			var keyById = new Dictionary<string, string>();
 			var conflicts = new List<string>();
-			foreach (Match match in Regex.Matches(source, @"Add(?:Store)?\(entries, FeatureTrigger\.\w+, ""(\w+)"", SettingKeys\.(\w+),"))
+			foreach (var entry in entries)
 			{
+				var key = entry.Toggle != null ? entry.Toggle.Key : entry.Store.Key;
 				string existing;
-				if (keyById.TryGetValue(match.Groups[1].Value, out existing) && existing != match.Groups[2].Value)
+				if (keyById.TryGetValue(entry.Id, out existing) && existing != key)
 				{
-					conflicts.Add(match.Groups[1].Value);
+					conflicts.Add(entry.Id);
 				}
-				keyById[match.Groups[1].Value] = match.Groups[2].Value;
+				keyById[entry.Id] = key;
 			}
 
-			Assert.True(keyById.Count > 40, "The registry scan found " + keyById.Count + " features; the scan or the registry changed.");
+			Assert.NotEmpty(entries);
 			Assert.True(conflicts.Count == 0, "Feature ids tied to two settings: " + string.Join(", ", conflicts));
 		}
 

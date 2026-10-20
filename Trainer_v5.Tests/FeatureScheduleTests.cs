@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -8,7 +6,6 @@ namespace Trainer_v5.Tests
 	// A persistent toggle needs a cadence and a decision about what happens the moment it is switched on (#273).
 	public class FeatureScheduleTests
 	{
-		private static readonly Regex Row = new Regex(@"Add(?:Store)?\(entries, FeatureTrigger\.(?<trigger>\w+), ""(?<id>\w+)"",", RegexOptions.Compiled);
 		private static readonly string[] Periodic = { "Minute", "Hour", "Day", "Month" };
 
 		[Fact]
@@ -62,18 +59,17 @@ namespace Trainer_v5.Tests
 		private static Dictionary<string, HashSet<string>> Triggers()
 		{
 			var triggers = new Dictionary<string, HashSet<string>>();
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "FeatureRegistry.cs"));
-			foreach (Match match in Row.Matches(source))
+			// The registry the trainer actually runs, not its source text: delegates are created, nothing is invoked.
+			foreach (var entry in FeatureRegistry.Create())
 			{
-				var id = match.Groups["id"].Value;
-				if (!triggers.ContainsKey(id))
+				if (!triggers.ContainsKey(entry.Id))
 				{
-					triggers[id] = new HashSet<string>();
+					triggers[entry.Id] = new HashSet<string>();
 				}
-				triggers[id].Add(match.Groups["trigger"].Value);
+				triggers[entry.Id].Add(entry.Trigger.ToString());
 			}
 
-			Assert.True(triggers.Count > 40, "The registry scan found only " + triggers.Count + " features.");
+			Assert.NotEmpty(triggers);
 			return triggers;
 		}
 

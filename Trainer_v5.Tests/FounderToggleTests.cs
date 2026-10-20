@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -20,12 +19,11 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheToggleChecksAgainAfterTheConfirmationAndOnlyFlipsTheFlagOnTheExistingEmployee()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "FounderToggle.cs"));
-			var apply = source.Substring(source.IndexOf("private static void Apply", System.StringComparison.Ordinal));
-			apply = apply.Substring(0, apply.IndexOf("private static string FindBlocker", System.StringComparison.Ordinal));
+			var source = SourceCode.Read("FounderToggle.cs");
+			var apply = SourceCode.Body(source, "private static void Apply(");
 
-			Assert.True(apply.IndexOf("answer != \"YES\"", System.StringComparison.Ordinal) < apply.IndexOf("FindBlocker(target)", System.StringComparison.Ordinal));
-			Assert.True(apply.IndexOf("FindBlocker(target)", System.StringComparison.Ordinal) < apply.IndexOf("Founder = !shown", System.StringComparison.Ordinal));
+			SourceCode.AssertInOrder(apply, "answer != \"YES\"", "FindBlocker(target)", "the confirmation comes before the check");
+			SourceCode.AssertInOrder(apply, "FindBlocker(target)", "Founder = !shown", "the target is checked again before the write");
 			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"\.Founder = "));
 			Assert.DoesNotContain("Experimental", source);
 			Assert.DoesNotContain("new Employee(", source);
@@ -36,7 +34,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheDetailWindowOffersTheFounderToggleNextToTheOtherEditors()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "DetailWindowTrainer.cs"));
+			var source = SourceCode.Read("DetailWindowTrainer.cs");
 
 			foreach (var label in new[] { "\"Trait\"", "\"Demand\"", "\"Inspiration\"", "\"LeadSpec\"", "\"Founder\"" })
 			{

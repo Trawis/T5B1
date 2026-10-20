@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -12,7 +11,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheBehaviourReadsKeyPressesNotHeldKeys()
 		{
-			var source = SourceText.Strip(File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "TrainerBehaviour.cs")), keepStrings: true);
+			var source = SourceCode.Read("TrainerBehaviour.cs");
 
 			Assert.DoesNotMatch(HeldKey, source);
 			Assert.Contains("Input.GetKeyDown(KeyCode.F1)", source);

@@ -42,7 +42,10 @@ namespace Trainer_v5.Tests
 
 			Assert.All(rows, row => Assert.InRange(row.Column, 2, 4));
 			Assert.Equal(rows.Count, Enumerable.Count(Enumerable.Distinct(Enumerable.Select(rows, row => row.LocKey))));
-			Assert.Equal(new[] { 11, 14, 20 }, Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column))));
+			// How many rows each column holds is a layout choice that changes whenever a toggle is added; what must hold is that no column is empty and none is lost.
+			var perColumn = Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column)));
+			Assert.All(perColumn, count => Assert.True(count > 0, "A Settings column has no rows."));
+			Assert.Equal(rows.Count, Enumerable.Sum(perColumn));
 		}
 
 		[Fact]

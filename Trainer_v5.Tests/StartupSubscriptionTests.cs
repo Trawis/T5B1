@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -7,32 +6,21 @@ namespace Trainer_v5.Tests
 	// Time events must be subscribed before any fallible UI installation on scene load (#338).
 	public class StartupSubscriptionTests
 	{
-		private static string Read(string file)
-		{
-			return File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, file));
-		}
-
 		[Fact]
 		public void TheMainSceneSubscribesBeforeItCreatesOrInstallsAnyUi()
 		{
-			var source = Read("TrainerBehaviour.cs");
-			var start = source.IndexOf("case SceneRoute.MainScene:", System.StringComparison.Ordinal);
-			var branch = source.Substring(start, source.IndexOf("break;", start, System.StringComparison.Ordinal) - start);
+			var branch = SourceCode.Span(SourceCode.Read("TrainerBehaviour.cs"), "case SceneRoute.MainScene:", "break;");
 
-			var subscribe = branch.IndexOf("SubscribeToEvents()", System.StringComparison.Ordinal);
-			Assert.True(subscribe >= 0, "the main scene must subscribe");
-			Assert.True(subscribe < branch.IndexOf("Main.CreateUIButtons()", System.StringComparison.Ordinal));
-			Assert.True(subscribe < branch.IndexOf("DetailWindowTrainer.Install()", System.StringComparison.Ordinal));
+			SourceCode.AssertInOrder(branch, "SubscribeToEvents()", "Main.CreateUIButtons()", "the main scene must subscribe before creating UI");
+			SourceCode.AssertInOrder(branch, "SubscribeToEvents()", "DetailWindowTrainer.Install()", "the main scene must subscribe before installing UI");
 		}
 
 		[Fact]
 		public void SubscribingStaysGuardedAndLeavingStillUnsubscribes()
 		{
-			var source = Read("TrainerBehaviour.cs");
-			var subscribe = source.Substring(source.IndexOf("private void SubscribeToEvents()", System.StringComparison.Ordinal));
-			subscribe = subscribe.Substring(0, subscribe.IndexOf("private void UnsubscribeFromEvents()", System.StringComparison.Ordinal));
-			var leave = source.Substring(source.IndexOf("private void LeaveGame()", System.StringComparison.Ordinal));
-			leave = leave.Substring(0, leave.IndexOf("private void SubscribeToSceneEvents()", System.StringComparison.Ordinal));
+			var source = SourceCode.Read("TrainerBehaviour.cs");
+			var subscribe = SourceCode.Body(source, "private void SubscribeToEvents()");
+			var leave = SourceCode.Body(source, "private void LeaveGame()");
 
 			Assert.Contains("if (_timeEventsSubscribed)", subscribe);
 			Assert.Contains("_timeEventsSubscribed = true;", subscribe);
@@ -43,11 +31,9 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void AMissingUiElementIsReportedNotDereferenced()
 		{
-			var source = Read("UIHelper.cs");
-			var add = source.Substring(source.IndexOf("public static bool AddToElement", System.StringComparison.Ordinal));
-			add = add.Substring(0, add.IndexOf("public static void AddToWindow", System.StringComparison.Ordinal));
+			var add = SourceCode.Body(SourceCode.Read("UIHelper.cs"), "public static bool AddToElement");
 
-			Assert.True(add.IndexOf("parent == null", System.StringComparison.Ordinal) < add.IndexOf("parent.gameObject", System.StringComparison.Ordinal));
+			SourceCode.AssertInOrder(add, "parent == null", "parent.gameObject", "the parent is checked before it is used");
 			Assert.Contains(".Log()", add);
 			Assert.DoesNotContain("catch", add);
 		}
@@ -55,9 +41,9 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheDetailControlsAreOnlyMarkedInstalledWhenTheyWerePlaced()
 		{
-			var source = Read("DetailWindowTrainer.cs");
+			var source = SourceCode.Read("DetailWindowTrainer.cs");
 
-			Assert.True(source.IndexOf("if (!placed)", System.StringComparison.Ordinal) < source.IndexOf("_installedOn = target;", System.StringComparison.Ordinal));
+			SourceCode.AssertInOrder(source, "if (!placed)", "_installedOn = target;", "the installed marker follows the placement check");
 		}
 	}
 }

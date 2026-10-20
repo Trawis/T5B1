@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -8,9 +7,7 @@ namespace Trainer_v5.Tests
 	{
 		private static string CompletionBody()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "WorkItemFeatures.cs"));
-			var start = source.IndexOf("private static void CompleteResearchWork", System.StringComparison.Ordinal);
-			return source.Substring(start, 900);
+			return SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "private static void CompleteResearchWork");
 		}
 
 		[Fact]
