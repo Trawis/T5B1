@@ -174,9 +174,6 @@ namespace Trainer_v5
 			#endregion
 
 			#region column6
-			var experimentalToggle = UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a => settings.Toggle(SettingKeys.Experimental));
-
-			column6.Add(experimentalToggle);
 
 			#endregion
 

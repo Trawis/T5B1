@@ -57,6 +57,8 @@ namespace Trainer_v5
 		public static readonly ToggleKey AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
 		// Retired (see #150): same as ReduceBoxPrice.
 		public static readonly ToggleKey AutoMaxMarketShare = Toggle("AutoMaxMarketShare");
+		// Retired (#245): the Experimental opt-in moved to the mod Options (ExperimentalOptions). The key stays declared so old
+		// saves deserialize, but nothing reads it, so a saved true cannot enable experiments.
 		public static readonly ToggleKey Experimental = Toggle("Experimental");
 		public static readonly ToggleKey ForceLights = Toggle("ForceLights");
 		public static readonly ToggleKey ShowRoomCeilings = Toggle("ShowRoomCeilings");
