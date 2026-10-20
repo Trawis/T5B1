@@ -1,28 +1,26 @@
 # Features
-List of features in the trainer
 
-Open the trainer with the **Trainer** button (or F1; F2 closes it). Product
-actions read the product name from the *Product Name Here* input box at the top
-of the first column. Product name matching is exact and looks across every
-company (player and AI); if more than one product shares that name, the
-action reports the conflict instead of guessing which one to change.
+Current user-visible features. Open the trainer with the **Trainer** button
+(or F1; F2 closes it). The first column's *Product Name Here* input box supplies
+the product name for the product actions. Set Product Price, Stock and Active
+Users match the name exactly across every company (player and AI) and report a
+conflict instead of guessing when several products share it; Max Followers and
+Fix Bugs only look at your own company's work items.
 
----
+## Buttons
 
-**Buttons**
-
-Button features are applied once when clicked.
+Applied once when clicked.
 
 |  Feature               | Parameters             | Description                                                 |
 |:----------------------:|:----------------------:|:-----------------------------------------------------------:|
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
 | Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
-| Max Followers          | Product Name           | Maxes followers for the specified product in development    |
+| Max Followers          | Product Name           | Fills the followers of your active (not paused) in-development product to its current cap |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
 | Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a typed YES confirmation; one-way, and your own company and its subsidiaries are not accepted |
 | AI Bankrupt All        | None                   | Marks every simulated company as going bankrupt except your own company and companies you own (subsidiaries) |
-| Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
+| Fix Bugs               | Product Name           | Fixes all bugs of your product with that name that is in beta |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
 | Instant Marketing      | None                   | Immediately completes your active press release campaigns (other campaign types run continuously and have no completion to force) |
@@ -44,20 +42,16 @@ Button features are applied once when clicked.
 | Unlock and Claim Rewards | None                 | Completes and claims all task rewards                       |
 | Discord                | None                   | Opens the Discord invite message                            |
 
----
-
-**Dropdowns**
+## Dropdowns
 
 - **Efficiency**: Default, 100%-8000%; sets effectiveness for non-lead
   employees.
 - **Lead Efficiency**: Default, 100%-8000%; sets effectiveness for lead
   employees.
 
----
+## Toggles
 
-**Toggles**
-
-Toggle features stay active for as long as they are enabled.
+Active for as long as they are enabled. Toggles are saved with the save game.
 
 |  Feature                    | Description                                                   |
 |:---------------------------:|:------------------------------------------------------------:|
@@ -109,16 +103,22 @@ Toggle features stay active for as long as they are enabled.
 | No Offshore Heat             | Clears offshore account heat every frame, preventing it from reaching the audit threshold |
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
 
-**Enable Experimental Features (mod Options)**
+## Experimental options and retired settings
 
-The game's own Options screen lists the trainer under its mods and offers
-*Enable Experimental Features*, off by default. It is not in the Trainer Settings
-window. The choice is stored for the whole installation (not in a save game), so
-loading or switching saves does not change it. No experimental feature exists
-yet, so turning it on changes nothing today; the Options text says so. Older
-saves that still carry the retired *Experimental* toggle ignore it.
+The game's Options screen lists the trainer under its mods and offers *Enable
+Experimental Features*, off by default. The choice is stored by the game in the
+mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
+saved in one. No experimental feature exists yet, so turning it on changes
+nothing today. The Trainer Settings window has no Experimental toggle and no
+Test button.
 
-**Switching toggles off**
+Retired settings (Reduce Box Price, Auto Max Market Share, More Creativity,
+Reduce Expansion Cost and the former Experimental toggle) have no control and
+no behavior; a value stored for them in an older save is ignored. Disable
+Burglars has behavior but no window control: it runs only for a save that has
+it enabled.
+
+## Switching toggles off
 
 Switching a toggle off stops its effect from being applied again. Only these
 toggles also undo what they changed: No Education Cost, Free Print, Full
@@ -144,13 +144,11 @@ value is not recorded, so the trainer cannot put it back.
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
 | More Hosting Deals           | Deals and rewards already added stay |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
-| Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
+| Disable Burglars (no window control), Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
 | Disable Needs, Disable Stress, Lock Temperature To 21, Rooms Never Dirty, No Sickness, More Inspiration, No Offshore Heat, No Server Cost, Free Staff, Disable Force Pause, Disable Force Freeze | The last applied values stay until the game writes them again; how soon that happens is not determined. Sickness, dirt and similar states already cleared stay cleared |
 
----
-
-**Employee editing**
+## Employee editing
 
 The **Skill Change** button (on the actor window) and the extra buttons added to
 the game's employee detail window let you edit selected employees.
