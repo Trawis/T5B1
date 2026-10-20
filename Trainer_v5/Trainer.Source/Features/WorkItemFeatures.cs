@@ -58,11 +58,11 @@ namespace Trainer_v5
 
 			if (reassigned == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: All eligible work is already assigned to its best available team!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog("TeamsAlreadyOptimal".LocDef("Trainer: All eligible work is already assigned to its best available team!"), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Team assignments optimized!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("TeamAssignmentsOptimized".LocDef("Trainer: Team assignments optimized!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void InstantPorting()
@@ -71,7 +71,7 @@ namespace Trainer_v5
 
 			if (ports.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: No active porting work to complete!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog("NoPortingWork".LocDef("Trainer: No active porting work to complete!"), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -87,7 +87,7 @@ namespace Trainer_v5
 				}
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("PortingCompleted".LocDef("Trainer: Porting work has been completed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void ExtendDeadline()
@@ -158,7 +158,7 @@ namespace Trainer_v5
 
 			if (eligibleResearch.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: No active research to complete!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog("NoActiveResearch".LocDef("Trainer: No active research to complete!"), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -169,7 +169,7 @@ namespace Trainer_v5
 				CompleteResearchWork(researchWork);
 			});
 
-			HUD.Instance.AddPopupMessage("Trainer: Research completed instantly!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("ResearchCompleted".LocDef("Trainer: Research completed instantly!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void TestAction(string input)

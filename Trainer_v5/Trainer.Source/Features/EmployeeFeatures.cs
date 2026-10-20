@@ -21,17 +21,17 @@ namespace Trainer_v5
 			int amount;
 			if (selectedActors.Count == 0)
 			{
-				WindowManager.SpawnDialog("Select one or more employees.", false, DialogWindow.DialogType.Error);
+				WindowManager.SpawnDialog("SelectEmployeesError".LocDef("Select one or more employees."), false, DialogWindow.DialogType.Error);
 				return;
 			}
 			else if (selectedRoles.Count == 0)
 			{
-				WindowManager.SpawnDialog("Select one or more roles.", false, DialogWindow.DialogType.Error);
+				WindowManager.SpawnDialog("SelectRolesError".LocDef("Select one or more roles."), false, DialogWindow.DialogType.Error);
 				return;
 			}
 			else if (selectedSpecializations.Count == 0)
 			{
-				WindowManager.SpawnDialog("Select one or more specializations.", false, DialogWindow.DialogType.Error);
+				WindowManager.SpawnDialog("SelectSpecializationsError".LocDef("Select one or more specializations."), false, DialogWindow.DialogType.Error);
 				return;
 			}
 			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
@@ -52,7 +52,7 @@ namespace Trainer_v5
 					}
 				});
 
-				HUD.Instance.AddPopupMessage("Trainer: Employee skills/specializations are set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+				HUD.Instance.AddPopupMessage("EmployeeSkillsSet".LocDef("Trainer: Employee skills/specializations are set!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace Trainer_v5
 				Actors[i].employee.SetSpecialization(Actors[i].employee.GetRoleOrNatural(), "HR", 5);
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: All leaders are now HRed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
+			HUD.Instance.AddPopupMessage("AllLeadersHRed".LocDef("Trainer: All leaders are now HRed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
 		}
 
 		internal static void ResetAgeOfEmployees()
@@ -95,7 +95,7 @@ namespace Trainer_v5
 				actor.UpdateAgeLook();
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("EmployeesAgeReset".LocDef("Trainer: Employees age has been reset!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void EmployeesToMax()
@@ -127,7 +127,7 @@ namespace Trainer_v5
 				}
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: All employees are now max skilled!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
+			HUD.Instance.AddPopupMessage("AllEmployeesMaxSkilled".LocDef("Trainer: All employees are now max skilled!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
 		}
 
 		internal static void RestoreIncreaseWalkSpeed()

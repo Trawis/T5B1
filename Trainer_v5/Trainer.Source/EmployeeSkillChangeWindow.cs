@@ -112,11 +112,11 @@ namespace Trainer_v5
 
 			if (selectedActors.Count == 0)
 			{
-				Notification.ShowError("Select one or more employees.");
+				Notification.ShowError("SelectEmployeesError".LocDef("Select one or more employees."));
 			}
 			else if (selectedRoles.Count == 0)
 			{
-				Notification.ShowError("Select one or more roles.");
+				Notification.ShowError("SelectRolesError".LocDef("Select one or more roles."));
 			}
 			else
 			{

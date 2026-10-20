@@ -12,6 +12,8 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex UsedKey = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(|CreateSettingToggle\(\s*\w+,\s*""(?<key>\w+)""", RegexOptions.Compiled);
 
+		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|ShowError|CreateLabel)\(\s*""(?<text>[^""\\]+)""\s*[,)]", RegexOptions.Compiled);
+
 		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
 		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization");
@@ -126,6 +128,42 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.True(mismatches.Count == 0, "Code fallback differs from English file: " + string.Join("; ", mismatches));
+		}
+
+		[Fact]
+		public void ActiveMessagesAndLabelsGoThroughLocDef()
+		{
+			var bare = new SortedSet<string>();
+			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			{
+				foreach (Match match in BareText.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				{
+					bare.Add(Path.GetFileName(file) + ": " + match.Groups["text"].Value);
+				}
+			}
+
+			Assert.True(bare.Count == 0, "Use \"Key\".LocDef(\"text\") and add the key to English/Trainer.tyd: " + string.Join("; ", bare));
+		}
+
+		[Fact]
+		public void MessageKeysAreNotFakedInOtherLanguages()
+		{
+			// Other languages fall back to English through LocDef until a native speaker translates a key.
+			foreach (var key in new[] { "EfficiencyLabel", "LeadEfficiencyLabel", "SelectEmployeesError", "NoActiveResearch", "ResearchCompleted" })
+			{
+				var english = Value("English", key);
+				Assert.NotNull(english);
+				foreach (var file in Files())
+				{
+					if (Language(file) == "English")
+					{
+						continue;
+					}
+
+					var translated = Value(Language(file), key);
+					Assert.True(translated == null || translated != english, Language(file) + " copies the English text for " + key);
+				}
+			}
 		}
 
 		private static string Value(string language, string key)
