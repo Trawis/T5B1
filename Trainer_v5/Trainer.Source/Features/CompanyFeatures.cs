@@ -15,20 +15,20 @@ namespace Trainer_v5
 			double amount = Settings.OffshoreAccount;
 			if (amount <= 0.0)
 			{
-				WindowManager.SpawnDialog("Trainer: No offshore funds to transfer!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog("NoOffshoreFunds".LocDef("Trainer: No offshore funds to transfer!"), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			// The game has no transfer method; it adjusts this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
-			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("OffshoreFundsTransferred".LocDef("Trainer: Offshore funds transferred!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void ClearLoans()
 		{
 			Settings.Loans.Clear();
-			HUD.Instance.AddPopupMessage("Trainer: All loans are cleared!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("AllLoansCleared".LocDef("Trainer: All loans are cleared!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void AIBankrupt()
@@ -47,7 +47,7 @@ namespace Trainer_v5
 				return;
 
 			Example.TakeAllLand();
-			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("AllPlotsUnlocked".LocDef("Trainer: All plots has been unlocked!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void UnlockFurniture()
@@ -58,7 +58,7 @@ namespace Trainer_v5
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
 			HUD.Instance.UpdateFurnitureButtons();
-			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
@@ -70,7 +70,7 @@ namespace Trainer_v5
 		internal static void MonthDaysAction(int i)
 		{
 			GameSettings.DaysPerMonth = i;
-			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
+			WindowManager.SpawnDialog("DaysPerMonthRestart".LocDef("You have changed days per month. Please restart the game."), false, DialogWindow.DialogType.Warning);
 		}
 
 		internal static void MonthDays()
@@ -91,7 +91,7 @@ namespace Trainer_v5
 
 			if (!simulatedCompany.CanBuyOut(Settings.MyCompany))
 			{
-				WindowManager.SpawnDialog("Trainer: Company can't be bought!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog("CompanyCannotBeBought".LocDef("Trainer: Company can't be bought!"), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -177,7 +177,7 @@ namespace Trainer_v5
 		internal static void IncreaseMoneyAction(int amount)
 		{
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
-			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage("MoneyAddedDeals".LocDef("Trainer: Money has been added in category Deals!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void IncreaseMoney()
@@ -229,7 +229,7 @@ namespace Trainer_v5
 					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
 					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
 					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-					WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
+					WindowManager.SpawnDialog("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"), false, DialogWindow.DialogType.Information);
 				}
 			};
 
@@ -252,7 +252,7 @@ namespace Trainer_v5
 				}
 			}
 
-			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
+			WindowManager.SpawnDialog("MaxMarketRecognitionApplied".LocDef("Trainer: Max market recognition is applied to all software types and categories."), false, DialogWindow.DialogType.Information);
 		}
 
 		internal static void UnlockAndClaimAllRewards()
@@ -262,7 +262,7 @@ namespace Trainer_v5
 			HUD.Instance.RefreshBuildButtons();
 			HUD.Instance.UpdateFurnitureButtons();
 
-			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
+			WindowManager.SpawnDialog("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."), false, DialogWindow.DialogType.Information);
 		}
 
 		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.

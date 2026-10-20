@@ -125,7 +125,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		{
 			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("Select an employee first (select one employee, then close and reopen this window).");
+				Notification.ShowError("SelectEmployeeFirst".LocDef("Select an employee first (select one employee, then close and reopen this window)."));
 				return;
 			}
 			var target = _target;
@@ -138,7 +138,7 @@ namespace Trainer_v5.Trainer.Source.Window
 
 			if (selectTypes.Length == 0)
 			{
-				Notification.ShowError("Select one or more LeadSpec.");
+				Notification.ShowError("SelectLeadSpecError".LocDef("Select one or more LeadSpec."));
 				return;
 			}
 
@@ -149,7 +149,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				{
 					if (!target.IsStillValid())
 					{
-						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						Notification.ShowError("EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited."));
 						return;
 					}
 

@@ -97,7 +97,7 @@ namespace Trainer_v5.Window
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("The employee changed or is not available. Press Refresh.");
+					Notification.ShowError("EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh."));
 				return;
 			}
 			var employee = _target.Employee;

@@ -42,7 +42,7 @@ namespace Trainer_v5
 
 			if (target.Employee.Founder != shown)
 			{
-				Notification.ShowError("The employee changed. Nothing was edited.");
+				Notification.ShowError("EmployeeChangedNoEdit".LocDef("The employee changed. Nothing was edited."));
 				return;
 			}
 
