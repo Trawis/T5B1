@@ -49,9 +49,9 @@ namespace Trainer_v5.Tests
 			create = create.Substring(0, Index(create, "public override void ConstructOptionsScreen"));
 
 			Assert.Contains("if (!TrainerButton.gameObject.AddToElement(", create);
-			Assert.Contains("if (!SkillChangeButton.gameObject.AddToElement(", create);
 			Assert.Contains("TrainerButton = null;", create);
-			Assert.Contains("SkillChangeButton = null;", create);
+			Assert.DoesNotContain("SkillChangeButton", source);
+			Assert.DoesNotContain("ActorWindow", source);
 		}
 	}
 }

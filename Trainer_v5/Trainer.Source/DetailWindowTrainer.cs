@@ -27,6 +27,7 @@ namespace Trainer_v5
 				UIFactory.Button("DetailInspirationButton".LocDef("Inspiration"), SetInspiration),
 				UIFactory.Button("DetailLeadSpecButton".LocDef("LeadSpec"), () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 				UIFactory.Button("DetailFounderButton".LocDef("Founder"), FounderToggle.Start),
+				UIFactory.Button("DetailSkillsButton".LocDef("Skills"), EmployeeSkillChangeWindow.Show),
 			};
 
 			// add components to DetailWindow, above it and within its width

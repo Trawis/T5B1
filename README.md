@@ -26,8 +26,8 @@ Status: `active`, maintained for the current *Software Inc.* Beta 1 branch.
 ## Usage
 
 Load a game and press the **Trainer** button (or **F1**; **F2** closes the
-window). The **Skill Change** button on the actor window and the extra buttons
-on the employee detail window edit selected employees. See
+window). The extra buttons on the employee detail window (including **Skills**) edit
+the shown employee, or all selected employees in the skill editor. See
 [`docs/project/features.md`](docs/project/features.md) for every feature.
 
 ### Experimental options

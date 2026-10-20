@@ -12,55 +12,6 @@ namespace Trainer_v5
 
 		internal static bool SpecializationsLoaded => _specializationsLoaded;
 
-		internal static void SetSkillPerEmployeeAction(string input)
-		{
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
-			var selectedRoles = Helpers.RolesList.Where(r => r.Value).ToList();
-			var selectedSpecializations = Helpers.SpecializationsList.Where(s => s.Value).ToList();
-
-			int amount;
-			if (selectedActors.Count == 0)
-			{
-				Notification.ShowError("SelectEmployeesError".LocDef("Select one or more employees."));
-				return;
-			}
-			else if (selectedRoles.Count == 0)
-			{
-				Notification.ShowError("SelectRolesError".LocDef("Select one or more roles."));
-				return;
-			}
-			else if (selectedSpecializations.Count == 0)
-			{
-				Notification.ShowError("SelectSpecializationsError".LocDef("Select one or more specializations."));
-				return;
-			}
-			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
-			{
-				Notification.ShowError("InvalidStarsInput".LocDef("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3"));
-				return;
-			}
-			else
-			{
-				selectedActors.ForEach(actor =>
-				{
-					foreach (var role in selectedRoles)
-					{
-						foreach (var specialization in selectedSpecializations)
-						{
-							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
-						}
-					}
-				});
-
-				Notification.Popup("EmployeeSkillsSet".LocDef("Trainer: Employee skills/specializations are set!"));
-			}
-		}
-
-		internal static void SetSkillPerEmployee()
-		{
-			WindowManager.SpawnInputDialog("StarsPrompt".LocDef("How many specialization stars do you want?\nMin = -3, Max = 3"), "StarsTitle".LocDef("Stars amount"), "3", SetSkillPerEmployeeAction);
-		}
-
 		internal static void ResetAgeOfEmployees()
 		{
 			if (!Helpers.RequireGameReady("Reset age of employees"))

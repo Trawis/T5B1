@@ -403,8 +403,13 @@ window (`DetailButtonLayout`).
 - Trait, Demand, LeadSpec, Inspiration and Founder resolve their employee
   through `EmployeeTarget`: the open detail window's employee, else exactly one
   selected employee, never the first of several. A deferred dialog re-checks
-  that the same live employee is still there before writing. Skill Change keeps
-  its intentional multi-employee selection.
+  that the same live employee is still there before writing.
+- Skills (`EmployeeSkillChangeWindow`, #450) is opened from the detail window
+  and edits the shown employee, or with its "All selected" option every live
+  selected employee (`EmployeeTarget.ResolveSelection`), captured at the click.
+  Each write re-checks its target and skips stale ones, reporting how many of
+  them were edited. The option is off on every opening. The role and
+  specialization choices stay in `Helpers.RolesList`/`SpecializationsList`.
 - Founder (`FounderToggle`, #190) flips only `Employee.Founder` after a Yes/No
   confirmation; the game treats a founder as unpaid (`Actor.WorksForFree`) and disables
   Fire when the detail window is shown, so the employee must be selected again.

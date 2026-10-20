@@ -44,19 +44,7 @@ namespace Trainer_v5
 		public static EmployeeTarget Resolve(out TargetSource source)
 		{
 			var detailActor = ShownDetailActor();
-			var selected = new List<Actor>();
-			var selection = SelectorController.Instance != null ? SelectorController.Instance.Selected : null;
-			if (selection != null)
-			{
-				foreach (var item in selection)
-				{
-					var actor = item as Actor;
-					if (IsLive(actor))
-					{
-						selected.Add(actor);
-					}
-				}
-			}
+			var selected = LiveSelectedActors();
 
 			source = Decide(IsLive(detailActor), selected.Count);
 			switch (source)
@@ -68,6 +56,18 @@ namespace Trainer_v5
 				default:
 					return null;
 			}
+		}
+
+		// Every live selected employee, captured at once so a later selection change cannot change who is edited.
+		public static List<EmployeeTarget> ResolveSelection()
+		{
+			var targets = new List<EmployeeTarget>();
+			foreach (var actor in LiveSelectedActors())
+			{
+				targets.Add(new EmployeeTarget(actor));
+			}
+
+			return targets;
 		}
 
 		public static string Describe(EmployeeTarget target, TargetSource source)
@@ -89,6 +89,25 @@ namespace Trainer_v5
 		public bool IsStillValid()
 		{
 			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
+		}
+
+		private static List<Actor> LiveSelectedActors()
+		{
+			var selected = new List<Actor>();
+			var selection = SelectorController.Instance != null ? SelectorController.Instance.Selected : null;
+			if (selection != null)
+			{
+				foreach (var item in selection)
+				{
+					var actor = item as Actor;
+					if (IsLive(actor))
+					{
+						selected.Add(actor);
+					}
+				}
+			}
+
+			return selected;
 		}
 
 		// A save reload or scene change leaves old actors referenced; only the current game's actors count.

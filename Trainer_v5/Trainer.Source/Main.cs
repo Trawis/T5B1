@@ -12,7 +12,6 @@ namespace Trainer_v5
 
 		public override string Name => "TrainerByTrawis";
 		public static Button TrainerButton { get; set; }
-		public static Button SkillChangeButton { get; set; }
 
 		public override void Initialize(ModController.DLLMod parentMod)
 		{
@@ -42,24 +41,17 @@ namespace Trainer_v5
 
 		public static void CreateUIButtons()
 		{
-			// Both buttons are tracked in the statics as soon as they exist, so a retry after a failure (or a second
-			// scene load) removes what is left before creating a new pair instead of stacking a second one.
+			// The button is tracked in the static as soon as it exists, so a retry after a failure (or a second
+			// scene load) removes what is left before creating a new one instead of stacking a second one.
 			DestroyUIButtons();
 
 			TrainerButton = UIFactory.Button(Helpers.TrainerVersion, () => SettingsWindow.Toggle(), "TrainerButton");
-			SkillChangeButton = UIFactory.Button("SkillChangeButton".LocDef("Skill Change"), () => EmployeeSkillChangeWindow.Show(), "EmployeeSkillButton");
 
 			// A button whose parent element is missing is dropped rather than left loose in the scene.
 			if (!TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32)))
 			{
 				DestroyButton(TrainerButton);
 				TrainerButton = null;
-			}
-
-			if (!SkillChangeButton.gameObject.AddToElement("ActorWindow/ContentPanel/Panel", new Rect(0, 0, 100, 32)))
-			{
-				DestroyButton(SkillChangeButton);
-				SkillChangeButton = null;
 			}
 		}
 
@@ -153,8 +145,6 @@ namespace Trainer_v5
 		{
 			DestroyButton(TrainerButton);
 			TrainerButton = null;
-			DestroyButton(SkillChangeButton);
-			SkillChangeButton = null;
 		}
 
 		private static void DestroyButton(Button button)

@@ -37,7 +37,7 @@ namespace Trainer_v5.Tests
 		{
 			var source = SourceCode.Read("DetailWindowTrainer.cs");
 
-			foreach (var label in new[] { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder" })
+			foreach (var label in new[] { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder", "Skills" })
 			{
 				Assert.Contains("UIFactory.Button(\"Detail" + label + "Button\".LocDef(\"" + label + "\")", source);
 			}
