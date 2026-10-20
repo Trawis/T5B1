@@ -201,26 +201,38 @@ namespace Trainer_v5.Tests
 		{
 			var headers = new List<string>();
 			var entryBeforeHeader = new List<string>();
-			foreach (var line in File.ReadAllText(EnglishFile()).Split('\n'))
-			{
-				if (line.StartsWith("#"))
-				{
-					headers.Add(line);
-				}
-				else if (Entry.IsMatch(line) && headers.Count == 0)
-				{
-					entryBeforeHeader.Add(line);
-				}
-			}
+			SectionHeaders(File.ReadAllText(EnglishFile()), headers, entryBeforeHeader);
 
 			Assert.True(entryBeforeHeader.Count == 0, "Entries before the first header: " + string.Join(", ", entryBeforeHeader));
 			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", headers));
 		}
 
 		[Fact]
+		public void SectionParsingGivesTheSameResultForLfAndCrlfFiles()
+		{
+			var lf = File.ReadAllText(EnglishFile()).Replace("\r\n", "\n");
+			var crlf = lf.Replace("\n", "\r\n");
+			var lfHeaders = new List<string>();
+			var crlfHeaders = new List<string>();
+			SectionHeaders(lf, lfHeaders, new List<string>());
+			SectionHeaders(crlf, crlfHeaders, new List<string>());
+
+			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", lfHeaders));
+			Assert.Equal(string.Join(", ", lfHeaders), string.Join(", ", crlfHeaders));
+
+			var lfSections = EnglishSectionOfEveryKey(lf);
+			var crlfSections = EnglishSectionOfEveryKey(crlf);
+			Assert.Equal(lfSections.Count, crlfSections.Count);
+			foreach (var pair in lfSections)
+			{
+				Assert.Equal(pair.Value, crlfSections[pair.Key]);
+			}
+		}
+
+		[Fact]
 		public void EnglishToggleRowsAreUnderTogglesAndActionRowsUnderActions()
 		{
-			var sectionOf = EnglishSectionOfEveryKey();
+			var sectionOf = EnglishSectionOfEveryKey(File.ReadAllText(EnglishFile()));
 			var misplaced = new List<string>();
 			var toggleRows = SettingToggleRows.Create();
 			toggleRows.AddRange(SettingToggleRows.CreateImmediate());
@@ -309,11 +321,31 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		private static Dictionary<string, string> EnglishSectionOfEveryKey()
+		private static string[] Lines(string text)
+		{
+			return text.Replace("\r\n", "\n").Split('\n');
+		}
+
+		private static void SectionHeaders(string text, List<string> headers, List<string> entryBeforeHeader)
+		{
+			foreach (var line in Lines(text))
+			{
+				if (line.StartsWith("#"))
+				{
+					headers.Add(line);
+				}
+				else if (Entry.IsMatch(line) && headers.Count == 0)
+				{
+					entryBeforeHeader.Add(line);
+				}
+			}
+		}
+
+		private static Dictionary<string, string> EnglishSectionOfEveryKey(string text)
 		{
 			var sectionOf = new Dictionary<string, string>();
 			var section = "";
-			foreach (var line in File.ReadAllText(EnglishFile()).Split('\n'))
+			foreach (var line in Lines(text))
 			{
 				if (line.StartsWith("#"))
 				{
