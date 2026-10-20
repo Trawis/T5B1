@@ -56,6 +56,20 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   Experimental setting no longer enables anything.
 - Retired the Reduce Expansion Cost toggle: it changed a value the game never
   reads, so it had no effect on plot prices. Saves that had it on still load.
+- Restored the Disable Burglars toggle in Trainer Settings. It removes burglars
+  that are present and any that appear.
+- Retired the unused Disable Skill Decay setting; the game has no skill decay
+  and the setting never did anything.
+- New saves no longer store settings of removed features (Reduce Box Price,
+  Auto Max Market Share, More Creativity, Reduce Expansion Cost, Disable Skill
+  Decay and the old per-save Experimental flag). Older saves that contain them
+  still load and the values are ignored.
+- More trainer windows, buttons, prompts and messages now use the localization
+  system with English as the fallback.
+- Removed unused internal code and moved the Skill Change window next to the
+  other employee windows.
+- Simplified the README, architecture and feature documentation; the Steam
+  Workshop source install is now described first.
 
 ## [5.4.0] - 2026-10-19
 
