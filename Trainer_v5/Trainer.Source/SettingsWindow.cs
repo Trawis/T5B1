@@ -182,7 +182,7 @@ namespace Trainer_v5
 			});
 
 			column6.Add(experimentalToggle);
-			column6.Add(UIHelper.CreateLabel("Shows the Test button below"));
+			column6.Add(UIHelper.CreateLabel("ExperimentalHint".LocDef("Shows the Test button below")));
 			column6.Add(UIHelper.CreateLabel());
 			column6.Add(testButton);
 

@@ -20,6 +20,7 @@ namespace Trainer_v5.Tests
 			Assert.Contains("settings.Toggle(SettingKeys.Experimental);", source);
 			Assert.Contains("SetTestControlsActive(settings, testButton);", source);
 			Assert.Contains("testButton.SetActive(experimental);", source);
+			Assert.Contains("\"ExperimentalHint\".LocDef(\"Shows the Test button below\")", source);
 		}
 
 		[Fact]
