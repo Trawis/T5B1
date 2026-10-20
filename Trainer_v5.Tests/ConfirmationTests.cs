@@ -6,8 +6,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Confirmation policy (#242): a small audited set of actions asks through the game's own Yes/No dialog and checks
-	// the game and its scope again when the player answers. Routine and value-entry actions never ask.
 	public class ConfirmationTests
 	{
 		private static string Company(string signature)
@@ -55,7 +53,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheActionOnlyRunsFromTheYesCallback()
 		{
-			// No / Esc / closing the dialog never calls the Yes action; onConfirm must not be reachable any other way.
 			var ask = SourceCode.Body(SourceCode.Read("Confirmation.cs"), "internal static void Ask(");
 
 			Assert.Single(Regex.Matches(ask, @"onConfirm\(\)"));
@@ -112,7 +109,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheAuditedSetIsExactlyTheDocumentedOne()
 		{
-			// Adding a confirmation means updating the decision matrix in docs/project/architecture.md and this list.
+			// A new confirmation needs a row in the architecture.md decision matrix and in this list.
 			var found = new List<string>();
 			foreach (var item in AllSources())
 			{

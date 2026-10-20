@@ -51,7 +51,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void OnlyNotificationCallsTheGamePopupAndDialogApis()
 		{
-			// Allow-list: Notification.cs (and Confirmation.cs for ShowMessageBox). Input dialogs (SpawnInputDialog, via InputHelper) are a separate surface and are
+			// Allow-list: Notification.cs. Input dialogs (SpawnInputDialog, via InputHelper) are a separate surface and are
 			// not listed here because they never get the popup prefix.
 			var offenders = new List<string>();
 			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
@@ -65,7 +65,6 @@ namespace Trainer_v5.Tests
 					offenders.Add(name + ": AddPopupMessage");
 				if (source.Contains("WindowManager.SpawnDialog("))
 					offenders.Add(name + ": SpawnDialog");
-				// Confirmation.cs owns the Yes/No question (#242); it carries no trainer message of its own.
 				if (name != "Confirmation.cs" && source.Contains("ShowMessageBox("))
 					offenders.Add(name + ": ShowMessageBox");
 				if (source.Contains("PopupManager.AddPopup("))

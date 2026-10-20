@@ -394,13 +394,12 @@ namespace Trainer_v5
 			Notification.ShowInfo("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"));
 		}
 
-		// Every eligible AI company that is not already going bankrupt: the scope AI Bankrupt All shows and acts on.
 		private static List<SimulatedCompany> FindAllBankruptTargets()
 		{
 			return Settings.simulation.Companies.Values.Where(company => IsBankruptTarget(company) && !company.Bankrupt).ToList();
 		}
 
-		// The dialog stays open while the game runs, so the game and the targets are checked again before any flag is set.
+		// The dialog stays open while the game runs, so game and targets are re-checked first.
 		private static void ApplyAIBankrupt(GameSettings game, int shownCount)
 		{
 			if (!ReferenceEquals(game, Settings))
@@ -434,7 +433,6 @@ namespace Trainer_v5
 			Notification.Popup("AllLoansCleared".LocDef("Trainer: All loans are cleared!"));
 		}
 
-		// Reward tasks that are not yet in both the completed and the claimed set of this save.
 		private static int CountUnclaimedRewards()
 		{
 			return GameData.Tasks
