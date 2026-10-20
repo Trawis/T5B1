@@ -10,7 +10,7 @@ namespace Trainer_v5.Tests
 	{
 		private static string SetBaseSkillsBody()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "EmployeeSkillChangeWindow.cs")).Replace("\r\n", "\n");
+			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeSkillChangeWindow.cs")).Replace("\r\n", "\n");
 			var start = source.IndexOf("private static void SetBaseSkills", System.StringComparison.Ordinal);
 			return source.Substring(start);
 		}

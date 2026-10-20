@@ -8,6 +8,7 @@ namespace Trainer_v5.Tests
 	public class SettingsTests
 	{
 		// Every key below is persisted in saves: renaming or removing one resets that toggle for players, so it needs a migration.
+		// Retired keys (RetiredSettingsTests) are deliberately absent: they are no longer written or read.
 		internal static readonly string[] PersistedToggleKeys =
 		{
 			"NoStress", "NoVacation", "FullRoomBrightness", "CleanRooms", "FullEnvironment",
@@ -15,11 +16,11 @@ namespace Trainer_v5.Tests
 			"FreeEmployees", "LockAge", "MoreHostingDeals", "IncreaseCourierCapacity", "ReduceISPCost",
 			"IncreasePrintSpeed", "FreePrint", "IncreaseBookshelfSkill", "NoMaintenance", "NoSickness",
 			"FullSatisfaction", "DisableSkillDecay", "DisableBurglars", "DisableFires", "NoServerCost",
-			"ReduceExpansionCost", "NoEducationCost", "IncreaseWalkSpeed", "AutoEndDesign",
-			"AutoContractProgression", "AutoEndResearch", "AutoEndPatent", "ReduceBoxPrice",
-			"DisableFurnitureStealing", "MoreInspiration", "MoreCreativity", "AutoResearchStart",
+			"NoEducationCost", "IncreaseWalkSpeed", "AutoEndDesign",
+			"AutoContractProgression", "AutoEndResearch", "AutoEndPatent",
+			"DisableFurnitureStealing", "MoreInspiration", "AutoResearchStart",
 			"DigitalDistributionMonopol", "DisableFireInspection", "DisableForcePause",
-			"DisableForceFreeze", "AutoAcceptHostingDeals", "AutoMaxMarketShare", "Experimental",
+			"DisableForceFreeze", "AutoAcceptHostingDeals",
 			"ForceLights", "ShowRoomCeilings", "UnlimitedSubsidiaries", "NoMissedSupportTickets",
 			"NoInsuranceCost", "NoLoanInterest", "AutoPorting", "FreeMarketing", "NoOffshoreHeat",
 			"NoFounderDividends"
