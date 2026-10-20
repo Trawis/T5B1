@@ -53,6 +53,16 @@ per-game caches (`TrainerBehaviour.ResetPerGameState`: window references, the
 specialization list, hosting timing flags, the pending-list warning and the
 printer baselines); persisted settings are never part of that reset.
 
+On every game load (`GameSettings.GameReady`, independent of any toggle)
+`MarketFeatures.RepairLegacyHostingRequests` clears `Deal.Request` on a
+`ServerDeal` that has `Request` set, no resolvable bidder and the product's
+developer as client. Older trainer builds created such deals (`Request = true`
+after construction left `_bidder` at 0, so `Deal.CompanyName` read the empty
+bidder). The game constructs every `ServerDeal` with `Request` false and only
+`IPDeal` logic reads the flag, so the repair changes the displayed company only;
+client, `PerPower`, validity and server registration are untouched. It is
+idempotent and not verified in the game.
+
 Scheduled features are rows in `FeatureRegistry`: an id, the setting that
 gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
 trigger in registration order, each through `Helpers.TryExecute`. Triggers are
