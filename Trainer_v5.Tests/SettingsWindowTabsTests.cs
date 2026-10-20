@@ -7,7 +7,7 @@ namespace Trainer_v5.Tests
 	// Game UI types cannot be built in the test host, so tab navigation is checked by source shape.
 	public class SettingsWindowTabsTests
 	{
-		private static readonly string[] UiFiles = { "SettingsWindow.cs", "SettingActionRows.cs", "SettingToggleRows.cs", "SettingsWindowState.cs", "TrainerDomain.cs" };
+		private static readonly string[] UiFiles = { "SettingsWindow.cs", "SettingActionRows.cs", "SettingToggleRows.cs", "SettingsWindowState.cs", "DomainEnums.cs" };
 
 		private static string Window()
 		{

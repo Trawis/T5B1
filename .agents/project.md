@@ -24,6 +24,16 @@ dotnet test "Trainer v5 - Beta 1.sln"
 
 Verify that test projects exist before treating a successful `dotnet test` command as test coverage. Report environment-blocked checks separately from code failures.
 
+## Workshop Source Compile
+
+The Steam Workshop item is compiled from `Trainer.Source` by the game's own compiler, which lists the files with
+`Directory.GetFiles(AllDirectories)` and does not sort them (see `docs/project/architecture.md`, Workshop Source Build).
+
+- A type that has a field of an enum type needs that enum to be declared before it in compile order: put the enum in a file
+  of the same folder that sorts first (for example `DomainEnums.cs`), or above the type in the same file. Otherwise the
+  game fails to load the mod with "Field '...' is an enum type with a bad underlying type" (#462).
+- The parse-only tests cannot catch this; test it by loading the mod in the game.
+
 ## Project Documentation
 
 - Update `README.md` for setup, build, run, or usage changes.
