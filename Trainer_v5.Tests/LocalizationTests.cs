@@ -142,8 +142,6 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			// The Test controls label is obsolete debug copy removed with the Test controls (#341).
-			bare.Remove("SettingsWindow.cs: Shows the Test controls below");
 			Assert.True(bare.Count == 0, "Use \"Key\".LocDef(\"text\") and add the key to English/Trainer.tyd: " + string.Join("; ", bare));
 		}
 
