@@ -30,7 +30,6 @@ namespace Trainer_v5
 				UIFactory.Button("DetailSkillsButton".LocDef("Skills"), EmployeeSkillChangeWindow.Show),
 			};
 
-			// add components to DetailWindow, above it and within its width
 			const int width = 80, height = 32, spacing = 4;
 			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
 			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);

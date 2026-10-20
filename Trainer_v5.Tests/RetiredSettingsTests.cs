@@ -14,22 +14,15 @@ namespace Trainer_v5.Tests
 		{
 			Assert.Equal("ReduceBoxPrice", SettingKeys.ReduceBoxPrice.Key);
 			Assert.Equal("AutoMaxMarketShare", SettingKeys.AutoMaxMarketShare.Key);
-			Assert.False(SettingKeys.ReduceBoxPrice.DefaultValue);
-			Assert.False(SettingKeys.AutoMaxMarketShare.DefaultValue);
 			Assert.Equal("MoreCreativity", SettingKeys.MoreCreativity.Key);
-			Assert.False(SettingKeys.MoreCreativity.DefaultValue);
 			Assert.Equal("ReduceExpansionCost", SettingKeys.ReduceExpansionCost.Key);
-			Assert.False(SettingKeys.ReduceExpansionCost.DefaultValue);
-			Assert.False(Helpers.Settings.ContainsKey("MoreCreativity"));
-			Assert.False(Helpers.Settings.ContainsKey("ReduceExpansionCost"));
-			Assert.False(Helpers.Settings.ContainsKey("ReduceBoxPrice"));
-			Assert.False(Helpers.Settings.ContainsKey("AutoMaxMarketShare"));
 			Assert.Equal("Experimental", SettingKeys.Experimental.Key);
-			Assert.False(SettingKeys.Experimental.DefaultValue);
-			Assert.False(Helpers.Settings.ContainsKey("Experimental"));
 			Assert.Equal("DisableSkillDecay", SettingKeys.DisableSkillDecay.Key);
-			Assert.False(SettingKeys.DisableSkillDecay.DefaultValue);
-			Assert.False(Helpers.Settings.ContainsKey("DisableSkillDecay"));
+			foreach (var key in RetiredKeys)
+			{
+				Assert.False(((ToggleKey)typeof(SettingKeys).GetField(key).GetValue(null)).DefaultValue, key);
+				Assert.False(Helpers.Settings.ContainsKey(key), key);
+			}
 		}
 
 		[Fact]

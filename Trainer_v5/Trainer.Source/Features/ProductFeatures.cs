@@ -109,7 +109,7 @@ namespace Trainer_v5
 			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
 		}
 
-		// PrintSpeed has no game writer and is not saved (ProductPrinter.SerializeMe), so the value read before the first write is the native one.
+		// PrintSpeed has no game writer and is not saved (ProductPrinter.SerializeMe): the first read is the native value.
 		internal static void ApplyIncreasePrintSpeed()
 		{
 			RetainLivePrinterSpeeds();

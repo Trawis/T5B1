@@ -58,12 +58,9 @@ namespace Trainer_v5
 		}
 
 		// Observes each transition toggle once, in registration order, and runs its Enabled or Disabled entries.
-		// An entry whose action reports failure is retried on the following calls instead of being consumed (#336):
-		// only the failed entries repeat, a successful one never does, and the next transition of the same toggle
-		// (a reversal included) replaces whatever is still pending, because its entries set the state outright.
-		// Every Enabled/Disabled action must stay an idempotent "set the state" write or a state-driven catch-up
-		// (a baseline captured once, an absolute value, a scan of what is still unfinished) so that a repeat after a
-		// partial run is safe. A one-off effect with a lasting side effect belongs on no transition trigger.
+		// A failing entry is retried on later calls instead of being consumed (#336); only failed entries repeat, and the
+		// toggle's next transition replaces whatever is pending. Enabled/Disabled actions must be idempotent "set the
+		// state" writes or state-driven catch-ups so a repeat after a partial run is safe; no one-off side effects.
 		public void RunTransitions()
 		{
 			for (int i = 0; i < _transitionKeys.Count; i++)

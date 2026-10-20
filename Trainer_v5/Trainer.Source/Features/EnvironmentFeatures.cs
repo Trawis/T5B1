@@ -191,7 +191,7 @@ namespace Trainer_v5
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
 		}
 
-		// Despawned only matters for employees, so burglars and inspectors are removed with Writeable.DestroyGO (what AI.GuestDespawn calls); Actor.OnDestroy then unregisters them from ActorManager.Others.
+		// Burglars and inspectors are removed with Writeable.DestroyGO (as AI.GuestDespawn does); Actor.OnDestroy unregisters them.
 		private static void RemoveActorsOfGroup(string group)
 		{
 			var actors = new List<Actor>(Settings.sActorManager.Others[group]);
