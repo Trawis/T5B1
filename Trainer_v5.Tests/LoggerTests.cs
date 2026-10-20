@@ -63,6 +63,13 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void ADebugLineHasTheDistinctPrefixAndIsNullSafe()
+		{
+			Assert.Equal("Trainer [debug]: game ready", Logger.FormatDebug("game ready"));
+			Assert.Equal("Trainer [debug]: null", Logger.FormatDebug(null));
+		}
+
+		[Fact]
 		public void AValueIsFormattedWithItsOwnText()
 		{
 			Assert.Equal("42", Logger.FormatValue(42));

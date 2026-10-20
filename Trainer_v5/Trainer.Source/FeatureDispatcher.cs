@@ -103,6 +103,11 @@ namespace Trainer_v5
 			{
 				_pending[key.Key] = pending;
 			}
+
+			if (LoggingOptions.DebugEnabled)
+			{
+				("toggle '" + key.Key + "' " + trigger + ": " + pending.Entries.Count + " entries queued").LogDebug();
+			}
 		}
 
 		private void RunPending(ToggleKey key)
@@ -133,6 +138,19 @@ namespace Trainer_v5
 			if (failed.Count == 0)
 			{
 				_pending.Remove(key.Key);
+			}
+
+			// Only the first failure and the end of the retries are traced, never every retry.
+			if (LoggingOptions.DebugEnabled)
+			{
+				if (failed.Count > 0 && pending.Visits == 1)
+				{
+					("toggle '" + key.Key + "': " + failed.Count + " entries failed, retrying").LogDebug();
+				}
+				else if (failed.Count == 0 && pending.Visits > 1)
+				{
+					("toggle '" + key.Key + "': retries finished after " + pending.Visits + " visits").LogDebug();
+				}
 			}
 		}
 
