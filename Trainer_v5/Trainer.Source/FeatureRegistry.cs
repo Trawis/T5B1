@@ -60,6 +60,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Month, "DisableFireInspection", SettingKeys.DisableFireInspection, EnvironmentFeatures.ApplyDisableFireInspection);
 			Add(entries, FeatureTrigger.Month, "DisableFurnitureStealing", SettingKeys.DisableFurnitureStealing, EnvironmentFeatures.ApplyDisableFurnitureStealing);
 			Add(entries, FeatureTrigger.Month, "NoVacation", SettingKeys.NoVacation, EmployeeFeatures.ApplyNoVacation);
+			Add(entries, FeatureTrigger.Month, "NoForgetfulSkillLoss", SettingKeys.NoForgetfulSkillLoss, EmployeeFeatures.ApplyNoForgetfulSkillLoss);
 			Add(entries, FeatureTrigger.Month, "LockAge", SettingKeys.LockAge, EmployeeFeatures.ApplyLockAge);
 			Add(entries, FeatureTrigger.Month, "NoLoanInterest", SettingKeys.NoLoanInterest, CompanyFeatures.ApplyNoLoanInterest);
 			Add(entries, FeatureTrigger.Month, "NoFounderDividends", SettingKeys.NoFounderDividends, CompanyFeatures.ApplyNoFounderDividends);
@@ -67,6 +68,7 @@ namespace Trainer_v5
 			// Enabled / Disabled (observed once per frame, in this order)
 			Add(entries, FeatureTrigger.Enabled, "NoMaintenance", SettingKeys.NoMaintenance, EnvironmentFeatures.ApplyNoMaintenance);
 			Add(entries, FeatureTrigger.Enabled, "NoVacation", SettingKeys.NoVacation, EmployeeFeatures.ApplyNoVacation);
+			Add(entries, FeatureTrigger.Enabled, "NoForgetfulSkillLoss", SettingKeys.NoForgetfulSkillLoss, EmployeeFeatures.ApplyNoForgetfulSkillLoss);
 			Add(entries, FeatureTrigger.Enabled, "MoreHostingDeals", SettingKeys.MoreHostingDeals, MarketFeatures.ApplyHostingDealTiming);
 			Add(entries, FeatureTrigger.Enabled, "AutoEndDesign", SettingKeys.AutoEndDesign, WorkItemFeatures.ApplyAutoEndDesign);
 			Add(entries, FeatureTrigger.Enabled, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);

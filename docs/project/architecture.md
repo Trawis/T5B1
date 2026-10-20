@@ -184,7 +184,7 @@ The other toggles fall into these groups (checked against the vendored
   values are per furniture type or item and are not captured.
 - Saved state with no recorded original: `Employee` salary fields
   (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
-  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  (`NoVacation`), `Actor.ForgetfulETA` (`NoForgetfulSkillLoss`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
   ticket timestamps, work items advanced or started by the `Auto*` toggles,
   deals added by `MoreHostingDeals`, closed or removed distribution platforms
   (`DigitalDistributionMonopol`), despawned burglars and inspectors,

@@ -72,6 +72,7 @@ Active for as long as they are enabled. Toggles are saved with the save game.
 | Lock Age of Employees       | Employees do not age                                         |
 | No Vacation                 | Employees do not go on vacation                              |
 | No Sickness                 | Employees do not fall ill                                    |
+| No Forgetful Skill Loss (Untested) | Employees with the Forgetful trait keep their specialization stars: every month the trait's loss timer is pushed 12 months ahead whenever it is due within 3 months, which also skips the loss popup. Not tested in the game |
 | Auto Research Start         | Automatically starts research for available tech levels      |
 | Digital Distribution Monopol| Shuts down rival digital distribution platforms              |
 | Disable Fire Inspection     | Removes fire inspectors and passes inspections               |
@@ -152,6 +153,7 @@ value is not recorded, so the trainer cannot put it back.
 | Disable Fires                | The fire-starting chance of furniture stays at 0 (not saved, so a reload drops it); fires already put out stay out |
 | Free Employees               | Salaries and salary demands stay at 0 and employees no longer negotiate salary; the previous values are not captured and are saved with the employee |
 | Lock Age of Employees        | Employee birth dates stay shifted; ages are not restored |
+| No Forgetful Skill Loss      | Timers already pushed ahead stay pushed and are saved with the employee (previous values not captured), so the Forgetful loss happens later than the game would have; lost stars are never restored |
 | No Vacation                  | Next vacation dates stay pushed back and employees already called back from vacation stay back; the game sets new vacation dates through its own scheduling, when not determined |
 | Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
 | No Missed Support Tickets    | Ticket ages stay reset |
