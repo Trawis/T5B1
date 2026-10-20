@@ -94,7 +94,6 @@ Toggle features stay active for as long as they are enabled.
 | More Hosting Deals          | Generates extra hosting deals and rewards                    |
 | Reduce Internet Cost        | Halves ISP cost                                             |
 | No Server Cost              | Servers are free                                            |
-| Reduce Expansion Cost       | Halves expansion cost                                       |
 | Disable Force Pause         | Prevents the game from force-pausing                         |
 | Disable Force Freeze        | Prevents the game from force-freezing                        |
 | Auto Accept Hosting Deals   | Accepts valid server deals that are waiting in the deal list; offers you rejected or filtered out are skipped, and nothing is accepted if the list cannot be identified |
@@ -124,7 +123,7 @@ saves that still carry the retired *Experimental* toggle ignore it.
 Switching a toggle off stops its effect from being applied again. Only these
 toggles also undo what they changed: No Education Cost, Free Print, Full
 Environment, Full Sun Light, Increase Walk Speed, Increase Courier Capacity,
-Increase Print Speed, Reduce Internet Cost and Reduce Expansion Cost. Force Lights, Show Room
+Increase Print Speed and Reduce Internet Cost. Force Lights, Show Room
 Ceilings and Unlimited Subsidiaries follow the setting directly. Every other
 toggle leaves its changes as described below. "Not captured" means the original
 value is not recorded, so the trainer cannot put it back.

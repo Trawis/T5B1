@@ -92,8 +92,8 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("\"Experimental\"", source);
 			Assert.DoesNotContain("ExperimentalHint", source);
 			Assert.DoesNotContain("IsDebug", source);
-			Assert.Contains("testButton.SetActive(ExperimentalOptions.Enabled);", source);
-			Assert.Contains("SetTestControlsActive(testButton);", source);
+			Assert.DoesNotContain("testButton", source);
+			Assert.DoesNotContain("SetTestControlsActive", source);
 		}
 
 		[Fact]

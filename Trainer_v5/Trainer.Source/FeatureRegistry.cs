@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Trainer_v5
 {
 	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order. Not registered: the retired
-	// AutoMaxMarketShare, MoreCreativity and ReduceBoxPrice, and the Cheats.* flags TrainerBehaviour pushes once per load.
+	// AutoMaxMarketShare, MoreCreativity, ReduceBoxPrice and ReduceExpansionCost, and the Cheats.* flags TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
 		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
@@ -48,7 +48,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Minute, "IncreaseWalkSpeed", SettingKeys.IncreaseWalkSpeed, EmployeeFeatures.ApplyIncreaseWalkSpeed);
 			Add(entries, FeatureTrigger.Minute, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.ApplyIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Minute, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
-			Add(entries, FeatureTrigger.Minute, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.ApplyReduceExpansionCost);
 
 			// Day
 			Add(entries, FeatureTrigger.Day, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
@@ -105,8 +104,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Disabled, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.RestoreIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Enabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 			Add(entries, FeatureTrigger.Disabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.RestoreReduceISPCost);
-			Add(entries, FeatureTrigger.Enabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.ApplyReduceExpansionCost);
-			Add(entries, FeatureTrigger.Disabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.RestoreReduceExpansionCost);
 
 			// Frame: values the game recomputes or overwrites faster than the Minute cadence (#88, #157), so a slower
 			// trigger would let them degrade between runs; none was moved without in-game verification (#361).

@@ -280,11 +280,6 @@ namespace Trainer_v5
 			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
 		}
 
-		internal static void RestoreReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST;
-		}
-
 		// Paid-off loans are already removed when this runs; only outstanding loans' interest is refunded.
 		internal static void ApplyNoLoanInterest()
 		{
@@ -362,11 +357,6 @@ namespace Trainer_v5
 		internal static void ApplyReduceISPCost()
 		{
 			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f;
-		}
-
-		internal static void ApplyReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST_HALF;
 		}
 
 		internal static void ApplyDisableForcePause()

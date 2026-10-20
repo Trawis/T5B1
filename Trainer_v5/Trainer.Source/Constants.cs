@@ -34,8 +34,6 @@ namespace Trainer_v5
 		public const int MAX_BOXES_DEFAULT = 54;
 		public const int MAX_CARRY_BOOSTED = 18;
 		public const int MAX_CARRY_DEFAULT = 9;
-		public const float EXPANSION_COST = 350f;
-		public const float EXPANSION_COST_HALF = 175f;
 		public const float WALK_SPEED_BOOSTED = 4f;
 		public const float WALK_SPEED_DEFAULT = 2f;
 		public const float PRINTER_PRICE_DEFAULT = 0.1f;

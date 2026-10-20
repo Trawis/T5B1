@@ -142,8 +142,8 @@ A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
 off and does not undo earlier writes. `docs/project/features.md` lists the
 player-visible result per toggle. Restoring toggles are `NoEducationCost`,
 `FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
-`IncreaseCourierCapacity`, `IncreasePrintSpeed`, `ReduceISPCost` and
-`ReduceExpansionCost`. `FreePrint` restores the constructor value of
+`IncreaseCourierCapacity`, `IncreasePrintSpeed` and `ReduceISPCost`.
+`FreePrint` restores the constructor value of
 `ProductPrinter.PrintPrice` (`0.1`, the only game write). `IncreasePrintSpeed`
 restores a per-printer baseline of `ProductPrinter.PrintSpeed`, which has no
 game writer and no constructor value, so its native value is only readable
@@ -195,9 +195,12 @@ writes the same string keys. Code references settings through `SettingKeys`
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
 A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
-`ReduceBoxPrice`, `AutoMaxMarketShare` and `MoreCreativity` are retired: still declared so old
+`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity` and `ReduceExpansionCost` are retired: still declared so old
 saves deserialize, but with no UI and no scheduled behavior
-(`RetiredSettingsTests`). `Experimental` is retired the same way (#245): its
+(`RetiredSettingsTests`). `ReduceExpansionCost` only wrote `GameSettings.ExpansionCost`, which nothing in the
+game reads; the real plot price is `PlotArea.Price` (`PricePerSqm * Area + AddonCost`), and `PricePerSqm` is saved
+with the plot and also feeds selling refunds and company worth, so a baseline-based reduction could not be restored
+safely after a reload (#354). `Experimental` is retired the same way (#245): its
 saved value is kept and written back unchanged but nothing reads it, so an old
 save with `Experimental` true cannot enable experiments.
 
@@ -230,9 +233,7 @@ settings, not in saves and not in `Helpers.Settings`:
   `Trainer_v5.Experimental`, is checked against `ExperimentalOptions.Enabled`
   by its caller, and is never added to `FeatureRegistry`, `SettingToggleRows`
   or the Trainer Settings window. There is no experimental framework and no
-  experimental feature yet; the Options text says so. The Test Button in the
-  Trainer Settings window stays hidden unless the option was on when that window
-  was built, and is removed by #341.
+  experimental feature yet; the Options text says so. The Test Button was removed by #341.
 
 Not verified in the game: the Options layout, the toggle round trip and that the
 game writes the settings file for a Workshop source mod the same way as for a

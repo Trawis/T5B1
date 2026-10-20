@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Trainer_v5.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -175,10 +174,6 @@ namespace Trainer_v5
 			#endregion
 
 			#region column6
-			var testButton = UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton);
-
-			column6.Add(UIHelper.CreateLabel());
-			column6.Add(testButton);
 
 			#endregion
 
@@ -204,7 +199,6 @@ namespace Trainer_v5
 			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
 			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
-			SetTestControlsActive(testButton);
 		}
 
 		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
@@ -239,11 +233,6 @@ namespace Trainer_v5
 			scrollRect.vertical = true;
 			scrollRect.movementType = ScrollRect.MovementType.Clamped;
 			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
-		}
-
-		private static void SetTestControlsActive(GameObject testButton)
-		{
-			testButton.SetActive(ExperimentalOptions.Enabled);
 		}
 
 		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)
