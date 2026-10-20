@@ -1,9 +1,5 @@
 root = true
 
-# Starter baseline for new repositories.
-# Existing repositories should preserve their current indentation style before adopting this file.
-# If an existing repo already uses spaces for C# or shell scripts, change the matching section before formatting.
-
 [*]
 charset = utf-8
 end_of_line = lf
@@ -16,8 +12,7 @@ indent_size = 2
 trim_trailing_whitespace = false
 
 [*.cs]
-# Default for new C# files when no local style already exists.
-# Preserve existing file/repo indentation when modifying existing projects.
+# C# files use tabs (width 4).
 indent_style = tab
 indent_size = 4
 tab_width = 4
@@ -38,7 +33,7 @@ indent_style = space
 indent_size = 4
 
 [*.{sh,bash}]
-# Default for new shell scripts when no local style already exists.
+# Shell scripts use tabs (width 4).
 indent_style = tab
 indent_size = 4
 
