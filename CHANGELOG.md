@@ -86,6 +86,9 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   button, with an "All selected" option for several employees). The Skill
   Change button in the Actor Window is gone, and the stars prompt now says it
   changes the stars by -3 to 3.
+- Fixed trainer windows being wider or taller than the screen at high UI scales:
+  the trait and demand editors now scroll and the trainer window is slightly
+  narrower.
 
 ## [5.4.0] - 2026-10-19
 
