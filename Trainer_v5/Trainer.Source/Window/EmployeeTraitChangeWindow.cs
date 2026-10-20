@@ -39,7 +39,7 @@ namespace Trainer_v5.Window
 			_target = EmployeeTarget.Resolve(out source);
 			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {EmployeeTarget.Describe(_target, source)}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = string.Format("EditTraitsTitle".LocDef("Edit traits for {0}"), EmployeeTarget.Describe(_target, source));
 
 			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
@@ -53,7 +53,7 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit traits for Nobody", "EditTrait", "EditTraitPanel");
+			var window = UIHelper.SpawnWindow(string.Format("EditTraitsTitle".LocDef("Edit traits for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
 
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
@@ -68,14 +68,14 @@ namespace Trainer_v5.Window
 				.Where(p => p.Key.IsBad())
 				.Select(p => p.Value.gameObject);
 
-			var col1 = new List<GameObject> { UIFactory.Label("Good", WindowStyles.TitleStyle).gameObject };
+			var col1 = new List<GameObject> { UIFactory.Label("GoodTraitsLabel".LocDef("Good"), WindowStyles.TitleStyle).gameObject };
 			col1.AddRange(goodTraitsToggle);
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			col1.Add(UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject);
 
-			var col2 = new List<GameObject> { UIFactory.Label("Neutral", WindowStyles.TitleStyle).gameObject };
+			var col2 = new List<GameObject> { UIFactory.Label("NeutralTraitsLabel".LocDef("Neutral"), WindowStyles.TitleStyle).gameObject };
 			col2.AddRange(neutralTraitsToggle);
 
-			var col3 = new List<GameObject> { UIFactory.Label("Bad", WindowStyles.TitleStyle).gameObject };
+			var col3 = new List<GameObject> { UIFactory.Label("BadTraitsLabel".LocDef("Bad"), WindowStyles.TitleStyle).gameObject };
 			col3.AddRange(badTraitsToggle);
 
 			col1.AddToWindow(window, Constants.FIRST_COLUMN);

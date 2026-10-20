@@ -75,7 +75,7 @@ namespace Trainer_v5
 
 		internal static void MonthDays()
 		{
-			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
+			InputHelper.RequestInt("DaysPerMonthPrompt".LocDef("How many days per month do you want?"), "DaysPerMonthTitle".LocDef("Days per month"), "2", MonthDaysAction, 1, 31);
 		}
 
 		internal static void TakeoverCompanyAction(string input)
@@ -85,7 +85,7 @@ namespace Trainer_v5
 
 			if (simulatedCompany == null)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -105,12 +105,12 @@ namespace Trainer_v5
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
+			WindowManager.SpawnDialog(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), input), false, DialogWindow.DialogType.Information);
 		}
 
 		internal static void TakeoverCompany()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Takeover Company", "", TakeoverCompanyAction);
+			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
 		}
 
 		internal static void SubDCompanyAction(string input)
@@ -120,24 +120,24 @@ namespace Trainer_v5
 
 			if (Company == null)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
 			if (!IsBankruptTarget(Company))
 			{
-				WindowManager.SpawnDialog("Trainer: " + Company.Name + " already belongs to you.", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyAlreadyYours".LocDef("Trainer: {0} already belongs to you."), Company.Name), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			Company.MakeSubsidiary(Settings.MyCompany, SDateTime.Now());
-			HUD.Instance.AddPopupMessage("Trainer: Company " + Company.Name + " is now your subsidiary!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage(string.Format("CompanySubsidiary".LocDef("Trainer: Company {0} is now your subsidiary!"), Company.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void SubDCompany()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Subsidiary Company", "", SubDCompanyAction);
+			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
 		}
 
 		internal static void ForceBankruptAction(string input)
@@ -148,30 +148,30 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
 			if (company.Bankrupt)
 			{
-				WindowManager.SpawnDialog("Trainer: " + company.Name + " is already going bankrupt.", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), company.Name), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			// One-way: the flag is only ever set, never toggled back.
-			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer => ConfirmForceBankrupt(company, answer));
+			WindowManager.SpawnInputDialog(string.Format("BankruptConfirmPrompt".LocDef("Bankrupt {0}? Type YES to confirm."), company.Name), "ConfirmationTitle".LocDef("Confirmation"), "YES", answer => ConfirmForceBankrupt(company, answer));
 		}
 
 		internal static void ForceBankrupt()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Force Bankrupt", "", ForceBankruptAction);
+			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
 		}
 
 		internal static void IncreaseMoneyAction(int amount)
@@ -182,7 +182,7 @@ namespace Trainer_v5
 
 		internal static void IncreaseMoney()
 		{
-			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
+			InputHelper.RequestInt("AddMoneyPrompt".LocDef("How much money do you want to add?"), "AddMoneyTitle".LocDef("Add Money"), "100000", IncreaseMoneyAction);
 		}
 
 		internal static void AddAIFundsAction(string input)
@@ -193,28 +193,28 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
-			InputHelper.RequestInt("How much money do you want to add to " + company.Name + "?", "Add AI Funds", "100000",
+			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), "AddAIFundsTitle".LocDef("Add AI Funds"), "100000",
 				amount =>
 				{
 					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
-					HUD.Instance.AddPopupMessage("Trainer: Money has been added to " + company.Name + "!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+					HUD.Instance.AddPopupMessage(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 				}, 0, int.MaxValue);
 		}
 
 		internal static void AddAIFunds()
 		{
-			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
+			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), "AddAIFundsTitle".LocDef("Add AI Funds"), "", AddAIFundsAction);
 		}
 
 		internal static void MaxReputation()
@@ -235,7 +235,7 @@ namespace Trainer_v5
 
 			Func<InputDialog> areYouSure = () =>
 			{
-				return WindowManager.SpawnInputDialog("Are you sure?", "Confirmation", "YES", action);
+				return WindowManager.SpawnInputDialog("AreYouSurePrompt".LocDef("Are you sure?"), "ConfirmationTitle".LocDef("Confirmation"), "YES", action);
 			};
 
 			areYouSure();

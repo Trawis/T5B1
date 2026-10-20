@@ -6,8 +6,6 @@ namespace Trainer_v5.Window
 {
 	public class EmployeeSkillChangeWindow : MonoBehaviour
 	{
-		private static readonly string _title = "Employee Skill Change, by Trawis";
-
 		public static GUIWindow Window { get; set; }
 
 		public static void Show()
@@ -30,7 +28,7 @@ namespace Trainer_v5.Window
 
 		private static GUIWindow CreateWindow()
 		{
-			var window = UIHelper.SpawnWindow(_title, "EditEmployee", "EditEmployeePanel");
+			var window = UIHelper.SpawnWindow("SkillChangeWindowTitle".LocDef("Employee Skill Change, by Trawis"), "EditEmployee", "EditEmployeePanel");
 
 			var firstHeader = FirstColumnHeader();
 			var roleToggles = RoleToggles();
@@ -62,7 +60,7 @@ namespace Trainer_v5.Window
 		{
 			return new[]
 			{
-				UIFactory.Label("Roles").gameObject,
+				UIFactory.Label("RolesLabel".LocDef("Roles")).gameObject,
 				UIFactory.EmptyBox().gameObject
 			};
 		}
@@ -79,9 +77,9 @@ namespace Trainer_v5.Window
 		{
 			return new[]
 			{
-				UIFactory.Button("Set Skills", EmployeeFeatures.SetSkillPerEmployee).gameObject,
+				UIFactory.Button("SetSkillsButton".LocDef("Set Skills"), EmployeeFeatures.SetSkillPerEmployee).gameObject,
 				UIFactory.EmptyBox().gameObject,
-				UIFactory.Button("Set Base Skills", SetBaseSkills).gameObject
+				UIFactory.Button("SetBaseSkillsButton".LocDef("Set Base Skills"), SetBaseSkills).gameObject
 			};
 		}
 
@@ -89,7 +87,7 @@ namespace Trainer_v5.Window
 		{
 			return new[]
 			{
-				UIFactory.Label("Specializations").gameObject,
+				UIFactory.Label("SpecializationsLabel".LocDef("Specializations")).gameObject,
 				UIFactory.EmptyBox().gameObject
 			};
 		}
@@ -122,8 +120,8 @@ namespace Trainer_v5.Window
 			{
 
 				InputHelper.RequestFloat(
-					"How many base skill do you want?\nMin = 0, Max = 1.0\nThis also raises each selected employee's skill ceiling to 1.0.",
-					$"Set base skill for {selectedActors.Count} actor(s)",
+					"BaseSkillPrompt".LocDef("How many base skill do you want?\nMin = 0, Max = 1.0\nThis also raises each selected employee's skill ceiling to 1.0."),
+					string.Format("SetBaseSkillTitle".LocDef("Set base skill for {0} actor(s)"), selectedActors.Count),
 					val => selectedActors.Where(EmployeeTarget.IsLive).ToList().ForEach(actor => selectedRoles.ForEach(role =>
 					{
 						actor.employee.SkillCeiling = 1f;

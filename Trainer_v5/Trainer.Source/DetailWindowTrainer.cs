@@ -22,11 +22,11 @@ namespace Trainer_v5
 
 			var components = new List<Component>
 			{
-				UIFactory.Button("Trait",  () => EmployeeTraitChangeWindow.Instance.Show()),
-				UIFactory.Button("Demand", () => EmployeeDemandChangeWindow.Instance.Show()),
-				UIFactory.Button("Inspiration", SetInspiration),
-				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
-				UIFactory.Button("Founder", FounderToggle.Start),
+				UIFactory.Button("DetailTraitButton".LocDef("Trait"),  () => EmployeeTraitChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailDemandButton".LocDef("Demand"), () => EmployeeDemandChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailInspirationButton".LocDef("Inspiration"), SetInspiration),
+				UIFactory.Button("DetailLeadSpecButton".LocDef("LeadSpec"), () => EmployeeLeadSpecChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailFounderButton".LocDef("Founder"), FounderToggle.Start),
 			};
 
 			// add components to DetailWindow, above it and within its width
@@ -73,8 +73,8 @@ namespace Trainer_v5
 			var employee = target.Employee;
 
 			InputHelper.RequestFloat(
-				$"Current is {employee.Inspiration}\nMin = 0, Max = 2.0",
-				$"Set inspiration for {employee.Name}",
+				string.Format("InspirationPrompt".LocDef("Current is {0}\nMin = 0, Max = 2.0"), employee.Inspiration),
+				string.Format("SetInspirationTitle".LocDef("Set inspiration for {0}"), employee.Name),
 				val =>
 				{
 					if (!target.IsStillValid())

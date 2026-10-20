@@ -40,7 +40,7 @@ namespace Trainer_v5.Window
 			_target = EmployeeTarget.Resolve(out source);
 
 			var employee = _target?.Employee;
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {EmployeeTarget.Describe(_target, source)}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(_target, source));
 
 			_isRefreshing = true;
 			foreach (var pair in _specToggles)
@@ -55,7 +55,7 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit lead specialization for Nobody", "EditLeadSpec", "MainPanel");
+			var window = UIHelper.SpawnWindow(string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
@@ -71,12 +71,12 @@ namespace Trainer_v5.Window
 			var col1Toggles = typeKeys.Take(half).Select(k => toggles[k].gameObject).ToArray();
 			var col2Toggles = typeKeys.Skip(half).Select(k => toggles[k].gameObject).ToArray();
 
-			var col1Header = new[] { UIFactory.Label("Lead Spec", WindowStyles.TitleStyle).gameObject };
+			var col1Header = new[] { UIFactory.Label("LeadSpecLabel".LocDef("Lead Spec"), WindowStyles.TitleStyle).gameObject };
 			var col1Footer = new[]
 			{
-				UIFactory.Button("All",          () => self.ToggleAll(true)).gameObject,
-				UIFactory.Button("None",         () => self.ToggleAll(false)).gameObject,
-				UIFactory.Button("Set LeadSpec", () => self.SetLeadSpec()).gameObject
+				UIFactory.Button("LeadSpecAllButton".LocDef("All"), () => self.ToggleAll(true)).gameObject,
+				UIFactory.Button("LeadSpecNoneButton".LocDef("None"), () => self.ToggleAll(false)).gameObject,
+				UIFactory.Button("SetLeadSpecButton".LocDef("Set LeadSpec"), () => self.SetLeadSpec()).gameObject
 			};
 
 			var col2Header = new[] { UIFactory.Label("", WindowStyles.TitleStyle).gameObject };
@@ -142,8 +142,8 @@ namespace Trainer_v5.Window
 			}
 
 			InputHelper.RequestFloat(
-				"How many LeadSpec do you want?\nMin = 0, Max = 1.0",
-				$"Set {selectTypes.Length} LeadSpec(s) for {employee.Name}",
+				"LeadSpecPrompt".LocDef("How many LeadSpec do you want?\nMin = 0, Max = 1.0"),
+				string.Format("SetLeadSpecTitle".LocDef("Set {0} LeadSpec(s) for {1}"), selectTypes.Length, employee.Name),
 				val =>
 				{
 					if (!target.IsStillValid())

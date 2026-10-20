@@ -51,12 +51,12 @@ namespace Trainer_v5
 			}
 
 			Product.Price = price;
-			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void SetProductPrice()
 		{
-			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
+			InputHelper.RequestFloat("ProductPricePrompt".LocDef("Type product price:"), "ProductPriceTitle".LocDef("Product price"), SetProductPriceAction, 0f, float.MaxValue);
 		}
 
 		internal static void SetProductStockAction(uint stock)
@@ -71,12 +71,12 @@ namespace Trainer_v5
 			}
 
 			Product.PhysicalCopies = stock;
-			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void SetProductStock()
 		{
-			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
+			InputHelper.RequestUInt("ProductStockPrompt".LocDef("Type product stock:"), "ProductStockTitle".LocDef("Product stock"), "100000", SetProductStockAction);
 		}
 
 		internal static void AddActiveUsersAction(int users)
@@ -91,12 +91,12 @@ namespace Trainer_v5
 			}
 
 			Product.Userbase = users;
-			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			HUD.Instance.AddPopupMessage(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
 		internal static void AddActiveUsers()
 		{
-			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
+			InputHelper.RequestInt("ProductUsersPrompt".LocDef("Type product active users:"), "ProductUsersTitle".LocDef("Product active users"), "100000", AddActiveUsersAction, 0, int.MaxValue);
 		}
 
 		internal static void ApplyFreePrint()
@@ -155,14 +155,14 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				errorMessage = "Trainer: Product " + name + " not found!";
+				errorMessage = string.Format("ProductNotFound".LocDef("Trainer: Product {0} not found!"), name);
 				return null;
 			}
 
 			if (matches.Count > 1)
 			{
-				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
-				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
+				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "UnknownOwner".LocDef("Unknown")).ToArray());
+				errorMessage = string.Format("ProductNameAmbiguous".LocDef("Trainer: Product name {0} is ambiguous (owned by: {1}). Rename the product or use a unique name."), name, owners);
 				return null;
 			}
 

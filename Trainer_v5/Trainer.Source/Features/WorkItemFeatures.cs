@@ -115,7 +115,7 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
-				WindowManager.SpawnDialog("Trainer: No product named " + input + " is in beta!", false, DialogWindow.DialogType.Information);
+				WindowManager.SpawnDialog(string.Format("ProductNotInBeta".LocDef("Trainer: No product named {0} is in beta!"), input), false, DialogWindow.DialogType.Information);
 				return;
 			}
 
@@ -124,7 +124,7 @@ namespace Trainer_v5
 
 		internal static void FixBugs()
 		{
-			WindowManager.SpawnInputDialog("Type product name:", "Fix Bugs", "", FixBugsAction);
+			WindowManager.SpawnInputDialog("ProductNamePrompt".LocDef("Type product name:"), "FixBugsTitle".LocDef("Fix Bugs"), "", FixBugsAction);
 		}
 
 		internal static void MaxFollowersAction(string input)
@@ -146,7 +146,7 @@ namespace Trainer_v5
 
 		internal static void MaxFollowers()
 		{
-			WindowManager.SpawnInputDialog("Type product name:", "Max Followers", "", MaxFollowersAction);
+			WindowManager.SpawnInputDialog("ProductNamePrompt".LocDef("Type product name:"), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
 		}
 
 		internal static void InstantResearch()

@@ -24,7 +24,7 @@ namespace Trainer_v5
 
 			var employee = target.Employee;
 			var shown = employee.Founder;
-			WindowManager.SpawnInputDialog(BuildPrompt(employee.Name, !shown), "Toggle Founder", "YES", answer => Apply(target, shown, answer));
+			WindowManager.SpawnInputDialog(BuildPrompt(employee.Name, !shown), "ToggleFounderTitle".LocDef("Toggle Founder"), "YES", answer => Apply(target, shown, answer));
 		}
 
 		// The dialog stays open while the game runs, so the target is checked again before writing.
@@ -54,12 +54,12 @@ namespace Trainer_v5
 		{
 			if (!target.IsStillValid())
 			{
-				return "The employee changed or is not available. Nothing was edited.";
+				return "EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited.");
 			}
 
 			if (GameData.MultiplayerMode)
 			{
-				return "Not available in multiplayer.";
+				return "NotAvailableInMultiplayer".LocDef("Not available in multiplayer.");
 			}
 
 			return null;

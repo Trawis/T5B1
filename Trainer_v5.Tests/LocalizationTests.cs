@@ -12,7 +12,11 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex UsedKey = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(|CreateSettingToggle\(\s*\w+,\s*""(?<key>\w+)""", RegexOptions.Compiled);
 
-		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|ShowError|CreateLabel)\(\s*""(?<text>[^""\\]+)""\s*[,)]", RegexOptions.Compiled);
+		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|ShowError|CreateLabel|SpawnInputDialog|SpawnWindow|RequestInt|RequestUInt|RequestFloat|UIFactory\.Label|UIFactory\.Button)\(\s*""(?<text>(?:[^""\\]|\\.)+)""\s*[,)]", RegexOptions.Compiled);
+
+		private static readonly Regex Formatted = new Regex(@"string\.Format\(\s*""(?<key>\w+)""\s*\.LocDef\(", RegexOptions.Compiled);
+
+		private static readonly Regex Placeholder = new Regex(@"\{(?<index>\d+)\}", RegexOptions.Compiled);
 
 		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
@@ -143,6 +147,50 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.True(bare.Count == 0, "Use \"Key\".LocDef(\"text\") and add the key to English/Trainer.tyd: " + string.Join("; ", bare));
+		}
+
+		[Fact]
+		public void MessagesWithPlaceholdersAreFormattedByTheCode()
+		{
+			// A numbered placeholder in the English text is only filled in when the code passes the looked-up text to string.Format.
+			var formatted = new SortedSet<string>();
+			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			{
+				foreach (Match match in Formatted.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				{
+					formatted.Add(match.Groups["key"].Value);
+				}
+			}
+
+			var withPlaceholder = new SortedSet<string>();
+			foreach (var key in Keys(File.ReadAllText(EnglishFile())))
+			{
+				var text = Value("English", key);
+				var indexes = new SortedSet<int>();
+				foreach (Match match in Placeholder.Matches(text))
+				{
+					indexes.Add(int.Parse(match.Groups["index"].Value));
+				}
+
+				if (indexes.Count == 0)
+				{
+					Assert.True(text.IndexOf('{') < 0 && text.IndexOf('}') < 0, key + " has a brace that is not a numbered placeholder");
+					continue;
+				}
+
+				withPlaceholder.Add(key);
+				var args = new object[Enumerable.Max(indexes) + 1];
+				for (var i = 0; i < args.Length; i++)
+				{
+					args[i] = "<" + i + ">";
+				}
+
+				Assert.True(args.Length == indexes.Count, key + " skips a placeholder number");
+				var result = string.Format(text, args);
+				Assert.True(result.IndexOf('{') < 0, key + " does not format cleanly");
+			}
+
+			Assert.Equal(string.Join(", ", withPlaceholder), string.Join(", ", formatted));
 		}
 
 		[Fact]

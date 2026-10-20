@@ -39,7 +39,7 @@ namespace Trainer_v5.Window
 			_target = EmployeeTarget.Resolve(out source);
 			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {EmployeeTarget.Describe(_target, source)}";
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = string.Format("EditDemandsTitle".LocDef("Edit demands for {0}"), EmployeeTarget.Describe(_target, source));
 
 			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
@@ -53,14 +53,14 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit demands for Nobody", "EditDemands", "EditDemandsPanel");
+			var window = UIHelper.SpawnWindow(string.Format("EditDemandsTitle".LocDef("Edit demands for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
 
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
 
-			var col1 = new List<GameObject> { UIFactory.Label("Demands", WindowStyles.TitleStyle).gameObject };
+			var col1 = new List<GameObject> { UIFactory.Label("DemandsLabel".LocDef("Demands"), WindowStyles.TitleStyle).gameObject };
 			col1.AddRange(demands.Values.Select(e => e.gameObject));
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			col1.Add(UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject);
 
 			col1.AddToWindow(window, Constants.FIRST_COLUMN);
 
@@ -87,7 +87,7 @@ namespace Trainer_v5.Window
 			var choice = LeadDesignDemands.GetChoice(demand);
 			if (choice == null)
 			{
-				Notification.ShowError("The game has no demand choice for " + demand + ", so it was not changed.");
+				Notification.ShowError(string.Format("NoDemandChoice".LocDef("The game has no demand choice for {0}, so it was not changed."), demand));
 				Refresh();
 				return;
 			}
