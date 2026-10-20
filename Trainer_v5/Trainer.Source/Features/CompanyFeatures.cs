@@ -120,6 +120,14 @@ namespace Trainer_v5
 
 			if (Company == null)
 			{
+				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				return;
+			}
+
+			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
+			if (!IsBankruptTarget(Company))
+			{
+				WindowManager.SpawnDialog("Trainer: " + Company.Name + " already belongs to you.", false, DialogWindow.DialogType.Information);
 				return;
 			}
 

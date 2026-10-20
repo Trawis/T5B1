@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-28
+**Last Updated**: 2026-10-19
 
 This document describes the current implemented architecture. Proposed
 changes belong under `docs/project/designs/`; individual features belong in
@@ -52,7 +52,10 @@ dependencies.
 
 Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
-to the menu tears both down.
+to the menu tears both down. Leaving the game and entering the main scene also
+reset the per-game caches (`TrainerBehaviour.ResetPerGameState`: the settings and
+skill-change window references, the specialization list, the hosting timing flags
+and the pending-list warning); persisted settings are never part of that reset.
 
 Features are scheduled at per-frame, minute, hour, day, or month cadence,
 matched to how often the underlying game state can actually change.
@@ -67,7 +70,7 @@ Frame, Minute, Hour, Day and Month (while the setting is on) and Enabled and
 Disabled (once, on the frame a toggle changes; each toggle is observed once
 per frame). A feature with several cadences has several rows sharing its id.
 To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
-triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+triggers. The `Cheats.*` flags (Force Lights, Show Room Ceilings, Unlimited Subsidiaries) stay in `TrainerBehaviour`: they have no save backing, so they are pushed on the first frame of the process and again on every toggle transition, which includes the first observation after each load.
 A periodic feature (Minute, Hour, Day, Month) also has an Enabled row so it
 takes effect the moment it is switched on, unless it is listed in
 `FeatureRegistry.NoCatchUp`; `FeatureScheduleTests` enforces that, so a new
@@ -116,6 +119,57 @@ deactivated, so each save load is a cold start: an enabled toggle runs its
 enable hook. A toggle that was on before the reset keeps that fact for its
 first observation, so one that is now off still runs its restore; this matters
 for state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
+
+An Enabled/Disabled entry whose guarded call fails is not consumed: the
+dispatcher keeps the failed entries of the toggle's latest transition and
+retries only those on the following frames (every frame for the first 60, then
+every 60th), so entries that succeeded never repeat. The next transition of the
+same toggle, a reversal included, replaces what is pending; pending retries
+survive the tracker reset, so a restore that failed is still run in the next
+game. This is safe because every Enabled/Disabled action is an idempotent
+write of an absolute value or baseline, or a catch-up scan of unfinished work;
+an action with a lasting one-off side effect must not be registered on these
+triggers. Retries do not make the Workshop build recover from an exception: a
+named method that throws still unloads the mod through the injected handler.
+
+### Non-restoring toggles
+
+A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
+off and does not undo earlier writes. `docs/project/features.md` lists the
+player-visible result per toggle. Restoring toggles are `NoEducationCost`,
+`FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
+`IncreaseCourierCapacity`, `ReduceISPCost` and `ReduceExpansionCost`; the
+`Cheats.*` toggles are bound to their setting when it changes. The rest fall
+into these groups (checked against the vendored `Assembly-CSharp.dll`):
+
+- Furniture and printer fields that are not part of the saved data and have no
+  game writer: `Furniture.AuraValues` (`IncreaseBookshelfSkill`),
+  `Furniture.Comfort` (`NoMaintenance`), `Furniture.Water` and `Wattage`
+  (`NoWaterElectricity`), `Furniture.Noisiness` (`NoiseReduction`),
+  `Furniture.CanSteal` (`DisableFurnitureStealing`),
+  `Upgradable.FireStarter` (`DisableFires`) and `ProductPrinter.PrintSpeed`
+  (`IncreasePrintSpeed`). `Furniture.SerializeMe` and
+  `ProductPrinter.SerializeMe` do not write them, so they stay changed for the
+  loaded objects and come from the object definition after a load. The
+  original values are per furniture type or item and are not captured.
+- Saved state with no recorded original: `Employee` salary fields
+  (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
+  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  ticket timestamps, work items advanced or started by
+  the `Auto*` toggles, deals added by `MoreHostingDeals`, closed or removed
+  distribution platforms (`DigitalDistributionMonopol`), despawned burglars and
+  inspectors, `PassedFireInspection`, and money refunded by the cost-refund
+  toggles.
+- Values the game writes itself: `Furniture.ActorNoise`, `EnvironmentNoise`
+  and `FinalNoise`, `Actor.Noisiness`, `Actor.Effectiveness`, `Employee.Stress`
+  and needs, `Employee.JobSatisfaction`, `Room.Temperature`, `GermCount` and
+  `Smell`, `GameSettings.ServerCost`, `StaffSalaryDue`, the utility bills,
+  `Heat` and `ForcePause`. The assembly has a writer for each; how soon it
+  replaces the last trainer value is not determined.
+
+No public game method that recomputes the first two groups was identified, and
+the calling conditions of the game's salary and vacation writers for player
+employees were not traced. The settings window does not mark one-way toggles.
 
 ## Persistence and Settings
 
@@ -198,8 +252,8 @@ Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
 toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
-helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Founder button (`FounderToggle`, #190) shows the employee's Founder state and flips only `Employee.Founder` on the existing object, either way and for any live employee, after a typed YES; the target is checked again at confirmation. The game treats a founder as unpaid (`Actor.WorksForFree`) and disables Fire for one when the detail window is shown, so the employee must be selected again. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. UI text is localized; translations live under
-`Trainer_v5/Trainer.Localization/<language>/`.
+helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Founder button (`FounderToggle`, #190) shows the employee's Founder state and flips only `Employee.Founder` on the existing object, either way and for any live employee, after a typed YES; the target is checked again at confirmation. The game treats a founder as unpaid (`Actor.WorksForFree`) and disables Fire for one when the detail window is shown, so the employee must be selected again. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. Most UI text is localized (a localization key with an English default) and translations live under
+`Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and labels are English-only.
 
 ## Validation
 
@@ -219,7 +273,7 @@ helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve th
 
 ## Architectural Debt
 
-- None currently tracked.
+- Open work is tracked as GitHub issues labeled `type: tech-debt`.
 
 ## Design Records
 

@@ -20,8 +20,8 @@ Button features are applied once when clicked.
 | Max Followers          | Product Name           | Maxes followers for the specified product in development    |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
-| Bankrupt               | Company Name           | Toggles bankruptcy for the specified company                |
-| AI Bankrupt All        | None                   | Forces every simulated company to go bankrupt               |
+| Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a typed YES confirmation; one-way, and your own company and its subsidiaries are not accepted |
+| AI Bankrupt All        | None                   | Marks every simulated company as going bankrupt except your own company and companies you own (subsidiaries) |
 | Fix Bugs               | Product Name           | Fixes all bugs for the specified product in beta            |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
@@ -32,7 +32,6 @@ Button features are applied once when clicked.
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
-| Max Market Share       | None                   | Sets market share to 100% for all your products             |
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
@@ -73,7 +72,6 @@ Toggle features stay active for as long as they are enabled.
 | Auto Research Start         | Automatically starts research for available tech levels      |
 | Digital Distribution Monopol| Shuts down rival digital distribution platforms              |
 | Disable Fire Inspection     | Removes fire inspectors and passes inspections               |
-| Auto Max Market Share       | Keeps all your products at 100% market share                 |
 | Full Environment            | Rooms have maximum furniture environment                     |
 | Full Sun Light              | Rooms are fully lit                                          |
 | Lock Temperature To 21      | Room temperatures are locked to 21 C                         |
@@ -113,6 +111,37 @@ Toggle features stay active for as long as they are enabled.
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
 | Experimental                | Reveals experimental test controls (re-open window to apply) |
 
+**Switching toggles off**
+
+Switching a toggle off stops its effect from being applied again. Only these
+toggles also undo what they changed: No Education Cost, Free Print, Full
+Environment, Full Sun Light, Increase Walk Speed, Increase Courier Capacity,
+Reduce Internet Cost and Reduce Expansion Cost. Force Lights, Show Room
+Ceilings and Unlimited Subsidiaries follow the setting directly. Every other
+toggle leaves its changes as described below. "Not captured" means the original
+value is not recorded, so the trainer cannot put it back.
+
+|  Toggle                      | After switching off                                           |
+|:----------------------------:|:-------------------------------------------------------------|
+| Increase Bookshelf Skill     | Bookshelves keep the boosted aura value; the original per-bookshelf value is not captured. The value is not part of the furniture's save data, so loading the save drops it |
+| No Maintenance               | Chairs raised to high comfort keep it (previous comfort not captured; not saved, so a reload drops it); furniture that was repaired stays repaired (quality is saved) |
+| Free Water & Electricity     | Furniture water and wattage stay at 0 (previous values not captured; not saved, so a reload drops them); the water, electricity and gas bills are written by the game again |
+| Noise Reduction              | Furniture base noisiness stays at 0 (not captured; not saved, so a reload drops it); the noise values the game recalculates and employee noisiness are written by the game again |
+| Increase Print Speed         | Printers keep the doubled print speed (original speed not captured; not saved, so a reload drops it) |
+| Disable Furniture Stealing   | Furniture stays unstealable (not saved, so a reload drops it) |
+| Disable Fires                | The fire-starting chance of furniture stays at 0 (not saved, so a reload drops it); fires already put out stay out |
+| Free Employees               | Salaries and salary demands stay at 0 and employees no longer negotiate salary; the previous values are not captured and are saved with the employee |
+| Lock Age of Employees        | Employee birth dates stay shifted; ages are not restored |
+| No Vacation                  | Next vacation dates stay pushed back and employees already called back from vacation stay back; the game sets new vacation dates through its own scheduling, when not determined |
+| Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
+| No Missed Support Tickets    | Ticket ages stay reset |
+| Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
+| More Hosting Deals           | Deals and rewards already added stay |
+| Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
+| Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
+| No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
+| Disable Needs, Disable Stress, Lock Temperature To 21, Rooms Never Dirty, No Sickness, More Inspiration, No Offshore Heat, No Server Cost, Free Staff, Disable Force Pause, Disable Force Freeze | The last applied values stay until the game writes them again; how soon that happens is not determined. Sickness, dirt and similar states already cleared stay cleared |
+
 ---
 
 **Employee editing**
@@ -123,7 +152,7 @@ the game's employee detail window let you edit selected employees.
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
 | Set Skills     | Sets specialization stars (-3 to 3) for selected roles/specs       |
-| Set Base Skills| Sets base role skill (0 to 1.0)                                     |
+| Set Base Skills| Sets base role skill (0 to 1.0); also raises the employee skill ceiling to 1.0 |
 | Trait          | Toggles an employee's traits                                       |
 | Demand         | Toggles a lead's design demands                                    |
 | LeadSpec       | Sets lead specialization values per software type                  |

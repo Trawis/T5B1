@@ -6,6 +6,17 @@ namespace Trainer_v5.Tests
 	public class UIHelperLayoutTests
 	{
 		[Theory]
+		[InlineData(100, 100, 0, 132)]
+		[InlineData(100, 164, 0, 196)]
+		[InlineData(164, 100, 4, 200)]
+		[InlineData(0, 0, 4, 36)]
+		[InlineData(0, 0, 0, 32)]
+		public void ColumnWindowHeightIsTallestColumnPlusOriginOffsetPlusTitleBar(int first, int second, int originY, int expected)
+		{
+			Assert.Equal(expected, UIHelper.GetColumnWindowHeight(first, second, originY));
+		}
+
+		[Theory]
 		[InlineData(0, 0)]
 		[InlineData(1, 32)]
 		[InlineData(5, 160)]

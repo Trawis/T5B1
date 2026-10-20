@@ -21,8 +21,13 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void AnEmptyOrMissingArrayIsLeftAlone()
 		{
-			MarketFeatures.MarkAllProgressComplete(new float[0]);
-			MarketFeatures.MarkAllProgressComplete(null);
+			var empty = new float[0];
+
+			MarketFeatures.MarkAllProgressComplete(empty);
+			var missing = Record.Exception(() => MarketFeatures.MarkAllProgressComplete(null));
+
+			Assert.Empty(empty);
+			Assert.Null(missing);
 		}
 	}
 }

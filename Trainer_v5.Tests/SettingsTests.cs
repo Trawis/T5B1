@@ -42,12 +42,24 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void FreshSettings_AreAllDisabledAndStoresAreUnset()
 		{
-			using (new SettingsSnapshot())
-			{
-				ResetToDefaults();
+			// Read from the declared keys, not from ResetToDefaults, so a changed SettingKeys default fails here.
+			var toggles = SettingKeys.CreateToggleDefaults();
+			var stores = SettingKeys.CreateStoreDefaults();
 
-				Assert.All(Helpers.Settings, pair => Assert.False(pair.Value, pair.Key));
-				Assert.All(Helpers.StoresSettings, pair => Assert.Null(pair.Value));
+			Assert.Equal(PersistedToggleKeys.Length, toggles.Count);
+			Assert.Equal(PersistedStoreKeys.Length, stores.Count);
+			Assert.All(toggles, pair => Assert.False(pair.Value, pair.Key));
+			Assert.All(stores, pair => Assert.Null(pair.Value));
+
+			// The live dictionaries start from the same declared defaults; no other test leaves them modified.
+			foreach (var pair in toggles)
+			{
+				Assert.Equal(pair.Value, Helpers.Settings[pair.Key]);
+			}
+
+			foreach (var pair in stores)
+			{
+				Assert.Equal(pair.Value, Helpers.StoresSettings[pair.Key]);
 			}
 		}
 
