@@ -404,15 +404,16 @@ toggles). The last tab is a static for the running game, not a save key. The
 Experimental opt-in and future diagnostics stay in the mod Options and have no
 tab. Employee editors (traits,
 demands, lead specialization, inspiration, founder, skill changes) are separate
-windows on shared layout helpers; their buttons sit above the native detail
-window (`DetailButtonLayout`).
+windows on shared layout helpers; their buttons sit above the native Employees
+window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Window`).
 
 - Trait, Demand, LeadSpec, Inspiration and Founder resolve their employee
-  through `EmployeeTarget`: the open detail window's employee, else exactly one
-  selected employee, never the first of several. A deferred dialog re-checks
+  through `EmployeeTarget`: exactly one employee selected in the Employees
+  window's list (`EmployeeList.GetSelected<Actor>()`; an open detail window or
+  the world selection is never consulted), never the first of several. A deferred dialog re-checks
   that the same live employee is still there before writing.
-- Skills (`EmployeeSkillChangeWindow`, #450) is opened from the detail window
-  and edits the shown employee, or with its "All selected" option every live
+- Skills (`EmployeeSkillChangeWindow`, #450) is opened from the Employees window
+  and edits the one selected employee, or with its "All selected" option every live
   selected employee (`EmployeeTarget.ResolveSelection`), captured at the click.
   Each write re-checks its target and skips stale ones, reporting how many of
   them were edited. The option is off on every opening. The role and

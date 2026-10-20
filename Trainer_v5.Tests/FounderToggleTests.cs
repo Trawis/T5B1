@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Founder toggle on the employee detail window (#190).
+	// The Founder toggle offered from the Employees window (#190).
 	public class FounderToggleTests
 	{
 		[Fact]
@@ -33,9 +33,9 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheDetailWindowOffersTheFounderToggleNextToTheOtherEditors()
+		public void TheEmployeesWindowOffersTheFounderToggleNextToTheOtherEditors()
 		{
-			var source = SourceCode.Read("DetailWindowTrainer.cs");
+			var source = SourceCode.Read("EmployeesWindowTrainer.cs");
 
 			foreach (var label in new[] { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder", "Skills" })
 			{
