@@ -27,6 +27,13 @@ namespace Trainer_v5
 			Shown = Window.Shown;
 		}
 
+		// The game destroys its windows with the scene; a stale Shown would make F1 do nothing in the next game.
+		public static void Reset()
+		{
+			Window = null;
+			Shown = false;
+		}
+
 		private static void Init()
 		{
 			var settings = Helpers.Settings;

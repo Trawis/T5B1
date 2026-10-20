@@ -140,6 +140,24 @@ namespace Trainer_v5
 		internal static bool IsGameReady(bool requireSelector = false) =>
 			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 
+		// For user-triggered actions: checks readiness before any game manager is touched and says why nothing happened.
+		internal static bool RequireGameReady(string action, bool requireSelector = false)
+		{
+			if (IsGameReady(requireSelector))
+			{
+				return true;
+			}
+
+			string message = $"{action}: the game is not ready yet, nothing was changed.";
+			message.Log();
+			if (HUD.Instance != null)
+			{
+				Notification.ShowError(message);
+			}
+
+			return false;
+		}
+
 		#endregion
 
 		#region extensions

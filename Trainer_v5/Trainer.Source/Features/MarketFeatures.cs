@@ -214,6 +214,14 @@ namespace Trainer_v5
 			return PendingDeals.Select(lists, dealWindow.GetActiveDeals());
 		}
 
+		// Hosting timing and the pending-list warning describe one game; the next game starts them fresh.
+		internal static void ResetGameState()
+		{
+			Helpers.DealIsPushed = false;
+			Helpers.RewardIsGained = false;
+			_warnedAboutPendingList = false;
+		}
+
 		private static void WarnOnce(string message)
 		{
 			if (_warnedAboutPendingList)
