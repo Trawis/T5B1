@@ -110,6 +110,7 @@ namespace Trainer_v5
 			EmployeeSkillChangeWindow.Reset();
 			EmployeeFeatures.ResetSpecializations();
 			MarketFeatures.ResetGameState();
+			ProductFeatures.ResetGameState();
 		}
 
 		private void SubscribeToSceneEvents()

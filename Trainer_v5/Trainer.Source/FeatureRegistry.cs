@@ -92,6 +92,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "FreePrint", SettingKeys.FreePrint, ProductFeatures.ApplyFreePrint);
 			Add(entries, FeatureTrigger.Disabled, "FreePrint", SettingKeys.FreePrint, ProductFeatures.RestoreFreePrint);
 			Add(entries, FeatureTrigger.Enabled, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.ApplyIncreasePrintSpeed);
+			Add(entries, FeatureTrigger.Disabled, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.RestoreIncreasePrintSpeed);
 			Add(entries, FeatureTrigger.Enabled, "FullEnvironment", SettingKeys.FullEnvironment, EnvironmentFeatures.ApplyFullEnvironment);
 			Add(entries, FeatureTrigger.Disabled, "FullEnvironment", SettingKeys.FullEnvironment, EnvironmentFeatures.RestoreFullEnvironment);
 			Add(entries, FeatureTrigger.Enabled, "FullRoomBrightness", SettingKeys.FullRoomBrightness, EnvironmentFeatures.ApplyFullRoomBrightness);

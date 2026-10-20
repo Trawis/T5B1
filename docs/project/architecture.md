@@ -142,20 +142,28 @@ A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
 off and does not undo earlier writes. `docs/project/features.md` lists the
 player-visible result per toggle. Restoring toggles are `NoEducationCost`,
 `FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
-`IncreaseCourierCapacity`, `ReduceISPCost` and `ReduceExpansionCost`; the
-`Cheats.*` toggles are bound to their setting when it changes. The rest fall
-into these groups (checked against the vendored `Assembly-CSharp.dll`):
+`IncreaseCourierCapacity`, `IncreasePrintSpeed`, `ReduceISPCost` and
+`ReduceExpansionCost`. `FreePrint` restores the constructor value of
+`ProductPrinter.PrintPrice` (`0.1`, the only game write). `IncreasePrintSpeed`
+restores a per-printer baseline of `ProductPrinter.PrintSpeed`, which has no
+game writer and no constructor value, so its native value is only readable
+from the live printer. The baseline is read before the first write, keyed by
+the printer's Unity instance id (no game object is kept), pruned against
+`GameSettings.ProductPrinters` on every apply and restore, and cleared when a
+game is left. A printer created or loaded while the toggle is on is captured
+on the next hourly apply; a printer without a baseline is left untouched on
+restore. The `Cheats.*` toggles are bound to their setting when it
+changes. The rest fall into these groups (checked against the vendored `Assembly-CSharp.dll`):
 
-- Furniture and printer fields that are not part of the saved data and have no
+- Furniture fields that are not part of the saved data and have no
   game writer: `Furniture.AuraValues` (`IncreaseBookshelfSkill`),
   `Furniture.Comfort` (`NoMaintenance`), `Furniture.Water` and `Wattage`
   (`NoWaterElectricity`), `Furniture.Noisiness` (`NoiseReduction`),
   `Furniture.CanSteal` (`DisableFurnitureStealing`),
-  `Upgradable.FireStarter` (`DisableFires`) and `ProductPrinter.PrintSpeed`
-  (`IncreasePrintSpeed`). `Furniture.SerializeMe` and
-  `ProductPrinter.SerializeMe` do not write them, so they stay changed for the
-  loaded objects and come from the object definition after a load. The
-  original values are per furniture type or item and are not captured.
+  `Upgradable.FireStarter` (`DisableFires`). `Furniture.SerializeMe` does not
+  write them, so they stay changed for the loaded objects and come from the
+  object definition after a load. The original values are per furniture type
+  or item and are not captured.
 - Saved state with no recorded original: `Employee` salary fields
   (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
   (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
