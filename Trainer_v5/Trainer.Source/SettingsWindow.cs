@@ -9,9 +9,8 @@ namespace Trainer_v5
 	{
 		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version}) | GAME VERSION: {Helpers.GetGameVersion()}";
 
-		// The page last shown, kept for the running game only (not a save key). Reset() leaves it alone.
+		// The page last shown, kept for the running game only (not a save key).
 		private static SettingsTab _activeTab;
-		// True while the controls are being set from the stored values; the toggle handler must not flip a setting then.
 		private static bool _refreshing;
 		private static Button[] _tabButtons;
 		private static GameObject[] _tabPages;
@@ -41,7 +40,6 @@ namespace Trainer_v5
 		}
 
 		// The game destroys its windows with the scene; a stale Shown would make F1 do nothing in the next game.
-		// No control outlives it, so the lists used to refresh them are dropped too.
 		public static void Reset()
 		{
 			Window = null;
@@ -109,7 +107,7 @@ namespace Trainer_v5
 			Window.SetWindowSize(visibleRows + 1, SettingsWindowState.WindowWidth);
 		}
 
-		// Shows one page and hides the others. Everything was built once in Init, so this creates nothing and adds no listeners.
+		// Everything is built once in Init, so a tab switch creates nothing and adds no listeners.
 		private static void SetActiveTab(SettingsTab tab)
 		{
 			_activeTab = SettingsWindowState.ClampTab(tab);
@@ -126,15 +124,13 @@ namespace Trainer_v5
 			}
 		}
 
-		// The shown page has a disabled, bold button; the others stay clickable.
 		private static void MarkTab(Button button, bool isActive)
 		{
 			button.interactable = !isActive;
 			button.GetComponentInChildren<Text>().fontStyle = isActive ? FontStyle.Bold : FontStyle.Normal;
 		}
 
-		// The window outlives a close, so the controls can be behind the stored values (a partial load changes them).
-		// The UI version has no way to set a toggle without raising its change event, hence the guard.
+		// The UI cannot set a toggle without raising its change event, hence the _refreshing guard.
 		private static void RefreshFromSettings()
 		{
 			if (_toggleBindings == null)
@@ -192,7 +188,7 @@ namespace Trainer_v5
 
 		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject> settingsCells)
 		{
-			// The three product buttons that read the name sit next to the field; the static keeps the text across rebuilds.
+			// Helpers.ProductPriceName is static so the field text survives a rebuild.
 			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 
 			foreach (var row in SettingActionRows.Create())
@@ -227,7 +223,6 @@ namespace Trainer_v5
 			return control;
 		}
 
-		// A toggle flips its setting; the three immediate ones also apply the new value to the running game.
 		private static void OnToggleChanged(ToggleKey key)
 		{
 			if (_refreshing)
@@ -252,7 +247,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// Adds the label and drop-down of both efficiency settings first, the order PlaceSettingsPage lays them out in.
+		// Efficiency controls come first: the order PlaceSettingsPage lays them out in.
 		private static void BuildEfficiency(List<GameObject> settingsCells)
 		{
 			var storesSettings = Helpers.StoresSettings;
@@ -277,7 +272,6 @@ namespace Trainer_v5
 			settingsCells.Add(leadEfficiency.gameObject);
 		}
 
-		// Efficiency label and drop-down, lead efficiency label and drop-down, a gap, then the other Settings buttons.
 		// The drop-downs open from a fixed place because this page never scrolls.
 		private static void PlaceSettingsPage(GameObject container, List<GameObject> settingsCells)
 		{
@@ -311,7 +305,6 @@ namespace Trainer_v5
 			return counts;
 		}
 
-		// A header row per section that has controls, then its controls filled row by row.
 		private static void PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order)
 		{
 			var zeroAnchors = new Rect(0, 0, 0, 0);
@@ -358,8 +351,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// One page below the tab strip. A page taller than the window scrolls on its own (the same ScrollRect set-up the
-		// window used for its columns); a page that fits gets no scroll area. Each page keeps its own scroll position.
+		// A page taller than the window scrolls on its own; one that fits gets no scroll area.
 		private static TabPage CreateTabPage(string name, int rows, int visibleRows)
 		{
 			var zeroAnchors = new Rect(0, 0, 0, 0);
@@ -387,7 +379,7 @@ namespace Trainer_v5
 			return new TabPage(viewport.gameObject, content.gameObject);
 		}
 
-		// A toggle control and the setting it shows. Not generic (see Workshop Source Build).
+		// Not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types.
 		private sealed class ToggleBinding
 		{
 			public readonly Toggle Control;
@@ -400,7 +392,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The object a page is shown and hidden by, and the one its controls are added to.
 		private sealed class TabPage
 		{
 			public readonly GameObject Root;

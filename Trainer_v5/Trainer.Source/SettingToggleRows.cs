@@ -19,9 +19,7 @@ namespace Trainer_v5
 		}
 	}
 
-	// The Trainer Settings toggles, each in one domain (#449), in display order within the domain. Standard toggles only
-	// flip their setting; the three in CreateImmediate also apply an effect at once (SettingsWindow runs it).
-	// Built in methods (see Workshop Source Build).
+	// Trainer Settings toggles per domain in display order. Built in methods (see Workshop Source Build).
 	internal static class SettingToggleRows
 	{
 		public static List<SettingToggleRow> Create()
@@ -75,7 +73,7 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Toggles whose handler applies the new value to the running game as well; shown after the standard rows of their domain.
+		// Their handler also applies the value to the running game; shown after the standard rows.
 		public static List<SettingToggleRow> CreateImmediate()
 		{
 			var rows = new List<SettingToggleRow>();

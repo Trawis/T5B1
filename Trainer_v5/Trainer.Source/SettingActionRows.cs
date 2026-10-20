@@ -22,9 +22,7 @@ namespace Trainer_v5
 		}
 	}
 
-	// Every button of the Trainer Settings window, each on one tab and, on the Actions tab, in one domain (#449), in
-	// display order within the domain. Only global actions: employee-targeted ones sit on the detail window. The table
-	// holds the handlers and nothing runs until a button is clicked. Built in a method (see Workshop Source Build).
+	// Global actions only, in display order per domain. Built in a method (see Workshop Source Build).
 	internal static class SettingActionRows
 	{
 		public static List<SettingActionRow> Create()

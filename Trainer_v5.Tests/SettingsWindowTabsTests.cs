@@ -4,8 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The game's UI types cannot be built in the test host, so the tab navigation of the Trainer Settings window (#449) is
-	// checked by the shape of its source: what is built once, what a tab switch may do, what a toggle handler guards.
+	// Game UI types cannot be built in the test host, so tab navigation is checked by source shape.
 	public class SettingsWindowTabsTests
 	{
 		private static readonly string[] UiFiles = { "SettingsWindow.cs", "SettingActionRows.cs", "SettingToggleRows.cs", "SettingsWindowState.cs", "TrainerDomain.cs" };

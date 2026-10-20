@@ -14,7 +14,7 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, SettingsWindowState.ProductNameFieldText(current, hint));
 		}
 
-		// 18 rows is the tallest page (Toggles); 1366x768 leaves about 16 after the tab strip, 1920x1080 about 26.
+		// 18 rows is the tallest page (Toggles); 1366x768 leaves about 16, 1920x1080 about 26.
 		[Theory]
 		[InlineData(18, 6, 16, 16)]
 		[InlineData(18, 6, 26, 18)]
@@ -61,7 +61,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void EverySectionWithControlsAddsAHeaderRowAndEmptySectionsAddNothing()
 		{
-			// Company 11 (3 rows), Employee 2 (1), Product 8 (2), Work 5 (2), Environment 2 (1): five headers.
+			// 9 control rows plus five section headers.
 			Assert.Equal(14, SettingsWindowState.PageRows(new[] { 11, 2, 8, 5, 2 }, SettingsWindowState.Columns));
 			Assert.Equal(2, SettingsWindowState.PageRows(new[] { 0, 4, 0 }, SettingsWindowState.Columns));
 			Assert.Equal(0, SettingsWindowState.PageRows(new int[0], SettingsWindowState.Columns));

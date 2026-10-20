@@ -5,11 +5,9 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Trainer Settings buttons are data (#449): each one is on exactly one tab and, on the Actions tab, in one domain.
 	public class SettingActionRowsTests
 	{
-		// Every button the window shows, with its tab and domain: a moved or removed button fails here until this list is
-		// edited on purpose. Employee-targeted actions are on the detail window, not here.
+		// A moved or removed button fails here until this list is edited on purpose.
 		private static readonly string[] GoldenActions =
 		{
 			"AddMoney=Actions/Company", "AddAIFunds=Actions/Company", "TakeoverCompany=Actions/Company", "SubsidiaryCompany=Actions/Company",

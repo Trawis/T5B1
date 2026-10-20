@@ -35,8 +35,7 @@ namespace Trainer_v5.Tests
 			Assert.All(rowKeys, key => Assert.Contains(key, declared));
 		}
 
-		// Every toggle the window shows, with the domain (section) it sits in: a moved or removed toggle fails here until
-		// this list is edited on purpose (#449). Retired keys and the native-Options Experimental switch are not listed.
+		// A moved or removed toggle fails here until this list is edited on purpose.
 		private static readonly string[] GoldenToggleDomains =
 		{
 			"NoNeeds=Employee", "NoStress=Employee", "FreeEmployees=Employee", "FreeStaff=Employee", "FullSatisfaction=Employee", "LockAge=Employee",

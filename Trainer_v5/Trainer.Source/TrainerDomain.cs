@@ -1,23 +1,22 @@
 namespace Trainer_v5
 {
-	// What a Trainer Settings control is about. Order and identity here are code, never the localized section header.
-	// None is the unset value: a table row without a domain fails SettingToggleRowsTests / SettingActionRowsTests.
+	// None is unset: a table row without a domain fails SettingToggleRowsTests / SettingActionRowsTests.
 	internal enum TrainerDomain
 	{
 		None = 0,
-		Company,
-		Employee,
-		Product,
-		Work,
-		Environment
+		Company = 1,
+		Employee = 2,
+		Product = 3,
+		Work = 4,
+		Environment = 5
 	}
 
-	// The three top-level pages of the Trainer Settings window. None is "no page chosen yet" and shows Actions.
+	// None means no page chosen yet and shows Actions.
 	internal enum SettingsTab
 	{
 		None = 0,
-		Actions,
-		Toggles,
-		Settings
+		Actions = 1,
+		Toggles = 2,
+		Settings = 3
 	}
 }
