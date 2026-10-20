@@ -379,11 +379,6 @@ mod project or packaged). The game marks it as requiring a 32-bit process,
 which a 64-bit test host rejects, so the tests load a temporary copy with that
 flag cleared.
 
-`FullGameCompileTests` goes further when the game is installed (its `Managed` folder is
-found in a default Steam folder or through `T5B1_GAME_MANAGED`): it compiles the injected
-sources against the game's assemblies and writes the assembly. It is skipped on CI and
-needs Windows; the game's compiler stops with an internal error on current Mono.
-
 What the tests cannot establish:
 
 - Type resolution and the rest of the semantic compile: the vendored libraries
