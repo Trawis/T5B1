@@ -18,9 +18,17 @@ namespace Trainer_v5.Tests
 			var source = ReadSource();
 
 			Assert.Contains("settings.Toggle(SettingKeys.Experimental);", source);
-			Assert.Contains("SetTestControlsActive(settings, testToggle, testButton);", source);
-			Assert.Contains("testToggle.SetActive(experimental);", source);
+			Assert.Contains("SetTestControlsActive(settings, testButton);", source);
 			Assert.Contains("testButton.SetActive(experimental);", source);
+		}
+
+		[Fact]
+		public void TheDummyTestToggleIsGone()
+		{
+			var source = ReadSource();
+
+			Assert.DoesNotContain("testToggle", source);
+			Assert.DoesNotContain("\"TestToggle\"", source);
 		}
 
 		[Fact]

@@ -174,19 +174,16 @@ namespace Trainer_v5
 			#endregion
 
 			#region column6
-			bool testIsOn = false;
-			var testToggle = UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), testIsOn, a => testIsOn = !testIsOn);
 			var testButton = UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton);
 			var experimentalToggle = UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a =>
 			{
 				settings.Toggle(SettingKeys.Experimental);
-				SetTestControlsActive(settings, testToggle, testButton);
+				SetTestControlsActive(settings, testButton);
 			});
 
 			column6.Add(experimentalToggle);
-			column6.Add(UIHelper.CreateLabel("Shows the Test controls below"));
+			column6.Add(UIHelper.CreateLabel("Shows the Test button below"));
 			column6.Add(UIHelper.CreateLabel());
-			column6.Add(testToggle);
 			column6.Add(testButton);
 
 			#endregion
@@ -213,7 +210,7 @@ namespace Trainer_v5
 			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
 			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
-			SetTestControlsActive(settings, testToggle, testButton);
+			SetTestControlsActive(settings, testButton);
 		}
 
 		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
@@ -250,10 +247,9 @@ namespace Trainer_v5
 			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
 		}
 
-		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testToggle, GameObject testButton)
+		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testButton)
 		{
 			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
-			testToggle.SetActive(experimental);
 			testButton.SetActive(experimental);
 		}
 

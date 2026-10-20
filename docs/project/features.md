@@ -109,7 +109,7 @@ Toggle features stay active for as long as they are enabled.
 | Free Marketing               | Refunds your daily budget-based marketing spend; press releases and follower campaigns are unaffected |
 | No Offshore Heat             | Clears offshore account heat every frame, preventing it from reaching the audit threshold |
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
-| Experimental                | Reveals experimental test controls (re-open window to apply) |
+| Experimental                | Shows the Test Button, which adds quality to a named alpha product |
 
 **Switching toggles off**
 
