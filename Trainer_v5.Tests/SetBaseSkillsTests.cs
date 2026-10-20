@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.IO;
 using System.Threading;
 using Xunit;
 
@@ -10,9 +9,7 @@ namespace Trainer_v5.Tests
 	{
 		private static string SetBaseSkillsBody()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeSkillChangeWindow.cs")).Replace("\r\n", "\n");
-			var start = source.IndexOf("private static void SetBaseSkills", System.StringComparison.Ordinal);
-			return source.Substring(start);
+			return SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "private static void SetBaseSkills()");
 		}
 
 		[Fact]
@@ -21,7 +18,7 @@ namespace Trainer_v5.Tests
 			var body = SetBaseSkillsBody();
 
 			Assert.Contains("Min = 0, Max = 1.0", body);
-			Assert.Contains("0f,\n\t\t\t\t\t1f);", body);
+			Assert.Contains("0f, 1f);", body);
 		}
 
 		[Fact]

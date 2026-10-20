@@ -92,12 +92,6 @@ namespace Trainer_v5
 				Main.TrainerButton = null;
 			}
 
-			if (Main.SkillChangeButton != null)
-			{
-				Destroy(Main.SkillChangeButton.gameObject);
-				Main.SkillChangeButton = null;
-			}
-
 			DetailWindowTrainer.Reset();
 			ResetPerGameState();
 			_toggleStates.Reset();

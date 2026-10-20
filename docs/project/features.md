@@ -164,12 +164,13 @@ value is not recorded, so the trainer cannot put it back.
 
 ## Employee editing
 
-The **Skill Change** button (on the actor window) and the extra buttons added to
-the game's employee detail window let you edit selected employees.
+The extra buttons added to the game's employee detail window edit the employee
+it shows. **Skills** opens the skill editor for that employee; its **All selected**
+option applies a write to every selected employee instead.
 
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
-| Set Skills     | Sets specialization stars (-3 to 3) for selected roles/specs       |
+| Set Skills     | Changes specialization stars by -3 to 3 (not 0; the game keeps 0 to 3 stars) for selected roles/specs |
 | Set Base Skills| Sets base role skill (0 to 1.0); also raises the employee skill ceiling to 1.0 |
 | Trait          | Toggles an employee's traits                                       |
 | Demand         | Toggles a lead's design demands                                    |
