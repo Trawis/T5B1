@@ -74,15 +74,37 @@ namespace Trainer_v5
 				return false;
 			}
 
-			WindowManager.AddElementToElement(gameObject, parent.gameObject, location, new Rect(0, 0, 0, 0));
+			PlaceInElement(gameObject, parent.gameObject, location);
 			return true;
+		}
+
+		public static void PlaceInWindow(GameObject element, GUIWindow window, Rect location)
+		{
+			WindowManager.AddElementToWindow(element, window, location, new Rect(0, 0, 0, 0));
+		}
+
+		public static void PlaceInElement(GameObject element, GameObject container, Rect location)
+		{
+			WindowManager.AddElementToElement(element, container, location, new Rect(0, 0, 0, 0));
+		}
+
+		// Makes a viewport scroll vertically over its content, one step per mouse-wheel notch.
+		public static void MakeVerticallyScrollable(GameObject viewport, RectTransform content, float step)
+		{
+			viewport.AddComponent<RectMask2D>();
+			var scrollRect = viewport.AddComponent<ScrollRect>();
+			scrollRect.content = content;
+			scrollRect.horizontal = false;
+			scrollRect.vertical = true;
+			scrollRect.movementType = ScrollRect.MovementType.Clamped;
+			scrollRect.scrollSensitivity = step;
 		}
 
 		public static void AddToWindow(this List<GameObject> gameObjects, GUIWindow window, int column, bool isComboBox = false)
 		{
 			for (int i = 0; i < gameObjects.Count; i++)
 			{
-				WindowManager.AddElementToWindow(gameObjects[i], window, GetColumnSlot(i, column, isComboBox), new Rect(0, 0, 0, 0));
+				PlaceInWindow(gameObjects[i], window, GetColumnSlot(i, column, isComboBox));
 			}
 		}
 
@@ -116,7 +138,6 @@ namespace Trainer_v5
 		/// <summary>Lays out a header, scrolling rows (up to maxVisibleRows) and a footer; returns the column height.</summary>
 		public static int CreateScrollableColumn(GUIWindow window, Rect origin, GameObject[] header, GameObject[] scrollableItems, GameObject[] footer, int itemHeight, int gap, int maxVisibleRows)
 		{
-			var zeroAnchors = new Rect(0, 0, 0, 0);
 			float x = origin.x;
 			float width = origin.width;
 			float y = origin.y;
@@ -125,7 +146,7 @@ namespace Trainer_v5
 
 			foreach (var item in header)
 			{
-				WindowManager.AddElementToWindow(item, window, new Rect(x, y, width, itemHeight), zeroAnchors);
+				PlaceInWindow(item, window, new Rect(x, y, width, itemHeight));
 				y += step;
 				totalSlots++;
 			}
@@ -135,7 +156,7 @@ namespace Trainer_v5
 			{
 				foreach (var item in scrollableItems)
 				{
-					WindowManager.AddElementToWindow(item, window, new Rect(x, y, width, itemHeight), zeroAnchors);
+					PlaceInWindow(item, window, new Rect(x, y, width, itemHeight));
 					y += step;
 					totalSlots++;
 				}
@@ -147,26 +168,20 @@ namespace Trainer_v5
 
 				var viewport = WindowManager.SpawnPanel();
 				viewport.gameObject.name = "ScrollViewport";
-				WindowManager.AddElementToWindow(viewport.gameObject, window, new Rect(x, y, width, scrollAreaHeight), zeroAnchors);
-				viewport.gameObject.AddComponent<RectMask2D>();
-				var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
+				PlaceInWindow(viewport.gameObject, window, new Rect(x, y, width, scrollAreaHeight));
 
 				var content = WindowManager.SpawnPanel();
 				content.gameObject.name = "ScrollContent";
-				WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, width, contentHeight), zeroAnchors);
+				PlaceInElement(content.gameObject, viewport.gameObject, new Rect(0, 0, width, contentHeight));
 
 				float itemY = 0;
 				foreach (var item in scrollableItems)
 				{
-					WindowManager.AddElementToElement(item, content.gameObject, new Rect(0, itemY, width, itemHeight), zeroAnchors);
+					PlaceInElement(item, content.gameObject, new Rect(0, itemY, width, itemHeight));
 					itemY += step;
 				}
 
-				scrollRect.content = content;
-				scrollRect.horizontal = false;
-				scrollRect.vertical = true;
-				scrollRect.movementType = ScrollRect.MovementType.Clamped;
-				scrollRect.scrollSensitivity = itemHeight;
+				MakeVerticallyScrollable(viewport.gameObject, content, itemHeight);
 
 				y += maxVisibleRows * step;
 				totalSlots += maxVisibleRows;
@@ -174,7 +189,7 @@ namespace Trainer_v5
 
 			foreach (var item in footer)
 			{
-				WindowManager.AddElementToWindow(item, window, new Rect(x, y, width, itemHeight), zeroAnchors);
+				PlaceInWindow(item, window, new Rect(x, y, width, itemHeight));
 				y += step;
 				totalSlots++;
 			}

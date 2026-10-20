@@ -54,7 +54,7 @@ namespace Trainer_v5.Tests
 		public void EveryListenerIsAddedWhileTheWindowIsBuilt()
 		{
 			var source = Window();
-			var allowed = new[] { "private static void Init()", "private static void BuildEfficiency(" };
+			var allowed = new[] { "private static void Init()", "private static GUICombobox AddEfficiencyRow(" };
 			var inAllowed = 0;
 			foreach (var marker in allowed)
 			{
@@ -160,7 +160,10 @@ namespace Trainer_v5.Tests
 			Assert.Contains("row.Tab == SettingsTab.Settings", actions);
 			Assert.Contains("SettingKeys.EfficiencyStore", efficiency);
 			Assert.Contains("SettingKeys.LeadEfficiencyStore", efficiency);
-			Assert.Equal(2, Count(source, "UIHelper.CreateComboBox("));
+			Assert.Equal(1, Count(source, "UIHelper.CreateComboBox("));
+			Assert.Equal(2, Count(efficiency, "AddEfficiencyRow(settingsCells,"));
+			Assert.Contains("_efficiencyComboBox = AddEfficiencyRow(", efficiency);
+			Assert.Contains("_leadEfficiencyComboBox = AddEfficiencyRow(", efficiency);
 			Assert.Contains("PlaceSettingsPage(settingsPage.Content, settingsCells);", SourceCode.Body(source, "private static void Init()"));
 		}
 
@@ -232,6 +235,50 @@ namespace Trainer_v5.Tests
 					Assert.DoesNotContain(retired, source);
 				}
 			}
+		}
+
+		[Fact]
+		public void EveryControlIsPlacedThroughTheSharedPlacementHelpers()
+		{
+			var source = Window();
+
+			Assert.Equal(0, Count(source, "WindowManager.AddElementTo"));
+			Assert.Equal(0, Count(source, "zeroAnchors"));
+			Assert.Equal(0, Count(source, "AddComponent<ScrollRect>"));
+			Assert.Equal(1, Count(source, "UIHelper.MakeVerticallyScrollable("));
+			Assert.Equal(6, Count(source, "UIHelper.PlaceIn"));
+		}
+
+		[Fact]
+		public void TheSharedScrollSetupExistsOnceAndIsUsedByBothScrollingLayouts()
+		{
+			var helper = SourceCode.Read("UIHelper.cs");
+			var setup = SourceCode.Body(helper, "public static void MakeVerticallyScrollable(");
+
+			Assert.Equal(1, Count(helper, "AddComponent<ScrollRect>"));
+			Assert.Equal(1, Count(helper, "AddComponent<RectMask2D>"));
+			Assert.Contains("scrollRect.horizontal = false;", setup);
+			Assert.Contains("scrollRect.vertical = true;", setup);
+			Assert.Contains("ScrollRect.MovementType.Clamped", setup);
+			Assert.Equal(1, Count(SourceCode.Body(helper, "public static int CreateScrollableColumn("), "MakeVerticallyScrollable("));
+			Assert.Equal(1, Count(SourceCode.Body(helper, "public static void PlaceInElement("), "WindowManager.AddElementToElement("));
+			Assert.Equal(1, Count(SourceCode.Body(helper, "public static void PlaceInWindow("), "WindowManager.AddElementToWindow("));
+		}
+
+		[Fact]
+		public void EachControlGetsItsHandlerOnceAndRefreshNeverAddsOne()
+		{
+			var source = Window();
+			var efficiencyRow = SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow(");
+			var refreshEfficiency = SourceCode.Body(source, "private static void RefreshEfficiency(");
+			var createToggle = SourceCode.Body(source, "private static GameObject CreateSettingToggle(");
+
+			Assert.Equal(1, Count(efficiencyRow, "AddListener("));
+			Assert.Equal(1, Count(source, "onClick.AddListener("));
+			Assert.DoesNotContain("AddListener", refreshEfficiency);
+			Assert.DoesNotContain("AddListener", createToggle);
+			Assert.Equal(1, Count(createToggle, "_toggleBindings.Add("));
+			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Init()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells);", "the list is replaced before the toggles register in it");
 		}
 
 		private static int Count(string source, string text)
