@@ -144,10 +144,10 @@ conventions.
 
 | Trigger | Workflow | Result |
 |---------|----------|--------|
-| Push or PR to `develop` | CI | Build check |
-| Daily schedule or manual dispatch | Nightly | Build + versioned RC artifact + prerelease |
+| Push to `develop`, PR to `develop` or `main` | CI | Release build + format check + tests |
+| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, versioned RC zip artifact, draft prerelease published after its asset uploads |
 | PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
-| Push to `main` | Release | Build + versioned zip artifact + versioned GitHub Release |
+| Push to `main` | Release | Build + format check + tests, versioned zip artifact + versioned GitHub Release |
 
 The release workflow reads the semantic version from `Helpers.Version`. A release
 creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the
