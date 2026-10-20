@@ -2,7 +2,7 @@
 
 **Project**: T5B1 - Software Inc. Trainer (v5, Beta 1)
 **Status**: Active
-**Last Updated**: 2026-09-28
+**Last Updated**: 2026-10-19
 
 This document describes the current implemented architecture. Proposed
 changes belong under `docs/project/designs/`; individual features belong in
@@ -70,7 +70,7 @@ Frame, Minute, Hour, Day and Month (while the setting is on) and Enabled and
 Disabled (once, on the frame a toggle changes; each toggle is observed once
 per frame). A feature with several cadences has several rows sharing its id.
 To schedule a new feature, add its rows; `TrainerBehaviour` only raises the
-triggers. The `Cheats.*` flags pushed once per load stay in `TrainerBehaviour`.
+triggers. The `Cheats.*` flags (Force Lights, Show Room Ceilings, Unlimited Subsidiaries) stay in `TrainerBehaviour`: they have no save backing, so they are pushed on the first frame of the process and again on every toggle transition, which includes the first observation after each load.
 A periodic feature (Minute, Hour, Day, Month) also has an Enabled row so it
 takes effect the moment it is switched on, unless it is listed in
 `FeatureRegistry.NoCatchUp`; `FeatureScheduleTests` enforces that, so a new
@@ -252,8 +252,8 @@ Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
 toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
-helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Founder button (`FounderToggle`, #190) shows the employee's Founder state and flips only `Employee.Founder` on the existing object, either way and for any live employee, after a typed YES; the target is checked again at confirmation. The game treats a founder as unpaid (`Actor.WorksForFree`) and disables Fire for one when the detail window is shown, so the employee must be selected again. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. UI text is localized; translations live under
-`Trainer_v5/Trainer.Localization/<language>/`.
+helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Founder button (`FounderToggle`, #190) shows the employee's Founder state and flips only `Employee.Founder` on the existing object, either way and for any live employee, after a typed YES; the target is checked again at confirmation. The game treats a founder as unpaid (`Actor.WorksForFree`) and disables Fire for one when the detail window is shown, so the employee must be selected again. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. Most UI text is localized (a localization key with an English default) and translations live under
+`Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and labels are English-only.
 
 ## Validation
 
@@ -273,7 +273,7 @@ helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve th
 
 ## Architectural Debt
 
-- None currently tracked.
+- Open work is tracked as GitHub issues labeled `type: tech-debt`.
 
 ## Design Records
 
