@@ -65,7 +65,7 @@ namespace Trainer_v5.Tests
 					offenders.Add(name + ": AddPopupMessage");
 				if (source.Contains("WindowManager.SpawnDialog("))
 					offenders.Add(name + ": SpawnDialog");
-				if (source.Contains("ShowMessageBox("))
+				if (name != "Confirmation.cs" && source.Contains("ShowMessageBox("))
 					offenders.Add(name + ": ShowMessageBox");
 				if (source.Contains("PopupManager.AddPopup("))
 					offenders.Add(name + ": PopupManager.AddPopup");

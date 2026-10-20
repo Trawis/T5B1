@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("Ann: Founder off -> on", turnOn);
 			Assert.Contains("Ann: Founder on -> off", turnOff);
-			Assert.Contains("Type YES to confirm", turnOn);
+			Assert.DoesNotContain("YES", turnOn);
 		}
 
 		[Fact]
@@ -22,7 +22,8 @@ namespace Trainer_v5.Tests
 			var source = SourceCode.Read("FounderToggle.cs");
 			var apply = SourceCode.Body(source, "private static void Apply(");
 
-			SourceCode.AssertInOrder(apply, "answer != \"YES\"", "FindBlocker(target)", "the confirmation comes before the check");
+			Assert.DoesNotContain("YES", apply);
+			SourceCode.AssertInOrder(source, "Confirmation.Ask(", "Apply(target, shown)", "the player is asked before the write");
 			SourceCode.AssertInOrder(apply, "FindBlocker(target)", "Founder = !shown", "the target is checked again before the write");
 			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"\.Founder = "));
 			Assert.DoesNotContain("Experimental", source);
