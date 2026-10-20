@@ -87,6 +87,16 @@ OptionsLoadHint			"Please load the game and press 'Trainer' button."
 MoreCreativity				"More Creativity"
 MoreInspiration				"More Inspiration"
 ExtendDeadline				"Extend Deadline"
+#Trainer Settings tabs and section headers
+TabActions					"Actions"
+TabToggles					"Toggles"
+TabSettings					"Settings"
+DomainCompany				"Company"
+DomainEmployee				"Employee"
+DomainProduct				"Product"
+DomainWork					"Work"
+DomainEnvironment			"Environment"
+
 #Labels, dialogs and popups
 SelectEmployeesError			"Select one or more employees."
 SelectRolesError			"Select one or more roles."

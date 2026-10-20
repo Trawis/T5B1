@@ -5,15 +5,12 @@ namespace Trainer_v5
 		public const int ELEMENT_WIDTH = 150;
 		public const int ELEMENT_HEIGHT = 32;
 
-		public const int X_SETTINGS_WINDOW = 982;
 		public const int X_EMPLOYEESKILLCHANGE_WINDOW = SECOND_COLUMN + ELEMENT_WIDTH + FIRST_COLUMN;
 
 		public const int FIRST_COLUMN = 1;
 		public const int SECOND_COLUMN = 161;
 		public const int THIRD_COLUMN = 322;
 		public const int FOURTH_COLUMN = 483;
-		public const int FIFTH_COLUMN = 644;
-		public const int SIXTH_COLUMN = 805;
 
 		public const float BOOKSHELF_AURA_BOOSTED = 0.75f;
 		public const float CHAIR_COMFORT_LOW = 1.2f;

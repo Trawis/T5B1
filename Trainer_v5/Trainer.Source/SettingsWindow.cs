@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,6 +8,16 @@ namespace Trainer_v5
 	public class SettingsWindow : MonoBehaviour
 	{
 		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version}) | GAME VERSION: {Helpers.GetGameVersion()}";
+
+		// The page last shown, kept for the running game only (not a save key). Reset() leaves it alone.
+		private static SettingsTab _activeTab;
+		// True while the controls are being set from the stored values; the toggle handler must not flip a setting then.
+		private static bool _refreshing;
+		private static Button[] _tabButtons;
+		private static GameObject[] _tabPages;
+		private static List<ToggleBinding> _toggleBindings;
+		private static GUICombobox _efficiencyComboBox;
+		private static GUICombobox _leadEfficiencyComboBox;
 
 		public static GUIWindow Window { get; set; }
 		public static bool Shown { get; set; }
@@ -22,24 +31,31 @@ namespace Trainer_v5
 			else
 			{
 				Window.Toggle();
+				if (Window.Shown)
+				{
+					RefreshFromSettings();
+				}
 			}
 
 			Shown = Window.Shown;
 		}
 
 		// The game destroys its windows with the scene; a stale Shown would make F1 do nothing in the next game.
+		// No control outlives it, so the lists used to refresh them are dropped too.
 		public static void Reset()
 		{
 			Window = null;
 			Shown = false;
+			_refreshing = false;
+			_tabButtons = null;
+			_tabPages = null;
+			_toggleBindings = null;
+			_efficiencyComboBox = null;
+			_leadEfficiencyComboBox = null;
 		}
 
 		private static void Init()
 		{
-			var settings = Helpers.Settings;
-			var storesSettings = Helpers.StoresSettings;
-			var efficiencySelectItems = Helpers.EfficiencySelectItems;
-
 			Window = UIHelper.SpawnWindow(_title, "TrainerSettings", "TrainerSettingsPanel");
 
 			if (Window.name == "TrainerSettings")
@@ -62,193 +78,339 @@ namespace Trainer_v5
 				}
 			}
 
-			var standardToggles = SettingToggleRows.Create();
+			_toggleBindings = new List<ToggleBinding>();
+			var actionCells = CreateSectionLists();
+			var toggleCells = CreateSectionLists();
+			var settingsCells = new List<GameObject>();
 
-			List<GameObject> column1 = new List<GameObject>();
-			List<GameObject> column2 = new List<GameObject>();
-			List<GameObject> column3 = new List<GameObject>();
-			List<GameObject> column4 = new List<GameObject>();
-			List<GameObject> column5 = new List<GameObject>();
-			List<GameObject> column6 = new List<GameObject>();
+			BuildEfficiency(settingsCells);
+			BuildActions(actionCells, settingsCells);
+			BuildToggles(toggleCells);
 
-			#region column1
+			var actionDomains = SettingsWindowState.ActionDomains();
+			var toggleDomains = SettingsWindowState.ToggleDomains();
+			int actionRows = SettingsWindowState.PageRows(CountCells(actionCells, actionDomains), SettingsWindowState.Columns);
+			int toggleRows = SettingsWindowState.PageRows(CountCells(toggleCells, toggleDomains), SettingsWindowState.Columns);
+			int maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 1);
+			int visibleRows = SettingsWindowState.VisibleRows(System.Math.Max(actionRows, toggleRows), SettingsWindowState.SettingsPageRows, maxVisibleRows);
 
-			column1.Add(UIHelper.CreateButton("AddMoney".LocDef("Add Money"), CompanyFeatures.IncreaseMoney));
-			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), CompanyFeatures.AddAIFunds));
-			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
-			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
-			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyFeatures.TakeoverCompany));
-			column1.Add(UIHelper.CreateLabel());
+			var actionsPage = CreateTabPage("ActionsPage", actionRows, visibleRows);
+			PlaceSections(actionsPage.Content, actionCells, actionDomains);
+			var togglesPage = CreateTabPage("TogglesPage", toggleRows, visibleRows);
+			PlaceSections(togglesPage.Content, toggleCells, toggleDomains);
+			var settingsPage = CreateTabPage("SettingsPage", SettingsWindowState.SettingsPageRows, visibleRows);
+			PlaceSettingsPage(settingsPage.Content, settingsCells);
 
-			column1.Add(UIHelper.CreateButton("BankruptAll".LocDef("AI Bankrupt All"), CompanyFeatures.AIBankrupt));
-			column1.Add(UIHelper.CreateButton("DaysPerMonth".LocDef("Days per month"), CompanyFeatures.MonthDays));
-			column1.Add(UIHelper.CreateButton("ClearAllLoans".LocDef("Clear all loans"), CompanyFeatures.ClearLoans));
-			column1.Add(UIHelper.CreateButton("MaxMarketRecognition".LocDef("Max Market Recognition"), CompanyFeatures.MaxMarketRecognition));
-			column1.Add(UIHelper.CreateButton("MaxSkill".LocDef("Max skill of employees"), EmployeeFeatures.EmployeesToMax));
-			column1.Add(UIHelper.CreateButton("ResetAge".LocDef("Reset age of employees"), EmployeeFeatures.ResetAgeOfEmployees));
-			column1.Add(UIHelper.CreateButton("SellProductsStock".LocDef("Sell products stock"), ProductFeatures.SellProductStock));
-			column1.Add(UIHelper.CreateButton("UnlockAllFurniture".LocDef("Unlock all furniture"), CompanyFeatures.UnlockFurniture));
-			column1.Add(UIHelper.CreateButton("UnlockAllSpace".LocDef("Unlock all space"), CompanyFeatures.UnlockAllSpace));
-			column1.Add(UIHelper.CreateButton("ExtendDeadline".LocDef("Extend Deadline"), WorkItemFeatures.ExtendDeadline));
-			column1.Add(UIHelper.CreateButton("UnlockAndClaimRewards".LocDef("Unlock and Claim Rewards"), CompanyFeatures.UnlockAndClaimAllRewards));
+			_tabPages = new[] { actionsPage.Root, togglesPage.Root, settingsPage.Root };
+			BuildTabStrip();
+			SetActiveTab(_activeTab);
 
-			#endregion
+			// Title bar and tab strip rows, then the content rows.
+			Window.SetWindowSize(visibleRows + 1, SettingsWindowState.WindowWidth);
+		}
 
-			#region column2
+		// Shows one page and hides the others. Everything was built once in Init, so this creates nothing and adds no listeners.
+		private static void SetActiveTab(SettingsTab tab)
+		{
+			_activeTab = SettingsWindowState.ClampTab(tab);
+			if (_tabPages == null || _tabButtons == null)
+			{
+				return;
+			}
 
-			column2.Add(UIHelper.CreateButton("MaxReputation".LocDef("Max Reputation"), CompanyFeatures.MaxReputation));
-			column2.Add(UIHelper.CreateButton("FixBugs".LocDef("Fix Bugs"), WorkItemFeatures.FixBugs));
-			column2.Add(UIHelper.CreateButton("InstantResearch".LocDef("Instant Research"), WorkItemFeatures.InstantResearch));
-			column2.Add(UIHelper.CreateButton("InstantPorting".LocDef("Instant Porting"), WorkItemFeatures.InstantPorting));
-			column2.Add(UIHelper.CreateButton("InstantMarketing".LocDef("Instant Marketing"), MarketFeatures.InstantMarketing));
-			column2.Add(UIHelper.CreateButton("TransferOffshoreFunds".LocDef("Transfer Offshore Funds"), CompanyFeatures.TransferOffshoreFunds));
-			column2.Add(UIHelper.CreateButton("OptimizeTeamAssignments".LocDef("Optimize Team Assignments"), WorkItemFeatures.OptimizeTeamAssignments));
-			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SetProductPrice".LocDef("Set Product Price"), ProductFeatures.SetProductPrice));
-			column2.Add(UIHelper.CreateLabel());
-			column2.Add(UIHelper.CreateButton("SubsidiaryCompany".LocDef("Subsidiary Company"), CompanyFeatures.SubDCompany));
-			column2.Add(UIHelper.CreateLabel());
+			int active = SettingsWindowState.PageIndex(_activeTab);
+			for (int i = 0; i < _tabPages.Length; i++)
+			{
+				_tabPages[i].SetActive(i == active);
+				MarkTab(_tabButtons[i], i == active);
+			}
+		}
 
-			AddStandardToggles(column2, standardToggles, 2, settings);
-			column2.Add(UIHelper.CreateToggle("UnlimitedSubsidiaries".LocDef("Unlimited Subsidiaries"), settings.Get(SettingKeys.UnlimitedSubsidiaries), a => { settings.Toggle(SettingKeys.UnlimitedSubsidiaries); CompanyFeatures.ApplyUnlimitedSubsidiaries(settings.Get(SettingKeys.UnlimitedSubsidiaries)); }));
+		// The shown page has a disabled, bold button; the others stay clickable.
+		private static void MarkTab(Button button, bool isActive)
+		{
+			button.interactable = !isActive;
+			button.GetComponentInChildren<Text>().fontStyle = isActive ? FontStyle.Bold : FontStyle.Normal;
+		}
 
-			#endregion
+		// The window outlives a close, so the controls can be behind the stored values (a partial load changes them).
+		// The UI version has no way to set a toggle without raising its change event, hence the guard.
+		private static void RefreshFromSettings()
+		{
+			if (_toggleBindings == null)
+			{
+				return;
+			}
 
-			#region column3
+			var settings = Helpers.Settings;
+			_refreshing = true;
+			try
+			{
+				foreach (var binding in _toggleBindings)
+				{
+					if (binding.Control != null)
+					{
+						binding.Control.isOn = settings.Get(binding.Key);
+					}
+				}
 
-			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("SetProductStock".LocDef("Set Product Stock"), ProductFeatures.SetProductStock));
-			column3.Add(UIHelper.CreateLabel());
-			column3.Add(UIHelper.CreateButton("Bankrupt".LocDef("Bankrupt"), CompanyFeatures.ForceBankrupt));
-			column3.Add(UIHelper.CreateLabel());
+				RefreshEfficiency(_efficiencyComboBox, SettingKeys.EfficiencyStore);
+				RefreshEfficiency(_leadEfficiencyComboBox, SettingKeys.LeadEfficiencyStore);
+			}
+			finally
+			{
+				_refreshing = false;
+			}
+		}
 
-			AddStandardToggles(column3, standardToggles, 3, settings);
-			column3.Add(UIHelper.CreateToggle("ForceLights".LocDef("Force Lights"), settings.Get(SettingKeys.ForceLights), a => { settings.Toggle(SettingKeys.ForceLights); EnvironmentFeatures.ApplyForceLights(settings.Get(SettingKeys.ForceLights)); }));
-			column3.Add(UIHelper.CreateToggle("ShowRoomCeilings".LocDef("Show Room Ceilings"), settings.Get(SettingKeys.ShowRoomCeilings), a => { settings.Toggle(SettingKeys.ShowRoomCeilings); EnvironmentFeatures.ApplyShowRoomCeilings(settings.Get(SettingKeys.ShowRoomCeilings)); }));
+		private static void RefreshEfficiency(GUICombobox comboBox, StoreKey key)
+		{
+			if (comboBox != null)
+			{
+				comboBox.UpdateSelectionSupressEvents(Helpers.EfficiencySelectItems.GetIndex(Helpers.StoresSettings, key, 2));
+			}
+		}
 
-			#endregion
+		private static void BuildTabStrip()
+		{
+			var labels = new[] { "TabActions".LocDef("Actions"), "TabToggles".LocDef("Toggles"), "TabSettings".LocDef("Settings") };
+			var names = new[] { "ActionsTab", "TogglesTab", "SettingsTab" };
+			_tabButtons = new Button[labels.Length];
+			for (int i = 0; i < labels.Length; i++)
+			{
+				_tabButtons[i] = CreateTabButton(i, labels[i], names[i]);
+			}
+		}
 
-			#region column4
+		private static Button CreateTabButton(int index, string label, string name)
+		{
+			var tab = SettingsTab.Actions + index;
+			var button = UIFactory.Button(label, () => SetActiveTab(tab), name);
+			WindowManager.AddElementToWindow(button.gameObject, Window, UIHelper.GetGridSlot(index, SettingsWindowState.Columns, 0), new Rect(0, 0, 0, 0));
+			return button;
+		}
 
-			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateButton("SetActiveUsers".LocDef("Set Active Users"), ProductFeatures.AddActiveUsers));
-			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateLabel());
-			column4.Add(UIHelper.CreateLabel());
+		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject> settingsCells)
+		{
+			// The three product buttons that read the name sit next to the field; the static keeps the text across rebuilds.
+			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 
-			AddStandardToggles(column4, standardToggles, 4, settings);
+			foreach (var row in SettingActionRows.Create())
+			{
+				var button = UIHelper.CreateButton(row.LocKey.LocDef(row.DefaultText), row.Action);
+				if (row.Tab == SettingsTab.Settings)
+				{
+					settingsCells.Add(button);
+				}
+				else
+				{
+					actionCells[(int)row.Domain].Add(button);
+				}
+			}
+		}
 
-			#endregion
+		private static void BuildToggles(List<GameObject>[] toggleCells)
+		{
+			var rows = SettingToggleRows.Create();
+			rows.AddRange(SettingToggleRows.CreateImmediate());
+			foreach (var row in rows)
+			{
+				toggleCells[(int)row.Domain].Add(CreateSettingToggle(row));
+			}
+		}
 
-			#region column5
+		private static GameObject CreateSettingToggle(SettingToggleRow row)
+		{
+			var key = row.Key;
+			var control = UIHelper.CreateToggle(row.LocKey.LocDef(row.DefaultText), Helpers.Settings.Get(key), a => OnToggleChanged(key));
+			_toggleBindings.Add(new ToggleBinding(control.GetComponent<Toggle>(), key));
+			return control;
+		}
 
-			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateButton("Discord".LocDef("DISCORD"), () => Helpers.ShowDiscordInvite()));
-			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateLabel());
-			column5.Add(UIHelper.CreateLabel());
+		// A toggle flips its setting; the three immediate ones also apply the new value to the running game.
+		private static void OnToggleChanged(ToggleKey key)
+		{
+			if (_refreshing)
+			{
+				return;
+			}
 
-			column5.Add(UIHelper.CreateLabel("EfficiencyLabel".LocDef("Efficiency")));
-			var efficiencyComboBox = UIHelper.CreateComboBox(
+			var settings = Helpers.Settings;
+			settings.Toggle(key);
+			bool enabled = settings.Get(key);
+			if (key == SettingKeys.UnlimitedSubsidiaries)
+			{
+				CompanyFeatures.ApplyUnlimitedSubsidiaries(enabled);
+			}
+			else if (key == SettingKeys.ForceLights)
+			{
+				EnvironmentFeatures.ApplyForceLights(enabled);
+			}
+			else if (key == SettingKeys.ShowRoomCeilings)
+			{
+				EnvironmentFeatures.ApplyShowRoomCeilings(enabled);
+			}
+		}
+
+		// Adds the label and drop-down of both efficiency settings first, the order PlaceSettingsPage lays them out in.
+		private static void BuildEfficiency(List<GameObject> settingsCells)
+		{
+			var storesSettings = Helpers.StoresSettings;
+			var efficiencySelectItems = Helpers.EfficiencySelectItems;
+
+			settingsCells.Add(UIHelper.CreateLabel("EfficiencyLabel".LocDef("Efficiency")));
+			_efficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
 				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.EfficiencyStore, 2)
 			);
-			efficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.EfficiencyStore, efficiencySelectItems.GetAt(efficiencyComboBox.Selected).Value));
-			column5.Add(efficiencyComboBox.gameObject);
+			var efficiency = _efficiencyComboBox;
+			efficiency.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.EfficiencyStore, efficiencySelectItems.GetAt(efficiency.Selected).Value));
+			settingsCells.Add(efficiency.gameObject);
 
-			column5.Add(UIHelper.CreateLabel("LeadEfficiencyLabel".LocDef("Lead Efficiency")));
-			var leadEfficiencyComboBox = UIHelper.CreateComboBox(
+			settingsCells.Add(UIHelper.CreateLabel("LeadEfficiencyLabel".LocDef("Lead Efficiency")));
+			_leadEfficiencyComboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
 				selection: efficiencySelectItems.GetIndex(storesSettings, SettingKeys.LeadEfficiencyStore, 2)
 			);
-			leadEfficiencyComboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.LeadEfficiencyStore, efficiencySelectItems.GetAt(leadEfficiencyComboBox.Selected).Value));
-			column5.Add(leadEfficiencyComboBox.gameObject);
-
-			#endregion
-
-			#region column6
-
-			#endregion
-
-			var scrollingColumns = new[] { column1, column2, column3, column4 };
-			int tallestScrollingColumn = scrollingColumns.Max(c => c.Count);
-			int otherRows = Math.Max(column5.Count, column6.Count);
-			int maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 0);
-			int visibleRows = SettingsWindowState.VisibleRows(tallestScrollingColumn, otherRows, maxVisibleRows);
-
-			if (tallestScrollingColumn > visibleRows)
-			{
-				AddScrollingColumns(Window, scrollingColumns, visibleRows);
-			}
-			else
-			{
-				column1.AddToWindow(Window, Constants.FIRST_COLUMN);
-				column2.AddToWindow(Window, Constants.SECOND_COLUMN);
-				column3.AddToWindow(Window, Constants.THIRD_COLUMN);
-				column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
-			}
-
-			column5.AddToWindow(Window, Constants.FIFTH_COLUMN, isComboBox: true);
-			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
-
-			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
+			var leadEfficiency = _leadEfficiencyComboBox;
+			leadEfficiency.OnSelectedChanged.AddListener(() => storesSettings.Set(SettingKeys.LeadEfficiencyStore, efficiencySelectItems.GetAt(leadEfficiency.Selected).Value));
+			settingsCells.Add(leadEfficiency.gameObject);
 		}
 
-		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
-		// tallest column. Columns 5 and 6 stay outside it so the combo box drop-downs are not clipped.
-		private static void AddScrollingColumns(GUIWindow window, List<GameObject>[] columns, int visibleRows)
+		// Efficiency label and drop-down, lead efficiency label and drop-down, a gap, then the other Settings buttons.
+		// The drop-downs open from a fixed place because this page never scrolls.
+		private static void PlaceSettingsPage(GameObject container, List<GameObject> settingsCells)
 		{
 			var zeroAnchors = new Rect(0, 0, 0, 0);
-			int width = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
-			int contentHeight = columns.Max(column => column.Count) * Constants.ELEMENT_HEIGHT;
+			for (int i = 0; i < settingsCells.Count; i++)
+			{
+				int row = i < 4 ? i : i + 1;
+				WindowManager.AddElementToElement(settingsCells[i], container, UIHelper.GetGridSlot(row, 1, 0), zeroAnchors);
+			}
+		}
 
+		private static List<GameObject>[] CreateSectionLists()
+		{
+			var sections = new List<GameObject>[(int)TrainerDomain.Environment + 1];
+			for (int i = 0; i < sections.Length; i++)
+			{
+				sections[i] = new List<GameObject>();
+			}
+
+			return sections;
+		}
+
+		private static int[] CountCells(List<GameObject>[] sections, TrainerDomain[] order)
+		{
+			var counts = new int[order.Length];
+			for (int i = 0; i < order.Length; i++)
+			{
+				counts[i] = sections[(int)order[i]].Count;
+			}
+
+			return counts;
+		}
+
+		// A header row per section that has controls, then its controls filled row by row.
+		private static void PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order)
+		{
+			var zeroAnchors = new Rect(0, 0, 0, 0);
+			int headerWidth = UIHelper.GetGridColumnX(SettingsWindowState.Columns - 1) + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
+			int row = 0;
+			foreach (var domain in order)
+			{
+				var cells = sections[(int)domain];
+				if (cells.Count == 0)
+				{
+					continue;
+				}
+
+				var header = UIFactory.Label(DomainLabel(domain), new TextStyle { Alignment = TextAnchor.MiddleCenter, FontStyle = FontStyle.Bold });
+				header.name = domain + "_Header";
+				WindowManager.AddElementToElement(header.gameObject, container, new Rect(Constants.FIRST_COLUMN, row * Constants.ELEMENT_HEIGHT, headerWidth, Constants.ELEMENT_HEIGHT), zeroAnchors);
+				row++;
+
+				for (int i = 0; i < cells.Count; i++)
+				{
+					WindowManager.AddElementToElement(cells[i], container, UIHelper.GetGridSlot(i, SettingsWindowState.Columns, row), zeroAnchors);
+				}
+
+				row += SettingsWindowState.SectionRows(cells.Count, SettingsWindowState.Columns);
+			}
+		}
+
+		private static string DomainLabel(TrainerDomain domain)
+		{
+			switch (domain)
+			{
+				case TrainerDomain.Company:
+					return "DomainCompany".LocDef("Company");
+				case TrainerDomain.Employee:
+					return "DomainEmployee".LocDef("Employee");
+				case TrainerDomain.Product:
+					return "DomainProduct".LocDef("Product");
+				case TrainerDomain.Work:
+					return "DomainWork".LocDef("Work");
+				case TrainerDomain.Environment:
+					return "DomainEnvironment".LocDef("Environment");
+				default:
+					return string.Empty;
+			}
+		}
+
+		// One page below the tab strip. A page taller than the window scrolls on its own (the same ScrollRect set-up the
+		// window used for its columns); a page that fits gets no scroll area. Each page keeps its own scroll position.
+		private static TabPage CreateTabPage(string name, int rows, int visibleRows)
+		{
+			var zeroAnchors = new Rect(0, 0, 0, 0);
 			var viewport = WindowManager.SpawnPanel();
-			viewport.gameObject.name = "ScrollViewport";
-			WindowManager.AddElementToWindow(viewport.gameObject, window, new Rect(Constants.FIRST_COLUMN, 0, width, visibleRows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			viewport.gameObject.name = name;
+			WindowManager.AddElementToWindow(viewport.gameObject, Window, new Rect(0, Constants.ELEMENT_HEIGHT, SettingsWindowState.WindowWidth, visibleRows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			if (rows <= visibleRows)
+			{
+				return new TabPage(viewport.gameObject, viewport.gameObject);
+			}
+
 			viewport.gameObject.AddComponent<RectMask2D>();
 			var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
 
 			var content = WindowManager.SpawnPanel();
-			content.gameObject.name = "ScrollContent";
-			WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, width, contentHeight), zeroAnchors);
-
-			for (int c = 0; c < columns.Length; c++)
-			{
-				var columnX = Constants.FIRST_COLUMN + c * (Constants.SECOND_COLUMN - Constants.FIRST_COLUMN);
-				for (int i = 0; i < columns[c].Count; i++)
-				{
-					WindowManager.AddElementToElement(columns[c][i], content.gameObject, UIHelper.GetColumnSlot(i, columnX - Constants.FIRST_COLUMN, false), zeroAnchors);
-				}
-			}
+			content.gameObject.name = name + "Content";
+			WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, SettingsWindowState.WindowWidth, rows * Constants.ELEMENT_HEIGHT), zeroAnchors);
 
 			scrollRect.content = content;
 			scrollRect.horizontal = false;
 			scrollRect.vertical = true;
 			scrollRect.movementType = ScrollRect.MovementType.Clamped;
 			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
+
+			return new TabPage(viewport.gameObject, content.gameObject);
 		}
 
-		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)
+		// A toggle control and the setting it shows. Not generic (see Workshop Source Build).
+		private sealed class ToggleBinding
 		{
-			foreach (var row in rows)
+			public readonly Toggle Control;
+			public readonly ToggleKey Key;
+
+			public ToggleBinding(Toggle control, ToggleKey key)
 			{
-				if (row.Column == columnNumber)
-				{
-					column.Add(CreateSettingToggle(settings, row.LocKey, row.DefaultText, row.Key));
-				}
+				Control = control;
+				Key = key;
 			}
 		}
 
-		private static GameObject CreateSettingToggle(Dictionary<string, bool> settings, string locKey, string defaultText, ToggleKey key)
+		// The object a page is shown and hidden by, and the one its controls are added to.
+		private sealed class TabPage
 		{
-			return UIHelper.CreateToggle(locKey.LocDef(defaultText), settings.Get(key), a => settings.Toggle(key));
+			public readonly GameObject Root;
+			public readonly GameObject Content;
+
+			public TabPage(GameObject root, GameObject content)
+			{
+				Root = root;
+				Content = content;
+			}
 		}
 	}
 }
