@@ -46,7 +46,7 @@ namespace Trainer_v5.Tests
 			try
 			{
 				float value;
-				var error = InputHelper.Validate<float>(input, float.TryParse, 0f, 1f, out value);
+				var error = InputHelper.Validate<float>(input, InputHelper.ParseFloat, 0f, 1f, out value);
 
 				Assert.Equal(valid, error == null);
 			}
