@@ -146,12 +146,15 @@ conventions.
 |---------|----------|--------|
 | Push or PR to `develop` | CI | Build check |
 | Daily schedule or manual dispatch | Nightly | Build + versioned RC artifact + prerelease |
+| PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
 | Push to `main` | Release | Build + versioned zip artifact + versioned GitHub Release |
 
 The release workflow reads the semantic version from `Helpers.Version`. A release
 creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the
 downloadable archive name. Increase `Helpers.Version` before merging another
-release to `main`. The nightly workflow appends the workflow run number as an RC
+release to `main`; the Release Version Guard check fails a pull request to `main`
+whose `Helpers.Version` tag already exists, and a push to `main` without a bump
+is still expected to fail the Release workflow. The nightly workflow appends the workflow run number as an RC
 suffix, producing versions such as `5.4.0-rc123` (tag `v5.4.0-rc123`); nightly prereleases do not
 replace the latest stable release.
 
