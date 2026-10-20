@@ -112,6 +112,11 @@ namespace Trainer_v5
 			EmployeeFeatures.ResetSpecializations();
 			MarketFeatures.ResetGameState();
 			ProductFeatures.ResetGameState();
+
+			if (LoggingOptions.DebugEnabled)
+			{
+				"per-game state reset".LogDebug();
+			}
 		}
 
 		private void SubscribeToSceneEvents()
@@ -173,6 +178,11 @@ namespace Trainer_v5
 
 		private void OnGameReady(object sender, EventArgs args)
 		{
+			if (LoggingOptions.DebugEnabled)
+			{
+				"game ready".LogDebug();
+			}
+
 			DetailWindowTrainer.Install();
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
 		}
@@ -191,12 +201,18 @@ namespace Trainer_v5
 		{
 			if (_dispatcher == null)
 			{
+				List<FeatureEntry> entries = FeatureRegistry.Create();
 				_dispatcher = new FeatureDispatcher(
-					FeatureRegistry.Create(),
+					entries,
 					key => Helpers.GetProperty(TrainerSettings, key),
 					key => Helpers.GetProperty(StoresSettings, key) != null,
 					_toggleStates,
 					Helpers.TryExecute);
+
+				if (LoggingOptions.DebugEnabled)
+				{
+					("dispatcher created: " + entries.Count + " entries").LogDebug();
+				}
 			}
 			return _dispatcher;
 		}
@@ -265,16 +281,31 @@ namespace Trainer_v5
 			if (!_forceLightsApplied)
 			{
 				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+
+				if (LoggingOptions.DebugEnabled && _forceLightsApplied)
+				{
+					"ForceLights applied once".LogDebug();
+				}
 			}
 
 			if (!_showRoomCeilingsApplied)
 			{
 				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+
+				if (LoggingOptions.DebugEnabled && _showRoomCeilingsApplied)
+				{
+					"ShowRoomCeilings applied once".LogDebug();
+				}
 			}
 
 			if (!_unlimitedSubsidiariesApplied)
 			{
 				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+
+				if (LoggingOptions.DebugEnabled && _unlimitedSubsidiariesApplied)
+				{
+					"UnlimitedSubsidiaries applied once".LogDebug();
+				}
 			}
 
 			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)

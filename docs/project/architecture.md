@@ -99,6 +99,37 @@ directly in one reaches only the guard (`WorkshopExceptionBoundaryTests`
 simulate this with the game's injector and compiler). The handler's behavior
 comes from the game assembly and has not been run in the game (#241).
 
+## Logging
+
+Normal logging is always on and has no setting: a feature failure is reported
+once per rate-limit window through `Helpers.TryExecute` (a `Logger` console line
+naming the feature plus `UnityEngine.Debug.LogException`), and a skipped action
+writes one `Logger.Log` warning to the dev console. Nothing in Normal logging
+looks at `LoggingOptions`.
+
+*Debug Logging* (mod Options, default off) adds trace lines on top:
+
+- `Logger.LogDebug` writes `Trainer [debug]: ...` to the dev console only
+  (`DevConsole.Console.Log`). It never uses `Debug.Log*`: the game stops Unity
+  logging at 1 MB and 2 MB of `Player.log`, and its error handler counts every
+  logged error or exception against a budget of 50 and can pause the game to
+  show its report dialog. Do not add further `Debug.LogError` or
+  `Debug.LogException` paths for trace output.
+- Every `.LogDebug(` call is wrapped in `if (LoggingOptions.DebugEnabled)`, so
+  nothing is built while the option is off. Trace lines are event based, never
+  per frame: a toggle transition and the entries it queued, the first failure
+  and the end of a transition's retries (not each retry), game ready,
+  dispatcher creation, the per-game reset and the first application of the
+  one-time static settings.
+- `LoggingOptions` (`Trainer.Source/LoggingOptions.cs`) stores `DebugLogging`
+  as `True`/`False` in the same per-mod settings file as the Experimental
+  option (see below) and is independent of it.
+
+In the Workshop source build every method body, including the logging helpers,
+is wrapped by the injected exception handler, so logging code must stay trivial
+and exception-free. `LoggingOptionsTests` enforces the guard and the
+console-only rule. Not verified in the game.
+
 ## Toggle Transitions
 
 Reversible toggles restore game state on disable only when the previous or
@@ -212,6 +243,8 @@ not in saves and not in `Helpers.Settings`:
   once per mod when the Options window starts (and when a mod is loaded or
   reloaded later); the game keeps the content, so the toggle reads the value
   when built and is its only writer.
+- *Debug Logging* (`LoggingOptions`, see Logging) is a second, independent
+  option in the same `DLLMod.Settings` file under its own key `DebugLogging`.
 - `ExperimentalOptions` (`Trainer.Source/Experimental/`) is the single
   accessor; only a stored `True` enables it, missing or damaged values stay off.
 - Experimental-only code goes in `Trainer.Source/Experimental/` (namespace

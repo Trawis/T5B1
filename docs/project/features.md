@@ -113,6 +113,12 @@ saved in one. No experimental feature exists yet, so turning it on changes
 nothing today. The Trainer Settings window has no Experimental toggle and no
 Test button.
 
+The same Options screen offers *Debug Logging*, off by default and independent
+of the experimental switch. When on, extra `Trainer [debug]:` trace lines (toggle
+changes, retries, game ready and per-game resets) are written to the dev console
+only; errors and warnings are always logged. It is stored in the same
+`DLLMods/<mod>Setting.txt` and applies to every save game.
+
 Retired settings (Reduce Box Price, Auto Max Market Share, More Creativity,
 Reduce Expansion Cost and the former Experimental toggle) have no control and
 no behavior; a value stored for them in an older save is ignored.

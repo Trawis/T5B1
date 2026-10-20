@@ -21,6 +21,7 @@ namespace Trainer_v5
 
 			// The game has already read the mod's own settings file; this runs when the mod loads, before any game.
 			ExperimentalOptions.Load(parentMod.Settings);
+			LoggingOptions.Load(parentMod.Settings);
 		}
 
 		public static void OpenSettingsWindow()
@@ -80,6 +81,20 @@ namespace Trainer_v5
 				new Rect(0, 0, 0, 0));
 			y += 64;
 
+			if (_mod != null)
+			{
+				Toggle debugToggle = UIFactory.Toggle("DebugLogging".LocDef("Debug Logging"), LoggingOptions.DebugEnabled, SetDebugLoggingEnabled);
+				WindowManager.AddElementToElement(debugToggle.gameObject, parent.gameObject, new Rect(0, y, 400, Constants.ELEMENT_HEIGHT),
+					new Rect(0, 0, 0, 0));
+				y += Constants.ELEMENT_HEIGHT;
+			}
+
+			Text debugNote = WindowManager.SpawnLabel();
+			debugNote.text = "DebugLoggingHint".LocDef("Adds trace lines to the dev console. Errors are always logged. The choice applies to every save game.");
+			WindowManager.AddElementToElement(debugNote.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
+				new Rect(0, 0, 0, 0));
+			y += 64;
+
 			Text label = WindowManager.SpawnLabel();
 			label.text = "OptionsLoadHint".LocDef("Please load the game and press 'Trainer' button.");
 			WindowManager.AddElementToElement(label.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
@@ -127,6 +142,11 @@ namespace Trainer_v5
 		private void SetExperimentalEnabled(bool enabled)
 		{
 			ExperimentalOptions.Set(enabled, _mod.SaveSetting);
+		}
+
+		private void SetDebugLoggingEnabled(bool enabled)
+		{
+			LoggingOptions.Set(enabled, _mod.SaveSetting);
 		}
 
 		private static void DestroyUIButtons()
