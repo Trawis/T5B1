@@ -34,27 +34,49 @@ jobs:
       - name: Read nightly version
         if: steps.check.outputs.has_commits == 'true'
         id: version
-        shell: pwsh
+        shell: bash
         env:
           RC_NUMBER: ${{ github.run_number }}
         run: |
-          $content = Get-Content -Raw "Trainer_v5/Trainer.Source/Helpers.cs"
-          $match = [regex]::Match(
-            $content,
-            'public\s+static\s+string\s+Version\s*=>\s*"(?<version>\d+\.\d+\.\d+)";'
-          )
-
-          if (-not $match.Success) {
-            throw "Could not read a semantic version from Helpers.Version."
+          # BEGIN nightly_base_version
+          # Prints the nightly base: the higher of Helpers.Version and the next
+          # patch after the highest stable vX.Y.Z tag. Prerelease tags are ignored.
+          nightly_base_version() {
+            local helpers="$1" tags="$2" stable
+            stable=$(printf '%s\n' "$tags" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/^v//' | sort -V | tail -n 1)
+            if [ -z "$stable" ]; then
+              echo "$helpers"
+              return
+            fi
+            local next="${stable%.*}.$(( ${stable##*.} + 1 ))"
+            printf '%s\n%s\n' "$helpers" "$next" | sort -V | tail -n 1
           }
+          # END nightly_base_version
 
-          $baseVersion = $match.Groups["version"].Value
-          $version = "$baseVersion-rc$env:RC_NUMBER"
-          $commit = git rev-parse HEAD
+          helpers_version=$(sed -nE 's/.*public[[:space:]]+static[[:space:]]+string[[:space:]]+Version[[:space:]]*=>[[:space:]]*"([0-9]+\.[0-9]+\.[0-9]+)";.*/\1/p' Trainer_v5/Trainer.Source/Helpers.cs | head -n 1)
+          if [ -z "$helpers_version" ]; then
+            echo "Could not read a semantic version from Helpers.Version." >&2
+            exit 1
+          fi
 
-          "version=$version" >> $env:GITHUB_OUTPUT
-          "tag=v$version" >> $env:GITHUB_OUTPUT
-          "commit=$commit" >> $env:GITHUB_OUTPUT
+          base_version=$(nightly_base_version "$helpers_version" "$(git tag --list 'v*')")
+          # A dotted numeric identifier keeps release candidates ordered by run number (SemVer 2.0.0, 11.4).
+          version="$base_version-rc.$RC_NUMBER"
+          tag="v$version"
+          commit=$(git rev-parse HEAD)
+
+          tag_commit=$(git rev-parse --quiet --verify "refs/tags/$tag^{commit}" || true)
+          if [ -n "$tag_commit" ] && [ "$tag_commit" != "$commit" ]; then
+            echo "Tag $tag already exists on commit $tag_commit, not $commit. Do not reuse tags." >&2
+            exit 1
+          fi
+
+          echo "Helpers.Version $helpers_version -> nightly version $version"
+          {
+            echo "version=$version"
+            echo "tag=$tag"
+            echo "commit=$commit"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Check existing nightly release
         if: steps.check.outputs.has_commits == 'true'

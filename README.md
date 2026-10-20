@@ -104,7 +104,7 @@ Report bugs and suggestions through GitHub Issues; community chat is on
 | Trigger | Workflow | Result |
 |---------|----------|--------|
 | Push to `develop`, PR to `develop` or `main` | CI | Release build + format check + tests |
-| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, an RC zip, and a prerelease (version `<Helpers.Version>-rc<run number>`) that does not replace the latest stable release |
+| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, an RC zip, and a prerelease (version `<base>-rc.<run number>`, where `<base>` is the higher of `Helpers.Version` and the next patch after the highest stable `v<X.Y.Z>` tag, so it sorts above the last stable release) that does not replace the latest stable release |
 | PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
 | Push to `main` | Release | Build + format check + tests, versioned zip + GitHub Release tagged `v<Helpers.Version>` |
 
