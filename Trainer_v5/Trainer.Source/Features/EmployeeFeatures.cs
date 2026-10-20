@@ -12,79 +12,11 @@ namespace Trainer_v5
 
 		internal static bool SpecializationsLoaded => _specializationsLoaded;
 
-		internal static void SetSkillPerEmployeeAction(string input)
-		{
-			var selectedActors = SelectorController.Instance.Selected.OfType<Actor>().ToList();
-			var selectedRoles = Helpers.RolesList.Where(r => r.Value).ToList();
-			var selectedSpecializations = Helpers.SpecializationsList.Where(s => s.Value).ToList();
-
-			int amount;
-			if (selectedActors.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more employees.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (selectedRoles.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more roles.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (selectedSpecializations.Count == 0)
-			{
-				WindowManager.SpawnDialog("Select one or more specializations.", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else if (!int.TryParse(input, out amount) || amount == 0 || amount < -3 || amount > 3)
-			{
-				WindowManager.SpawnDialog("Invalid input!\nAllowed inputs are: -3, -2, -1, 1, 2, 3", false, DialogWindow.DialogType.Error);
-				return;
-			}
-			else
-			{
-				selectedActors.ForEach(actor =>
-				{
-					foreach (var role in selectedRoles)
-					{
-						foreach (var specialization in selectedSpecializations)
-						{
-							actor.employee.AddSpecialization(role.Key.ToEmployeeRole(), specialization.Key, false, true, amount);
-						}
-					}
-				});
-
-				HUD.Instance.AddPopupMessage("Trainer: Employee skills/specializations are set!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-			}
-		}
-
-		internal static void SetSkillPerEmployee()
-		{
-			WindowManager.SpawnInputDialog("How many specialization stars do you want?\nMin = -3, Max = 3", "Stars amount", "3", SetSkillPerEmployeeAction);
-		}
-
-		internal static void HREmployees()
-		{
-			if (!Helpers.IsGameReady(requireSelector: true))
-				return;
-
-			Actor[] Actors = Settings.sActorManager.Actors
-									 .Where(actor => actor.employee.IsRole(Employee.RoleBit.Lead))
-									 .ToArray();
-
-			if (Actors.Length == 0)
-			{
-				return;
-			}
-
-			for (var i = 0; i < Actors.Length; i++)
-			{
-				Actors[i].employee.SetSpecialization(Actors[i].employee.GetRoleOrNatural(), "HR", 5);
-			}
-
-			HUD.Instance.AddPopupMessage("Trainer: All leaders are now HRed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
-		}
-
 		internal static void ResetAgeOfEmployees()
 		{
+			if (!Helpers.RequireGameReady("Reset age of employees"))
+				return;
+
 			var currentTime = SDateTime.Now();
 			foreach (var actor in Settings.sActorManager.Actors)
 			{
@@ -92,16 +24,16 @@ namespace Trainer_v5
 				actor.UpdateAgeLook();
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Employees age has been reset!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("EmployeesAgeReset".LocDef("Trainer: Employees age has been reset!"));
 		}
 
 		internal static void EmployeesToMax()
 		{
+			if (!Helpers.RequireGameReady("Max skill of employees", requireSelector: true))
+				return;
+
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
-
-			if (!Helpers.IsGameReady(requireSelector: true))
-				return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -124,7 +56,7 @@ namespace Trainer_v5
 				}
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: All employees are now max skilled!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
+			Notification.Popup("AllEmployeesMaxSkilled".LocDef("Trainer: All employees are now max skilled!"));
 		}
 
 		internal static void RestoreIncreaseWalkSpeed()
@@ -230,6 +162,22 @@ namespace Trainer_v5
 			}
 		}
 
+		// The list belongs to one game (mods change the specializations), so a new game recomputes it. The loaded flag
+		// stays set: it also gates the one-time Discord popup in TrainerBehaviour.Update.
+		internal static void ResetSpecializations()
+		{
+			Helpers.SpecializationsList = null;
+		}
+
+		// Recomputes the list for a later game; the first load of a session still belongs to TrainerBehaviour.Update.
+		internal static void RestoreSpecializationsAfterReset()
+		{
+			if (_specializationsLoaded && Helpers.SpecializationsList == null)
+			{
+				LoadSpecializations();
+			}
+		}
+
 		internal static void LoadSpecializations()
 		{
 			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)
@@ -268,19 +216,31 @@ namespace Trainer_v5
 			Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 		}
 
+		// Walks backwards so removing an entry never shifts one still to be visited, and copies nothing (Thoughts.Values is the live list).
+		internal static void RemoveUnwantedThoughts(DictionaryList<string, Employee.ThoughtEffect> thoughts)
+		{
+			for (int i = thoughts.Count - 1; i >= 0; i--)
+			{
+				Employee.ThoughtEffect thought = thoughts[i];
+				if (IsUnwantedThought(thought.Mood))
+				{
+					thoughts.Remove(thought.Thought);
+				}
+			}
+		}
+
+		internal static bool IsUnwantedThought(MoodEffect mood)
+		{
+			return mood.Negative || mood.Sue || !string.IsNullOrEmpty(mood.QuitReason);
+		}
+
 		private static void ApplyFullSatisfactionToActor(Actor actor)
 		{
 			Employee employee = actor.employee;
 
 			employee.JobSatisfaction = 2f;
 			employee.ActiveComplaint = false;
-			foreach (var thought in employee.Thoughts.Values.ToList())
-			{
-				if (thought.Mood.Negative || thought.Mood.Sue || !string.IsNullOrEmpty(thought.Mood.QuitReason))
-				{
-					employee.Thoughts.Remove(thought.Thought);
-				}
-			}
+			RemoveUnwantedThoughts(employee.Thoughts);
 
 			employee.SetMood("LoveWork", actor, 1f);
 		}

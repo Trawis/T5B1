@@ -6,6 +6,90 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.5.0] - 2026-10-20
+
+- Fixed No Sickness leaving employees with the reduced efficiency the game applies
+  after an illness.
+- Fixed Auto Accept Hosting Deals accepting deals when no server group could
+  take them; deals now stay pending until a real server group exists.
+- Fixed Extend Deadline setting a wrong date instead of moving the contract
+  deadline one year later.
+- Fixed the trainer not receiving game time events for a load when its buttons
+  could not be added to the game interface.
+- Fixed trainer settings carrying over from a previously loaded save when the
+  next save does not contain them.
+- Fixed trainer error messages in the console to include the exception type,
+  stack trace and inner exceptions, and logging a null value no longer throws.
+- Fixed the Lead Spec window's no-employee message referring to a Refresh
+  button that does not exist.
+- Fixed Set Base Skills accepting values outside its displayed 0-1 range; its
+  prompt now states that it raises the employee skill ceiling to 1.0.
+- Fixed incorrect German, Spanish and Croatian translations (for example German
+  "Disable Fires" no longer reads as dismissals) and aligned English fallback
+  texts.
+- Fixed Disable Burglars and Disable Fire Inspection not removing burglars and
+  fire inspectors that were already on the map.
+- Fixed Trainer Settings rows being unreachable on short screens, the
+  Experimental Test controls needing a window re-open, the Product Name field
+  not showing the stored name, and the Skill Change window clipping its second
+  column.
+- Fixed trainer features that run every frame stopping when the game clock was
+  briefly unavailable or a shared per-frame step failed.
+- Fixed the Trainer Settings window hotkeys, the specialization list and
+  hosting deal timing carrying over between loaded games, and Max Skill and
+  Reset Age acting before the game was ready.
+- Fixed Enabled and Disabled feature switches being skipped for good when they
+  failed once because the game was not ready; they are now retried.
+- Fixed Sell Product Stock claiming a sale when nothing was sold, silent
+  failures in Subsidiary Company and Fix Bugs (which also no longer accepts
+  your own company), and duplicate or leftover Trainer buttons after a failed
+  UI install.
+- Release and nightly workflows now run the format and test checks and use
+  pinned actions, pull requests to `main` fail when their version tag already
+  exists, and the nightly prerelease is published as a draft with its asset
+  attached.
+- Tests are safer under parallel runs and no longer depend on exact source text.
+- Removed the Test Button from the Trainer Settings window.
+- Moved Enable Experimental Features from the Trainer Settings window to the
+  trainer's section in the game's mod Options. It is off by default and applies
+  to every save; no experimental features are available yet, and an old saved
+  Experimental setting no longer enables anything.
+- Retired the Reduce Expansion Cost toggle: it changed a value the game never
+  reads, so it had no effect on plot prices. Saves that had it on still load.
+- Restored the Disable Burglars toggle in Trainer Settings. It removes burglars
+  that are present and any that appear.
+- Retired the unused Disable Skill Decay setting; the game has no skill decay
+  and the setting never did anything.
+- New saves no longer store settings of removed features (Reduce Box Price,
+  Auto Max Market Share, More Creativity, Reduce Expansion Cost, Disable Skill
+  Decay and the old per-save Experimental flag). Older saves that contain them
+  still load and the values are ignored.
+- More trainer windows, buttons, prompts and messages now use the localization
+  system with English as the fallback.
+- Removed unused internal code and moved the Skill Change window next to the
+  other employee windows.
+- Simplified the README, architecture and feature documentation; the Steam
+  Workshop source install is now described first.
+- Trainer popups now always start with "Trainer: ", and refused actions such as
+  an unknown company or product show as error dialogs.
+- AI Bankrupt All, Clear all loans and Unlock and Claim Rewards now ask for a
+  Yes/No confirmation that shows how many items are affected. Force Bankrupt,
+  Max Reputation and Founder use the same Yes/No dialog instead of typing YES.
+- Added a Debug Logging option to the mod Options that writes extra diagnostic
+  lines to the in-game console (errors are always logged).
+- The trainer window now has three tabs (Actions, Toggles and Settings) with
+  sections, is narrower, and remembers the last tab while the game runs.
+- Nightly builds are now identified by UTC date and time, run number and attempt
+  (for example nightly-20261020T115100Z-r122-a1) instead of a release candidate
+  number, and are always prereleases.
+- The Skill Change editor moved into the employee detail window (new Skills
+  button, with an "All selected" option for several employees). The Skill
+  Change button in the Actor Window is gone, and the stars prompt now says it
+  changes the stars by -3 to 3.
+- Fixed trainer windows being wider or taller than the screen at high UI scales:
+  the trait and demand editors now scroll and the trainer window is slightly
+  narrower.
+
 ## [5.4.0] - 2026-10-19
 
 - Removed the Creativity editor from the employee detail window and the More

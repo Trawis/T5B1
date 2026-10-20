@@ -12,9 +12,8 @@ namespace Trainer_v5
 		private static readonly FeatureGuard _featureGuard;
 
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.4.0";
+		public static string Version => "5.5.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
-		public static bool IsDebug => false;
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
 
 		public static Random Random { get; set; }
@@ -116,14 +115,14 @@ namespace Trainer_v5
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
 		{
-			string message = $"Join us on our discord server\n{DiscordUrl}";
+			string message = string.Format("DiscordInvite".LocDef("Join us on our discord server\n{0}"), DiscordUrl);
 			if (displayAsPopup)
 			{
-				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+				Notification.Popup(message);
 			}
 			else
 			{
-				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo(message);
 			}
 		}
 
@@ -139,6 +138,24 @@ namespace Trainer_v5
 
 		internal static bool IsGameReady(bool requireSelector = false) =>
 			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
+
+		// For user-triggered actions: checks readiness before any game manager is touched and says why nothing happened.
+		internal static bool RequireGameReady(string action, bool requireSelector = false)
+		{
+			if (IsGameReady(requireSelector))
+			{
+				return true;
+			}
+
+			string message = $"{action}: the game is not ready yet, nothing was changed.";
+			message.Log();
+			if (HUD.Instance != null)
+			{
+				Notification.ShowError(message);
+			}
+
+			return false;
+		}
 
 		#endregion
 

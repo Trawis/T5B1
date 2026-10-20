@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -6,38 +5,39 @@ namespace Trainer_v5.Tests
 	// Bankruptcy is one-way, unambiguous, never the player's own company (#234).
 	public class ForceBankruptTests
 	{
-		private static string Between(string startMarker, string endMarker)
+		private static string Member(string signature)
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "CompanyFeatures.cs"));
-			var start = source.IndexOf(startMarker, System.StringComparison.Ordinal);
-			var end = source.IndexOf(endMarker, start, System.StringComparison.Ordinal);
-			return source.Substring(start, end - start);
+			return SourceCode.Body(SourceCode.Read("Features", "CompanyFeatures.cs"), signature);
 		}
 
 		[Fact]
 		public void TheForceActionNeverTogglesTheFlagAndAsksBeforeSettingIt()
 		{
-			var body = Between("internal static void ForceBankruptAction", "internal static void ForceBankrupt()");
+			var body = Member("internal static void ForceBankruptAction");
 
 			Assert.DoesNotContain("= !", body);
 			Assert.Contains("matches.Count > 1", body);
 			Assert.Contains("IsBankruptTarget(simCompany)", body);
 			Assert.DoesNotContain("Bankrupt = true", body);
-			Assert.True(body.IndexOf("SpawnInputDialog", System.StringComparison.Ordinal) < body.IndexOf("ConfirmForceBankrupt", System.StringComparison.Ordinal));
+			Assert.DoesNotContain("YES", body);
+			SourceCode.AssertInOrder(body, "Confirmation.Ask(", "ConfirmForceBankrupt", "the player is asked before the flag is set");
 		}
 
 		[Fact]
 		public void BankruptAllLeavesThePlayersCompanyAlone()
 		{
-			var body = Between("internal static void AIBankrupt", "internal static void UnlockAllSpace");
+			var body = Member("private static List<SimulatedCompany> FindAllBankruptTargets");
 
-			Assert.Contains("Where(IsBankruptTarget)", body);
+			Assert.Contains("IsBankruptTarget(company)", body);
+			Assert.Contains("!company.Bankrupt", body);
+			Assert.Contains("FindAllBankruptTargets()", Member("private static void ApplyAIBankrupt"));
+			Assert.Contains("FindAllBankruptTargets()", Member("internal static void AIBankrupt"));
 		}
 
 		[Fact]
 		public void TheEligibilityRuleSparesThePlayersCompanyAndItsSubsidiaries()
 		{
-			var body = Between("private static bool IsBankruptTarget", "private static void ConfirmForceBankrupt");
+			var body = Member("private static bool IsBankruptTarget");
 
 			Assert.Contains("company != Settings.MyCompany", body);
 			Assert.Contains("!company.IsPlayerOwned()", body);
@@ -46,12 +46,13 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheConfirmationChecksTheCompanyAgainBeforeSettingTheFlag()
 		{
-			var body = Between("private static void ConfirmForceBankrupt", "private static float GetDefaultISPCostFactor");
+			var body = Member("private static void ConfirmForceBankrupt(");
 
 			Assert.Contains("Companies.TryGetValue(company.ID", body);
 			Assert.Contains("IsBankruptTarget(company)", body);
 			Assert.Contains("!company.Bankrupt", body);
 			Assert.DoesNotContain("= !", body);
+			Assert.DoesNotContain("answer", body);
 		}
 	}
 }

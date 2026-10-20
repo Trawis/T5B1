@@ -6,12 +6,18 @@ namespace Trainer_v5
 	// Runs a trigger's features in registration order; the settings lookup and guard are injected to stay Unity-free.
 	internal sealed class FeatureDispatcher
 	{
+		// RunTransitions calls (frames) that retry every call before a failing transition backs off to every 60th call.
+		private const int FastRetryVisits = 60;
+
 		private readonly List<FeatureEntry>[] _byTrigger;
 		private readonly List<ToggleKey> _transitionKeys;
 		private readonly Func<ToggleKey, bool> _isToggleOn;
 		private readonly Func<StoreKey, bool> _isStoreSet;
 		private readonly ToggleStateTracker _toggleStates;
 		private readonly Func<string, Action, bool> _execute;
+		// Transition entries that failed, per toggle key. Kept across ToggleStateTracker.Reset on purpose: a restore that
+		// failed for a toggle that is off in the next game would otherwise never run again (see RunTransitions).
+		private readonly Dictionary<string, PendingTransition> _pending = new Dictionary<string, PendingTransition>();
 
 		public FeatureDispatcher(IList<FeatureEntry> entries, Func<ToggleKey, bool> isToggleOn, Func<StoreKey, bool> isStoreSet, ToggleStateTracker toggleStates, Func<string, Action, bool> execute)
 		{
@@ -52,6 +58,9 @@ namespace Trainer_v5
 		}
 
 		// Observes each transition toggle once, in registration order, and runs its Enabled or Disabled entries.
+		// A failing entry is retried on later calls instead of being consumed (#336); only failed entries repeat, and the
+		// toggle's next transition replaces whatever is pending. Enabled/Disabled actions must be idempotent "set the
+		// state" writes or state-driven catch-ups so a repeat after a partial run is safe; no one-off side effects.
 		public void RunTransitions()
 		{
 			for (int i = 0; i < _transitionKeys.Count; i++)
@@ -60,23 +69,84 @@ namespace Trainer_v5
 				ToggleTransitionEnum transition = _toggleStates.Observe(key.Key, _isToggleOn(key));
 				if (transition == ToggleTransitionEnum.JustEnabled)
 				{
-					RunFor(FeatureTrigger.Enabled, key);
+					StartPending(FeatureTrigger.Enabled, key);
 				}
 				else if (transition == ToggleTransitionEnum.JustDisabled)
 				{
-					RunFor(FeatureTrigger.Disabled, key);
+					StartPending(FeatureTrigger.Disabled, key);
 				}
+
+				RunPending(key);
 			}
 		}
 
-		private void RunFor(FeatureTrigger trigger, ToggleKey key)
+		private void StartPending(FeatureTrigger trigger, ToggleKey key)
 		{
+			PendingTransition pending = new PendingTransition();
 			List<FeatureEntry> entries = _byTrigger[(int)trigger];
 			for (int i = 0; i < entries.Count; i++)
 			{
 				if (entries[i].Toggle == key)
 				{
-					_execute(entries[i].Id, entries[i].Action);
+					pending.Entries.Add(entries[i]);
+				}
+			}
+
+			if (pending.Entries.Count == 0)
+			{
+				_pending.Remove(key.Key);
+			}
+			else
+			{
+				_pending[key.Key] = pending;
+			}
+
+			if (LoggingOptions.DebugEnabled)
+			{
+				("toggle '" + key.Key + "' " + trigger + ": " + pending.Entries.Count + " entries queued").LogDebug();
+			}
+		}
+
+		private void RunPending(ToggleKey key)
+		{
+			PendingTransition pending;
+			if (!_pending.TryGetValue(key.Key, out pending))
+			{
+				return;
+			}
+
+			// A permanently failing action backs off after the first minute of frames instead of failing every frame.
+			pending.Visits++;
+			if (pending.Visits > FastRetryVisits && pending.Visits % FastRetryVisits != 0)
+			{
+				return;
+			}
+
+			List<FeatureEntry> failed = new List<FeatureEntry>();
+			for (int i = 0; i < pending.Entries.Count; i++)
+			{
+				if (!_execute(pending.Entries[i].Id, pending.Entries[i].Action))
+				{
+					failed.Add(pending.Entries[i]);
+				}
+			}
+
+			pending.Entries = failed;
+			if (failed.Count == 0)
+			{
+				_pending.Remove(key.Key);
+			}
+
+			// Only the first failure and the end of the retries are traced, never every retry.
+			if (LoggingOptions.DebugEnabled)
+			{
+				if (failed.Count > 0 && pending.Visits == 1)
+				{
+					("toggle '" + key.Key + "': " + failed.Count + " entries failed, retrying").LogDebug();
+				}
+				else if (failed.Count == 0 && pending.Visits > 1)
+				{
+					("toggle '" + key.Key + "': retries finished after " + pending.Visits + " visits").LogDebug();
 				}
 			}
 		}
@@ -84,6 +154,13 @@ namespace Trainer_v5
 		private bool IsOn(FeatureEntry entry)
 		{
 			return entry.Toggle != null ? _isToggleOn(entry.Toggle) : _isStoreSet(entry.Store);
+		}
+
+		// The entries of one toggle's latest transition that have not succeeded yet.
+		private sealed class PendingTransition
+		{
+			public List<FeatureEntry> Entries = new List<FeatureEntry>();
+			public int Visits;
 		}
 	}
 }

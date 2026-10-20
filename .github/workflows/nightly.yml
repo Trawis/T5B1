@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: develop
           fetch-depth: 0
@@ -35,9 +35,44 @@ jobs:
         if: steps.check.outputs.has_commits == 'true'
         id: version
         shell: pwsh
-        env:
-          RC_NUMBER: ${{ github.run_number }}
         run: |
+          # The build time is read once here. Every later step uses only these outputs.
+          # A nightly is a development build identified by UTC time and run identity. It never infers a release version.
+          function New-NightlyIdentity {
+            param(
+              [DateTime] $Now,
+              [string] $RunNumber,
+              [string] $RunAttempt,
+              [string] $ProductVersion,
+              [string] $Commit
+            )
+
+            if ($RunNumber -notmatch '^\d+$' -or $RunAttempt -notmatch '^\d+$') {
+              throw "Run number '$RunNumber' and run attempt '$RunAttempt' must be numeric."
+            }
+
+            $invariant = [System.Globalization.CultureInfo]::InvariantCulture
+            $utc = $Now.ToUniversalTime()
+            $stamp = $utc.ToString("yyyyMMdd'T'HHmmss'Z'", $invariant)
+            $display = $utc.ToString("yyyy-MM-dd HH:mm", $invariant) + " UTC"
+            $asset = "Trainer_v5_nightly_${stamp}_r${RunNumber}_a${RunAttempt}"
+
+            return [ordered]@{
+              stamp           = $stamp
+              tag             = "nightly-$stamp-r$RunNumber-a$RunAttempt"
+              name            = "Trainer Nightly " + [char]0x2014 + " $display"
+              display_time    = $display
+              artifact        = $asset
+              zip             = "$asset.zip"
+              product_version = $ProductVersion
+              version         = "$ProductVersion-nightly.$stamp.r$RunNumber.a$RunAttempt"
+              run_number      = $RunNumber
+              run_attempt     = $RunAttempt
+              commit          = $Commit
+              short_sha       = $Commit.Substring(0, 7)
+            }
+          }
+
           $content = Get-Content -Raw "Trainer_v5/Trainer.Source/Helpers.cs"
           $match = [regex]::Match(
             $content,
@@ -48,23 +83,77 @@ jobs:
             throw "Could not read a semantic version from Helpers.Version."
           }
 
-          $baseVersion = $match.Groups["version"].Value
-          $version = "$baseVersion-rc$env:RC_NUMBER"
           $commit = git rev-parse HEAD
+          $identity = New-NightlyIdentity `
+            -Now ([DateTime]::UtcNow) `
+            -RunNumber $env:GITHUB_RUN_NUMBER `
+            -RunAttempt $env:GITHUB_RUN_ATTEMPT `
+            -ProductVersion $match.Groups["version"].Value `
+            -Commit $commit
 
-          "version=$version" >> $env:GITHUB_OUTPUT
-          "tag=v$version" >> $env:GITHUB_OUTPUT
-          "commit=$commit" >> $env:GITHUB_OUTPUT
+          foreach ($key in $identity.Keys) {
+            Add-Content -Path $env:GITHUB_OUTPUT -Value "$key=$($identity[$key])" -Encoding utf8
+          }
+
+      - name: Check existing nightly release
+        if: steps.check.outputs.has_commits == 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.version.outputs.tag }}
+          COMMIT: ${{ steps.version.outputs.commit }}
+        run: |
+          # The tag carries the UTC time, run number and attempt, so a new run or attempt gets a new tag.
+          # A published release is immutable: it is never overwritten, moved or retagged.
+          # A draft with this exact tag is reused only when it targets the current commit.
+          $lines = gh api "repos/$env:GH_REPO/releases?per_page=100" --paginate --jq '.[] | {tag_name, draft, target_commitish} | tojson'
+          if ($LASTEXITCODE -ne 0) {
+            throw "Could not list releases."
+          }
+
+          $existing = @($lines | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object { $_.tag_name -eq $env:TAG })
+          $tagCommit = $null
+          if (git tag --list $env:TAG) {
+            $tagCommit = git rev-list -n 1 $env:TAG
+          }
+
+          if ($existing | Where-Object { -not $_.draft }) {
+            throw "Release $env:TAG is already published and immutable. Do not retry this run; start a new nightly run for a new tag."
+          }
+
+          if ($tagCommit -and $tagCommit -ne $env:COMMIT) {
+            throw "Tag $env:TAG already points to commit $tagCommit, not $env:COMMIT. Resolve it manually."
+          }
+
+          if ($existing) {
+            $draft = $existing[0]
+            if ($draft.target_commitish -ne $env:COMMIT) {
+              throw "Draft release $env:TAG targets $($draft.target_commitish), not $env:COMMIT. Resolve it manually."
+            }
+
+            Write-Output "Reusing leftover draft release $env:TAG for commit $env:COMMIT."
+          } elseif ($tagCommit) {
+            throw "Tag $env:TAG already exists without a release. Resolve it manually before retrying."
+          }
 
       - name: Setup .NET
         if: steps.check.outputs.has_commits == 'true'
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: '8.x'
 
       - name: Build (Release)
         if: steps.check.outputs.has_commits == 'true'
         run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental --property:Version=${{ steps.version.outputs.version }}
+
+      - name: Format
+        if: steps.check.outputs.has_commits == 'true'
+        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+
+      - name: Test
+        if: steps.check.outputs.has_commits == 'true'
+        run: dotnet test "Trainer v5 - Beta 1.sln" --configuration Release --no-build
 
       - name: Stage release files
         if: steps.check.outputs.has_commits == 'true'
@@ -77,25 +166,63 @@ jobs:
       - name: Package
         if: steps.check.outputs.has_commits == 'true'
         shell: pwsh
-        run: Compress-Archive -Path release/* -DestinationPath Trainer_v5_${{ steps.version.outputs.version }}.zip
+        run: Compress-Archive -Path release/* -DestinationPath ${{ steps.version.outputs.zip }}
 
       - name: Upload artifact
         if: steps.check.outputs.has_commits == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: Trainer_v5_${{ steps.version.outputs.version }}
-          path: Trainer_v5_${{ steps.version.outputs.version }}.zip
+          name: ${{ steps.version.outputs.artifact }}
+          path: ${{ steps.version.outputs.zip }}
           if-no-files-found: error
 
       - name: Create nightly release
+        id: release
         if: steps.check.outputs.has_commits == 'true'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: Trainer v${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.name }}
+          body: |
+            Nightly development build of `develop`. This is not a release candidate and not a stable release.
+
+            - Source commit: [`${{ steps.version.outputs.short_sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.version.outputs.commit }}) (`${{ steps.version.outputs.commit }}`)
+            - Branch: `develop`
+            - Built: ${{ steps.version.outputs.display_time }} (`${{ steps.version.outputs.stamp }}`)
+            - Workflow run: ${{ steps.version.outputs.run_number }}, attempt ${{ steps.version.outputs.run_attempt }}
+            - Product version it was built from (`Helpers.Version`, shown in game): ${{ steps.version.outputs.product_version }}
+            - Assembly and file build version: `${{ steps.version.outputs.version }}`; an identifier of this build, not a release version
           target_commitish: ${{ steps.version.outputs.commit }}
-          files: Trainer_v5_${{ steps.version.outputs.version }}.zip
-          draft: false
+          files: ${{ steps.version.outputs.zip }}
+          draft: true
           prerelease: true
           generate_release_notes: false
           make_latest: false
+
+      - name: Publish nightly release
+        if: steps.check.outputs.has_commits == 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          ASSET_NAME: ${{ steps.version.outputs.zip }}
+        run: |
+          # Assets can only be attached while the release is a draft; publishing makes it immutable.
+          $release = gh api "repos/$env:GH_REPO/releases/$env:RELEASE_ID" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) {
+            throw "Could not read draft release $env:RELEASE_ID."
+          }
+
+          if (-not $release.draft) {
+            throw "Release $env:RELEASE_ID is not a draft; refusing to modify it."
+          }
+
+          if (-not ($release.assets | Where-Object { $_.name -eq $env:ASSET_NAME -and $_.state -eq 'uploaded' })) {
+            throw "Draft release is missing uploaded asset $env:ASSET_NAME; not publishing."
+          }
+
+          gh api --method PATCH "repos/$env:GH_REPO/releases/$env:RELEASE_ID" -F draft=false -F prerelease=true -f make_latest=false
+          if ($LASTEXITCODE -ne 0) {
+            throw "Could not publish release $env:RELEASE_ID."
+          }

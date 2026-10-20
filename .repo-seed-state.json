@@ -63,9 +63,9 @@
     "docs/templates/editorconfig.template": "74b219dcd26beaefc51a9892f5e74b136ac30ff0b04ef70039fbaa9903ead77a",
     "docs/templates/readme.template.md": "656ae4b0a9e24cfab74c6209420d0a46745f2869cfb2ff6f591e72aaffa67e46",
     "docs/templates/tsd.template.md": "e5458fc3eab8778c6648f62a28ddb6e237c06bbf83191be02d09c7e165cf2c90",
-    "scripts/sync-docs.py": "8b4da7844bece8bed0d7a299385ae9f158f87867178c5b0de90f8fd687864afd"
+    "scripts/sync-docs.py": "ea495410a22e22a12bf3db861483b21938de61839ec1c40b7e2086e80ab6f6c6"
   },
-  "pack_version": "6.0.0",
+  "pack_version": "6.0.2",
   "profile": "library",
   "schema_version": 2,
   "tombstones": {}

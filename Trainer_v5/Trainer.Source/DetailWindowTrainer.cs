@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Trainer_v5.Trainer.Source.Window;
 using Trainer_v5.Window;
 using UnityEngine;
 
@@ -23,23 +22,45 @@ namespace Trainer_v5
 
 			var components = new List<Component>
 			{
-				UIFactory.Button("Trait",  () => EmployeeTraitChangeWindow.Instance.Show()),
-				UIFactory.Button("Demand", () => EmployeeDemandChangeWindow.Instance.Show()),
-				UIFactory.Button("Inspiration", SetInspiration),
-				UIFactory.Button("LeadSpec", () => EmployeeLeadSpecChangeWindow.Instance.Show()),
-				UIFactory.Button("Founder", FounderToggle.Start),
+				UIFactory.Button("DetailTraitButton".LocDef("Trait"),  () => EmployeeTraitChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailDemandButton".LocDef("Demand"), () => EmployeeDemandChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailInspirationButton".LocDef("Inspiration"), SetInspiration),
+				UIFactory.Button("DetailLeadSpecButton".LocDef("LeadSpec"), () => EmployeeLeadSpecChangeWindow.Instance.Show()),
+				UIFactory.Button("DetailFounderButton".LocDef("Founder"), FounderToggle.Start),
+				UIFactory.Button("DetailSkillsButton".LocDef("Skills"), EmployeeSkillChangeWindow.Show),
 			};
 
-			// add components to DetailWindow, above it and within its width
 			const int width = 80, height = 32, spacing = 4;
 			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
 			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);
-			for (var i = 0; i < components.Count; i++)
+			var placed = false;
+			try
 			{
-				components[i].gameObject.AddToElement("DetailWindow", slots[i]);
+				var allAdded = true;
+				for (var i = 0; i < components.Count; i++)
+				{
+					allAdded &= components[i].gameObject.AddToElement("DetailWindow", slots[i]);
+				}
+
+				placed = allAdded;
+			}
+			finally
+			{
+				// A missing window element or an exception partway drops every control, so a retry starts clean
+				// instead of stacking a second set on top of the buttons that were already added.
+				if (!placed)
+				{
+					for (var i = 0; i < components.Count; i++)
+					{
+						Object.Destroy(components[i].gameObject);
+					}
+				}
 			}
 
-			// Marked installed only after the loop succeeds, so an exception leaves a retry possible.
+			if (!placed)
+				return;
+
+			// Marked installed only after every control was placed, so a failure leaves a retry possible.
 			_installedOn = target;
 		}
 
@@ -52,13 +73,13 @@ namespace Trainer_v5
 			var employee = target.Employee;
 
 			InputHelper.RequestFloat(
-				$"Current is {employee.Inspiration}\nMin = 0, Max = 2.0",
-				$"Set inspiration for {employee.Name}",
+				string.Format("InspirationPrompt".LocDef("Current is {0}\nMin = 0, Max = 2.0"), employee.Inspiration),
+				string.Format("SetInspirationTitle".LocDef("Set inspiration for {0}"), employee.Name),
 				val =>
 				{
 					if (!target.IsStillValid())
 					{
-						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						Notification.ShowError(SharedMessages.EmployeeChangedNothingEdited());
 						return;
 					}
 

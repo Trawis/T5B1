@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Trainer_v5
 {
 	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order. Not registered: the retired
-	// AutoMaxMarketShare, MoreCreativity and ReduceBoxPrice, and the Cheats.* flags TrainerBehaviour pushes once per load.
+	// AutoMaxMarketShare, MoreCreativity, ReduceBoxPrice and ReduceExpansionCost, and the Cheats.* flags TrainerBehaviour pushes once per load.
 	internal static class FeatureRegistry
 	{
 		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
@@ -48,7 +48,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Minute, "IncreaseWalkSpeed", SettingKeys.IncreaseWalkSpeed, EmployeeFeatures.ApplyIncreaseWalkSpeed);
 			Add(entries, FeatureTrigger.Minute, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.ApplyIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Minute, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
-			Add(entries, FeatureTrigger.Minute, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.ApplyReduceExpansionCost);
 
 			// Day
 			Add(entries, FeatureTrigger.Day, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
@@ -92,6 +91,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "FreePrint", SettingKeys.FreePrint, ProductFeatures.ApplyFreePrint);
 			Add(entries, FeatureTrigger.Disabled, "FreePrint", SettingKeys.FreePrint, ProductFeatures.RestoreFreePrint);
 			Add(entries, FeatureTrigger.Enabled, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.ApplyIncreasePrintSpeed);
+			Add(entries, FeatureTrigger.Disabled, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.RestoreIncreasePrintSpeed);
 			Add(entries, FeatureTrigger.Enabled, "FullEnvironment", SettingKeys.FullEnvironment, EnvironmentFeatures.ApplyFullEnvironment);
 			Add(entries, FeatureTrigger.Disabled, "FullEnvironment", SettingKeys.FullEnvironment, EnvironmentFeatures.RestoreFullEnvironment);
 			Add(entries, FeatureTrigger.Enabled, "FullRoomBrightness", SettingKeys.FullRoomBrightness, EnvironmentFeatures.ApplyFullRoomBrightness);
@@ -104,10 +104,10 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Disabled, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.RestoreIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Enabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 			Add(entries, FeatureTrigger.Disabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.RestoreReduceISPCost);
-			Add(entries, FeatureTrigger.Enabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.ApplyReduceExpansionCost);
-			Add(entries, FeatureTrigger.Disabled, "ReduceExpansionCost", SettingKeys.ReduceExpansionCost, CompanyFeatures.RestoreReduceExpansionCost);
 
-			// Frame
+			// Frame: values the game recomputes or overwrites faster than the Minute cadence (#88, #157), so a slower
+			// trigger would let them degrade between runs; none was moved without in-game verification (#361).
+			// Passes must stay allocation-free: index loops, no LINQ, ToList or per-frame delegates.
 			Add(entries, FeatureTrigger.Frame, "NoiseReduction", SettingKeys.NoiseReduction, EnvironmentFeatures.ApplyNoiseReduction);
 			Add(entries, FeatureTrigger.Frame, "DisableFires", SettingKeys.DisableFires, EnvironmentFeatures.ApplyDisableActiveFires);
 			Add(entries, FeatureTrigger.Frame, "CleanRooms", SettingKeys.CleanRooms, EnvironmentFeatures.ApplyCleanRooms);

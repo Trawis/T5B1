@@ -29,17 +29,13 @@ namespace Trainer_v5.Window
 		public void Refresh()
 		{
 			var window = _window;
-			if (window == null || !window.Shown)
-			{
-				_target = null;
-				return;
-			}
-
 			TargetSource source;
-			_target = EmployeeTarget.Resolve(out source);
+			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
+				return;
+
 			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit traits for {EmployeeTarget.Describe(_target, source)}";
+			window.SetTitle(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
@@ -53,37 +49,46 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit traits for Nobody", "EditTrait", "EditTraitPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
 
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
 
 			var goodTraitsToggle = traits
 				.Where(p => p.Key.IsGood())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 			var neutralTraitsToggle = traits
 				.Where(p => p.Key.IsNeutral())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 			var badTraitsToggle = traits
 				.Where(p => p.Key.IsBad())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 
-			var col1 = new List<GameObject> { UIFactory.Label("Good", WindowStyles.TitleStyle).gameObject };
-			col1.AddRange(goodTraitsToggle);
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			var col1Header = new[] { UIFactory.Label("GoodTraitsLabel".LocDef("Good"), WindowStyles.TitleStyle).gameObject };
+			var col1Footer = new[] { UIFactory.Button(SharedMessages.EditorRefreshButton(), () => self.Refresh()).gameObject };
+			var col2Header = new[] { UIFactory.Label("NeutralTraitsLabel".LocDef("Neutral"), WindowStyles.TitleStyle).gameObject };
+			var col3Header = new[] { UIFactory.Label("BadTraitsLabel".LocDef("Bad"), WindowStyles.TitleStyle).gameObject };
+			var noFooter = new GameObject[0];
 
-			var col2 = new List<GameObject> { UIFactory.Label("Neutral", WindowStyles.TitleStyle).gameObject };
-			col2.AddRange(neutralTraitsToggle);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, col1Header.Length + col1Footer.Length);
 
-			var col3 = new List<GameObject> { UIFactory.Label("Bad", WindowStyles.TitleStyle).gameObject };
-			col3.AddRange(badTraitsToggle);
+			var col1Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.FIRST_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col1Header, goodTraitsToggle, col1Footer,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+			var col2Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.SECOND_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col2Header, neutralTraitsToggle, noFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+			var col3Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.THIRD_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col3Header, badTraitsToggle, noFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
-			col1.AddToWindow(window, Constants.FIRST_COLUMN);
-			col2.AddToWindow(window, Constants.SECOND_COLUMN);
-			col3.AddToWindow(window, Constants.THIRD_COLUMN);
-
-			var maxRows = new[] { col1.Count, col2.Count, col3.Count }.Max();
-			window.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1);
+			window.SetMinSize(Constants.FOURTH_COLUMN - 1, UIHelper.GetColumnWindowHeight(UIHelper.GetColumnWindowHeight(col1Height, col2Height, 0), col3Height, 0));
 
 			_window = window;
 			_traitsToggles = traits;
@@ -91,10 +96,13 @@ namespace Trainer_v5.Window
 
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{
+			if (_isRefreshing)
+				return;
+
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("The employee changed or is not available. Press Refresh.");
+					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
 				return;
 			}
 			var employee = _target.Employee;

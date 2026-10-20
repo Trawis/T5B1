@@ -15,30 +15,46 @@ namespace Trainer_v5
 			double amount = Settings.OffshoreAccount;
 			if (amount <= 0.0)
 			{
-				WindowManager.SpawnDialog("Trainer: No offshore funds to transfer!", false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoOffshoreFunds".LocDef("Trainer: No offshore funds to transfer!"));
 				return;
 			}
 
 			// The game has no transfer method; it adjusts this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
-			HUD.Instance.AddPopupMessage("Trainer: Offshore funds transferred!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("OffshoreFundsTransferred".LocDef("Trainer: Offshore funds transferred!"));
 		}
 
 		internal static void ClearLoans()
 		{
-			Settings.Loans.Clear();
-			HUD.Instance.AddPopupMessage("Trainer: All loans are cleared!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			if (!Helpers.RequireGameReady("Clear all loans"))
+				return;
+
+			int count = Settings.Loans.Count;
+			if (count == 0)
+			{
+				Notification.ShowInfo("NoLoansToClear".LocDef("There are no loans to clear."));
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Clear all loans", string.Format("ClearLoansConfirm".LocDef("Remove all {0} loan(s) without repaying them?\nNo payment is made, the remaining payments are cancelled and this cannot be undone."), count), () => ApplyClearLoans(game, count));
 		}
 
 		internal static void AIBankrupt()
 		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(IsBankruptTarget).ToArray();
+			if (!Helpers.RequireGameReady("AI Bankrupt All"))
+				return;
 
-			for (int i = 0; i < Companies.Length; i++)
+			int count = FindAllBankruptTargets().Count;
+			if (count == 0)
 			{
-				Companies[i].Bankrupt = true;
+				Notification.ShowInfo("NoAICompaniesToBankrupt".LocDef("There is no AI company left to bankrupt."));
+				return;
 			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("AI Bankrupt All", string.Format("BankruptAllConfirm".LocDef("Bankrupt all {0} AI company(ies)?\nThe game cancels their deals and removes them from the market. This cannot be undone.\nYour own company and its subsidiaries are not affected."), count), () => ApplyAIBankrupt(game, count));
 		}
 
 		internal static void UnlockAllSpace()
@@ -47,7 +63,7 @@ namespace Trainer_v5
 				return;
 
 			Example.TakeAllLand();
-			HUD.Instance.AddPopupMessage("Trainer: All plots has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("AllPlotsUnlocked".LocDef("Trainer: All plots has been unlocked!"));
 		}
 
 		internal static void UnlockFurniture()
@@ -58,7 +74,7 @@ namespace Trainer_v5
 			Example.UnlockFurniture();
 			Cheats.UnlockFurn = true;
 			HUD.Instance.UpdateFurnitureButtons();
-			HUD.Instance.AddPopupMessage("Trainer: All furniture has been unlocked!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"));
 		}
 
 		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
@@ -70,12 +86,12 @@ namespace Trainer_v5
 		internal static void MonthDaysAction(int i)
 		{
 			GameSettings.DaysPerMonth = i;
-			WindowManager.SpawnDialog("You have changed days per month. Please restart the game.", false, DialogWindow.DialogType.Warning);
+			Notification.ShowWarning("DaysPerMonthRestart".LocDef("You have changed days per month. Please restart the game."));
 		}
 
 		internal static void MonthDays()
 		{
-			InputHelper.RequestInt("How many days per month do you want?", "Days per month", "2", MonthDaysAction, 1, 31);
+			InputHelper.RequestInt("DaysPerMonthPrompt".LocDef("How many days per month do you want?"), "DaysPerMonthTitle".LocDef("Days per month"), "2", MonthDaysAction, 1, 31);
 		}
 
 		internal static void TakeoverCompanyAction(string input)
@@ -85,13 +101,13 @@ namespace Trainer_v5
 
 			if (simulatedCompany == null)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
 			if (!simulatedCompany.CanBuyOut(Settings.MyCompany))
 			{
-				WindowManager.SpawnDialog("Trainer: Company can't be bought!", false, DialogWindow.DialogType.Information);
+				Notification.ShowError("CompanyCannotBeBought".LocDef("Trainer: Company can't be bought!"));
 				return;
 			}
 
@@ -105,12 +121,12 @@ namespace Trainer_v5
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			WindowManager.SpawnDialog("Trainer: Company " + input + " has been takovered by you!", false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), input));
 		}
 
 		internal static void TakeoverCompany()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Takeover Company", "", TakeoverCompanyAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
 		}
 
 		internal static void SubDCompanyAction(string input)
@@ -120,16 +136,24 @@ namespace Trainer_v5
 
 			if (Company == null)
 			{
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
+				return;
+			}
+
+			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
+			if (!IsBankruptTarget(Company))
+			{
+				Notification.ShowInfo(string.Format("CompanyAlreadyYours".LocDef("Trainer: {0} already belongs to you."), Company.Name));
 				return;
 			}
 
 			Company.MakeSubsidiary(Settings.MyCompany, SDateTime.Now());
-			HUD.Instance.AddPopupMessage("Trainer: Company " + Company.Name + " is now your subsidiary!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("CompanySubsidiary".LocDef("Trainer: Company {0} is now your subsidiary!"), Company.Name));
 		}
 
 		internal static void SubDCompany()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Subsidiary Company", "", SubDCompanyAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
 		}
 
 		internal static void ForceBankruptAction(string input)
@@ -140,41 +164,41 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				Notification.ShowError(SharedMessages.CompanyNameAmbiguous(input));
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
 			if (company.Bankrupt)
 			{
-				WindowManager.SpawnDialog("Trainer: " + company.Name + " is already going bankrupt.", false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo(string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), company.Name));
 				return;
 			}
 
 			// One-way: the flag is only ever set, never toggled back.
-			WindowManager.SpawnInputDialog("Bankrupt " + company.Name + "? Type YES to confirm.", "Confirmation", "YES", answer => ConfirmForceBankrupt(company, answer));
+			Confirmation.Ask("Bankrupt", string.Format("BankruptConfirmPrompt".LocDef("Bankrupt {0}?\nThe game cancels its deals and removes it from the market. This cannot be undone."), company.Name), () => ConfirmForceBankrupt(company));
 		}
 
 		internal static void ForceBankrupt()
 		{
-			WindowManager.SpawnInputDialog("Type company name:", "Force Bankrupt", "", ForceBankruptAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
 		}
 
 		internal static void IncreaseMoneyAction(int amount)
 		{
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
-			HUD.Instance.AddPopupMessage("Trainer: Money has been added in category Deals!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("MoneyAddedDeals".LocDef("Trainer: Money has been added in category Deals!"));
 		}
 
 		internal static void IncreaseMoney()
 		{
-			InputHelper.RequestInt("How much money do you want to add?", "Add Money", "100000", IncreaseMoneyAction);
+			InputHelper.RequestInt("AddMoneyPrompt".LocDef("How much money do you want to add?"), "AddMoneyTitle".LocDef("Add Money"), "100000", IncreaseMoneyAction);
 		}
 
 		internal static void AddAIFundsAction(string input)
@@ -185,52 +209,33 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: Company " + input + " not found!", false, DialogWindow.DialogType.Information);
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				WindowManager.SpawnDialog("Trainer: Company name " + input + " is ambiguous. Rename the company or use a unique name.", false, DialogWindow.DialogType.Information);
+				Notification.ShowError(SharedMessages.CompanyNameAmbiguous(input));
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
-			InputHelper.RequestInt("How much money do you want to add to " + company.Name + "?", "Add AI Funds", "100000",
+			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), SharedMessages.AddAIFundsTitle(), "100000",
 				amount =>
 				{
 					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
-					HUD.Instance.AddPopupMessage("Trainer: Money has been added to " + company.Name + "!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+					Notification.Popup(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name));
 				}, 0, int.MaxValue);
 		}
 
 		internal static void AddAIFunds()
 		{
-			WindowManager.SpawnInputDialog("Type AI company name:", "Add AI Funds", "", AddAIFundsAction);
+			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AddAIFundsTitle(), "", AddAIFundsAction);
 		}
 
 		internal static void MaxReputation()
 		{
-			Action<string> action = (input) =>
-			{
-				if (input == "YES")
-				{
-					Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-					WindowManager.SpawnDialog("Trainer: Max reputation is applied to all categories", false, DialogWindow.DialogType.Information);
-				}
-			};
-
-			Func<InputDialog> areYouSure = () =>
-			{
-				return WindowManager.SpawnInputDialog("Are you sure?", "Confirmation", "YES", action);
-			};
-
-			areYouSure();
+			Confirmation.Ask("Max Reputation", "MaxReputationConfirm".LocDef("Set your business reputation to the maximum in all categories?"), ApplyMaxReputation);
 		}
 
 		internal static void MaxMarketRecognition()
@@ -244,17 +249,23 @@ namespace Trainer_v5
 				}
 			}
 
-			WindowManager.SpawnDialog("Trainer: Max market recognition is applied to all software types and categories.", false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo("MaxMarketRecognitionApplied".LocDef("Trainer: Max market recognition is applied to all software types and categories."));
 		}
 
 		internal static void UnlockAndClaimAllRewards()
 		{
-			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
-			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
-			HUD.Instance.RefreshBuildButtons();
-			HUD.Instance.UpdateFurnitureButtons();
+			if (!Helpers.RequireGameReady("Unlock and Claim Rewards"))
+				return;
 
-			WindowManager.SpawnDialog("Trainer: All rewards are unlocked and claimed.", false, DialogWindow.DialogType.Information);
+			int count = CountUnclaimedRewards();
+			if (count == 0)
+			{
+				Notification.ShowInfo("NoRewardsToUnlock".LocDef("Every reward is already unlocked and claimed."));
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Unlock and Claim Rewards", string.Format("UnlockRewardsConfirm".LocDef("Mark {0} reward task(s) as completed and claimed in this save?\nThe game has no way to undo this."), count), () => ApplyUnlockAndClaimAllRewards(game, count));
 		}
 
 		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.
@@ -270,11 +281,6 @@ namespace Trainer_v5
 		{
 			AI.MaxBoxes = Constants.MAX_BOXES_DEFAULT;
 			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
-		}
-
-		internal static void RestoreReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST;
 		}
 
 		// Paid-off loans are already removed when this runs; only outstanding loans' interest is refunded.
@@ -356,11 +362,6 @@ namespace Trainer_v5
 			Settings.Environment.ISPCostFactor = GetDefaultISPCostFactor() / 2f;
 		}
 
-		internal static void ApplyReduceExpansionCost()
-		{
-			Settings.ExpansionCost = Constants.EXPANSION_COST_HALF;
-		}
-
 		internal static void ApplyDisableForcePause()
 		{
 			GameSettings.ForcePause = false;
@@ -382,12 +383,87 @@ namespace Trainer_v5
 			return company != Settings.MyCompany && !company.IsPlayerOwned();
 		}
 
+		private static void ApplyMaxReputation()
+		{
+			Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
+			Notification.ShowInfo("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"));
+		}
+
+		private static List<SimulatedCompany> FindAllBankruptTargets()
+		{
+			return Settings.simulation.Companies.Values.Where(company => IsBankruptTarget(company) && !company.Bankrupt).ToList();
+		}
+
+		// The dialog stays open while the game runs, so game and targets are re-checked first.
+		private static void ApplyAIBankrupt(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			List<SimulatedCompany> targets = FindAllBankruptTargets();
+			if (!Confirmation.IsScopeUnchanged(shownCount, targets.Count))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			for (int i = 0; i < targets.Count; i++)
+			{
+				targets[i].Bankrupt = true;
+			}
+		}
+
+		private static void ApplyClearLoans(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsScopeUnchanged(shownCount, Settings.Loans.Count))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			Settings.Loans.Clear();
+			Notification.Popup("AllLoansCleared".LocDef("Trainer: All loans are cleared!"));
+		}
+
+		private static int CountUnclaimedRewards()
+		{
+			return GameData.Tasks
+				.Where(task => !Settings.CompletedTasks.Contains(task.Name) || !Settings.ClaimedRewards.Contains(task.Name))
+				.Select(task => task.Name)
+				.Distinct()
+				.Count();
+		}
+
+		private static void ApplyUnlockAndClaimAllRewards(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsScopeUnchanged(shownCount, CountUnclaimedRewards()))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			Settings.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
+			Settings.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
+			HUD.Instance.RefreshBuildButtons();
+			HUD.Instance.UpdateFurnitureButtons();
+
+			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
+		}
+
 		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
-		private static void ConfirmForceBankrupt(SimulatedCompany company, string answer)
+		private static void ConfirmForceBankrupt(SimulatedCompany company)
 		{
 			SimulatedCompany current;
 			bool stillThere = Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company;
-			if (answer == "YES" && stillThere && IsBankruptTarget(company) && !company.Bankrupt)
+			if (stillThere && IsBankruptTarget(company) && !company.Bankrupt)
 			{
 				company.Bankrupt = true;
 			}

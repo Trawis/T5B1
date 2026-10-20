@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
@@ -28,10 +30,13 @@ namespace Trainer_v5
 			}
 		}
 
+		// HashList.GetEnumerator boxes a list enumerator, so the per-frame furniture passes index the list instead of using foreach.
 		internal static void ApplyNoiseReduction()
 		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			HashList<Furniture> allFurniture = Settings.sRoomManager.AllFurniture;
+			for (int i = 0; i < allFurniture.Count; i++)
 			{
+				Furniture furniture = allFurniture[i];
 				furniture.ActorNoise = 0f;
 				furniture.EnvironmentNoise = 0f;
 				furniture.FinalNoise = 0f;
@@ -46,8 +51,10 @@ namespace Trainer_v5
 
 		internal static void ApplyDisableActiveFires()
 		{
-			foreach (Furniture furniture in Settings.sRoomManager.AllFurniture)
+			HashList<Furniture> allFurniture = Settings.sRoomManager.AllFurniture;
+			for (int i = 0; i < allFurniture.Count; i++)
 			{
+				Furniture furniture = allFurniture[i];
 				if (!furniture.Parent.IsOnFire)
 				{
 					continue;
@@ -137,20 +144,12 @@ namespace Trainer_v5
 
 		internal static void ApplyDisableBurglars()
 		{
-			foreach (var burglar in Settings.sActorManager.Others["Burglars"])
-			{
-				burglar.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(burglar);
-			}
+			RemoveActorsOfGroup("Burglars");
 		}
 
 		internal static void ApplyDisableFireInspection()
 		{
-			foreach (var fireInspector in Settings.sActorManager.Others["FireInspector"])
-			{
-				fireInspector.Despawned = true;
-				Settings.sActorManager.RemoveFromAwaiting(fireInspector);
-			}
+			RemoveActorsOfGroup("FireInspector");
 
 			Settings.ActiveFireReport.Reset();
 			Settings.PassedFireInspection = true;
@@ -192,6 +191,17 @@ namespace Trainer_v5
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
 		}
 
+		// Burglars and inspectors are removed with Writeable.DestroyGO (as AI.GuestDespawn does); Actor.OnDestroy unregisters them.
+		private static void RemoveActorsOfGroup(string group)
+		{
+			var actors = new List<Actor>(Settings.sActorManager.Others[group]);
+			for (int i = 0; i < actors.Count; i++)
+			{
+				Settings.sActorManager.RemoveFromAwaiting(actors[i]);
+				actors[i].DestroyGO();
+			}
+		}
+
 		private static void ApplyCleanRoomsToRoom(Room room)
 		{
 			room.ClearDirt();
@@ -208,7 +218,6 @@ namespace Trainer_v5
 			if (actor.SpecialState == Actor.HomeState.Sick)
 			{
 				actor.SpecialState = Actor.HomeState.Default;
-				actor.WasSick = true;
 			}
 
 			actor.GermAdd = 0f;

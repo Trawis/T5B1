@@ -44,6 +44,69 @@ namespace Trainer_v5
 		public static EmployeeTarget Resolve(out TargetSource source)
 		{
 			var detailActor = ShownDetailActor();
+			var selected = LiveSelectedActors();
+
+			source = Decide(IsLive(detailActor), selected.Count);
+			switch (source)
+			{
+				case TargetSource.DetailWindow:
+					return new EmployeeTarget(detailActor);
+				case TargetSource.Selection:
+					return new EmployeeTarget(selected[0]);
+				default:
+					return null;
+			}
+		}
+
+		// An editor window that is closed or missing has no target; true means the target and source are fresh.
+		public static bool TryResolveFor(GUIWindow window, out EmployeeTarget target, out TargetSource source)
+		{
+			if (window == null || !window.Shown)
+			{
+				target = null;
+				source = TargetSource.None;
+				return false;
+			}
+
+			target = Resolve(out source);
+			return true;
+		}
+
+		// Every live selected employee, captured at once so a later selection change cannot change who is edited.
+		public static List<EmployeeTarget> ResolveSelection()
+		{
+			var targets = new List<EmployeeTarget>();
+			foreach (var actor in LiveSelectedActors())
+			{
+				targets.Add(new EmployeeTarget(actor));
+			}
+
+			return targets;
+		}
+
+		public static string Describe(EmployeeTarget target, TargetSource source)
+		{
+			if (target != null)
+			{
+				return target.Employee.Name;
+			}
+
+			return source == TargetSource.Ambiguous ? "EmployeeSeveralSelected".LocDef("one employee (several are selected)") : "EmployeeNobody".LocDef("Nobody");
+		}
+
+		public static bool IsLive(Actor actor)
+		{
+			return actor != null && actor.employee != null && !actor.employee.Dismissed;
+		}
+
+		// False once the actor is gone, dismissed, replaced, or no longer part of the active game.
+		public bool IsStillValid()
+		{
+			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
+		}
+
+		private static List<Actor> LiveSelectedActors()
+		{
 			var selected = new List<Actor>();
 			var selection = SelectorController.Instance != null ? SelectorController.Instance.Selected : null;
 			if (selection != null)
@@ -58,37 +121,7 @@ namespace Trainer_v5
 				}
 			}
 
-			source = Decide(IsLive(detailActor), selected.Count);
-			switch (source)
-			{
-				case TargetSource.DetailWindow:
-					return new EmployeeTarget(detailActor);
-				case TargetSource.Selection:
-					return new EmployeeTarget(selected[0]);
-				default:
-					return null;
-			}
-		}
-
-		public static string Describe(EmployeeTarget target, TargetSource source)
-		{
-			if (target != null)
-			{
-				return target.Employee.Name;
-			}
-
-			return source == TargetSource.Ambiguous ? "one employee (several are selected)" : "Nobody";
-		}
-
-		public static bool IsLive(Actor actor)
-		{
-			return actor != null && actor.employee != null && !actor.employee.Dismissed;
-		}
-
-		// False once the actor is gone, dismissed, replaced, or no longer part of the active game.
-		public bool IsStillValid()
-		{
-			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
+			return selected;
 		}
 
 		// A save reload or scene change leaves old actors referenced; only the current game's actors count.

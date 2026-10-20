@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -70,7 +72,33 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.True(misplaced.Count == 0, "The injector wrapped something that is not a method or constructor body:" + Environment.NewLine + string.Join(Environment.NewLine, misplaced));
-			Assert.True(wrapped > 100, "Expected the injector to wrap well over a hundred bodies in the trainer, found " + wrapped + ". The injector or this check has changed.");
+
+			// The floor follows the compiled trainer instead of a fixed number: nearly every ordinary method it declares has a
+			// braced body for the injector to wrap. Expression-bodied members have none, hence the margin (about 5% today).
+			var compiled = CompiledMethodBodies();
+			Assert.True(compiled > 0, "The compiled trainer has no methods; the count is broken.");
+			Assert.True(wrapped * 100 >= compiled * 80, "The injector wrapped " + wrapped + " bodies but the compiled trainer declares " + compiled + " ordinary methods; the injector or this check has changed.");
+		}
+
+		private static int CompiledMethodBodies()
+		{
+			var count = 0;
+			foreach (var type in typeof(FeatureRegistry).Assembly.GetTypes())
+			{
+				if (type.IsDefined(typeof(CompilerGeneratedAttribute), false))
+				{
+					continue;
+				}
+
+				foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly))
+				{
+					if (!method.IsAbstract && !method.IsSpecialName && !method.IsDefined(typeof(CompilerGeneratedAttribute), false))
+					{
+						count++;
+					}
+				}
+			}
+			return count;
 		}
 
 		[Fact]

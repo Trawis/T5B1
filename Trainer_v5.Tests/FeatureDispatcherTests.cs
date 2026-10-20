@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -125,22 +123,216 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheRegistryUsesEachFeatureIdWithOneSettingOnly()
+		public void AFailedEnabledActionIsRetriedOnTheNextCallAndThenNotRepeated()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "FeatureRegistry.cs"));
-			var keyById = new Dictionary<string, string>();
-			var conflicts = new List<string>();
-			foreach (Match match in Regex.Matches(source, @"Add(?:Store)?\(entries, FeatureTrigger\.\w+, ""(\w+)"", SettingKeys\.(\w+),"))
-			{
-				string existing;
-				if (keyById.TryGetValue(match.Groups[1].Value, out existing) && existing != match.Groups[2].Value)
+			_on.Add(SettingKeys.FreeEmployees.Key);
+			int attempts = 0;
+			var dispatcher = CreateWithResults(
+				(id, action) =>
 				{
-					conflicts.Add(match.Groups[1].Value);
-				}
-				keyById[match.Groups[1].Value] = match.Groups[2].Value;
+					attempts++;
+					if (attempts == 1)
+					{
+						return false;
+					}
+
+					action();
+					return true;
+				},
+				Entry("FreeEmployees", FeatureTrigger.Enabled, SettingKeys.FreeEmployees));
+
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(2, attempts);
+			Assert.Equal(new[] { "FreeEmployees" }, _calls);
+		}
+
+		[Fact]
+		public void OnlyTheFailedEntryOfAToggleIsRetried()
+		{
+			_on.Add(SettingKeys.NoVacation.Key);
+			var failing = new HashSet<string> { "second" };
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					if (failing.Contains(id))
+					{
+						_calls.Add("failed:" + id);
+						return false;
+					}
+
+					action();
+					return true;
+				},
+				Entry("first", FeatureTrigger.Enabled, SettingKeys.NoVacation),
+				Entry("second", FeatureTrigger.Enabled, SettingKeys.NoVacation),
+				Entry("third", FeatureTrigger.Enabled, SettingKeys.NoVacation));
+
+			dispatcher.RunTransitions();
+			failing.Clear();
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(new[] { "first", "failed:second", "third", "second" }, _calls);
+		}
+
+		[Fact]
+		public void ADisableBeforeAPendingEnableRetryCancelsTheEnableAndRunsTheRestore()
+		{
+			_on.Add(SettingKeys.FreePrint.Key);
+			bool failEnable = true;
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					if (failEnable)
+					{
+						_calls.Add("failed:" + id);
+						return false;
+					}
+
+					action();
+					return true;
+				},
+				Entry("FreePrint", FeatureTrigger.Enabled, SettingKeys.FreePrint, "apply"),
+				Entry("FreePrint", FeatureTrigger.Disabled, SettingKeys.FreePrint, "restore"));
+
+			dispatcher.RunTransitions();
+			failEnable = false;
+			_on.Remove(SettingKeys.FreePrint.Key);
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(new[] { "failed:FreePrint", "FreePrint:restore" }, _calls);
+		}
+
+		[Fact]
+		public void AnEnableAfterAFailedRestoreReplacesTheRestoreRetry()
+		{
+			_on.Add(SettingKeys.FreePrint.Key);
+			bool failRestore = true;
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					action();
+					return !(failRestore && _calls[_calls.Count - 1] == "FreePrint:restore");
+				},
+				Entry("FreePrint", FeatureTrigger.Enabled, SettingKeys.FreePrint, "apply"),
+				Entry("FreePrint", FeatureTrigger.Disabled, SettingKeys.FreePrint, "restore"));
+			dispatcher.RunTransitions();
+			_on.Remove(SettingKeys.FreePrint.Key);
+			dispatcher.RunTransitions();
+			failRestore = false;
+			_on.Add(SettingKeys.FreePrint.Key);
+
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(new[] { "FreePrint:apply", "FreePrint:restore", "FreePrint:apply" }, _calls);
+		}
+
+		[Fact]
+		public void AFailedRestoreIsStillRetriedAfterTheTrackerWasResetWithTheToggleOff()
+		{
+			_on.Add(SettingKeys.ReduceISPCost.Key);
+			bool failRestore = true;
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					if (failRestore && !_on.Contains(SettingKeys.ReduceISPCost.Key))
+					{
+						_calls.Add("failed:" + id);
+						return false;
+					}
+
+					action();
+					return true;
+				},
+				Entry("ReduceISPCost", FeatureTrigger.Enabled, SettingKeys.ReduceISPCost, "apply"),
+				Entry("ReduceISPCost", FeatureTrigger.Disabled, SettingKeys.ReduceISPCost, "restore"));
+			dispatcher.RunTransitions();
+			_on.Remove(SettingKeys.ReduceISPCost.Key);
+			dispatcher.RunTransitions();
+
+			_tracker.Reset();
+			failRestore = false;
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Equal(new[] { "ReduceISPCost:apply", "failed:ReduceISPCost", "ReduceISPCost:restore" }, _calls);
+		}
+
+		[Fact]
+		public void AToggleThatNeverTransitionsNeverExecutesAnything()
+		{
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					action();
+					return true;
+				},
+				Entry("FreePrint", FeatureTrigger.Enabled, SettingKeys.FreePrint));
+
+			dispatcher.RunTransitions();
+			dispatcher.RunTransitions();
+
+			Assert.Empty(_calls);
+		}
+
+		[Fact]
+		public void AnActionThatKeepsFailingRetriesEveryCallForAMinuteOfFramesThenBacksOff()
+		{
+			_on.Add(SettingKeys.NoMaintenance.Key);
+			int attempts = 0;
+			var dispatcher = CreateWithResults(
+				(id, action) =>
+				{
+					attempts++;
+					return false;
+				},
+				Entry("NoMaintenance", FeatureTrigger.Enabled, SettingKeys.NoMaintenance));
+
+			for (int i = 0; i < 60; i++)
+			{
+				dispatcher.RunTransitions();
 			}
 
-			Assert.True(keyById.Count > 40, "The registry scan found " + keyById.Count + " features; the scan or the registry changed.");
+			Assert.Equal(60, attempts);
+
+			for (int i = 0; i < 59; i++)
+			{
+				dispatcher.RunTransitions();
+			}
+
+			Assert.Equal(60, attempts);
+
+			dispatcher.RunTransitions();
+
+			Assert.Equal(61, attempts);
+		}
+
+		[Fact]
+		public void TheRegistryUsesEachFeatureIdWithOneSettingOnly()
+		{
+			// The registry the trainer actually runs, not its source text: delegates are created, nothing is invoked.
+			var entries = FeatureRegistry.Create();
+			var keyById = new Dictionary<string, string>();
+			var conflicts = new List<string>();
+			foreach (var entry in entries)
+			{
+				var key = entry.Toggle != null ? entry.Toggle.Key : entry.Store.Key;
+				string existing;
+				if (keyById.TryGetValue(entry.Id, out existing) && existing != key)
+				{
+					conflicts.Add(entry.Id);
+				}
+				keyById[entry.Id] = key;
+			}
+
+			Assert.NotEmpty(entries);
 			Assert.True(conflicts.Count == 0, "Feature ids tied to two settings: " + string.Join(", ", conflicts));
 		}
 
@@ -151,6 +343,11 @@ namespace Trainer_v5.Tests
 				action();
 				return true;
 			});
+		}
+
+		private FeatureDispatcher CreateWithResults(Func<string, Action, bool> execute, params FeatureEntry[] entries)
+		{
+			return new FeatureDispatcher(entries, key => _on.Contains(key.Key), store => _stores.Contains(store.Key), _tracker, execute);
 		}
 
 		private FeatureEntry Entry(string id, FeatureTrigger trigger, ToggleKey key, string label = null)

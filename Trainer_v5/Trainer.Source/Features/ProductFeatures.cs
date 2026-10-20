@@ -6,30 +6,22 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
+		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
+
 		private static GameSettings Settings => GameSettings.Instance;
 
 		internal static void SellProductStock()
 		{
-			WindowManager.SpawnDialog("Stock of products with no active users were sold at half the price.",
-				false, DialogWindow.DialogType.Information);
-
 			SoftwareProduct[] Products = Settings.MyCompany.Products
-												 .Where(product => product.Userbase == 0)
+												 .Where(product => product.Userbase == 0 && product.PhysicalCopies > 0)
 												 .ToArray();
 
-			if (Products.Length == 0)
-			{
-				return;
-			}
-
+			double total = 0;
 			for (int i = 0; i < Products.Length; i++)
 			{
 				SoftwareProduct product = Products[i];
 				uint copies = product.PhysicalCopies;
-				if (copies == 0)
-				{
-					continue;
-				}
+				double proceeds = StockSale.Proceeds(copies, product.Price);
 
 				// ChangeAllPhysicalStock also removes the stock of forced add-ons; its argument is an int.
 				for (uint left = copies; left > 0;)
@@ -39,8 +31,12 @@ namespace Trainer_v5
 					left -= (uint)chunk;
 				}
 
-				Settings.MyCompany.MakeTransaction(StockSale.Proceeds(copies, product.Price), Company.TransactionCategory.Sales);
+				Settings.MyCompany.MakeTransaction(proceeds, Company.TransactionCategory.Sales);
+				total += proceeds;
 			}
+
+			// Reported after selling, so the player is never told about a sale that did not happen.
+			Notification.ShowInfo(StockSale.Summary(Products.Length, total));
 		}
 
 		internal static void SetProductPriceAction(float price)
@@ -50,17 +46,17 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.Price = price;
-			HUD.Instance.AddPopupMessage("Trainer: Price for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void SetProductPrice()
 		{
-			InputHelper.RequestFloat("Type product price:", "Product price", SetProductPriceAction, 0f, float.MaxValue);
+			InputHelper.RequestFloat("ProductPricePrompt".LocDef("Type product price:"), "ProductPriceTitle".LocDef("Product price"), SetProductPriceAction, 0f, float.MaxValue);
 		}
 
 		internal static void SetProductStockAction(uint stock)
@@ -70,17 +66,17 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.PhysicalCopies = stock;
-			HUD.Instance.AddPopupMessage("Trainer: Stock for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void SetProductStock()
 		{
-			InputHelper.RequestUInt("Type product stock:", "Product stock", "100000", SetProductStockAction);
+			InputHelper.RequestUInt("ProductStockPrompt".LocDef("Type product stock:"), "ProductStockTitle".LocDef("Product stock"), "100000", SetProductStockAction);
 		}
 
 		internal static void AddActiveUsersAction(int users)
@@ -90,17 +86,17 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.Userbase = users;
-			HUD.Instance.AddPopupMessage("Trainer: Active users for " + Product.Name + " has been setted up!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void AddActiveUsers()
 		{
-			InputHelper.RequestInt("Type product active users:", "Product active users", "100000", AddActiveUsersAction, 0, int.MaxValue);
+			InputHelper.RequestInt("ProductUsersPrompt".LocDef("Type product active users:"), "ProductUsersTitle".LocDef("Product active users"), "100000", AddActiveUsersAction, 0, int.MaxValue);
 		}
 
 		internal static void ApplyFreePrint()
@@ -113,9 +109,41 @@ namespace Trainer_v5
 			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
 		}
 
+		// PrintSpeed has no game writer and is not saved (ProductPrinter.SerializeMe): the first read is the native value.
 		internal static void ApplyIncreasePrintSpeed()
 		{
-			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
+			RetainLivePrinterSpeeds();
+			Settings.ProductPrinters.ForEach(p =>
+			{
+				_printerSpeeds.Capture(p.GetInstanceID(), p.PrintSpeed);
+				p.PrintSpeed = 2f;
+			});
+		}
+
+		internal static void RestoreIncreasePrintSpeed()
+		{
+			RetainLivePrinterSpeeds();
+			Settings.ProductPrinters.ForEach(p =>
+			{
+				float baseline;
+				if (_printerSpeeds.TryTake(p.GetInstanceID(), out baseline))
+				{
+					p.PrintSpeed = baseline;
+				}
+			});
+		}
+
+		// Printer baselines belong to one game; the next game's printers start without any.
+		internal static void ResetGameState()
+		{
+			_printerSpeeds.Clear();
+		}
+
+		private static void RetainLivePrinterSpeeds()
+		{
+			HashSet<int> live = new HashSet<int>();
+			Settings.ProductPrinters.ForEach(p => live.Add(p.GetInstanceID()));
+			_printerSpeeds.Retain(live);
 		}
 
 		// Shared by the price, stock and active-users actions; rejects ambiguous names.
@@ -127,14 +155,14 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				errorMessage = "Trainer: Product " + name + " not found!";
+				errorMessage = string.Format("ProductNotFound".LocDef("Trainer: Product {0} not found!"), name);
 				return null;
 			}
 
 			if (matches.Count > 1)
 			{
-				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "Unknown").ToArray());
-				errorMessage = "Trainer: Product name " + name + " is ambiguous (owned by: " + owners + "). Rename the product or use a unique name.";
+				string owners = string.Join(", ", matches.Select(product => product.DevCompany != null ? product.DevCompany.Name : "UnknownOwner".LocDef("Unknown")).ToArray());
+				errorMessage = string.Format("ProductNameAmbiguous".LocDef("Trainer: Product name {0} is ambiguous (owned by: {1}). Rename the product or use a unique name."), name, owners);
 				return null;
 			}
 

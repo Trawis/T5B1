@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
-using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Trainer_v5.Trainer.Source.Window
+namespace Trainer_v5.Window
 {
 	public class EmployeeLeadSpecChangeWindow
 	{
@@ -31,17 +30,13 @@ namespace Trainer_v5.Trainer.Source.Window
 		public void Refresh()
 		{
 			var window = _window;
-			if (window == null || !window.Shown)
-			{
-				_target = null;
-				return;
-			}
-
 			TargetSource source;
-			_target = EmployeeTarget.Resolve(out source);
+			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
+				return;
+
 
 			var employee = _target?.Employee;
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit lead specialization for {EmployeeTarget.Describe(_target, source)}";
+			window.SetTitle(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _specToggles)
@@ -56,7 +51,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit lead specialization for Nobody", "EditLeadSpec", "MainPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
@@ -72,12 +67,12 @@ namespace Trainer_v5.Trainer.Source.Window
 			var col1Toggles = typeKeys.Take(half).Select(k => toggles[k].gameObject).ToArray();
 			var col2Toggles = typeKeys.Skip(half).Select(k => toggles[k].gameObject).ToArray();
 
-			var col1Header = new[] { UIFactory.Label("Lead Spec", WindowStyles.TitleStyle).gameObject };
+			var col1Header = new[] { UIFactory.Label("LeadSpecLabel".LocDef("Lead Spec"), WindowStyles.TitleStyle).gameObject };
 			var col1Footer = new[]
 			{
-				UIFactory.Button("All",          () => self.ToggleAll(true)).gameObject,
-				UIFactory.Button("None",         () => self.ToggleAll(false)).gameObject,
-				UIFactory.Button("Set LeadSpec", () => self.SetLeadSpec()).gameObject
+				UIFactory.Button("LeadSpecAllButton".LocDef("All"), () => self.ToggleAll(true)).gameObject,
+				UIFactory.Button("LeadSpecNoneButton".LocDef("None"), () => self.ToggleAll(false)).gameObject,
+				UIFactory.Button("SetLeadSpecButton".LocDef("Set LeadSpec"), () => self.SetLeadSpec()).gameObject
 			};
 
 			var col2Header = new[] { UIFactory.Label("", WindowStyles.TitleStyle).gameObject };
@@ -86,7 +81,7 @@ namespace Trainer_v5.Trainer.Source.Window
 			const int colWidth = 160, padding = 4, colGap = 8, gap = 2;
 
 			var reservedRows = Math.Max(col1Header.Length + col1Footer.Length, col2Header.Length + col2Footer.Length);
-			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows, gap);
 
 			var col1Height = UIHelper.CreateScrollableColumn(
 				window, new Rect(padding, padding, colWidth, 0),
@@ -99,8 +94,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
 
 			int totalWidth = padding * 2 + colWidth * 2 + colGap;
-			// One extra row for the title bar, as the Skill Change window does; without it the footer buttons fall outside the window.
-			int totalHeight = Mathf.Max(col1Height, col2Height) + padding + Constants.ELEMENT_HEIGHT;
+			int totalHeight = UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding);
 			window.SetMinSize(totalWidth, totalHeight);
 
 			_window = window;
@@ -126,7 +120,7 @@ namespace Trainer_v5.Trainer.Source.Window
 		{
 			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("Select an employee first (open one employee, then press Refresh).");
+				Notification.ShowError(SharedMessages.SelectEmployeeFirst());
 				return;
 			}
 			var target = _target;
@@ -139,18 +133,18 @@ namespace Trainer_v5.Trainer.Source.Window
 
 			if (selectTypes.Length == 0)
 			{
-				Notification.ShowError("Select one or more LeadSpec.");
+				Notification.ShowError("SelectLeadSpecError".LocDef("Select one or more LeadSpec."));
 				return;
 			}
 
 			InputHelper.RequestFloat(
-				"How many LeadSpec do you want?\nMin = 0, Max = 1.0",
-				$"Set {selectTypes.Length} LeadSpec(s) for {employee.Name}",
+				"LeadSpecPrompt".LocDef("How many LeadSpec do you want?\nMin = 0, Max = 1.0"),
+				string.Format("SetLeadSpecTitle".LocDef("Set {0} LeadSpec(s) for {1}"), selectTypes.Length, employee.Name),
 				val =>
 				{
 					if (!target.IsStillValid())
 					{
-						Notification.ShowError("The employee changed or is not available. Nothing was edited.");
+						Notification.ShowError(SharedMessages.EmployeeChangedNothingEdited());
 						return;
 					}
 

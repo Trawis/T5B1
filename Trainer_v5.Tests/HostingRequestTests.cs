@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -8,9 +7,7 @@ namespace Trainer_v5.Tests
 	{
 		private static string PushDealBody()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "MarketFeatures.cs"));
-			var start = source.IndexOf("internal static void PushDeal", System.StringComparison.Ordinal);
-			return source.Substring(start, source.IndexOf("internal static void ApplyHostingDealTiming", start, System.StringComparison.Ordinal) - start);
+			return SourceCode.Body(SourceCode.Read("Features", "MarketFeatures.cs"), "internal static void PushDeal");
 		}
 
 		[Fact]

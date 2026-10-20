@@ -8,18 +8,19 @@ namespace Trainer_v5.Tests
 	public class SettingsTests
 	{
 		// Every key below is persisted in saves: renaming or removing one resets that toggle for players, so it needs a migration.
+		// Retired keys (RetiredSettingsTests) are deliberately absent: they are no longer written or read.
 		internal static readonly string[] PersistedToggleKeys =
 		{
 			"NoStress", "NoVacation", "FullRoomBrightness", "CleanRooms", "FullEnvironment",
 			"NoiseReduction", "FreeStaff", "TemperatureLock", "NoWaterElectricity", "NoNeeds",
 			"FreeEmployees", "LockAge", "MoreHostingDeals", "IncreaseCourierCapacity", "ReduceISPCost",
 			"IncreasePrintSpeed", "FreePrint", "IncreaseBookshelfSkill", "NoMaintenance", "NoSickness",
-			"FullSatisfaction", "DisableSkillDecay", "DisableBurglars", "DisableFires", "NoServerCost",
-			"ReduceExpansionCost", "NoEducationCost", "IncreaseWalkSpeed", "AutoEndDesign",
-			"AutoContractProgression", "AutoEndResearch", "AutoEndPatent", "ReduceBoxPrice",
-			"DisableFurnitureStealing", "MoreInspiration", "MoreCreativity", "AutoResearchStart",
+			"FullSatisfaction", "DisableBurglars", "DisableFires", "NoServerCost",
+			"NoEducationCost", "IncreaseWalkSpeed", "AutoEndDesign",
+			"AutoContractProgression", "AutoEndResearch", "AutoEndPatent",
+			"DisableFurnitureStealing", "MoreInspiration", "AutoResearchStart",
 			"DigitalDistributionMonopol", "DisableFireInspection", "DisableForcePause",
-			"DisableForceFreeze", "AutoAcceptHostingDeals", "AutoMaxMarketShare", "Experimental",
+			"DisableForceFreeze", "AutoAcceptHostingDeals",
 			"ForceLights", "ShowRoomCeilings", "UnlimitedSubsidiaries", "NoMissedSupportTickets",
 			"NoInsuranceCost", "NoLoanInterest", "AutoPorting", "FreeMarketing", "NoOffshoreHeat",
 			"NoFounderDividends"
@@ -42,12 +43,24 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void FreshSettings_AreAllDisabledAndStoresAreUnset()
 		{
-			using (new SettingsSnapshot())
-			{
-				ResetToDefaults();
+			// Read from the declared keys, not from ResetToDefaults, so a changed SettingKeys default fails here.
+			var toggles = SettingKeys.CreateToggleDefaults();
+			var stores = SettingKeys.CreateStoreDefaults();
 
-				Assert.All(Helpers.Settings, pair => Assert.False(pair.Value, pair.Key));
-				Assert.All(Helpers.StoresSettings, pair => Assert.Null(pair.Value));
+			Assert.Equal(PersistedToggleKeys.Length, toggles.Count);
+			Assert.Equal(PersistedStoreKeys.Length, stores.Count);
+			Assert.All(toggles, pair => Assert.False(pair.Value, pair.Key));
+			Assert.All(stores, pair => Assert.Null(pair.Value));
+
+			// The live dictionaries start from the same declared defaults; no other test leaves them modified.
+			foreach (var pair in toggles)
+			{
+				Assert.Equal(pair.Value, Helpers.Settings[pair.Key]);
+			}
+
+			foreach (var pair in stores)
+			{
+				Assert.Equal(pair.Value, Helpers.StoresSettings[pair.Key]);
 			}
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
@@ -65,14 +66,16 @@ namespace Trainer_v5
 				switch (SceneRoutes.For(scene.name))
 				{
 					case SceneRoute.MainScene:
-						Main.CreateUIButtons();
-						// Immediate attempt; GameSettings.GameReady below is the reliable trigger.
-						DetailWindowTrainer.Install();
+						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
+						ResetPerGameState();
+						Main.CreateUIButtons();
+						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
+						DetailWindowTrainer.Install();
 						break;
 					case SceneRoute.Customization:
-						ActorCustomization.StartYears = new[] { 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2060, 2070, 2080, 2090, 2100 };
-						ActorCustomization.StartLoans = new[] { 0, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000 };
+						ActorCustomization.StartYears = Constants.CUSTOMIZATION_START_YEARS;
+						ActorCustomization.StartLoans = Constants.CUSTOMIZATION_START_LOANS;
 						break;
 					default:
 						LeaveGame();
@@ -89,15 +92,25 @@ namespace Trainer_v5
 				Main.TrainerButton = null;
 			}
 
-			if (Main.SkillChangeButton != null)
-			{
-				Destroy(Main.SkillChangeButton.gameObject);
-				Main.SkillChangeButton = null;
-			}
-
 			DetailWindowTrainer.Reset();
+			ResetPerGameState();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
+		}
+
+		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
+		private void ResetPerGameState()
+		{
+			SettingsWindow.Reset();
+			EmployeeSkillChangeWindow.Reset();
+			EmployeeFeatures.ResetSpecializations();
+			MarketFeatures.ResetGameState();
+			ProductFeatures.ResetGameState();
+
+			if (LoggingOptions.DebugEnabled)
+			{
+				"per-game state reset".LogDebug();
+			}
 		}
 
 		private void SubscribeToSceneEvents()
@@ -159,7 +172,13 @@ namespace Trainer_v5
 
 		private void OnGameReady(object sender, EventArgs args)
 		{
+			if (LoggingOptions.DebugEnabled)
+			{
+				"game ready".LogDebug();
+			}
+
 			DetailWindowTrainer.Install();
+			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -176,12 +195,18 @@ namespace Trainer_v5
 		{
 			if (_dispatcher == null)
 			{
+				List<FeatureEntry> entries = FeatureRegistry.Create();
 				_dispatcher = new FeatureDispatcher(
-					FeatureRegistry.Create(),
+					entries,
 					key => Helpers.GetProperty(TrainerSettings, key),
 					key => Helpers.GetProperty(StoresSettings, key) != null,
 					_toggleStates,
 					Helpers.TryExecute);
+
+				if (LoggingOptions.DebugEnabled)
+				{
+					("dispatcher created: " + entries.Count + " entries").LogDebug();
+				}
 			}
 			return _dispatcher;
 		}
@@ -228,11 +253,12 @@ namespace Trainer_v5
 				});
 			}
 
-			ApplyProcessStaticSettings();
+			// Each shared step has its own boundary so a failure cannot skip the Frame run below (#356).
+			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
 
-			GetDispatcher().RunTransitions();
+			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());
 
-			_minuteWatcher.Poll();
+			Helpers.TryExecute("MinutePoll", () => _minuteWatcher.Poll());
 
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
@@ -249,16 +275,31 @@ namespace Trainer_v5
 			if (!_forceLightsApplied)
 			{
 				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+
+				if (LoggingOptions.DebugEnabled && _forceLightsApplied)
+				{
+					"ForceLights applied once".LogDebug();
+				}
 			}
 
 			if (!_showRoomCeilingsApplied)
 			{
 				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+
+				if (LoggingOptions.DebugEnabled && _showRoomCeilingsApplied)
+				{
+					"ShowRoomCeilings applied once".LogDebug();
+				}
 			}
 
 			if (!_unlimitedSubsidiariesApplied)
 			{
 				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+
+				if (LoggingOptions.DebugEnabled && _unlimitedSubsidiariesApplied)
+				{
+					"UnlimitedSubsidiaries applied once".LogDebug();
+				}
 			}
 
 			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)

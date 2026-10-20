@@ -58,11 +58,11 @@ namespace Trainer_v5
 
 			if (reassigned == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: All eligible work is already assigned to its best available team!", false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("TeamsAlreadyOptimal".LocDef("Trainer: All eligible work is already assigned to its best available team!"));
 				return;
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Team assignments optimized!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("TeamAssignmentsOptimized".LocDef("Trainer: Team assignments optimized!"));
 		}
 
 		internal static void InstantPorting()
@@ -71,7 +71,7 @@ namespace Trainer_v5
 
 			if (ports.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: No active porting work to complete!", false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoPortingWork".LocDef("Trainer: No active porting work to complete!"));
 				return;
 			}
 
@@ -87,32 +87,7 @@ namespace Trainer_v5
 				}
 			}
 
-			HUD.Instance.AddPopupMessage("Trainer: Porting work has been completed!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		internal static void Test()
-		{
-			var designDocuments = Settings.MyCompany.WorkItems.OfType<DesignDocument>().Where(d => !d.HasFinished).ToList();
-
-			foreach (var designDocument in designDocuments)
-			{
-				for (int i = 0; i < DesignDocument.MaxIteration; i++)
-				{
-					if (designDocument.Parent == null && designDocument.Iteration < 3)
-					{
-						for (int index = 0; index < designDocument.Features.Length; index++)
-						{
-							designDocument.Features[index].ArtDone = designDocument.Features[index].CodeDone = false;
-							designDocument.Features[index].Progress = 1f;
-							designDocument.Features[index].DevTime = 1f;
-							designDocument.Features[index].Qual = 1f;
-							designDocument.Features[index].LastIterationProg = 1f;
-						}
-						DevConsole.Console.Log(designDocument.GetProgress());
-						designDocument.Iteration++;
-					}
-				}
-			}
+			Notification.Popup("PortingCompleted".LocDef("Trainer: Porting work has been completed!"));
 		}
 
 		internal static void ExtendDeadline()
@@ -122,9 +97,14 @@ namespace Trainer_v5
 				var contract = work.contract;
 				if (contract == null)
 					continue;
-				var deadline = contract.Deadline;
-				contract.Deadline = new SDateTime(deadline.Year + 1, deadline.Month, deadline.Day);
+				contract.Deadline = ExtendedByYear(contract.Deadline);
 			}
+		}
+
+		// The game calendar has a fixed number of days per month and no leap days, so the same day and month is always valid.
+		internal static SDateTime ExtendedByYear(SDateTime deadline)
+		{
+			return new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1);
 		}
 
 		internal static void FixBugsAction(string input)
@@ -135,6 +115,7 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
+				Notification.ShowError(string.Format("ProductNotInBeta".LocDef("Trainer: No product named {0} is in beta!"), input));
 				return;
 			}
 
@@ -143,7 +124,7 @@ namespace Trainer_v5
 
 		internal static void FixBugs()
 		{
-			WindowManager.SpawnInputDialog("Type product name:", "Fix Bugs", "", FixBugsAction);
+			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "FixBugsTitle".LocDef("Fix Bugs"), "", FixBugsAction);
 		}
 
 		internal static void MaxFollowersAction(string input)
@@ -165,7 +146,7 @@ namespace Trainer_v5
 
 		internal static void MaxFollowers()
 		{
-			WindowManager.SpawnInputDialog("Type product name:", "Max Followers", "", MaxFollowersAction);
+			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
 		}
 
 		internal static void InstantResearch()
@@ -177,7 +158,7 @@ namespace Trainer_v5
 
 			if (eligibleResearch.Count == 0)
 			{
-				WindowManager.SpawnDialog("Trainer: No active research to complete!", false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoActiveResearch".LocDef("Trainer: No active research to complete!"));
 				return;
 			}
 
@@ -188,25 +169,7 @@ namespace Trainer_v5
 				CompleteResearchWork(researchWork);
 			});
 
-			HUD.Instance.AddPopupMessage("Trainer: Research completed instantly!", "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
-		}
-
-		internal static void TestAction(string input)
-		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
-					item.Name == input && !item.InBeta);
-
-			if (WorkItem == null)
-				return;
-
-			var softwareAlpha = ((SoftwareAlpha)WorkItem);
-			softwareAlpha.AddQuality(10f, 10f, false);
-		}
-
-		internal static void TestButton()
-		{
-			WindowManager.SpawnInputDialog("Type product name in alpha (not beta):", "Add Quality", "", TestAction);
+			Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
 		}
 
 		internal static void ApplyAutoEndDesign()

@@ -29,17 +29,13 @@ namespace Trainer_v5.Window
 		public void Refresh()
 		{
 			var window = _window;
-			if (window == null || !window.Shown)
-			{
-				_target = null;
-				return;
-			}
-
 			TargetSource source;
-			_target = EmployeeTarget.Resolve(out source);
+			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
+				return;
+
 			var employee = _target?.Employee;
 
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = $"Edit demands for {EmployeeTarget.Describe(_target, source)}";
+			window.SetTitle(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
@@ -53,19 +49,21 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow("Edit demands for Nobody", "EditDemands", "EditDemandsPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
 
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
 
-			var col1 = new List<GameObject> { UIFactory.Label("Demands", WindowStyles.TitleStyle).gameObject };
-			col1.AddRange(demands.Values.Select(e => e.gameObject));
-			col1.Add(UIFactory.Button("Refresh", () => self.Refresh()).gameObject);
+			var header = new[] { UIFactory.Label("DemandsLabel".LocDef("Demands"), WindowStyles.TitleStyle).gameObject };
+			var footer = new[] { UIFactory.Button(SharedMessages.EditorRefreshButton(), () => self.Refresh()).gameObject };
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, header.Length + footer.Length);
 
-			col1.AddToWindow(window, Constants.FIRST_COLUMN);
+			var height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.FIRST_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				header, demands.Values.Select(e => e.gameObject).ToArray(), footer,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
-			var maxRows = new[] { col1.Count }.Max();
-			window.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1);
+			window.SetMinSize(Constants.SECOND_COLUMN - 1, UIHelper.GetColumnWindowHeight(height, 0, 0));
 
 			_window = window;
 			_demandToggles = demands;
@@ -79,7 +77,7 @@ namespace Trainer_v5.Window
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("The employee changed or is not available. Press Refresh.");
+					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
 				return;
 			}
 			var employee = _target.Employee;
@@ -87,7 +85,7 @@ namespace Trainer_v5.Window
 			var choice = LeadDesignDemands.GetChoice(demand);
 			if (choice == null)
 			{
-				Notification.ShowError("The game has no demand choice for " + demand + ", so it was not changed.");
+				Notification.ShowError(string.Format("NoDemandChoice".LocDef("The game has no demand choice for {0}, so it was not changed."), demand));
 				Refresh();
 				return;
 			}
@@ -114,7 +112,7 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// Grants via the game's AcceptDemand so the effect runs; its cost is charged as in the game (a refund would pay twice with the dismissal refund).
+		// Grants via AcceptDemand so the effect runs; its cost stays charged (a refund would pay twice with the dismissal refund).
 		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
 		{
 			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);

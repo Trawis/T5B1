@@ -1,4 +1,3 @@
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -9,9 +8,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheActionRecomputesTheCapAndFillsItWithoutAddingBillions()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "WorkItemFeatures.cs"));
-			var start = source.IndexOf("internal static void MaxFollowersAction", System.StringComparison.Ordinal);
-			var body = source.Substring(start, source.IndexOf("internal static void MaxFollowers()", start, System.StringComparison.Ordinal) - start);
+			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersAction");
 
 			Assert.Contains("ReEvaluateMaxFollowers()", body);
 			Assert.Contains("Followers = WorkItem.MaxFollowers", body);
