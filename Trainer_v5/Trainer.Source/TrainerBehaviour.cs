@@ -241,11 +241,12 @@ namespace Trainer_v5
 				});
 			}
 
-			ApplyProcessStaticSettings();
+			// Each shared step has its own boundary so a failure cannot skip the Frame run below (#356).
+			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
 
-			GetDispatcher().RunTransitions();
+			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());
 
-			_minuteWatcher.Poll();
+			Helpers.TryExecute("MinutePoll", () => _minuteWatcher.Poll());
 
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
