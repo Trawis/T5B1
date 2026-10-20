@@ -1,15 +1,22 @@
 # Features
 
 Current user-visible features. Open the trainer with the **Trainer** button
-(or F1; F2 closes it). The first column's *Product Name Here* input box supplies
-the product name for the product actions. Set Product Price, Stock and Active
+(or F1; F2 closes it). The window has three tabs and reopens on the tab last
+used in the running game: **Actions** (the buttons below, in Company, Employee,
+Product, Work and Environment sections), **Toggles** (the toggles below, in
+Employee, Environment, Work, Company and Product sections; the page scrolls
+when the screen is short) and **Settings** (the two efficiency dropdowns and
+Discord). Switching tabs runs nothing and keeps typed and selected values. On
+the Actions tab the *Product Name Here* input box, first in the Product section,
+supplies the product name for the product actions. Set Product Price, Stock and Active
 Users match the name exactly across every company (player and AI) and report a
 conflict instead of guessing when several products share it; Max Followers and
 Fix Bugs only look at your own company's work items.
 
 ## Buttons
 
-Applied once when clicked.
+Applied once when clicked. All but Discord are on the Actions tab; Discord is on
+the Settings tab.
 
 |  Feature               | Parameters             | Description                                                 |
 |:----------------------:|:----------------------:|:-----------------------------------------------------------:|
@@ -43,6 +50,8 @@ Applied once when clicked.
 | Discord                | None                   | Opens the Discord invite message                            |
 
 ## Dropdowns
+
+On the Settings tab.
 
 - **Efficiency**: Default, 100%-8000%; sets effectiveness for non-lead
   employees.

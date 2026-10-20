@@ -35,17 +35,67 @@ namespace Trainer_v5.Tests
 			Assert.All(rowKeys, key => Assert.Contains(key, declared));
 		}
 
-		[Fact]
-		public void RowsStayInTheFirstFourColumnsAndHaveAUniqueLocalizationKey()
+		// A moved or removed toggle fails here until this list is edited on purpose.
+		private static readonly string[] GoldenToggleDomains =
+		{
+			"NoNeeds=Employee", "NoStress=Employee", "FreeEmployees=Employee", "FreeStaff=Employee", "FullSatisfaction=Employee", "LockAge=Employee",
+			"NoVacation=Employee", "NoSickness=Employee", "NoEducationCost=Employee", "IncreaseWalkSpeed=Employee", "IncreaseBookshelfSkill=Employee", "MoreInspiration=Employee",
+			"DisableFireInspection=Environment", "FullEnvironment=Environment", "FullRoomBrightness=Environment", "TemperatureLock=Environment", "NoMaintenance=Environment",
+			"NoiseReduction=Environment", "CleanRooms=Environment", "DisableFires=Environment", "DisableBurglars=Environment", "DisableFurnitureStealing=Environment",
+			"NoWaterElectricity=Environment", "ForceLights=Environment", "ShowRoomCeilings=Environment",
+			"AutoResearchStart=Work", "AutoEndDesign=Work", "AutoContractProgression=Work", "AutoEndResearch=Work", "AutoEndPatent=Work", "AutoPorting=Work",
+			"DisableForcePause=Work", "DisableForceFreeze=Work",
+			"ReduceISPCost=Company", "NoServerCost=Company", "NoInsuranceCost=Company", "NoLoanInterest=Company", "NoOffshoreHeat=Company", "NoFounderDividends=Company",
+			"UnlimitedSubsidiaries=Company",
+			"FreePrint=Product", "IncreasePrintSpeed=Product", "MoreHostingDeals=Product", "AutoAcceptHostingDeals=Product", "DigitalDistributionMonopol=Product",
+			"NoMissedSupportTickets=Product", "FreeMarketing=Product", "IncreaseCourierCapacity=Product"
+		};
+
+		private static List<SettingToggleRow> AllRows()
 		{
 			var rows = SettingToggleRows.Create();
+			rows.AddRange(SettingToggleRows.CreateImmediate());
+			return rows;
+		}
 
-			Assert.All(rows, row => Assert.InRange(row.Column, 2, 4));
+		[Fact]
+		public void RowsHaveADomainAndAUniqueLocalizationKey()
+		{
+			var rows = AllRows();
+
+			Assert.All(rows, row => Assert.NotEqual(TrainerDomain.None, row.Domain));
 			Assert.Equal(rows.Count, Enumerable.Count(Enumerable.Distinct(Enumerable.Select(rows, row => row.LocKey))));
-			// How many rows each column holds is a layout choice that changes whenever a toggle is added; what must hold is that no column is empty and none is lost.
-			var perColumn = Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column)));
-			Assert.All(perColumn, count => Assert.True(count > 0, "A Settings column has no rows."));
-			Assert.Equal(rows.Count, Enumerable.Sum(perColumn));
+			Assert.All(rows, row => Assert.False(string.IsNullOrEmpty(row.DefaultText)));
+		}
+
+		[Fact]
+		public void EveryToggleSitsInExactlyTheGoldenDomain()
+		{
+			var actual = Enumerable.ToList(Enumerable.Select(AllRows(), row => row.Key.Key + "=" + row.Domain));
+
+			Assert.Equal(Enumerable.Count(GoldenToggleDomains), actual.Count);
+			Assert.Equal(Enumerable.OrderBy(GoldenToggleDomains, x => x, System.StringComparer.Ordinal), Enumerable.OrderBy(actual, x => x, System.StringComparer.Ordinal));
+		}
+
+		[Fact]
+		public void TheImmediateTogglesAreTheExplicitOnesAndNoStandardRowRepeatsThem()
+		{
+			var immediate = Enumerable.ToList(Enumerable.Select(SettingToggleRows.CreateImmediate(), row => row.Key.Key));
+			var standard = Enumerable.ToList(Enumerable.Select(SettingToggleRows.Create(), row => row.Key.Key));
+
+			Assert.Equal(Explicit, Enumerable.ToArray(immediate));
+			Assert.Empty(Enumerable.Intersect(immediate, standard));
+		}
+
+		[Fact]
+		public void EveryToggleDomainOfThePageIsUsedAndEveryUsedDomainIsOnThePage()
+		{
+			var used = Enumerable.ToList(Enumerable.Distinct(Enumerable.Select(AllRows(), row => row.Domain)));
+			var page = SettingsWindowState.ToggleDomains();
+
+			Assert.Equal(Enumerable.Count(page), Enumerable.Count(Enumerable.Distinct(page)));
+			Assert.Empty(Enumerable.Except(used, page));
+			Assert.Empty(Enumerable.Except(page, used));
 		}
 
 		[Fact]
@@ -57,7 +107,7 @@ namespace Trainer_v5.Tests
 
 			Assert.True(burglars >= 0, "Disable Burglars has no Settings row.");
 			Assert.Equal(fires + 1, burglars);
-			Assert.Equal(rows[fires].Column, rows[burglars].Column);
+			Assert.Equal(rows[fires].Domain, rows[burglars].Domain);
 			Assert.Equal("Disable Burglars", rows[burglars].DefaultText);
 		}
 
@@ -72,10 +122,14 @@ namespace Trainer_v5.Tests
 			}
 
 			var wrong = new List<string>();
-			foreach (var row in SettingToggleRows.Create())
+			foreach (var row in AllRows())
 			{
 				string text;
-				if (english.TryGetValue(row.LocKey, out text) && text != row.DefaultText)
+				if (!english.TryGetValue(row.LocKey, out text))
+				{
+					wrong.Add(row.LocKey + ": missing from English/Trainer.tyd");
+				}
+				else if (text != row.DefaultText)
 				{
 					wrong.Add(row.LocKey + ": \"" + row.DefaultText + "\" vs \"" + text + "\"");
 				}

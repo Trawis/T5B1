@@ -193,6 +193,17 @@ namespace Trainer_v5
 			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
 		}
 
+		// Same x slots as the FIRST_COLUMN..FOURTH_COLUMN constants.
+		internal static int GetGridColumnX(int column)
+		{
+			return column <= 0 ? Constants.FIRST_COLUMN : Constants.SECOND_COLUMN + (column - 1) * (Constants.THIRD_COLUMN - Constants.SECOND_COLUMN);
+		}
+
+		internal static Rect GetGridSlot(int index, int columns, int firstRow)
+		{
+			return new Rect(GetGridColumnX(index % columns), (firstRow + index / columns) * Constants.ELEMENT_HEIGHT, Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
+		}
+
 		private static string NameOrDefault(this string name, string suffix, string text = null)
 		{
 			return (name?.RemoveWhitespaces() ?? text?.RemoveWhitespaces() ?? "default") + "_" + suffix;

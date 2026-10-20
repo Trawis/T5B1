@@ -276,13 +276,16 @@ ones that fail when it is skipped.
    value in use (`SerializationTests`). Code refers to the key as
    `SettingKeys.X`, never as a string (`SettingKeyUsageTests`).
 3. Add the Settings window row. A standard toggle is one
-   `SettingToggleRows.Create` row: column 2 to 4, a unique localization key, the
-   English default text and the key. A toggle with an immediate side effect
-   stays explicit in `SettingsWindow` and is listed in
+   `SettingToggleRows.Create` row: a `TrainerDomain`, a unique localization key,
+   the English default text and the key. A toggle with an immediate side effect
+   is a `SettingToggleRows.CreateImmediate` row plus a branch in
+   `SettingsWindow.OnToggleChanged`, and is listed in
    `SettingToggleRowsTests`; a persisted toggle without a row must be listed
-   there too. Enforced by `SettingToggleRowsTests`
+   there too. Add the key and its domain to the golden list in
+   `SettingToggleRowsTests`. Enforced by `SettingToggleRowsTests`
    (`EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow`,
-   `RowsStayInTheFirstFourColumnsAndHaveAUniqueLocalizationKey`).
+   `RowsHaveADomainAndAUniqueLocalizationKey`,
+   `EveryToggleSitsInExactlyTheGoldenDomain`).
 4. Localize the text. The label is looked up with the localization key and the
    in-code default text (`"Key".LocDef("Default text")`). Add the key and the
    same English text to `Trainer.Localization/English/Trainer.tyd`; other
@@ -377,10 +380,22 @@ What the tests cannot establish:
 ## UI Architecture
 
 Trainer UI is built from Software Inc's `WindowManager` widgets so it matches
-native game UI. `SettingsWindow` owns the main toggle/button grid: standard
-toggles are rows in `SettingToggleRows` (column, localization key, default
-text, setting), toggles with an immediate side effect stay explicit, and the
-Experimental opt-in lives in the mod Options. Employee editors (traits,
+native game UI. `SettingsWindow` is one window with three tabs, Actions,
+Toggles and Settings (#449, design #447): plain `WindowManager` buttons switch
+three panels that are built once in `Init` and shown with `SetActive`, so a tab
+switch creates nothing, adds no listener and keeps typed and selected values.
+Actions and Toggles are one page each with a header per domain
+(`TrainerDomain`: Company, Employee, Product, Work, Environment) and scroll when
+the canvas is short; Settings holds the efficiency dropdowns and Discord. Buttons
+are rows in `SettingActionRows` (tab, domain, localization key, default text,
+handler) and toggles are rows in `SettingToggleRows` (domain, localization key,
+default text, setting); the three toggles with an immediate side effect are
+`SettingToggleRows.CreateImmediate` and `SettingsWindow.OnToggleChanged` runs
+their effect. Showing the window again sets the controls from the stored values
+under a `_refreshing` guard (the game's UI has no set-without-notify for
+toggles). The last tab is a static for the running game, not a save key. The
+Experimental opt-in and future diagnostics stay in the mod Options and have no
+tab. Employee editors (traits,
 demands, lead specialization, inspiration, founder, skill changes) are separate
 windows on shared layout helpers; their buttons sit above the native detail
 window (`DetailButtonLayout`).

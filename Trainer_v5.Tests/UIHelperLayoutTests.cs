@@ -34,5 +34,32 @@ namespace Trainer_v5.Tests
 		{
 			Assert.Equal(new Rect(644, expectedY, Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT), UIHelper.GetColumnSlot(index, 644, true));
 		}
+
+		[Theory]
+		[InlineData(0, 1)]
+		[InlineData(1, 161)]
+		[InlineData(2, 322)]
+		[InlineData(3, 483)]
+		public void GridColumnsAreTheSlotsOfTheFourSettingsColumns(int column, int expectedX)
+		{
+			Assert.Equal(expectedX, UIHelper.GetGridColumnX(column));
+		}
+
+		[Theory]
+		[InlineData(0, 0, 1, 0)]
+		[InlineData(3, 0, 483, 0)]
+		[InlineData(4, 0, 1, 32)]
+		[InlineData(5, 2, 161, 96)]
+		[InlineData(11, 1, 483, 96)]
+		public void GridSlotsFillRowsOfFourFromTheFirstRow(int index, int firstRow, int expectedX, int expectedY)
+		{
+			Assert.Equal(new Rect(expectedX, expectedY, Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT), UIHelper.GetGridSlot(index, 4, firstRow));
+		}
+
+		[Fact]
+		public void ASingleColumnGridStacksRows()
+		{
+			Assert.Equal(new Rect(1, 160, Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT), UIHelper.GetGridSlot(5, 1, 0));
+		}
 	}
 }
