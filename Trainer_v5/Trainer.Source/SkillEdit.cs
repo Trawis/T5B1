@@ -23,7 +23,7 @@ namespace Trainer_v5
 		public const int MinStars = -3;
 		public const int MaxStars = 3;
 
-		// A zero change is rejected, as before; the game clamps each specialization to 0..3 stars.
+		// A zero change is rejected; the game clamps each specialization to 0..3 stars.
 		public static bool IsValidStars(int stars)
 		{
 			return stars != 0 && stars >= MinStars && stars <= MaxStars;

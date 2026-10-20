@@ -112,7 +112,7 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// Grants via the game's AcceptDemand so the effect runs; its cost is charged as in the game (a refund would pay twice with the dismissal refund).
+		// Grants via AcceptDemand so the effect runs; its cost stays charged (a refund would pay twice with the dismissal refund).
 		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
 		{
 			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);

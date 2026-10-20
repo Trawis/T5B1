@@ -140,7 +140,7 @@ namespace Trainer_v5
 			return FitRows(canvasHeight, rowHeight + gap, reservedRows);
 		}
 
-		// The preferred minimum of rows gives way when the canvas cannot hold it: a MinSize above the canvas wins and pushes the footer off screen.
+		// The preferred minimum of rows gives way when the canvas cannot hold it; a larger MinSize would push the footer off screen.
 		internal static int FitRows(float canvasHeight, int rowStep, int reservedRows)
 		{
 			int availableRows = (int)System.Math.Floor((canvasHeight - WINDOW_CHROME_HEIGHT) / rowStep) - reservedRows;
@@ -210,7 +210,7 @@ namespace Trainer_v5
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
 		}
 
-		/// <summary>Window height for two scrollable columns: the taller column, the offset its origin sits below the top (0 when it starts at y = 0), and one title-bar row; without that row the footer falls outside the window.</summary>
+		/// <summary>Window height for two scrollable columns: the taller column, the offset its origin sits below the top (0 when it starts at y = 0), and one title-bar row (else the footer falls outside).</summary>
 		internal static int GetColumnWindowHeight(int firstColumnHeight, int secondColumnHeight, int columnOriginY)
 		{
 			return System.Math.Max(firstColumnHeight, secondColumnHeight) + columnOriginY + TITLE_BAR_HEIGHT;

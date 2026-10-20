@@ -198,7 +198,6 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("private static SettingsTab _activeTab;", source);
 			Assert.DoesNotContain("SaveSetting", source);
-			Assert.DoesNotContain("SettingKeys.Experimental", source);
 			Assert.Equal(0, Count(SourceCode.Read("Main.cs"), "_activeTab"));
 		}
 

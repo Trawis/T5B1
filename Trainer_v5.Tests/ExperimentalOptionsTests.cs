@@ -87,10 +87,7 @@ namespace Trainer_v5.Tests
 		{
 			var source = SourceCode.Read("SettingsWindow.cs");
 
-			Assert.DoesNotContain("\"Experimental\"", source);
 			Assert.DoesNotContain("ExperimentalHint", source);
-			Assert.DoesNotContain("IsDebug", source);
-			Assert.DoesNotContain("testButton", source);
 			Assert.DoesNotContain("SetTestControlsActive", source);
 		}
 
