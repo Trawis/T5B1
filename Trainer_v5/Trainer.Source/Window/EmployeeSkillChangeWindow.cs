@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Trainer_v5
+namespace Trainer_v5.Window
 {
 	public class EmployeeSkillChangeWindow : MonoBehaviour
 	{

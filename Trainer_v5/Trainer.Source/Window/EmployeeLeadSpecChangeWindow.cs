@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Trainer_v5.SDK;
-using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Trainer_v5.Trainer.Source.Window
+namespace Trainer_v5.Window
 {
 	public class EmployeeLeadSpecChangeWindow
 	{
