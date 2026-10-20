@@ -54,14 +54,16 @@ namespace Trainer_v5.Window
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
 
-			var col1 = new List<GameObject> { UIFactory.Label("DemandsLabel".LocDef("Demands"), WindowStyles.TitleStyle).gameObject };
-			col1.AddRange(demands.Values.Select(e => e.gameObject));
-			col1.Add(UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject);
+			var header = new[] { UIFactory.Label("DemandsLabel".LocDef("Demands"), WindowStyles.TitleStyle).gameObject };
+			var footer = new[] { UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject };
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, header.Length + footer.Length);
 
-			col1.AddToWindow(window, Constants.FIRST_COLUMN);
+			var height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.FIRST_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				header, demands.Values.Select(e => e.gameObject).ToArray(), footer,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
-			var maxRows = new[] { col1.Count }.Max();
-			window.SetWindowSize(maxRows + 1, Constants.SECOND_COLUMN - 1);
+			window.SetMinSize(Constants.SECOND_COLUMN - 1, UIHelper.GetColumnWindowHeight(height, 0, 0));
 
 			_window = window;
 			_demandToggles = demands;

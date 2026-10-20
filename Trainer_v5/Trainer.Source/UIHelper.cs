@@ -126,7 +126,7 @@ namespace Trainer_v5
 		}
 
 		/// <summary>Estimates how many rows of rowHeight fit on screen after window chrome and reservedRows.</summary>
-		public static int GetMaxVisibleRows(int rowHeight, int reservedRows)
+		public static int GetMaxVisibleRows(int rowHeight, int reservedRows, int gap = 0)
 		{
 			float canvasHeight = FALLBACK_CANVAS_HEIGHT;
 
@@ -137,8 +137,15 @@ namespace Trainer_v5
 				canvasHeight = canvasRect.rect.height;
 			}
 
-			int availableRows = Mathf.FloorToInt((canvasHeight - WINDOW_CHROME_HEIGHT) / rowHeight) - reservedRows;
-			return Mathf.Max(MIN_VISIBLE_ROWS, availableRows);
+			return FitRows(canvasHeight, rowHeight + gap, reservedRows);
+		}
+
+		// The preferred minimum of rows gives way when the canvas cannot hold it: a MinSize above the canvas wins and pushes the footer off screen.
+		internal static int FitRows(float canvasHeight, int rowStep, int reservedRows)
+		{
+			int availableRows = (int)System.Math.Floor((canvasHeight - WINDOW_CHROME_HEIGHT) / rowStep) - reservedRows;
+			int fittingRows = (int)System.Math.Floor(canvasHeight / rowStep) - reservedRows - 1;
+			return System.Math.Max(1, System.Math.Max(System.Math.Min(MIN_VISIBLE_ROWS, fittingRows), availableRows));
 		}
 
 		/// <summary>Lays out a header, scrolling rows (up to maxVisibleRows) and a footer; returns the column height.</summary>
