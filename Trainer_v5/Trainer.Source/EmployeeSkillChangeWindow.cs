@@ -47,7 +47,7 @@ namespace Trainer_v5
 				secondHeader, specToggles, secondFooter,
 				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
-			window.MinSize = new Vector2(Constants.X_EMPLOYEESKILLCHANGE_WINDOW, Mathf.Max(firstColumnHeight, secondColumnHeight) + Constants.ELEMENT_HEIGHT);
+			window.MinSize = new Vector2(Constants.X_EMPLOYEESKILLCHANGE_WINDOW, UIHelper.GetColumnWindowHeight(firstColumnHeight, secondColumnHeight, 0));
 
 			return window;
 		}

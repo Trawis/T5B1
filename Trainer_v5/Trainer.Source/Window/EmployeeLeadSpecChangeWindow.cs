@@ -99,8 +99,7 @@ namespace Trainer_v5.Trainer.Source.Window
 				Constants.ELEMENT_HEIGHT, gap, maxVisibleRows);
 
 			int totalWidth = padding * 2 + colWidth * 2 + colGap;
-			// One extra row for the title bar, as the Skill Change window does; without it the footer buttons fall outside the window.
-			int totalHeight = Mathf.Max(col1Height, col2Height) + padding + Constants.ELEMENT_HEIGHT;
+			int totalHeight = UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding);
 			window.SetMinSize(totalWidth, totalHeight);
 
 			_window = window;
