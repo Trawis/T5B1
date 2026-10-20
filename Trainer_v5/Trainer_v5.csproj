@@ -6,6 +6,7 @@
 		<LangVersion>6.0</LangVersion>
 		<ProjectGuid>{5BF62D82-5C9D-4E95-9835-169756BD58FA}</ProjectGuid>
 		<Prefer32Bit>false</Prefer32Bit>
+		<WarningsAsErrors>$(WarningsAsErrors);CS0108;CS0114;CS0162;CS0168;CS0169;CS0219;CS0414;CS0649</WarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
