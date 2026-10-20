@@ -101,7 +101,7 @@ namespace Trainer_v5
 
 			if (simulatedCompany == null)
 			{
-				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
@@ -126,7 +126,7 @@ namespace Trainer_v5
 
 		internal static void TakeoverCompany()
 		{
-			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
 		}
 
 		internal static void SubDCompanyAction(string input)
@@ -136,7 +136,7 @@ namespace Trainer_v5
 
 			if (Company == null)
 			{
-				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
@@ -153,7 +153,7 @@ namespace Trainer_v5
 
 		internal static void SubDCompany()
 		{
-			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
 		}
 
 		internal static void ForceBankruptAction(string input)
@@ -164,13 +164,13 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				Notification.ShowError(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input));
+				Notification.ShowError(SharedMessages.CompanyNameAmbiguous(input));
 				return;
 			}
 
@@ -187,7 +187,7 @@ namespace Trainer_v5
 
 		internal static void ForceBankrupt()
 		{
-			WindowManager.SpawnInputDialog("CompanyNamePrompt".LocDef("Type company name:"), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
+			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
 		}
 
 		internal static void IncreaseMoneyAction(int amount)
@@ -209,18 +209,18 @@ namespace Trainer_v5
 
 			if (matches.Count == 0)
 			{
-				Notification.ShowError(string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), input));
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
 			if (matches.Count > 1)
 			{
-				Notification.ShowError(string.Format("CompanyNameAmbiguous".LocDef("Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."), input));
+				Notification.ShowError(SharedMessages.CompanyNameAmbiguous(input));
 				return;
 			}
 
 			SimulatedCompany company = matches[0];
-			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), "AddAIFundsTitle".LocDef("Add AI Funds"), "100000",
+			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), SharedMessages.AddAIFundsTitle(), "100000",
 				amount =>
 				{
 					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
@@ -230,7 +230,7 @@ namespace Trainer_v5
 
 		internal static void AddAIFunds()
 		{
-			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), "AddAIFundsTitle".LocDef("Add AI Funds"), "", AddAIFundsAction);
+			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AddAIFundsTitle(), "", AddAIFundsAction);
 		}
 
 		internal static void MaxReputation()

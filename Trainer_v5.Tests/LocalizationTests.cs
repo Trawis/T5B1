@@ -20,6 +20,9 @@ namespace Trainer_v5.Tests
 
 		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
+		// Buttons and toggles of the Settings window tables, then labels, dialogs (information, confirmations, prompts), errors and HUD popups.
+		private static readonly string[] EnglishSections = { "#Input fields", "#Actions", "#Toggles", "#Labels", "#Dialogs", "#Errors", "#Notifications" };
+
 		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization");
 
 		[Fact]
@@ -194,6 +197,98 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void EnglishHasTheAgreedSectionsInOrderAndEveryEntryIsUnderOne()
+		{
+			var headers = new List<string>();
+			var entryBeforeHeader = new List<string>();
+			foreach (var line in File.ReadAllText(EnglishFile()).Split('\n'))
+			{
+				if (line.StartsWith("#"))
+				{
+					headers.Add(line);
+				}
+				else if (Entry.IsMatch(line) && headers.Count == 0)
+				{
+					entryBeforeHeader.Add(line);
+				}
+			}
+
+			Assert.True(entryBeforeHeader.Count == 0, "Entries before the first header: " + string.Join(", ", entryBeforeHeader));
+			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", headers));
+		}
+
+		[Fact]
+		public void EnglishToggleRowsAreUnderTogglesAndActionRowsUnderActions()
+		{
+			var sectionOf = EnglishSectionOfEveryKey();
+			var misplaced = new List<string>();
+			var toggleRows = SettingToggleRows.Create();
+			toggleRows.AddRange(SettingToggleRows.CreateImmediate());
+			foreach (var row in toggleRows)
+			{
+				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Toggles")
+				{
+					misplaced.Add(row.LocKey + " (toggle)");
+				}
+			}
+
+			foreach (var row in SettingActionRows.Create())
+			{
+				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Actions")
+				{
+					misplaced.Add(row.LocKey + " (action)");
+				}
+			}
+
+			Assert.True(misplaced.Count == 0, "Move to #Toggles or #Actions in English/Trainer.tyd: " + string.Join(", ", misplaced));
+		}
+
+		[Fact]
+		public void NoKeyIsLookedUpInMoreThanOnePlace()
+		{
+			var places = new Dictionary<string, List<string>>();
+			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			{
+				foreach (Match match in UsedKey.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				{
+					var key = match.Groups["key"].Value;
+					if (!places.ContainsKey(key))
+					{
+						places[key] = new List<string>();
+					}
+
+					places[key].Add(Path.GetFileName(file));
+				}
+			}
+
+			var repeated = new List<string>();
+			foreach (var pair in places)
+			{
+				if (pair.Value.Count > 1)
+				{
+					repeated.Add(pair.Key + " (" + string.Join(", ", pair.Value) + ")");
+				}
+			}
+
+			Assert.True(repeated.Count == 0, "Looked up in more than one place; move each to SharedMessages: " + string.Join("; ", repeated));
+		}
+
+		[Fact]
+		public void EverySharedMessageKeepsItsKeyAndFallbackAsOneLiteralPair()
+		{
+			var source = SourceText.Strip(File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "SharedMessages.cs")), keepStrings: true);
+			var methods = Regex.Matches(source, @"public static string (?<name>\w+)\(");
+			var pairs = new List<string>();
+			foreach (Match match in Fallback.Matches(source))
+			{
+				pairs.Add(match.Groups["key"].Value);
+			}
+
+			Assert.True(methods.Count > 0);
+			Assert.Equal(string.Join(", ", Enumerable.Select(methods.Cast<Match>(), method => method.Groups["name"].Value)), string.Join(", ", pairs));
+		}
+
+		[Fact]
 		public void MessageKeysAreNotFakedInOtherLanguages()
 		{
 			// Other languages fall back to English through LocDef until a native speaker translates a key.
@@ -212,6 +307,29 @@ namespace Trainer_v5.Tests
 					Assert.True(translated == null || translated != english, Language(file) + " copies the English text for " + key);
 				}
 			}
+		}
+
+		private static Dictionary<string, string> EnglishSectionOfEveryKey()
+		{
+			var sectionOf = new Dictionary<string, string>();
+			var section = "";
+			foreach (var line in File.ReadAllText(EnglishFile()).Split('\n'))
+			{
+				if (line.StartsWith("#"))
+				{
+					section = line;
+				}
+				else
+				{
+					var match = Entry.Match(line);
+					if (match.Success)
+					{
+						sectionOf[match.Groups["key"].Value] = section;
+					}
+				}
+			}
+
+			return sectionOf;
 		}
 
 		private static string Value(string language, string key)

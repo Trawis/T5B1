@@ -288,8 +288,12 @@ ones that fail when it is skipped.
    `EveryToggleSitsInExactlyTheGoldenDomain`).
 4. Localize the text. The label is looked up with the localization key and the
    in-code default text (`"Key".LocDef("Default text")`). Add the key and the
-   same English text to `Trainer.Localization/English/Trainer.tyd`; other
-   language files are not required to contain it. A message that includes a
+   same English text to `Trainer.Localization/English/Trainer.tyd` under the
+   section that matches how the code uses it (`#Input fields`, `#Actions`,
+   `#Toggles`, `#Labels`, `#Dialogs`, `#Errors`, `#Notifications`); other
+   language files are not required to contain it. A text looked up from more
+   than one place is a method in `SharedMessages` that holds the whole
+   `"Key".LocDef("Default text")` pair; single-use texts stay inline. A message that includes a
    runtime value keeps a numbered placeholder in the text and is filled in with
    `string.Format("Key".LocDef("Name: {0}"), value)`; a literal `\n` in the
    text is a line break. Enforced by
@@ -298,7 +302,10 @@ ones that fail when it is skipped.
    `CodeFallbackTextMatchesTheEnglishFile`, `EveryLanguageKeyAlsoExistsInEnglish`,
    `NoLanguageDefinesAKeyTwice`, `EveryLocalizationFileEndsWithANewline`,
    `ActiveMessagesAndLabelsGoThroughLocDef`,
-   `MessagesWithPlaceholdersAreFormattedByTheCode`).
+   `MessagesWithPlaceholdersAreFormattedByTheCode`,
+   `EnglishHasTheAgreedSectionsInOrderAndEveryEntryIsUnderOne`,
+   `EnglishToggleRowsAreUnderTogglesAndActionRowsUnderActions`,
+   `NoKeyIsLookedUpInMoreThanOnePlace`).
 5. Choose the cadence and add `FeatureRegistry` rows: a Frame, Minute, Hour, Day
    or Month row for the toggle, whose action lives on a `Features/*Features`
    class and does not catch errors itself. The row id is the one error boundary

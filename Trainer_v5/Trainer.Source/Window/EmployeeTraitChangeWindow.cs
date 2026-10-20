@@ -35,7 +35,7 @@ namespace Trainer_v5.Window
 
 			var employee = _target?.Employee;
 
-			window.SetTitle(string.Format("EditTraitsTitle".LocDef("Edit traits for {0}"), EmployeeTarget.Describe(_target, source)));
+			window.SetTitle(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
@@ -49,7 +49,7 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(string.Format("EditTraitsTitle".LocDef("Edit traits for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
 
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
@@ -68,7 +68,7 @@ namespace Trainer_v5.Window
 				.ToArray();
 
 			var col1Header = new[] { UIFactory.Label("GoodTraitsLabel".LocDef("Good"), WindowStyles.TitleStyle).gameObject };
-			var col1Footer = new[] { UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject };
+			var col1Footer = new[] { UIFactory.Button(SharedMessages.EditorRefreshButton(), () => self.Refresh()).gameObject };
 			var col2Header = new[] { UIFactory.Label("NeutralTraitsLabel".LocDef("Neutral"), WindowStyles.TitleStyle).gameObject };
 			var col3Header = new[] { UIFactory.Label("BadTraitsLabel".LocDef("Bad"), WindowStyles.TitleStyle).gameObject };
 			var noFooter = new GameObject[0];
@@ -102,7 +102,7 @@ namespace Trainer_v5.Window
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh."));
+					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
 				return;
 			}
 			var employee = _target.Employee;

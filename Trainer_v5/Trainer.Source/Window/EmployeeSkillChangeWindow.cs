@@ -57,7 +57,7 @@ namespace Trainer_v5.Window
 
 		private static GUIWindow CreateWindow()
 		{
-			var window = UIHelper.SpawnWindow(string.Format("EditSkillsTitle".LocDef("Edit skills for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditEmployee", "EditEmployeePanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditSkillsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditEmployee", "EditEmployeePanel");
 
 			var firstHeader = FirstColumnHeader();
 			var roleToggles = RoleToggles();
@@ -110,7 +110,7 @@ namespace Trainer_v5.Window
 			{
 				UIFactory.Button("SetSkillsButton".LocDef("Set Skills"), SetSkills).gameObject,
 				UIFactory.Button("SetBaseSkillsButton".LocDef("Set Base Skills"), SetBaseSkills).gameObject,
-				UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), Refresh).gameObject
+				UIFactory.Button(SharedMessages.EditorRefreshButton(), Refresh).gameObject
 			};
 		}
 
@@ -149,7 +149,7 @@ namespace Trainer_v5.Window
 
 			var title = _allSelected.isOn
 				? string.Format("EditSkillsSelectedTitle".LocDef("Edit skills for {0} selected employee(s)"), selectedCount)
-				: string.Format("EditSkillsTitle".LocDef("Edit skills for {0}"), _targetName);
+				: SharedMessages.EditSkillsTitle(_targetName);
 			window.SetTitle(title);
 		}
 
@@ -174,11 +174,11 @@ namespace Trainer_v5.Window
 			}
 			else if (_target == null)
 			{
-				Notification.ShowError("SelectEmployeeFirst".LocDef("Select an employee first (select one employee, then close and reopen this window)."));
+				Notification.ShowError(SharedMessages.SelectEmployeeFirst());
 			}
 			else
 			{
-				Notification.ShowError("EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh."));
+				Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
 			}
 
 			return null;
@@ -325,7 +325,7 @@ namespace Trainer_v5.Window
 					Notification.ShowWarning(string.Format("SkillsPartlyApplied".LocDef("Only {0} of {1} employees could be edited. The others changed or are not available."), applied, total));
 					break;
 				default:
-					Notification.ShowError("EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited."));
+					Notification.ShowError(SharedMessages.EmployeeChangedNothingEdited());
 					break;
 			}
 		}

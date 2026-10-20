@@ -35,7 +35,7 @@ namespace Trainer_v5.Window
 
 			var employee = _target?.Employee;
 
-			window.SetTitle(string.Format("EditDemandsTitle".LocDef("Edit demands for {0}"), EmployeeTarget.Describe(_target, source)));
+			window.SetTitle(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
@@ -49,13 +49,13 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(string.Format("EditDemandsTitle".LocDef("Edit demands for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
 
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
 
 			var header = new[] { UIFactory.Label("DemandsLabel".LocDef("Demands"), WindowStyles.TitleStyle).gameObject };
-			var footer = new[] { UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject };
+			var footer = new[] { UIFactory.Button(SharedMessages.EditorRefreshButton(), () => self.Refresh()).gameObject };
 			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, header.Length + footer.Length);
 
 			var height = UIHelper.CreateScrollableColumn(
@@ -77,7 +77,7 @@ namespace Trainer_v5.Window
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
-					Notification.ShowError("EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh."));
+					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
 				return;
 			}
 			var employee = _target.Employee;
