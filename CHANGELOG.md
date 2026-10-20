@@ -18,6 +18,37 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   could not be added to the game interface.
 - Fixed trainer settings carrying over from a previously loaded save when the
   next save does not contain them.
+- Fixed trainer error messages in the console to include the exception type,
+  stack trace and inner exceptions, and logging a null value no longer throws.
+- Fixed the Lead Spec window's no-employee message referring to a Refresh
+  button that does not exist.
+- Fixed Set Base Skills accepting values outside its displayed 0-1 range; its
+  prompt now states that it raises the employee skill ceiling to 1.0.
+- Fixed incorrect German, Spanish and Croatian translations (for example German
+  "Disable Fires" no longer reads as dismissals) and aligned English fallback
+  texts.
+- Fixed Disable Burglars and Disable Fire Inspection not removing burglars and
+  fire inspectors that were already on the map.
+- Fixed Trainer Settings rows being unreachable on short screens, the
+  Experimental Test controls needing a window re-open, the Product Name field
+  not showing the stored name, and the Skill Change window clipping its second
+  column.
+- Fixed trainer features that run every frame stopping when the game clock was
+  briefly unavailable or a shared per-frame step failed.
+- Fixed the Trainer Settings window hotkeys, the specialization list and
+  hosting deal timing carrying over between loaded games, and Max Skill and
+  Reset Age acting before the game was ready.
+- Fixed Enabled and Disabled feature switches being skipped for good when they
+  failed once because the game was not ready; they are now retried.
+- Fixed Sell Product Stock claiming a sale when nothing was sold, silent
+  failures in Subsidiary Company and Fix Bugs (which also no longer accepts
+  your own company), and duplicate or leftover Trainer buttons after a failed
+  UI install.
+- Release and nightly workflows now run the format and test checks and use
+  pinned actions, pull requests to `main` fail when their version tag already
+  exists, and the nightly prerelease is published as a draft with its asset
+  attached.
+- Tests are safer under parallel runs and no longer depend on exact source text.
 
 ## [5.4.0] - 2026-10-19
 
