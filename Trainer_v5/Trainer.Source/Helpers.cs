@@ -118,11 +118,11 @@ namespace Trainer_v5
 			string message = string.Format("DiscordInvite".LocDef("Join us on our discord server\n{0}"), DiscordUrl);
 			if (displayAsPopup)
 			{
-				HUD.Instance.AddPopupMessage(message, "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+				Notification.Popup(message);
 			}
 			else
 			{
-				WindowManager.SpawnDialog(message, false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo(message);
 			}
 		}
 

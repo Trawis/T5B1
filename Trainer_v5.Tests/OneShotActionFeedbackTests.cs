@@ -19,8 +19,8 @@ namespace Trainer_v5.Tests
 		{
 			var body = Between("ProductFeatures.cs", "internal static void SellProductStock", "internal static void SetProductPriceAction");
 
-			Assert.True(body.IndexOf("ChangeAllPhysicalStock", System.StringComparison.Ordinal) < body.IndexOf("SpawnDialog", System.StringComparison.Ordinal));
-			Assert.True(body.IndexOf("MakeTransaction", System.StringComparison.Ordinal) < body.IndexOf("SpawnDialog", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("ChangeAllPhysicalStock", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("MakeTransaction", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
 			Assert.Contains("StockSale.Summary(", body);
 		}
 
@@ -29,9 +29,9 @@ namespace Trainer_v5.Tests
 		{
 			var body = Between("CompanyFeatures.cs", "internal static void SubDCompanyAction", "internal static void SubDCompany()");
 
-			Assert.True(body.IndexOf("Company == null", System.StringComparison.Ordinal) < body.IndexOf("SpawnDialog", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("Company == null", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
 			Assert.True(body.IndexOf("!IsBankruptTarget(Company)", System.StringComparison.Ordinal) < body.IndexOf("MakeSubsidiary", System.StringComparison.Ordinal));
-			Assert.Equal(2, body.Split(new[] { "SpawnDialog" }, System.StringSplitOptions.None).Length - 1);
+			Assert.Equal(2, body.Split(new[] { "Notification.Show" }, System.StringSplitOptions.None).Length - 1);
 		}
 
 		[Fact]
@@ -39,8 +39,8 @@ namespace Trainer_v5.Tests
 		{
 			var body = Between("WorkItemFeatures.cs", "internal static void FixBugsAction", "internal static void FixBugs()");
 
-			Assert.True(body.IndexOf("WorkItem == null", System.StringComparison.Ordinal) < body.IndexOf("SpawnDialog", System.StringComparison.Ordinal));
-			Assert.True(body.IndexOf("SpawnDialog", System.StringComparison.Ordinal) < body.IndexOf("FixedBugs =", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("WorkItem == null", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("Notification.Show", System.StringComparison.Ordinal) < body.IndexOf("FixedBugs =", System.StringComparison.Ordinal));
 		}
 	}
 }

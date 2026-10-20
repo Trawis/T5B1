@@ -58,11 +58,11 @@ namespace Trainer_v5
 
 			if (reassigned == 0)
 			{
-				WindowManager.SpawnDialog("TeamsAlreadyOptimal".LocDef("Trainer: All eligible work is already assigned to its best available team!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("TeamsAlreadyOptimal".LocDef("Trainer: All eligible work is already assigned to its best available team!"));
 				return;
 			}
 
-			HUD.Instance.AddPopupMessage("TeamAssignmentsOptimized".LocDef("Trainer: Team assignments optimized!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("TeamAssignmentsOptimized".LocDef("Trainer: Team assignments optimized!"));
 		}
 
 		internal static void InstantPorting()
@@ -71,7 +71,7 @@ namespace Trainer_v5
 
 			if (ports.Count == 0)
 			{
-				WindowManager.SpawnDialog("NoPortingWork".LocDef("Trainer: No active porting work to complete!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoPortingWork".LocDef("Trainer: No active porting work to complete!"));
 				return;
 			}
 
@@ -87,7 +87,7 @@ namespace Trainer_v5
 				}
 			}
 
-			HUD.Instance.AddPopupMessage("PortingCompleted".LocDef("Trainer: Porting work has been completed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("PortingCompleted".LocDef("Trainer: Porting work has been completed!"));
 		}
 
 		internal static void ExtendDeadline()
@@ -115,7 +115,7 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
-				WindowManager.SpawnDialog(string.Format("ProductNotInBeta".LocDef("Trainer: No product named {0} is in beta!"), input), false, DialogWindow.DialogType.Information);
+				Notification.ShowError(string.Format("ProductNotInBeta".LocDef("Trainer: No product named {0} is in beta!"), input));
 				return;
 			}
 
@@ -158,7 +158,7 @@ namespace Trainer_v5
 
 			if (eligibleResearch.Count == 0)
 			{
-				WindowManager.SpawnDialog("NoActiveResearch".LocDef("Trainer: No active research to complete!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoActiveResearch".LocDef("Trainer: No active research to complete!"));
 				return;
 			}
 
@@ -169,7 +169,7 @@ namespace Trainer_v5
 				CompleteResearchWork(researchWork);
 			});
 
-			HUD.Instance.AddPopupMessage("ResearchCompleted".LocDef("Trainer: Research completed instantly!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
 		}
 
 		internal static void ApplyAutoEndDesign()

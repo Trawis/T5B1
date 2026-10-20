@@ -47,7 +47,7 @@ namespace Trainer_v5
 			}
 
 			target.Employee.Founder = !shown;
-			WindowManager.SpawnDialog($"{target.Employee.Name}: Founder is now {Label(!shown)}. Select the employee again to refresh the Fire button.", false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo($"{target.Employee.Name}: Founder is now {Label(!shown)}. Select the employee again to refresh the Fire button.");
 		}
 
 		private static string FindBlocker(EmployeeTarget target)

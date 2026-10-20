@@ -36,7 +36,7 @@ namespace Trainer_v5
 			}
 
 			// Reported after selling, so the player is never told about a sale that did not happen.
-			WindowManager.SpawnDialog(StockSale.Summary(Products.Length, total), false, DialogWindow.DialogType.Information);
+			Notification.ShowInfo(StockSale.Summary(Products.Length, total));
 		}
 
 		internal static void SetProductPriceAction(float price)
@@ -46,12 +46,12 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.Price = price;
-			HUD.Instance.AddPopupMessage(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void SetProductPrice()
@@ -66,12 +66,12 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.PhysicalCopies = stock;
-			HUD.Instance.AddPopupMessage(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void SetProductStock()
@@ -86,12 +86,12 @@ namespace Trainer_v5
 
 			if (Product == null)
 			{
-				WindowManager.SpawnDialog(error, false, DialogWindow.DialogType.Information);
+				Notification.ShowError(error);
 				return;
 			}
 
 			Product.Userbase = users;
-			HUD.Instance.AddPopupMessage(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), Product.Name), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), Product.Name));
 		}
 
 		internal static void AddActiveUsers()

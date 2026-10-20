@@ -104,11 +104,27 @@ Report bugs and suggestions through GitHub Issues; community chat is on
 | Trigger | Workflow | Result |
 |---------|----------|--------|
 | Push to `develop`, PR to `develop` or `main` | CI | Release build + format check + tests |
-| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, an RC zip, and a prerelease (version `<Helpers.Version>-rc<run number>`) that does not replace the latest stable release |
+| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, a nightly zip, and a prerelease development build tagged `nightly-<UTC time>-r<run>-a<attempt>` that does not replace the latest stable release |
 | PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
 | Push to `main` | Release | Build + format check + tests, versioned zip + GitHub Release tagged `v<Helpers.Version>` |
 
 Increase `Helpers.Version` before merging another release to `main`.
+
+#### Nightly development builds
+
+A nightly is an independent development build of `develop`, not a release candidate and not a stable release. It does not guess or imply the next release version; the UTC build time and the workflow run identify it.
+
+| Item | Example | Meaning |
+|------|---------|---------|
+| Tag | `nightly-20261020T115100Z-r122-a1` | UTC build time (`yyyyMMddTHHmmssZ`), workflow run number, run attempt. Sorts by date and is unique for every run and rerun. Never a stable `vX.Y.Z` tag. |
+| Release name | `Trainer Nightly — 2026-10-20 11:51 UTC` | Marked as a prerelease, never as the latest release. The notes list the full and short commit SHA, branch, build time and run. |
+| Zip and artifact | `Trainer_v5_nightly_20261020T115100Z_r122_a1.zip` | Same identity as the tag. |
+| Assembly and file build version | `5.4.0-nightly.20261020T115100Z.r122.a1` | SemVer build identifier of the DLL (`AssemblyInformationalVersion`; the numeric assembly and file version stay `5.4.0.0`). It is not a release version. |
+| In-game text | `v5.4.0` | `Helpers.Version`, the product version chosen for the next release. Nightlies never change it. |
+
+A rerun of the workflow gets a new run attempt and a new time, so it creates a new release and never changes an earlier one. The workflow fails instead of touching an existing published nightly, a tag that points to another commit, or a tag without a release.
+
+Historical `-rc` prereleases are not managed by the workflow; retention is decided separately.
 
 ## Maintainers
 

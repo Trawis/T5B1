@@ -12,7 +12,7 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex UsedKey = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(|CreateSettingToggle\(\s*\w+,\s*""(?<key>\w+)""", RegexOptions.Compiled);
 
-		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|ShowError|CreateLabel|SpawnInputDialog|SpawnWindow|RequestInt|RequestUInt|RequestFloat|UIFactory\.Label|UIFactory\.Button)\(\s*""(?<text>(?:[^""\\]|\\.)+)""\s*[,)]", RegexOptions.Compiled);
+		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|Notification\.Popup|Notification\.ShowInfo|Notification\.ShowWarning|ShowError|CreateLabel|SpawnInputDialog|SpawnWindow|RequestInt|RequestUInt|RequestFloat|UIFactory\.Label|UIFactory\.Button)\(\s*""(?<text>(?:[^""\\]|\\.)+)""\s*[,)]", RegexOptions.Compiled);
 
 		private static readonly Regex Formatted = new Regex(@"string\.Format\(\s*""(?<key>\w+)""\s*\.LocDef\(", RegexOptions.Compiled);
 
