@@ -70,6 +70,18 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   other employee windows.
 - Simplified the README, architecture and feature documentation; the Steam
   Workshop source install is now described first.
+- Trainer popups now always start with "Trainer: ", and refused actions such as
+  an unknown company or product show as error dialogs.
+- AI Bankrupt All, Clear all loans and Unlock and Claim Rewards now ask for a
+  Yes/No confirmation that shows how many items are affected. Force Bankrupt,
+  Max Reputation and Founder use the same Yes/No dialog instead of typing YES.
+- Added a Debug Logging option to the mod Options that writes extra diagnostic
+  lines to the in-game console (errors are always logged).
+- The trainer window now has three tabs (Actions, Toggles and Settings) with
+  sections, is narrower, and remembers the last tab while the game runs.
+- Nightly builds are now identified by UTC date and time, run number and attempt
+  (for example nightly-20261020T115100Z-r122-a1) instead of a release candidate
+  number, and are always prereleases.
 
 ## [5.4.0] - 2026-10-19
 
