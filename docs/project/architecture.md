@@ -365,7 +365,8 @@ handle:
   the game compiles the files (top-level files alphabetically, then each folder). A
   field of an enum declared later makes the compiler fail when it writes the
   assembly (CS0016 "enum type with a bad underlying type"). Put such enums in a
-  file that sorts first, as `DomainEnums.cs` does (`GameCompilerCompatibilityTests`).
+  file of the same folder that sorts first, as `DomainEnums.cs` does
+  (`GameCompilerCompatibilityTests`).
 - C# 6 only. The game's compiler rejects C# 7 syntax (CS1644).
 
 `GameSourcePipelineTests` and `GameCompilerHazardTests` in `Trainer_v5.Tests`

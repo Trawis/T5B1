@@ -46,7 +46,7 @@ namespace Trainer_v5.Tests
 					foreach (Match use in member.Matches(sources[file]))
 					{
 						var isTypeMember = BraceDepth(sources[file], use.Index) == 2;
-						var isLate = files.IndexOf(file) < enumIndex || (file == pair.Value && use.Index < enumPosition);
+						var isLate = files.IndexOf(file) < enumIndex || (file == pair.Value && use.Index < enumPosition) || Path.GetDirectoryName(file) != Path.GetDirectoryName(pair.Value);
 						if (isTypeMember && isLate)
 						{
 							late.Add(pair.Key + " (" + Path.GetFileName(pair.Value) + ") is used by a field in " + Path.GetFileName(file));
@@ -55,7 +55,7 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			Assert.True(late.Count == 0, "Declare the enum in a file that sorts before its users: " + string.Join("; ", late));
+			Assert.True(late.Count == 0, "Declare the enum in a file of the same folder that sorts before its users: " + string.Join("; ", late));
 		}
 
 		[Fact]
