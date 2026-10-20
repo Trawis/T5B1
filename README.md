@@ -1,162 +1,114 @@
 # Software Inc. Trainer
 
 A trainer (cheat) mod for the game *Software Inc.* (Beta 1 branch). It adds an
-in-game window and employee editors that let you apply one-shot actions (add
-money, max skills, take over companies) and continuous toggles (no needs, free
-employees, auto-finish work).
+in-game window and employee editors for one-shot actions (add money, max
+skills, take over companies) and continuous toggles (no needs, free employees,
+auto-finish work), built from the game's own UI widgets.
+
+Status: `active`, maintained for the current *Software Inc.* Beta 1 branch.
 
 > **Note:** Some features may not work with old saves. Back up your data before
 > testing.
 
-## Why
+## Installation
 
-*Software Inc.* is a business-simulation game. This mod gives players
-sandbox-style control over the simulation for experimentation, testing, and
-casual play, exposed through the game's own UI so it feels native.
+*Software Inc.* (Beta 1) on Windows is required.
 
-## Status
+- **Steam Workshop (primary).** Subscribe to the trainer's Workshop item. The
+  item is the trainer's source: the game's injector wraps its methods and the
+  game's bundled C# compiler builds it when the mod loads. The source therefore
+  has to stay inside what that compiler accepts (see
+  [Workshop Source Build](docs/project/architecture.md#workshop-source-build)).
+- **DLL (separate path).** Download the release zip from GitHub Releases and
+  copy `Trainer_v5.dll` and the `Trainer.Localization` folder into the game's
+  `DLLMods` folder.
 
-`active` - maintained for the current *Software Inc.* Beta 1 branch.
+## Usage
 
-## Requirements
+Load a game and press the **Trainer** button (or **F1**; **F2** closes the
+window). The **Skill Change** button on the actor window and the extra buttons
+on the employee detail window edit selected employees. See
+[`docs/project/features.md`](docs/project/features.md) for every feature.
 
-- *Software Inc.* (Beta 1) installed.
-- Windows (the game platform).
-- To build from source: a .NET SDK able to build the `net46` target project
-  (CI uses the .NET 8 SDK). The build references the game's assemblies in
-  `Trainer_v5/Trainer.Libraries/` and Unity modules, which are supplied by the
-  game at runtime.
+### Experimental options
 
-## Setup
+The game's Options screen lists the trainer with an *Enable Experimental
+Features* switch, off by default. The choice is stored by the game in the
+mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
+part of a save. No experimental feature exists yet, so turning it on changes
+nothing today. The Trainer Settings window has no Experimental control.
+
+### Retired settings
+
+Reduce Box Price, Auto Max Market Share, More Creativity, Reduce Expansion Cost
+and the former Experimental toggle are retired: they have no control and no
+behavior, and a value stored for them in an older save is ignored.
+
+## Limitations
+
+- May not work with old saves; back up first.
+- Toggles that write game state do not all undo it when switched off; see
+  [`features.md`](docs/project/features.md#switching-toggles-off).
+- Tightly coupled to the vendored game assemblies in
+  `Trainer_v5/Trainer.Libraries/`; a game update can break the build and
+  requires refreshing them. Older Beta 1 builds are not supported.
+- Automated tests cannot create live game objects; behavior that touches them
+  is checked only by loading the mod in the game.
+
+## Build and test
+
+Requires a .NET SDK that can build the `net46` project (CI uses .NET 8). The
+build references the game assemblies in `Trainer_v5/Trainer.Libraries/`.
 
 ```bash
 git clone https://github.com/Trawis/T5B1.git
 cd T5B1
-```
-
-To install a built mod, copy `Trainer_v5.dll` and the `Trainer.Localization`
-folder into the game's mod directory.
-
-## Build
-
-```bash
 dotnet build "Trainer v5 - Beta 1.sln"
-```
-
-The solution defines exactly two configurations, `Debug` and `Release`, and
-both target the current vendored Software Inc Beta 1 assemblies under
-`Trainer_v5/Trainer.Libraries/` directly - there are no version-specific
-preprocessor symbols or additional configurations to choose between.
-`Release` is the only configuration built by CI/CD; `Debug` is for local
-development and must be built locally.
-
-Old game-version-specific configurations (e.g. per-sub-version `SWINC*`
-configurations) are not maintained. T5B1 does not preserve backward
-compatibility with older Software Inc Beta 1 builds: game compatibility is
-updated by refreshing the vendored assemblies (see
-[`docs/project/architecture.md`](docs/project/architecture.md)), not by
-adding compatibility configurations or conditional code paths.
-
-## Test
-
-```bash
 dotnet test "Trainer v5 - Beta 1.sln"
 ```
 
-`Trainer_v5.Tests` (xUnit, `net462`) references the vendored game assemblies
-and covers the logic that runs outside Unity: setting keys, defaults and save
-round-trips, input validation, toggle transitions, and the minute-event
-cadence. It also runs the game's own source injector and C# compiler over the
-trainer source (see [Workshop Source Build](docs/project/architecture.md#workshop-source-build)).
-CI runs it after the build.
-
-Most live game objects cannot be created in the test host, so anything that
-touches them is not covered; validate it by loading the mod in the game.
-
-## Run
-
-Install the built `Trainer_v5.dll` and `Trainer.Localization` into the game's
-mod directory, launch *Software Inc.*, load a game, and press the **Trainer**
-button (or F1).
-
-## Configuration
-
-- **Version source of truth:** `Helpers.Version` in
-  `Trainer_v5/Trainer.Source/Helpers.cs`.
-- **Build configurations:** `Debug` and `Release` both target whichever
-  Software Inc build is currently vendored under
-  `Trainer_v5/Trainer.Libraries/` (see [Build](#build)).
-- **Persistence:** trainer toggle and efficiency settings are saved into the
-  game save file. No secrets or external configuration are required.
-
-## Usage
-
-Open the trainer with the **Trainer** button or **F1** (**F2** closes it). The
-**Skill Change** button on the actor window and extra buttons on the employee
-detail window edit selected employees. See [`docs/project/features.md`](docs/project/features.md) for the
-full feature list.
+The solution has the configurations `Debug` and `Release`, both targeting the
+vendored assemblies; CI builds `Release` only. `Trainer_v5.Tests` (xUnit,
+`net462`) covers the logic that runs outside Unity, and runs the game's own
+source injector and C# compiler over the trainer source. The release version
+is `Helpers.Version` in `Trainer_v5/Trainer.Source/Helpers.cs`. Trainer
+settings are saved in the game save; no secrets or external configuration are
+needed.
 
 ## Documentation
 
-- [`docs/project/architecture.md`](docs/project/architecture.md) - architecture and technical overview
-- [`docs/project/features.md`](docs/project/features.md) - feature list
+- [`docs/project/features.md`](docs/project/features.md) - feature reference
+- [`docs/project/architecture.md`](docs/project/architecture.md) - architecture, persistence and Workshop build constraints
 - [`CHANGELOG.md`](CHANGELOG.md) - version history
 
-## Known Limitations
+## Contributing
 
-- May not work with old saves; back up first.
-- Tightly coupled to the vendored game assemblies; game updates can break the
-  build and require refreshing the assemblies under
-  `Trainer_v5/Trainer.Libraries/` (see
-  [`docs/project/architecture.md`](docs/project/architecture.md)).
-- Automated tests do not create live game objects; behavior that touches them
-  is validated by loading the mod in the game.
-
-## Help and Contributing
-
-- Report bugs and suggestions through GitHub Issues.
-- Community chat and support: [Discord](https://discord.com/invite/J584aG).
+Report bugs and suggestions through GitHub Issues; community chat is on
+[Discord](https://discord.com/invite/J584aG). Branching and coding rules are in
+[`AGENTS.md`](AGENTS.md).
 
 ### Branching (Git Flow)
 
-This repository follows Git Flow.
-
-**Long-lived branches**
-
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production - stable releases only |
-| `develop` | Integration - all feature work targets here |
-
-**Branch families**
-
 | Branch | Base | PR target | Use for |
 |--------|------|-----------|---------|
-| `feature/<short-description>` | `develop` | `develop` | Normal implementation and maintenance |
+| `main` | - | - | Stable releases only |
+| `develop` | - | - | Integration |
+| `feature/<short-description>` | `develop` | `develop` | Implementation and maintenance |
 | `release/<major>.<minor>.<patch>` | `develop` | `main` | Release preparation and version bumps |
 | `hotfix/<short-description>` | `main` | `main` | Urgent fixes for released code |
 
-`release/*` and `hotfix/*` changes must also be brought back to `develop` after
-merge. See [`AGENTS.md`](AGENTS.md) for full branching rules and coding
-conventions.
+`release/*` and `hotfix/*` changes are also merged back to `develop`.
 
 ### CI / CD
 
 | Trigger | Workflow | Result |
 |---------|----------|--------|
 | Push to `develop`, PR to `develop` or `main` | CI | Release build + format check + tests |
-| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, versioned RC zip artifact, draft prerelease published after its asset uploads |
+| Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, an RC zip, and a prerelease (version `<Helpers.Version>-rc<run number>`) that does not replace the latest stable release |
 | PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
-| Push to `main` | Release | Build + format check + tests, versioned zip artifact + versioned GitHub Release |
+| Push to `main` | Release | Build + format check + tests, versioned zip + GitHub Release tagged `v<Helpers.Version>` |
 
-The release workflow reads the semantic version from `Helpers.Version`. A release
-creates the matching `v<major>.<minor>.<patch>` tag and uses the version in the
-downloadable archive name. Increase `Helpers.Version` before merging another
-release to `main`; the Release Version Guard check fails a pull request to `main`
-whose `Helpers.Version` tag already exists, and a push to `main` without a bump
-is still expected to fail the Release workflow. The nightly workflow appends the workflow run number as an RC
-suffix, producing versions such as `5.4.0-rc123` (tag `v5.4.0-rc123`); nightly prereleases do not
-replace the latest stable release.
+Increase `Helpers.Version` before merging another release to `main`.
 
 ## Maintainers
 
