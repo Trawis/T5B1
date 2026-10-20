@@ -56,30 +56,39 @@ namespace Trainer_v5.Window
 
 			var goodTraitsToggle = traits
 				.Where(p => p.Key.IsGood())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 			var neutralTraitsToggle = traits
 				.Where(p => p.Key.IsNeutral())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 			var badTraitsToggle = traits
 				.Where(p => p.Key.IsBad())
-				.Select(p => p.Value.gameObject);
+				.Select(p => p.Value.gameObject)
+				.ToArray();
 
-			var col1 = new List<GameObject> { UIFactory.Label("GoodTraitsLabel".LocDef("Good"), WindowStyles.TitleStyle).gameObject };
-			col1.AddRange(goodTraitsToggle);
-			col1.Add(UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject);
+			var col1Header = new[] { UIFactory.Label("GoodTraitsLabel".LocDef("Good"), WindowStyles.TitleStyle).gameObject };
+			var col1Footer = new[] { UIFactory.Button("EditorRefreshButton".LocDef("Refresh"), () => self.Refresh()).gameObject };
+			var col2Header = new[] { UIFactory.Label("NeutralTraitsLabel".LocDef("Neutral"), WindowStyles.TitleStyle).gameObject };
+			var col3Header = new[] { UIFactory.Label("BadTraitsLabel".LocDef("Bad"), WindowStyles.TitleStyle).gameObject };
+			var noFooter = new GameObject[0];
 
-			var col2 = new List<GameObject> { UIFactory.Label("NeutralTraitsLabel".LocDef("Neutral"), WindowStyles.TitleStyle).gameObject };
-			col2.AddRange(neutralTraitsToggle);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, col1Header.Length + col1Footer.Length);
 
-			var col3 = new List<GameObject> { UIFactory.Label("BadTraitsLabel".LocDef("Bad"), WindowStyles.TitleStyle).gameObject };
-			col3.AddRange(badTraitsToggle);
+			var col1Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.FIRST_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col1Header, goodTraitsToggle, col1Footer,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+			var col2Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.SECOND_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col2Header, neutralTraitsToggle, noFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
+			var col3Height = UIHelper.CreateScrollableColumn(
+				window, new Rect(Constants.THIRD_COLUMN, 0, Constants.ELEMENT_WIDTH, 0),
+				col3Header, badTraitsToggle, noFooter,
+				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
-			col1.AddToWindow(window, Constants.FIRST_COLUMN);
-			col2.AddToWindow(window, Constants.SECOND_COLUMN);
-			col3.AddToWindow(window, Constants.THIRD_COLUMN);
-
-			var maxRows = new[] { col1.Count, col2.Count, col3.Count }.Max();
-			window.SetWindowSize(maxRows + 1, Constants.FOURTH_COLUMN - 1);
+			window.SetMinSize(Constants.FOURTH_COLUMN - 1, UIHelper.GetColumnWindowHeight(UIHelper.GetColumnWindowHeight(col1Height, col2Height, 0), col3Height, 0));
 
 			_window = window;
 			_traitsToggles = traits;

@@ -81,7 +81,7 @@ namespace Trainer_v5.Window
 			const int colWidth = 160, padding = 4, colGap = 8, gap = 2;
 
 			var reservedRows = Math.Max(col1Header.Length + col1Footer.Length, col2Header.Length + col2Footer.Length);
-			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows);
+			var maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, reservedRows, gap);
 
 			var col1Height = UIHelper.CreateScrollableColumn(
 				window, new Rect(padding, padding, colWidth, 0),

@@ -3,10 +3,10 @@ namespace Trainer_v5
 	// Pure decisions behind the Trainer Settings window, kept apart from the Unity types so tests can reach them.
 	internal static class SettingsWindowState
 	{
-		// Window width: Columns slots at the column pitch plus 2 px of margin.
+		// Window width: the last column's right edge plus the 1 px margin the first column has on the left.
 		public const int Columns = 4;
 		public const int ColumnPitch = Constants.THIRD_COLUMN - Constants.SECOND_COLUMN;
-		public const int WindowWidth = Columns * ColumnPitch + 2;
+		public const int WindowWidth = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH + Constants.FIRST_COLUMN;
 
 		// Two label + drop-down pairs (4 rows), a gap and the Discord button.
 		public const int SettingsPageRows = 6;

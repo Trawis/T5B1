@@ -100,7 +100,14 @@ namespace Trainer_v5.Tests
 		public void TheWindowIsFourSlotsWide()
 		{
 			Assert.Equal(161, SettingsWindowState.ColumnPitch);
-			Assert.Equal(646, SettingsWindowState.WindowWidth);
+			Assert.Equal(634, SettingsWindowState.WindowWidth);
+		}
+
+		[Fact]
+		public void TheWindowHoldsTheLastColumnAndFitsTheSmallestCanvasWidth()
+		{
+			Assert.Equal(SettingsWindowState.WindowWidth, UIHelper.GetGridSlot(SettingsWindowState.Columns - 1, SettingsWindowState.Columns, 0).xMax + Constants.FIRST_COLUMN);
+			Assert.True(SettingsWindowState.WindowWidth <= 1280 / 2);
 		}
 
 		private static int[] Counts(Dictionary<TrainerDomain, int> perDomain, TrainerDomain[] order)
