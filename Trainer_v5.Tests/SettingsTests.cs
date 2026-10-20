@@ -15,7 +15,7 @@ namespace Trainer_v5.Tests
 			"NoiseReduction", "FreeStaff", "TemperatureLock", "NoWaterElectricity", "NoNeeds",
 			"FreeEmployees", "LockAge", "MoreHostingDeals", "IncreaseCourierCapacity", "ReduceISPCost",
 			"IncreasePrintSpeed", "FreePrint", "IncreaseBookshelfSkill", "NoMaintenance", "NoSickness",
-			"FullSatisfaction", "DisableSkillDecay", "DisableBurglars", "DisableFires", "NoServerCost",
+			"FullSatisfaction", "DisableBurglars", "DisableFires", "NoServerCost",
 			"NoEducationCost", "IncreaseWalkSpeed", "AutoEndDesign",
 			"AutoContractProgression", "AutoEndResearch", "AutoEndPatent",
 			"DisableFurnitureStealing", "MoreInspiration", "AutoResearchStart",
