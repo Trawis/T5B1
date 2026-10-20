@@ -61,28 +61,6 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog("How many specialization stars do you want?\nMin = -3, Max = 3", "Stars amount", "3", SetSkillPerEmployeeAction);
 		}
 
-		internal static void HREmployees()
-		{
-			if (!Helpers.IsGameReady(requireSelector: true))
-				return;
-
-			Actor[] Actors = Settings.sActorManager.Actors
-									 .Where(actor => actor.employee.IsRole(Employee.RoleBit.Lead))
-									 .ToArray();
-
-			if (Actors.Length == 0)
-			{
-				return;
-			}
-
-			for (var i = 0; i < Actors.Length; i++)
-			{
-				Actors[i].employee.SetSpecialization(Actors[i].employee.GetRoleOrNatural(), "HR", 5);
-			}
-
-			HUD.Instance.AddPopupMessage("AllLeadersHRed".LocDef("Trainer: All leaders are now HRed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0, 1);
-		}
-
 		internal static void ResetAgeOfEmployees()
 		{
 			if (!Helpers.RequireGameReady("Reset age of employees"))
