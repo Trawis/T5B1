@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: develop
           fetch-depth: 0
@@ -58,13 +58,21 @@ jobs:
 
       - name: Setup .NET
         if: steps.check.outputs.has_commits == 'true'
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: '8.x'
 
       - name: Build (Release)
         if: steps.check.outputs.has_commits == 'true'
         run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental --property:Version=${{ steps.version.outputs.version }}
+
+      - name: Format
+        if: steps.check.outputs.has_commits == 'true'
+        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+
+      - name: Test
+        if: steps.check.outputs.has_commits == 'true'
+        run: dotnet test "Trainer v5 - Beta 1.sln" --configuration Release --no-build
 
       - name: Stage release files
         if: steps.check.outputs.has_commits == 'true'
@@ -81,7 +89,7 @@ jobs:
 
       - name: Upload artifact
         if: steps.check.outputs.has_commits == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: Trainer_v5_${{ steps.version.outputs.version }}
           path: Trainer_v5_${{ steps.version.outputs.version }}.zip
@@ -89,7 +97,7 @@ jobs:
 
       - name: Create nightly release
         if: steps.check.outputs.has_commits == 'true'
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: Trainer v${{ steps.version.outputs.version }}

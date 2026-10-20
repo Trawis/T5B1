@@ -85,6 +85,9 @@ namespace Trainer_v5
 
 		internal static void ResetAgeOfEmployees()
 		{
+			if (!Helpers.RequireGameReady("Reset age of employees"))
+				return;
+
 			var currentTime = SDateTime.Now();
 			foreach (var actor in Settings.sActorManager.Actors)
 			{
@@ -97,11 +100,11 @@ namespace Trainer_v5
 
 		internal static void EmployeesToMax()
 		{
+			if (!Helpers.RequireGameReady("Max skill of employees", requireSelector: true))
+				return;
+
 			SoftwareType[] softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.ToArray();
 			Employee.EmployeeRole[] employeeRoles = (Employee.EmployeeRole[])Enum.GetValues(typeof(Employee.EmployeeRole));
-
-			if (!Helpers.IsGameReady(requireSelector: true))
-				return;
 
 			foreach (Actor actor in Settings.sActorManager.Actors.ToArray())
 			{
@@ -227,6 +230,22 @@ namespace Trainer_v5
 				employee.Demanded = 0f;
 				employee.UpfrontDemand = 0f;
 				employee.ChangeSalary(0f, 0f, actor, false);
+			}
+		}
+
+		// The list belongs to one game (mods change the specializations), so a new game recomputes it. The loaded flag
+		// stays set: it also gates the one-time Discord popup in TrainerBehaviour.Update.
+		internal static void ResetSpecializations()
+		{
+			Helpers.SpecializationsList = null;
+		}
+
+		// Recomputes the list for a later game; the first load of a session still belongs to TrainerBehaviour.Update.
+		internal static void RestoreSpecializationsAfterReset()
+		{
+			if (_specializationsLoaded && Helpers.SpecializationsList == null)
+			{
+				LoadSpecializations();
 			}
 		}
 

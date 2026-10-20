@@ -67,6 +67,7 @@ namespace Trainer_v5
 					case SceneRoute.MainScene:
 						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
+						ResetPerGameState();
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
 						DetailWindowTrainer.Install();
@@ -97,8 +98,18 @@ namespace Trainer_v5
 			}
 
 			DetailWindowTrainer.Reset();
+			ResetPerGameState();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
+		}
+
+		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
+		private void ResetPerGameState()
+		{
+			SettingsWindow.Reset();
+			EmployeeSkillChangeWindow.Reset();
+			EmployeeFeatures.ResetSpecializations();
+			MarketFeatures.ResetGameState();
 		}
 
 		private void SubscribeToSceneEvents()
@@ -161,6 +172,7 @@ namespace Trainer_v5
 		private void OnGameReady(object sender, EventArgs args)
 		{
 			DetailWindowTrainer.Install();
+			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -229,11 +241,12 @@ namespace Trainer_v5
 				});
 			}
 
-			ApplyProcessStaticSettings();
+			// Each shared step has its own boundary so a failure cannot skip the Frame run below (#356).
+			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
 
-			GetDispatcher().RunTransitions();
+			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());
 
-			_minuteWatcher.Poll();
+			Helpers.TryExecute("MinutePoll", () => _minuteWatcher.Poll());
 
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}

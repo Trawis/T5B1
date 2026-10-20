@@ -52,7 +52,10 @@ dependencies.
 
 Startup subscribes to Unity scene-load events (`SceneRoutes` maps a scene name to install, new-game screen or teardown; the Unity calls stay in `TrainerBehaviour`). Entering the main scene
 installs the trainer UI and subscribes to the game's time events; returning
-to the menu tears both down.
+to the menu tears both down. Leaving the game and entering the main scene also
+reset the per-game caches (`TrainerBehaviour.ResetPerGameState`: the settings and
+skill-change window references, the specialization list, the hosting timing flags
+and the pending-list warning); persisted settings are never part of that reset.
 
 Features are scheduled at per-frame, minute, hour, day, or month cadence,
 matched to how often the underlying game state can actually change.
@@ -128,6 +131,45 @@ write of an absolute value or baseline, or a catch-up scan of unfinished work;
 an action with a lasting one-off side effect must not be registered on these
 triggers. Retries do not make the Workshop build recover from an exception: a
 named method that throws still unloads the mod through the injected handler.
+
+### Non-restoring toggles
+
+A toggle with no Disabled row in `FeatureRegistry` stops acting when switched
+off and does not undo earlier writes. `docs/project/features.md` lists the
+player-visible result per toggle. Restoring toggles are `NoEducationCost`,
+`FreePrint`, `FullEnvironment`, `FullRoomBrightness`, `IncreaseWalkSpeed`,
+`IncreaseCourierCapacity`, `ReduceISPCost` and `ReduceExpansionCost`; the
+`Cheats.*` toggles are bound to their setting when it changes. The rest fall
+into these groups (checked against the vendored `Assembly-CSharp.dll`):
+
+- Furniture and printer fields that are not part of the saved data and have no
+  game writer: `Furniture.AuraValues` (`IncreaseBookshelfSkill`),
+  `Furniture.Comfort` (`NoMaintenance`), `Furniture.Water` and `Wattage`
+  (`NoWaterElectricity`), `Furniture.Noisiness` (`NoiseReduction`),
+  `Furniture.CanSteal` (`DisableFurnitureStealing`),
+  `Upgradable.FireStarter` (`DisableFires`) and `ProductPrinter.PrintSpeed`
+  (`IncreasePrintSpeed`). `Furniture.SerializeMe` and
+  `ProductPrinter.SerializeMe` do not write them, so they stay changed for the
+  loaded objects and come from the object definition after a load. The
+  original values are per furniture type or item and are not captured.
+- Saved state with no recorded original: `Employee` salary fields
+  (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
+  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  ticket timestamps, work items advanced or started by
+  the `Auto*` toggles, deals added by `MoreHostingDeals`, closed or removed
+  distribution platforms (`DigitalDistributionMonopol`), despawned burglars and
+  inspectors, `PassedFireInspection`, and money refunded by the cost-refund
+  toggles.
+- Values the game writes itself: `Furniture.ActorNoise`, `EnvironmentNoise`
+  and `FinalNoise`, `Actor.Noisiness`, `Actor.Effectiveness`, `Employee.Stress`
+  and needs, `Employee.JobSatisfaction`, `Room.Temperature`, `GermCount` and
+  `Smell`, `GameSettings.ServerCost`, `StaffSalaryDue`, the utility bills,
+  `Heat` and `ForcePause`. The assembly has a writer for each; how soon it
+  replaces the last trainer value is not determined.
+
+No public game method that recomputes the first two groups was identified, and
+the calling conditions of the game's salary and vacation writers for player
+employees were not traced. The settings window does not mark one-way toggles.
 
 ## Persistence and Settings
 

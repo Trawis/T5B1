@@ -91,6 +91,9 @@ namespace Trainer_v5.Window
 
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{
+			if (_isRefreshing)
+				return;
+
 			if (_target == null || !_target.IsStillValid())
 			{
 				if (!_isRefreshing)
