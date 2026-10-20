@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Trainer_v5.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -175,14 +176,7 @@ namespace Trainer_v5
 
 			#region column6
 			var testButton = UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton);
-			var experimentalToggle = UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a =>
-			{
-				settings.Toggle(SettingKeys.Experimental);
-				SetTestControlsActive(settings, testButton);
-			});
 
-			column6.Add(experimentalToggle);
-			column6.Add(UIHelper.CreateLabel("ExperimentalHint".LocDef("Shows the Test button below")));
 			column6.Add(UIHelper.CreateLabel());
 			column6.Add(testButton);
 
@@ -210,7 +204,7 @@ namespace Trainer_v5
 			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
 			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
-			SetTestControlsActive(settings, testButton);
+			SetTestControlsActive(testButton);
 		}
 
 		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
@@ -247,10 +241,9 @@ namespace Trainer_v5
 			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
 		}
 
-		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testButton)
+		private static void SetTestControlsActive(GameObject testButton)
 		{
-			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
-			testButton.SetActive(experimental);
+			testButton.SetActive(ExperimentalOptions.Enabled);
 		}
 
 		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)

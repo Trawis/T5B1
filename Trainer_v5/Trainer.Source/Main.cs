@@ -1,4 +1,5 @@
 using System.Linq;
+using Trainer_v5.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,8 @@ namespace Trainer_v5
 {
 	public class Main : ModMeta
 	{
+		private ModController.DLLMod _mod;
+
 		public override string Name => "TrainerByTrawis";
 		public static Button TrainerButton { get; set; }
 		public static Button SkillChangeButton { get; set; }
@@ -13,6 +16,10 @@ namespace Trainer_v5
 		public override void Initialize(ModController.DLLMod parentMod)
 		{
 			base.Initialize(parentMod);
+			_mod = parentMod;
+
+			// The game has already read the mod's own settings file; this runs when the mod loads, before any game.
+			ExperimentalOptions.Load(parentMod.Settings);
 		}
 
 		public static void OpenSettingsWindow()
@@ -56,11 +63,26 @@ namespace Trainer_v5
 
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)
 		{
-			Text label = WindowManager.SpawnLabel();
-			label.text = "Please load the game and press 'Trainer' button.";
-
-			WindowManager.AddElementToElement(label.gameObject, parent.gameObject, new Rect(0, 0, 400, 128),
+			// The game builds this once per Options window and keeps it, so the toggle is the only writer of the value.
+			float y = 0;
+			if (_mod != null)
+			{
+				Toggle toggle = UIFactory.Toggle("EnableExperimentalFeatures".LocDef("Enable Experimental Features"), ExperimentalOptions.Enabled, SetExperimentalEnabled);
+				WindowManager.AddElementToElement(toggle.gameObject, parent.gameObject, new Rect(0, y, 400, Constants.ELEMENT_HEIGHT),
 					new Rect(0, 0, 0, 0));
+				y += Constants.ELEMENT_HEIGHT;
+			}
+
+			Text note = WindowManager.SpawnLabel();
+			note.text = "ExperimentalNone".LocDef("No experimental features are available yet, so turning this on changes nothing today. The choice applies to every save game.");
+			WindowManager.AddElementToElement(note.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
+				new Rect(0, 0, 0, 0));
+			y += 64;
+
+			Text label = WindowManager.SpawnLabel();
+			label.text = "OptionsLoadHint".LocDef("Please load the game and press 'Trainer' button.");
+			WindowManager.AddElementToElement(label.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
+				new Rect(0, 0, 0, 0));
 		}
 
 		public override WriteDictionary Serialize(GameReader.LoadMode mode)
@@ -99,6 +121,11 @@ namespace Trainer_v5
 				var fallback = isFullLoad ? storeDefaults[store] : Helpers.GetProperty(Helpers.StoresSettings, store);
 				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, fallback));
 			}
+		}
+
+		private void SetExperimentalEnabled(bool enabled)
+		{
+			ExperimentalOptions.Set(enabled, _mod.SaveSetting);
 		}
 
 		private static void DestroyUIButtons()

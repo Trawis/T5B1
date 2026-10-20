@@ -19,8 +19,8 @@ namespace Trainer_v5
 		}
 	}
 
-	// The standard Trainer Settings toggles in display order per column (#274). Side-effect toggles and Experimental
-	// stay in SettingsWindow. Built in a method (see Workshop Source Build).
+	// The standard Trainer Settings toggles in display order per column (#274). Side-effect toggles stay in
+	// SettingsWindow. Built in a method (see Workshop Source Build).
 	internal static class SettingToggleRows
 	{
 		public static List<SettingToggleRow> Create()

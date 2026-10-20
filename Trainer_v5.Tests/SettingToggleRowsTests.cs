@@ -10,10 +10,10 @@ namespace Trainer_v5.Tests
 	// The Trainer Settings toggles are data (#274); these keep the table consistent with the settings and strings.
 	public class SettingToggleRowsTests
 	{
-		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings", "Experimental" };
+		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
-		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity" };
+		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "Experimental" };
 
 		[Fact]
 		public void EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow()

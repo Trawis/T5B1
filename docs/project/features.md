@@ -109,7 +109,15 @@ Toggle features stay active for as long as they are enabled.
 | Free Marketing               | Refunds your daily budget-based marketing spend; press releases and follower campaigns are unaffected |
 | No Offshore Heat             | Clears offshore account heat every frame, preventing it from reaching the audit threshold |
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
-| Experimental                | Shows the Test Button, which adds quality to a named alpha product |
+
+**Enable Experimental Features (mod Options)**
+
+The game's own Options screen lists the trainer under its mods and offers
+*Enable Experimental Features*, off by default. It is not in the Trainer Settings
+window. The choice is stored for the whole installation (not in a save game), so
+loading or switching saves does not change it. No experimental feature exists
+yet, so turning it on changes nothing today; the Options text says so. Older
+saves that still carry the retired *Experimental* toggle ignore it.
 
 **Switching toggles off**
 

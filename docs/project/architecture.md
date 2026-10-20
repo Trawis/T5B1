@@ -197,7 +197,47 @@ new setting is one new declaration there plus its UI and behavior.
 A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
 `ReduceBoxPrice`, `AutoMaxMarketShare` and `MoreCreativity` are retired: still declared so old
 saves deserialize, but with no UI and no scheduled behavior
-(`RetiredSettingsTests`).
+(`RetiredSettingsTests`). `Experimental` is retired the same way (#245): its
+saved value is kept and written back unchanged but nothing reads it, so an old
+save with `Experimental` true cannot enable experiments.
+
+### Experimental opt-in (mod Options)
+
+The Enable Experimental Features switch is the only authority for experimental
+behavior (default off). It is a toggle built in `Main.ConstructOptionsScreen`
+with `WindowManager` widgets and parented with `WindowManager.AddElementToElement`
+into the rectangle the game passes in. It is stored in the game's own per-mod
+settings, not in saves and not in `Helpers.Settings`:
+
+- The game gives each DLL mod a `Dictionary<string,string>` (`DLLMod.Settings`),
+  reads it from `DLLMods/<mod file>Setting.txt` in the `DLLMod` constructor and
+  rewrites that file on `DLLMod.SaveSetting` (the same call `ModBehaviour.SaveSetting`
+  makes). `Main.Initialize(DLLMod)` receives the `DLLMod` after the settings were
+  read, so `ExperimentalOptions.Load` has the value as soon as the mod loads,
+  before any game exists. The value is global to the installation: it does not
+  change with a save switch, load or scene reload, and is not written to a save.
+- `ModMeta.Serialize`/`Deserialize` (our `Main.Serialize`) are per save and
+  are not used for it. The game's own `Options` screen only persists properties
+  of its `Options` class and has no registration point for mods.
+- `ConstructOptionsScreen(parent, inGame)` is called by `OptionsWindow.AddModOption`
+  once per mod when the Options window starts (and when a mod is loaded or
+  reloaded later), in the main menu and in the game, active or not; the game
+  keeps the content, so the toggle reads the value when it is built and is its only
+  writer. The `inGame` flag is not used.
+- `ExperimentalOptions` (`Trainer.Source/Experimental/`) is the single accessor.
+  Only a stored `True` enables it; missing, empty or damaged values stay off.
+- Experimental-only code goes in `Trainer.Source/Experimental/` in namespace
+  `Trainer_v5.Experimental`, is checked against `ExperimentalOptions.Enabled`
+  by its caller, and is never added to `FeatureRegistry`, `SettingToggleRows`
+  or the Trainer Settings window. There is no experimental framework and no
+  experimental feature yet; the Options text says so. The Test Button in the
+  Trainer Settings window stays hidden unless the option was on when that window
+  was built, and is removed by #341.
+
+Not verified in the game: the Options layout, the toggle round trip and that the
+game writes the settings file for a Workshop source mod the same way as for a
+DLL mod (`Trainer.Libraries/Assembly-CSharp.dll` shows the same `DLLMod` path
+for both).
 
 ## Maintaining Persistent Features
 
@@ -223,8 +263,8 @@ Architecture, Toggle Transitions and Persistence and Settings.
    as `SettingKeys.X`, never as a string (`SettingKeyUsageTests`).
 3. Add the Settings window row. A standard toggle is one
    `SettingToggleRows.Create` row: column 2 to 4, a unique localization key, the
-   English default text and the key. A toggle with an immediate side effect and
-   the Experimental switch stay explicit in `SettingsWindow` and are listed in
+   English default text and the key. A toggle with an immediate side effect
+   stays explicit in `SettingsWindow` and is listed in
    `SettingToggleRowsTests`; a persisted toggle without a row must be listed
    there too. Enforced by `SettingToggleRowsTests`
    (`EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow`,
@@ -340,7 +380,7 @@ What they cannot establish:
 
 Trainer UI is built entirely from Software Inc's `WindowManager` widgets, so
 it matches native game UI. `SettingsWindow` owns the main trainer
-toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect and the Experimental switch stay explicit); specialized editors (employee traits, demands, lead
+toggle/button grid (the standard toggles are rows in `SettingToggleRows`: column, localization key, default text, setting; the toggles with an immediate side effect stay explicit; the Experimental opt-in is not in this window but in the mod Options, see Persistence and Settings); specialized editors (employee traits, demands, lead
 specialization, skill changes) are separate windows built on shared layout
 helpers. The Trait, Demand, LeadSpec, Inspiration and Founder editors resolve their employee through `EmployeeTarget`: the open detail window's employee, else exactly one selected employee, never the first of several. A deferred dialog re-checks that the same live employee is still there before writing; Skill Change keeps its intentional multi-employee selection. The Founder button (`FounderToggle`, #190) shows the employee's Founder state and flips only `Employee.Founder` on the existing object, either way and for any live employee, after a typed YES; the target is checked again at confirmation. The game treats a founder as unpaid (`Actor.WorksForFree`) and disables Fire for one when the detail window is shown, so the employee must be selected again. The Demand editor grants a demand through the game's own `AcceptDemand` (its effect runs and its cost, such as Luxury Car, is charged as in the game; a refund would stack with the game's refund on dismissal) and removes one by changing `DemandResults`, `DemandsMet` and `DemandsRequested` together (`DemandBits`), because the native detail window shows demands only while `DemandsMet` is set. The editor buttons sit above the native detail window (`DetailButtonLayout`): one row while the window's measured width fits them, wrapping upward in more rows when it does not; they are placed once when installed on a window instance, so resizing the window afterwards does not move them. Most UI text is localized (a localization key with an English default) and translations live under
 `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and labels are English-only.
