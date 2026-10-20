@@ -109,14 +109,14 @@ Toggle features stay active for as long as they are enabled.
 | Free Marketing               | Refunds your daily budget-based marketing spend; press releases and follower campaigns are unaffected |
 | No Offshore Heat             | Clears offshore account heat every frame, preventing it from reaching the audit threshold |
 | No Founder Dividends         | Refunds the founder-share portion of your monthly dividend payout; other shareholders are unaffected |
-| Experimental                | Reveals experimental test controls (re-open window to apply) |
+| Experimental                | Shows the Test Button, which adds quality to a named alpha product |
 
 **Switching toggles off**
 
 Switching a toggle off stops its effect from being applied again. Only these
 toggles also undo what they changed: No Education Cost, Free Print, Full
 Environment, Full Sun Light, Increase Walk Speed, Increase Courier Capacity,
-Reduce Internet Cost and Reduce Expansion Cost. Force Lights, Show Room
+Increase Print Speed, Reduce Internet Cost and Reduce Expansion Cost. Force Lights, Show Room
 Ceilings and Unlimited Subsidiaries follow the setting directly. Every other
 toggle leaves its changes as described below. "Not captured" means the original
 value is not recorded, so the trainer cannot put it back.
@@ -127,7 +127,6 @@ value is not recorded, so the trainer cannot put it back.
 | No Maintenance               | Chairs raised to high comfort keep it (previous comfort not captured; not saved, so a reload drops it); furniture that was repaired stays repaired (quality is saved) |
 | Free Water & Electricity     | Furniture water and wattage stay at 0 (previous values not captured; not saved, so a reload drops them); the water, electricity and gas bills are written by the game again |
 | Noise Reduction              | Furniture base noisiness stays at 0 (not captured; not saved, so a reload drops it); the noise values the game recalculates and employee noisiness are written by the game again |
-| Increase Print Speed         | Printers keep the doubled print speed (original speed not captured; not saved, so a reload drops it) |
 | Disable Furniture Stealing   | Furniture stays unstealable (not saved, so a reload drops it) |
 | Disable Fires                | The fire-starting chance of furniture stays at 0 (not saved, so a reload drops it); fires already put out stay out |
 | Free Employees               | Salaries and salary demands stay at 0 and employees no longer negotiate salary; the previous values are not captured and are saved with the employee |

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Trainer_v5
 {
@@ -15,7 +16,7 @@ namespace Trainer_v5
 				string.Empty,
 				input =>
 				{
-					var val = TryParseAndValidate(input, float.TryParse, min, max);
+					var val = TryParseAndValidate(input, ParseFloat, min, max);
 					if (val.HasValue)
 						onFinish.Invoke(val.Value);
 				});
@@ -29,7 +30,7 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(prompt, title, string.Empty,
 				input =>
 				{
-					var val = TryParseAndValidate<float>(input, float.TryParse);
+					var val = TryParseAndValidate<float>(input, ParseFloat);
 					if (val != null)
 						onFinish.Invoke(val.Value);
 				});
@@ -47,7 +48,7 @@ namespace Trainer_v5
 				defaultValue,
 				input =>
 				{
-					var val = TryParseAndValidate(input, int.TryParse, min, max);
+					var val = TryParseAndValidate(input, ParseInt, min, max);
 					if (val.HasValue)
 						onFinish.Invoke(val.Value);
 				});
@@ -62,7 +63,7 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
 				input =>
 				{
-					var val = TryParseAndValidate<int>(input, int.TryParse);
+					var val = TryParseAndValidate<int>(input, ParseInt);
 					if (val != null)
 						onFinish.Invoke(val.Value);
 				});
@@ -80,7 +81,7 @@ namespace Trainer_v5
 				defaultValue,
 				input =>
 				{
-					var val = TryParseAndValidate(input, uint.TryParse, min, max);
+					var val = TryParseAndValidate(input, ParseUInt, min, max);
 					if (val.HasValue)
 						onFinish.Invoke(val.Value);
 				});
@@ -95,13 +96,30 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
 				input =>
 				{
-					var val = TryParseAndValidate<uint>(input, uint.TryParse);
+					var val = TryParseAndValidate<uint>(input, ParseUInt);
 					if (val != null)
 						onFinish.Invoke(val.Value);
 				});
 		}
 
 		internal delegate bool TryParse<T>(string s, out T result) where T : struct;
+
+		// Input is parsed with the invariant culture and no thousands separators, whatever the OS locale:
+		// "." is the only decimal separator (the dialog prompts use it) and "0,5" or "1,234" are rejected, not guessed.
+		internal static bool ParseFloat(string s, out float result)
+		{
+			return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
+		}
+
+		internal static bool ParseInt(string s, out int result)
+		{
+			return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+		}
+
+		internal static bool ParseUInt(string s, out uint result)
+		{
+			return uint.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+		}
 
 		internal static string Validate<T>(
 			string str,

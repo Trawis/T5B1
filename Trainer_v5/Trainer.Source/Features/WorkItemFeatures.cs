@@ -90,31 +90,6 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("PortingCompleted".LocDef("Trainer: Porting work has been completed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		internal static void Test()
-		{
-			var designDocuments = Settings.MyCompany.WorkItems.OfType<DesignDocument>().Where(d => !d.HasFinished).ToList();
-
-			foreach (var designDocument in designDocuments)
-			{
-				for (int i = 0; i < DesignDocument.MaxIteration; i++)
-				{
-					if (designDocument.Parent == null && designDocument.Iteration < 3)
-					{
-						for (int index = 0; index < designDocument.Features.Length; index++)
-						{
-							designDocument.Features[index].ArtDone = designDocument.Features[index].CodeDone = false;
-							designDocument.Features[index].Progress = 1f;
-							designDocument.Features[index].DevTime = 1f;
-							designDocument.Features[index].Qual = 1f;
-							designDocument.Features[index].LastIterationProg = 1f;
-						}
-						DevConsole.Console.Log(designDocument.GetProgress());
-						designDocument.Iteration++;
-					}
-				}
-			}
-		}
-
 		internal static void ExtendDeadline()
 		{
 			foreach (var work in Settings.MyCompany.WorkItems)

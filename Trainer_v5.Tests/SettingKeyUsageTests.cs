@@ -55,6 +55,69 @@ namespace Trainer_v5.Tests
 			Assert.Equal(2, ToggleKeyUsage.Matches(code).Count);
 		}
 
+		// Main.Serialize/Deserialize iterate the persisted key strings, so they are the only code that may hand a string
+		// key to the settings accessors. Everything else passes a ToggleKey/StoreKey.
+		private static readonly Regex PropertyCall = new Regex(
+			"Helpers\\.(?:Get|Set)Property\\(\\s*[\\w.]+\\s*,\\s*(?<key>[^,)]+)",
+			RegexOptions.Compiled);
+
+		private static readonly Regex TypedKeyArgument = new Regex("^(?:SettingKeys\\.\\w+|settingKey|key)$", RegexOptions.Compiled);
+
+		private static readonly Regex RawIndexer = new Regex(
+			"(?:Helpers\\.)?(?:Settings|StoresSettings|TrainerSettings|settings|storesSettings)\\s*\\[\\s*\"",
+			RegexOptions.Compiled);
+
+		[Fact]
+		public void OnlySerializationPassesStringKeysToThePropertyAccessors()
+		{
+			var offenders = new List<string>();
+			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			{
+				var name = Path.GetFileName(file);
+				if (name == "Main.cs" || name == "Helpers.cs")
+				{
+					continue;
+				}
+
+				var text = SourceText.Strip(File.ReadAllText(file), keepStrings: true);
+				foreach (Match match in PropertyCall.Matches(text))
+				{
+					var key = match.Groups["key"].Value.Trim();
+					if (!TypedKeyArgument.IsMatch(key))
+					{
+						offenders.Add(name + ": " + key);
+					}
+				}
+			}
+
+			Assert.Empty(offenders);
+		}
+
+		[Fact]
+		public void SourceNeverIndexesTheSettingsDictionariesWithAStringLiteral()
+		{
+			var offenders = new List<string>();
+			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			{
+				var text = SourceText.Strip(File.ReadAllText(file), keepStrings: true);
+				foreach (Match match in RawIndexer.Matches(text))
+				{
+					offenders.Add(Path.GetFileName(file) + ": " + match.Value);
+				}
+			}
+
+			Assert.Empty(offenders);
+		}
+
+		[Fact]
+		public void TheStringKeyScansRecognizeRawAndTypedCalls()
+		{
+			Assert.Equal("\"NoStress\"", PropertyCall.Match("Helpers.GetProperty(Helpers.Settings, \"NoStress\")").Groups["key"].Value);
+			Assert.Matches(TypedKeyArgument, PropertyCall.Match("Helpers.GetProperty(TrainerSettings, SettingKeys.NoStress)").Groups["key"].Value);
+			Assert.Single(RawIndexer.Matches("Helpers.Settings[\"NoStress\"] = true;"));
+			Assert.Empty(RawIndexer.Matches("Helpers.Settings[key.Key] = true;"));
+		}
+
 		[Fact]
 		public void SourceUsesSettingKeysInsteadOfRawKeyStrings()
 		{
