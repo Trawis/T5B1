@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -54,8 +55,6 @@ namespace Trainer_v5
 				}
 			}
 
-			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
-
 			var standardToggles = SettingToggleRows.Create();
 
 			List<GameObject> column1 = new List<GameObject>();
@@ -71,7 +70,7 @@ namespace Trainer_v5
 			column1.Add(UIHelper.CreateButton("AddAIFunds".LocDef("Add AI Funds"), CompanyFeatures.AddAIFunds));
 			column1.Add(UIHelper.CreateButton("MaxFollowers".LocDef("Max Followers"), WorkItemFeatures.MaxFollowers));
 			column1.Add(UIHelper.CreateLabel());
-			column1.Add(UIHelper.CreateInputBox("ProductName".LocDef("Product Name Here"), boxText => Helpers.ProductPriceName = boxText));
+			column1.Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 			column1.Add(UIHelper.CreateLabel());
 			column1.Add(UIHelper.CreateButton("TakeoverCompany".LocDef("Takeover Company"), CompanyFeatures.TakeoverCompany));
 			column1.Add(UIHelper.CreateLabel());
@@ -168,29 +167,87 @@ namespace Trainer_v5
 			#endregion
 
 			#region column6
-			column6.Add(CreateSettingToggle(settings, "Experimental", "Experimental", SettingKeys.Experimental));
-			column6.Add(UIHelper.CreateLabel("After toggle re-open the window"));
-			column6.Add(UIHelper.CreateLabel());
-
-			if (experimental)
+			bool testIsOn = false;
+			var testToggle = UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), testIsOn, a => testIsOn = !testIsOn);
+			var testButton = UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton);
+			var experimentalToggle = UIHelper.CreateToggle("Experimental".LocDef("Experimental"), settings.Get(SettingKeys.Experimental), a =>
 			{
-				bool isOn = false;
-				column6.Add(UIHelper.CreateToggle("TestToggle".LocDef("Test Toggle"), isOn, a => isOn = !isOn));
-				column6.Add(UIHelper.CreateButton("TestButton".LocDef("Test Button"), WorkItemFeatures.TestButton));
+				settings.Toggle(SettingKeys.Experimental);
+				SetTestControlsActive(settings, testToggle, testButton);
+			});
 
-			}
+			column6.Add(experimentalToggle);
+			column6.Add(UIHelper.CreateLabel("Shows the Test controls below"));
+			column6.Add(UIHelper.CreateLabel());
+			column6.Add(testToggle);
+			column6.Add(testButton);
 
 			#endregion
 
-			column1.AddToWindow(Window, Constants.FIRST_COLUMN);
-			column2.AddToWindow(Window, Constants.SECOND_COLUMN);
-			column3.AddToWindow(Window, Constants.THIRD_COLUMN);
-			column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
+			var scrollingColumns = new[] { column1, column2, column3, column4 };
+			int tallestScrollingColumn = scrollingColumns.Max(c => c.Count);
+			int otherRows = Math.Max(column5.Count, column6.Count);
+			int maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 0);
+			int visibleRows = SettingsWindowState.VisibleRows(tallestScrollingColumn, otherRows, maxVisibleRows);
+
+			if (tallestScrollingColumn > visibleRows)
+			{
+				AddScrollingColumns(Window, scrollingColumns, visibleRows);
+			}
+			else
+			{
+				column1.AddToWindow(Window, Constants.FIRST_COLUMN);
+				column2.AddToWindow(Window, Constants.SECOND_COLUMN);
+				column3.AddToWindow(Window, Constants.THIRD_COLUMN);
+				column4.AddToWindow(Window, Constants.FOURTH_COLUMN);
+			}
+
 			column5.AddToWindow(Window, Constants.FIFTH_COLUMN, isComboBox: true);
 			column6.AddToWindow(Window, Constants.SIXTH_COLUMN);
 
-			int maxRowsCount = new[] { column1.Count, column2.Count, column3.Count, column4.Count, column5.Count, column6.Count }.Max();
-			Window.SetWindowSize(maxRowsCount, Constants.X_SETTINGS_WINDOW);
+			Window.SetWindowSize(visibleRows, Constants.X_SETTINGS_WINDOW);
+			SetTestControlsActive(settings, testToggle, testButton);
+		}
+
+		// Columns 1-4 share one vertical scroll area so every row stays reachable when the canvas is shorter than the
+		// tallest column. Columns 5 and 6 stay outside it so the combo box drop-downs are not clipped.
+		private static void AddScrollingColumns(GUIWindow window, List<GameObject>[] columns, int visibleRows)
+		{
+			var zeroAnchors = new Rect(0, 0, 0, 0);
+			int width = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
+			int contentHeight = columns.Max(column => column.Count) * Constants.ELEMENT_HEIGHT;
+
+			var viewport = WindowManager.SpawnPanel();
+			viewport.gameObject.name = "ScrollViewport";
+			WindowManager.AddElementToWindow(viewport.gameObject, window, new Rect(Constants.FIRST_COLUMN, 0, width, visibleRows * Constants.ELEMENT_HEIGHT), zeroAnchors);
+			viewport.gameObject.AddComponent<RectMask2D>();
+			var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
+
+			var content = WindowManager.SpawnPanel();
+			content.gameObject.name = "ScrollContent";
+			WindowManager.AddElementToElement(content.gameObject, viewport.gameObject, new Rect(0, 0, width, contentHeight), zeroAnchors);
+
+			for (int c = 0; c < columns.Length; c++)
+			{
+				var columnX = Constants.FIRST_COLUMN + c * (Constants.SECOND_COLUMN - Constants.FIRST_COLUMN);
+				for (int i = 0; i < columns[c].Count; i++)
+				{
+					WindowManager.AddElementToElement(columns[c][i], content.gameObject, UIHelper.GetColumnSlot(i, columnX - Constants.FIRST_COLUMN, false), zeroAnchors);
+				}
+			}
+
+			scrollRect.content = content;
+			scrollRect.horizontal = false;
+			scrollRect.vertical = true;
+			scrollRect.movementType = ScrollRect.MovementType.Clamped;
+			scrollRect.scrollSensitivity = Constants.ELEMENT_HEIGHT;
+		}
+
+		private static void SetTestControlsActive(Dictionary<string, bool> settings, GameObject testToggle, GameObject testButton)
+		{
+			bool experimental = Helpers.GetProperty(settings, SettingKeys.Experimental) || Helpers.IsDebug;
+			testToggle.SetActive(experimental);
+			testButton.SetActive(experimental);
 		}
 
 		private static void AddStandardToggles(List<GameObject> column, List<SettingToggleRow> rows, int columnNumber, Dictionary<string, bool> settings)
