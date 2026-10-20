@@ -6,6 +6,8 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
+		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
+
 		private static GameSettings Settings => GameSettings.Instance;
 
 		internal static void SellProductStock()
@@ -107,9 +109,41 @@ namespace Trainer_v5
 			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
 		}
 
+		// PrintSpeed has no game writer and is not saved (ProductPrinter.SerializeMe), so the value read before the first write is the native one.
 		internal static void ApplyIncreasePrintSpeed()
 		{
-			Settings.ProductPrinters.ForEach(p => p.PrintSpeed = 2f);
+			RetainLivePrinterSpeeds();
+			Settings.ProductPrinters.ForEach(p =>
+			{
+				_printerSpeeds.Capture(p.GetInstanceID(), p.PrintSpeed);
+				p.PrintSpeed = 2f;
+			});
+		}
+
+		internal static void RestoreIncreasePrintSpeed()
+		{
+			RetainLivePrinterSpeeds();
+			Settings.ProductPrinters.ForEach(p =>
+			{
+				float baseline;
+				if (_printerSpeeds.TryTake(p.GetInstanceID(), out baseline))
+				{
+					p.PrintSpeed = baseline;
+				}
+			});
+		}
+
+		// Printer baselines belong to one game; the next game's printers start without any.
+		internal static void ResetGameState()
+		{
+			_printerSpeeds.Clear();
+		}
+
+		private static void RetainLivePrinterSpeeds()
+		{
+			HashSet<int> live = new HashSet<int>();
+			Settings.ProductPrinters.ForEach(p => live.Add(p.GetInstanceID()));
+			_printerSpeeds.Retain(live);
 		}
 
 		// Shared by the price, stock and active-users actions; rejects ambiguous names.
