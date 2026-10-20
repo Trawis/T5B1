@@ -74,6 +74,7 @@ Active for as long as they are enabled. Toggles are saved with the save game.
 | Rooms Never Dirty           | Rooms are always clean and odorless                          |
 | No Education Cost           | Education is free                                            |
 | Disable Fires               | Prevents and extinguishes fires                              |
+| Disable Burglars            | Removes burglars that are present and any that appear (on enabling and every month) |
 | Auto Design End             | Automatically promotes finished design documents             |
 | Auto Contract Progression   | Automatically promotes contract work once its design/development is finished; QA, bug-fixing, and release stay manual |
 | Auto Research End           | Automatically finishes research and files patents            |
@@ -114,9 +115,7 @@ Test button.
 
 Retired settings (Reduce Box Price, Auto Max Market Share, More Creativity,
 Reduce Expansion Cost and the former Experimental toggle) have no control and
-no behavior; a value stored for them in an older save is ignored. Disable
-Burglars has behavior but no window control: it runs only for a save that has
-it enabled.
+no behavior; a value stored for them in an older save is ignored.
 
 ## Switching toggles off
 
@@ -144,7 +143,7 @@ value is not recorded, so the trainer cannot put it back.
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
 | More Hosting Deals           | Deals and rewards already added stay |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
-| Disable Burglars (no window control), Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
+| Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
 | Disable Needs, Disable Stress, Lock Temperature To 21, Rooms Never Dirty, No Sickness, More Inspiration, No Offshore Heat, No Server Cost, Free Staff, Disable Force Pause, Disable Force Freeze | The last applied values stay until the game writes them again; how soon that happens is not determined. Sickness, dirt and similar states already cleared stay cleared |
 

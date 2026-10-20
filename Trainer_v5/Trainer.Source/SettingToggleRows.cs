@@ -45,6 +45,7 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(3, "RoomsNeverDirty", "Rooms Never Dirty", SettingKeys.CleanRooms));
 			rows.Add(new SettingToggleRow(3, "NoEducationCost", "No Education Cost", SettingKeys.NoEducationCost));
 			rows.Add(new SettingToggleRow(3, "DisableFires", "Disable Fires", SettingKeys.DisableFires));
+			rows.Add(new SettingToggleRow(3, "DisableBurglars", "Disable Burglars", SettingKeys.DisableBurglars));
 			rows.Add(new SettingToggleRow(3, "AutoDesignEnd", "Auto Design End", SettingKeys.AutoEndDesign));
 			rows.Add(new SettingToggleRow(3, "AutoContractProgression", "Auto Contract Progression", SettingKeys.AutoContractProgression));
 			rows.Add(new SettingToggleRow(3, "AutoResearchEnd", "Auto Research End", SettingKeys.AutoEndResearch));

@@ -31,7 +31,8 @@ namespace Trainer_v5
 		public static readonly ToggleKey NoMaintenance = Toggle("NoMaintenance");
 		public static readonly ToggleKey NoSickness = Toggle("NoSickness");
 		public static readonly ToggleKey FullSatisfaction = Toggle("FullSatisfaction");
-		public static readonly ToggleKey DisableSkillDecay = Toggle("DisableSkillDecay");
+		// Retired (#342): never had behavior or a UI in this repository, and Beta 1 has no skill decay to disable.
+		public static readonly ToggleKey DisableSkillDecay = Retired("DisableSkillDecay");
 		public static readonly ToggleKey DisableBurglars = Toggle("DisableBurglars");
 		public static readonly ToggleKey DisableFires = Toggle("DisableFires");
 		public static readonly ToggleKey NoServerCost = Toggle("NoServerCost");

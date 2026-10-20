@@ -7,7 +7,7 @@ namespace Trainer_v5.Tests
 	[Collection(SettingsCollection.Name)]
 	public class RetiredSettingsTests
 	{
-		internal static readonly string[] RetiredKeys = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
+		internal static readonly string[] RetiredKeys = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental", "DisableSkillDecay" };
 
 		[Fact]
 		public void RetiredKeysAreStillDeclaredWithTheirOriginalNamesAndDefaultOffButAreNotLiveSettings()
@@ -27,6 +27,9 @@ namespace Trainer_v5.Tests
 			Assert.Equal("Experimental", SettingKeys.Experimental.Key);
 			Assert.False(SettingKeys.Experimental.DefaultValue);
 			Assert.False(Helpers.Settings.ContainsKey("Experimental"));
+			Assert.Equal("DisableSkillDecay", SettingKeys.DisableSkillDecay.Key);
+			Assert.False(SettingKeys.DisableSkillDecay.DefaultValue);
+			Assert.False(Helpers.Settings.ContainsKey("DisableSkillDecay"));
 		}
 
 		[Fact]

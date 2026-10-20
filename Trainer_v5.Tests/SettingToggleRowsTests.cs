@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
-		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "DisableBurglars", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
+		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
 
 		[Fact]
 		public void EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow()
@@ -46,6 +46,19 @@ namespace Trainer_v5.Tests
 			var perColumn = Enumerable.ToArray(Enumerable.Select(new[] { 2, 3, 4 }, column => Enumerable.Count(rows, row => row.Column == column)));
 			Assert.All(perColumn, count => Assert.True(count > 0, "A Settings column has no rows."));
 			Assert.Equal(rows.Count, Enumerable.Sum(perColumn));
+		}
+
+		[Fact]
+		public void DisableBurglarsHasARowNextToDisableFires()
+		{
+			var rows = SettingToggleRows.Create();
+			int fires = Enumerable.ToList(Enumerable.Select(rows, row => row.Key.Key)).IndexOf("DisableFires");
+			int burglars = Enumerable.ToList(Enumerable.Select(rows, row => row.Key.Key)).IndexOf("DisableBurglars");
+
+			Assert.True(burglars >= 0, "Disable Burglars has no Settings row.");
+			Assert.Equal(fires + 1, burglars);
+			Assert.Equal(rows[fires].Column, rows[burglars].Column);
+			Assert.Equal("Disable Burglars", rows[burglars].DefaultText);
 		}
 
 		[Fact]

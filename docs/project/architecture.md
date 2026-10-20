@@ -181,17 +181,18 @@ writes the same string keys. Code references settings through `SettingKeys`
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
 A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
-`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`, `ReduceExpansionCost` and the old per-save `Experimental` are
+`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`, `ReduceExpansionCost`, `DisableSkillDecay` and the old per-save `Experimental` are
 retired (`RetiredSettingsTests`): they are declared with `SettingKeys.Retired(...)`, which reserves the name and keeps
 the declaration but leaves the key out of `Helpers.Settings`, `Serialize` and `Deserialize` (#439). New saves do not
 contain them, and a `true` stored in an older save is ignored, so it cannot restore removed behavior; the other keys
 in such a save load as usual. An older trainer build that loads a new save finds these keys missing and falls back to
-its default or in-memory value (all five are off by default and had no working effect in the last release), so
+its default or in-memory value (all six are off by default and had no working effect in the last release), so
 downgrading loses at most a stale `true` of a setting that does nothing. `ReduceExpansionCost` only wrote `GameSettings.ExpansionCost`, which nothing in the
 game reads; the real plot price is `PlotArea.Price` (`PricePerSqm * Area + AddonCost`), and `PricePerSqm` is saved
 with the plot and also feeds selling refunds and company worth, so a baseline-based reduction could not be restored
 safely after a reload (#354). `Experimental` is retired the same way (#245): nothing reads a saved value, so an old
-save with `Experimental` true cannot enable experiments.
+save with `Experimental` true cannot enable experiments. `DisableSkillDecay` (#342) was only ever a default value: no
+code read it and Beta 1 has no skill decay to disable.
 
 ### Experimental opt-in (mod Options)
 
