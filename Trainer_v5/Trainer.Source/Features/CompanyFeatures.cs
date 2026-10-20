@@ -27,18 +27,34 @@ namespace Trainer_v5
 
 		internal static void ClearLoans()
 		{
-			Settings.Loans.Clear();
-			Notification.Popup("AllLoansCleared".LocDef("Trainer: All loans are cleared!"));
+			if (!Helpers.RequireGameReady("Clear all loans"))
+				return;
+
+			int count = Settings.Loans.Count;
+			if (count == 0)
+			{
+				Notification.ShowInfo("NoLoansToClear".LocDef("There are no loans to clear."));
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Clear all loans", string.Format("ClearLoansConfirm".LocDef("Remove all {0} loan(s) without repaying them?\nNo payment is made, the remaining payments are cancelled and this cannot be undone."), count), () => ApplyClearLoans(game, count));
 		}
 
 		internal static void AIBankrupt()
 		{
-			SimulatedCompany[] Companies = Settings.simulation.Companies.Values.Where(IsBankruptTarget).ToArray();
+			if (!Helpers.RequireGameReady("AI Bankrupt All"))
+				return;
 
-			for (int i = 0; i < Companies.Length; i++)
+			int count = FindAllBankruptTargets().Count;
+			if (count == 0)
 			{
-				Companies[i].Bankrupt = true;
+				Notification.ShowInfo("NoAICompaniesToBankrupt".LocDef("There is no AI company left to bankrupt."));
+				return;
 			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("AI Bankrupt All", string.Format("BankruptAllConfirm".LocDef("Bankrupt all {0} AI company(ies)?\nThe game cancels their deals and removes them from the market. This cannot be undone.\nYour own company and its subsidiaries are not affected."), count), () => ApplyAIBankrupt(game, count));
 		}
 
 		internal static void UnlockAllSpace()
@@ -166,7 +182,7 @@ namespace Trainer_v5
 			}
 
 			// One-way: the flag is only ever set, never toggled back.
-			WindowManager.SpawnInputDialog(string.Format("BankruptConfirmPrompt".LocDef("Bankrupt {0}? Type YES to confirm."), company.Name), "ConfirmationTitle".LocDef("Confirmation"), "YES", answer => ConfirmForceBankrupt(company, answer));
+			Confirmation.Ask("Bankrupt", string.Format("BankruptConfirmPrompt".LocDef("Bankrupt {0}?\nThe game cancels its deals and removes it from the market. This cannot be undone."), company.Name), () => ConfirmForceBankrupt(company));
 		}
 
 		internal static void ForceBankrupt()
@@ -219,26 +235,7 @@ namespace Trainer_v5
 
 		internal static void MaxReputation()
 		{
-			Action<string> action = (input) =>
-			{
-				if (input == "YES")
-				{
-					Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
-					Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
-					Notification.ShowInfo("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"));
-				}
-			};
-
-			Func<InputDialog> areYouSure = () =>
-			{
-				return WindowManager.SpawnInputDialog("AreYouSurePrompt".LocDef("Are you sure?"), "ConfirmationTitle".LocDef("Confirmation"), "YES", action);
-			};
-
-			areYouSure();
+			Confirmation.Ask("Max Reputation", "MaxReputationConfirm".LocDef("Set your business reputation to the maximum in all categories?"), ApplyMaxReputation);
 		}
 
 		internal static void MaxMarketRecognition()
@@ -257,12 +254,18 @@ namespace Trainer_v5
 
 		internal static void UnlockAndClaimAllRewards()
 		{
-			GameSettings.Instance.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
-			GameSettings.Instance.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
-			HUD.Instance.RefreshBuildButtons();
-			HUD.Instance.UpdateFurnitureButtons();
+			if (!Helpers.RequireGameReady("Unlock and Claim Rewards"))
+				return;
 
-			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
+			int count = CountUnclaimedRewards();
+			if (count == 0)
+			{
+				Notification.ShowInfo("NoRewardsToUnlock".LocDef("Every reward is already unlocked and claimed."));
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Unlock and Claim Rewards", string.Format("UnlockRewardsConfirm".LocDef("Mark {0} reward task(s) as completed and claimed in this save?\nThe game has no way to undo this."), count), () => ApplyUnlockAndClaimAllRewards(game, count));
 		}
 
 		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.
@@ -380,12 +383,89 @@ namespace Trainer_v5
 			return company != Settings.MyCompany && !company.IsPlayerOwned();
 		}
 
+		private static void ApplyMaxReputation()
+		{
+			Settings.MyCompany.ChangeBusinessRep(1f, "Publisher", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Deal", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Printing", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Lawsuit", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Contract", 1f);
+			Settings.MyCompany.ChangeBusinessRep(1f, "Hosting", 1f);
+			Notification.ShowInfo("MaxReputationApplied".LocDef("Trainer: Max reputation is applied to all categories"));
+		}
+
+		// Every eligible AI company that is not already going bankrupt: the scope AI Bankrupt All shows and acts on.
+		private static List<SimulatedCompany> FindAllBankruptTargets()
+		{
+			return Settings.simulation.Companies.Values.Where(company => IsBankruptTarget(company) && !company.Bankrupt).ToList();
+		}
+
+		// The dialog stays open while the game runs, so the game and the targets are checked again before any flag is set.
+		private static void ApplyAIBankrupt(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			List<SimulatedCompany> targets = FindAllBankruptTargets();
+			if (!Confirmation.IsScopeUnchanged(shownCount, targets.Count))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			for (int i = 0; i < targets.Count; i++)
+			{
+				targets[i].Bankrupt = true;
+			}
+		}
+
+		private static void ApplyClearLoans(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsScopeUnchanged(shownCount, Settings.Loans.Count))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			Settings.Loans.Clear();
+			Notification.Popup("AllLoansCleared".LocDef("Trainer: All loans are cleared!"));
+		}
+
+		// Reward tasks that are not yet in both the completed and the claimed set of this save.
+		private static int CountUnclaimedRewards()
+		{
+			return GameData.Tasks
+				.Where(task => !Settings.CompletedTasks.Contains(task.Name) || !Settings.ClaimedRewards.Contains(task.Name))
+				.Select(task => task.Name)
+				.Distinct()
+				.Count();
+		}
+
+		private static void ApplyUnlockAndClaimAllRewards(GameSettings game, int shownCount)
+		{
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsScopeUnchanged(shownCount, CountUnclaimedRewards()))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			Settings.CompletedTasks.AddRange(GameData.Tasks.Select(x => x.Name));
+			Settings.ClaimedRewards.AddRange(GameData.Tasks.Select(x => x.Name));
+			HUD.Instance.RefreshBuildButtons();
+			HUD.Instance.UpdateFurnitureButtons();
+
+			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
+		}
+
 		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
-		private static void ConfirmForceBankrupt(SimulatedCompany company, string answer)
+		private static void ConfirmForceBankrupt(SimulatedCompany company)
 		{
 			SimulatedCompany current;
 			bool stillThere = Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company;
-			if (answer == "YES" && stillThere && IsBankruptTarget(company) && !company.Bankrupt)
+			if (stillThere && IsBankruptTarget(company) && !company.Bankrupt)
 			{
 				company.Bankrupt = true;
 			}

@@ -18,8 +18,8 @@ Applied once when clicked.
 | Max Followers          | Product Name           | Fills the followers of your active (not paused) in-development product to its current cap |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
-| Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a typed YES confirmation; one-way, and your own company and its subsidiaries are not accepted |
-| AI Bankrupt All        | None                   | Marks every simulated company as going bankrupt except your own company and companies you own (subsidiaries) |
+| Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a Yes/No confirmation naming the company; one-way, and your own company and its subsidiaries are not accepted |
+| AI Bankrupt All        | None                   | After a Yes/No confirmation showing how many AI companies are affected, marks every simulated AI company as going bankrupt except your own company and companies you own (subsidiaries); with none left it only says so |
 | Fix Bugs               | Product Name           | Fixes all bugs of your product with that name that is in beta |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
@@ -30,16 +30,16 @@ Applied once when clicked.
 | Set Product Stock      | Product Name, Amount   | Sets the physical stock of the exact-matching product (player or AI company) |
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
-| Max Reputation         | None (confirmation)    | Maxes business reputation across all categories             |
+| Max Reputation         | None (confirmation)    | Maxes business reputation across all categories after a Yes/No confirmation |
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
 | Reset age of employees | None                   | Resets every employee to the youngest age                   |
 | Days per month         | Amount                 | Changes days per month (requires restart)                   |
-| Clear all loans        | None                   | Clears all loans                                            |
+| Clear all loans        | None                   | Removes all loans without repaying them, after a Yes/No confirmation showing the loan count; with none it only says so |
 | Extend Deadline        | None                   | Extends every contract deadline by one year                 |
 | Unlock all furniture   | None                   | Unlocks all furniture                                       |
 | Unlock all space       | None                   | Unlocks all plots of land                                   |
-| Unlock and Claim Rewards | None                 | Completes and claims all task rewards                       |
+| Unlock and Claim Rewards | None                 | Completes and claims all task rewards, after a Yes/No confirmation showing how many are still open; with none it only says so |
 | Discord                | None                   | Opens the Discord invite message                            |
 
 ## Dropdowns
@@ -160,4 +160,4 @@ the game's employee detail window let you edit selected employees.
 | Demand         | Toggles a lead's design demands                                    |
 | LeadSpec       | Sets lead specialization values per software type                  |
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
-| Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) |
+| Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) after a Yes/No confirmation naming the employee and both states |

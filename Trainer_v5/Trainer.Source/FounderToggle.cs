@@ -5,7 +5,7 @@ namespace Trainer_v5
 	{
 		public static string BuildPrompt(string name, bool founder)
 		{
-			return $"{name}: Founder {Label(!founder)} -> {Label(founder)}\nType YES to confirm.";
+			return $"{name}: Founder {Label(!founder)} -> {Label(founder)}";
 		}
 
 		public static void Start()
@@ -24,15 +24,12 @@ namespace Trainer_v5
 
 			var employee = target.Employee;
 			var shown = employee.Founder;
-			WindowManager.SpawnInputDialog(BuildPrompt(employee.Name, !shown), "ToggleFounderTitle".LocDef("Toggle Founder"), "YES", answer => Apply(target, shown, answer));
+			Confirmation.Ask("Founder", BuildPrompt(employee.Name, !shown), () => Apply(target, shown));
 		}
 
 		// The dialog stays open while the game runs, so the target is checked again before writing.
-		private static void Apply(EmployeeTarget target, bool shown, string answer)
+		private static void Apply(EmployeeTarget target, bool shown)
 		{
-			if (answer != "YES")
-				return;
-
 			var blocked = FindBlocker(target);
 			if (blocked != null)
 			{
