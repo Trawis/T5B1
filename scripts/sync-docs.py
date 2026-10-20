@@ -24,6 +24,15 @@ TEMPLATE_METADATA_END = "repo-seed-template:end"
 VALID_TYPES = {"managed", "template"}
 VALID_SCAFFOLD_GROUPS = {"project", "optional", "github", "editorconfig", "workflows"}
 PROJECT_OWNED_TREES = (".github/workflows",)
+# A path the manifest no longer lists is removed automatically only under these
+# pack-owned trees; elsewhere recorded state alone does not prove it is safe to delete.
+RETIRABLE_TREES = (
+    ".agents/guidelines/",
+    ".agents/conventions/",
+    SKILL_SOURCE_TREE,
+    SKILL_GENERATED_TREE,
+    "docs/templates/",
+)
 SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 SCAFFOLD_SOURCE_PATTERN = re.compile(
@@ -631,8 +640,8 @@ def prune_stale_assets(
         if path in protected_paths:
             actions.append(SyncAction("preserve", path, "stale path is now project-owned"))
             continue
-        if path not in known_paths:
-            # No longer in the manifest: keep the tombstone for manual review.
+        if path not in known_paths and not path.startswith(RETIRABLE_TREES):
+            # Outside the pack-owned trees: keep the tombstone for manual review.
             actions.append(SyncAction("preserve", path, "historical managed path is no longer in the manifest"))
             tombstones[path] = expected_hash
             continue
@@ -996,7 +1005,7 @@ def audit_target(
         except ValueError:
             lines.append(f"tombstone: {path} (resolves outside the repository; review manually)")
             continue
-        if target.is_file():
+        if target.is_file() or target.is_symlink():
             lines.append(f"tombstone: {path} (preserved stale managed content requires review)")
 
     findings = [
