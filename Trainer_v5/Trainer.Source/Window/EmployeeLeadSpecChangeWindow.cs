@@ -36,7 +36,7 @@ namespace Trainer_v5.Window
 
 
 			var employee = _target?.Employee;
-			window.SetTitle(string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(_target, source)));
+			window.SetTitle(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _specToggles)
@@ -51,7 +51,7 @@ namespace Trainer_v5.Window
 		private void CreateWindow()
 		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
+			var window = UIHelper.SpawnWindow(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
@@ -120,7 +120,7 @@ namespace Trainer_v5.Window
 		{
 			if (_target == null || !_target.IsStillValid())
 			{
-				Notification.ShowError("SelectEmployeeFirst".LocDef("Select an employee first (select one employee, then close and reopen this window)."));
+				Notification.ShowError(SharedMessages.SelectEmployeeFirst());
 				return;
 			}
 			var target = _target;
@@ -144,7 +144,7 @@ namespace Trainer_v5.Window
 				{
 					if (!target.IsStillValid())
 					{
-						Notification.ShowError("EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited."));
+						Notification.ShowError(SharedMessages.EmployeeChangedNothingEdited());
 						return;
 					}
 

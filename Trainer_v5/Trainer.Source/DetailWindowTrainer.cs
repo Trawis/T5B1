@@ -80,7 +80,7 @@ namespace Trainer_v5
 				{
 					if (!target.IsStillValid())
 					{
-						Notification.ShowError("EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited."));
+						Notification.ShowError(SharedMessages.EmployeeChangedNothingEdited());
 						return;
 					}
 

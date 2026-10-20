@@ -51,7 +51,7 @@ namespace Trainer_v5
 		{
 			if (!target.IsStillValid())
 			{
-				return "EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited.");
+				return SharedMessages.EmployeeChangedNothingEdited();
 			}
 
 			if (GameData.MultiplayerMode)
