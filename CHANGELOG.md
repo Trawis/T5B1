@@ -82,6 +82,10 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 - Nightly builds are now identified by UTC date and time, run number and attempt
   (for example nightly-20261020T115100Z-r122-a1) instead of a release candidate
   number, and are always prereleases.
+- The Skill Change editor moved into the employee detail window (new Skills
+  button, with an "All selected" option for several employees). The Skill
+  Change button in the Actor Window is gone, and the stars prompt now says it
+  changes the stars by -3 to 3.
 
 ## [5.4.0] - 2026-10-19
 
