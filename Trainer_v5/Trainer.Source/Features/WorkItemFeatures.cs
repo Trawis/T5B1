@@ -172,24 +172,6 @@ namespace Trainer_v5
 			HUD.Instance.AddPopupMessage("ResearchCompleted".LocDef("Trainer: Research completed instantly!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
 		}
 
-		internal static void TestAction(string input)
-		{
-			WorkItem WorkItem = Settings.MyCompany.WorkItems
-				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
-					item.Name == input && !item.InBeta);
-
-			if (WorkItem == null)
-				return;
-
-			var softwareAlpha = ((SoftwareAlpha)WorkItem);
-			softwareAlpha.AddQuality(10f, 10f, false);
-		}
-
-		internal static void TestButton()
-		{
-			WindowManager.SpawnInputDialog("Type product name in alpha (not beta):", "Add Quality", "", TestAction);
-		}
-
 		internal static void ApplyAutoEndDesign()
 		{
 			// PromoteAction() blocks without this precondition, so it is checked here first.

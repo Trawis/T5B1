@@ -3,39 +3,58 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The window object is cached after the first open, so the Test controls must follow the Experimental setting
-	// through the toggle callback instead of only at build time.
+	// The Test Button and its debug-only quality action are retired (#341). The Experimental toggle stays in the
+	// window until it moves to the native mod Options (#245); its saved key is preserved.
 	public class SettingsWindowExperimentalTests
 	{
-		private static string ReadSource()
+		[Fact]
+		public void TheExperimentalToggleStillPersistsItsSetting()
 		{
-			return File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "SettingsWindow.cs"));
+			var source = SourceCode.Read("SettingsWindow.cs");
+
+			Assert.Contains("\"Experimental\".LocDef(\"Experimental\")", source);
+			Assert.Contains("settings.Get(SettingKeys.Experimental)", source);
+			Assert.Contains("settings.Toggle(SettingKeys.Experimental)", source);
 		}
 
 		[Fact]
-		public void TheExperimentalToggleShowsAndHidesTheTestControls()
+		public void TheTestControlsAndTheirHintAreGone()
 		{
-			var source = ReadSource();
+			var source = SourceCode.Read("SettingsWindow.cs");
 
-			Assert.Contains("settings.Toggle(SettingKeys.Experimental);", source);
-			Assert.Contains("SetTestControlsActive(settings, testButton);", source);
-			Assert.Contains("testButton.SetActive(experimental);", source);
-			Assert.Contains("\"ExperimentalHint\".LocDef(\"Shows the Test button below\")", source);
-		}
-
-		[Fact]
-		public void TheDummyTestToggleIsGone()
-		{
-			var source = ReadSource();
-
+			Assert.DoesNotContain("testButton", source);
+			Assert.DoesNotContain("TestButton", source);
+			Assert.DoesNotContain("SetTestControlsActive", source);
+			Assert.DoesNotContain("ExperimentalHint", source);
 			Assert.DoesNotContain("testToggle", source);
 			Assert.DoesNotContain("\"TestToggle\"", source);
 		}
 
 		[Fact]
+		public void TheTestActionsAreGone()
+		{
+			var source = SourceCode.Read("Features", "WorkItemFeatures.cs");
+
+			Assert.DoesNotContain("TestButton", source);
+			Assert.DoesNotContain("TestAction", source);
+			Assert.DoesNotContain("static void Test(", source);
+		}
+
+		[Fact]
+		public void TheEnglishFileHasNoTestEntriesButKeepsTheExperimentalLabel()
+		{
+			var english = File.ReadAllText(Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization", "English", "Trainer.tyd"));
+
+			Assert.DoesNotContain("TestButton", english);
+			Assert.DoesNotContain("TestToggle", english);
+			Assert.DoesNotContain("ExperimentalHint", english);
+			Assert.Contains("Experimental\t", english);
+		}
+
+		[Fact]
 		public void TheLabelNoLongerAsksForTheWindowToBeReopened()
 		{
-			Assert.DoesNotContain("re-open the window", ReadSource());
+			Assert.DoesNotContain("re-open the window", SourceCode.Read("SettingsWindow.cs"));
 		}
 	}
 }
