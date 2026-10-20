@@ -191,6 +191,84 @@ A full load takes every key the save lacks from its declared default, so setting
 saves deserialize, but with no UI and no scheduled behavior
 (`RetiredSettingsTests`).
 
+## Maintaining Persistent Features
+
+A persistent toggle touches the steps below. The tests named per step are the
+ones that fail when it is skipped; the mechanisms are described in Runtime
+Architecture, Toggle Transitions and Persistence and Settings.
+
+1. Declare the key. Add `public static readonly ToggleKey X = Toggle("X");` to
+   `SettingKeys` (`Store("X")` for a `StoreKey`). Toggles default to off and
+   stores to unset; the field name equals the key string, which is unique and
+   never renamed or reused. Add the key to `SettingsTests.PersistedToggleKeys`
+   (`PersistedStoreKeys` for a store). Enforced by `SettingKeysTests`
+   (`EveryDeclaredKeyIsNamedAfterItsSavedKey`,
+   `DeclaredKeysAreExactlyTheKeysInTheSettingsDictionaries`) and
+   `SettingsTests` (`ToggleKeys_MatchThePersistedKeySet`,
+   `FreshSettings_AreAllDisabledAndStoresAreUnset`); a duplicate key throws
+   when `SettingKeys` is first used.
+2. Serialization needs no code. `Main.Serialize` and `Main.Deserialize` iterate
+   the dictionaries built from `SettingKeys`; a full load gives a key missing
+   from the save its declared default, a building or company load keeps the
+   value in use. `SerializationTests` cover the round trip, missing keys,
+   partial loads and keys that are no longer registered. Code refers to the key
+   as `SettingKeys.X`, never as a string (`SettingKeyUsageTests`).
+3. Add the Settings window row. A standard toggle is one
+   `SettingToggleRows.Create` row: column 2 to 4, a unique localization key, the
+   English default text and the key. A toggle with an immediate side effect and
+   the Experimental switch stay explicit in `SettingsWindow` and are listed in
+   `SettingToggleRowsTests`; a persisted toggle without a row must be listed
+   there too. Enforced by `SettingToggleRowsTests`
+   (`EveryPersistedToggleHasOneRowOrIsExplicitInTheWindow`,
+   `RowsStayInTheFirstFourColumnsAndHaveAUniqueLocalizationKey`).
+4. Localize the text. The label is looked up with the localization key and the
+   in-code default text (`"Key".LocDef("Default text")`). Add the key and the
+   same English text to `Trainer.Localization/English/Trainer.tyd`; other
+   language files are not required to contain it. Enforced by
+   `SettingToggleRowsTests.EveryRowDefaultTextMatchesTheEnglishFile` and
+   `LocalizationTests` (`EveryKeyTheCodeLooksUpExistsInEnglish`,
+   `CodeFallbackTextMatchesTheEnglishFile`, `EveryLanguageKeyAlsoExistsInEnglish`,
+   `NoLanguageDefinesAKeyTwice`, `EveryLocalizationFileEndsWithANewline`).
+5. Choose the cadence and add `FeatureRegistry` rows: a Frame, Minute, Hour, Day
+   or Month row for the toggle, whose action lives on a `Features/*Features`
+   class and does not catch errors itself. The row id is the one error boundary
+   of the feature and belongs to one setting
+   (`FeatureDispatcherTests.TheRegistryUsesEachFeatureIdWithOneSettingOnly`;
+   `FeatureBoundaryTests` keep the `Features/` classes free of `TryExecute`
+   and of each other). A periodic row also needs an Enabled row, or the id in
+   `FeatureRegistry.NoCatchUp`
+   (`FeatureScheduleTests.EveryPeriodicFeatureCatchesUpWhenEnabledOrIsListedAsNotNeedingTo`;
+   `TheNoCatchUpListHasNoStaleEntries` fails on a listed id that no longer
+   qualifies).
+6. Decide what switching off does. A restoring toggle gets a Disabled row that
+   writes the recovered value; it needs an Enabled row
+   (`FeatureScheduleTests.EveryRestoreRowHasAnApplyRowForTheSameFeature`). A
+   toggle with no Disabled row is non-restoring: record it, with the
+   player-visible result, in `features.md` and in Non-restoring toggles below.
+   Enabled and Disabled actions must be idempotent: a failed one is retried
+   (`FeatureDispatcherTests`: `AFailedEnabledActionIsRetriedOnTheNextCallAndThenNotRepeated`,
+   `OnlyTheFailedEntryOfAToggleIsRetried`,
+   `AFailedRestoreIsStillRetriedAfterTheTrackerWasResetWithTheToggleOff`,
+   `AnActionThatKeepsFailingRetriesEveryCallForAMinuteOfFramesThenBacksOff`).
+   Transitions come from `ToggleStateTracker`: an enable runs on the first
+   observation of a save that has the toggle on, and a restore runs when a
+   toggle that was on before leaving the game is off in the next one
+   (`ToggleStateTrackerTests`, `FeatureDispatcherTests.ARestoreRunsWhenTheNextSaveHasTheToggleOffAfterTheTrackerWasReset`,
+   `TransitionResetWiringTests`).
+7. Keep a retired toggle declared. Removing the UI and the rows is allowed;
+   removing or renaming the key is not, so old saves keep deserializing. Add it
+   to `RetiredSettingsTests` (declared with its original name and default off,
+   no `FeatureRegistry` row, no Settings window row) and keep it in
+   `PersistedToggleKeys`.
+8. Keep the code inside the Workshop source build rules (see Workshop Source
+   Build). `GameSourcePipelineTests` (`EverySourceFileParsesWithTheGamesCompilerAfterInjection`,
+   `EveryInjectedTryBlockWrapsAMethodOrConstructorBody`,
+   `NoMethodBodyEndsInAnUnconditionalThrow`), `GameCompilerCompatibilityTests`
+   (`SourceDeclaresNoGenericClassesOrStructs`) and `GameCompilerHazardTests`
+   (the hazard fixtures) fail when the source breaks a rule, and
+   `WorkshopExceptionBoundaryTests` describe how a failing registry action
+   behaves there.
+
 ## Game API Compatibility
 
 - Targets `net46` / C# 6, matching the game's Unity runtime.
