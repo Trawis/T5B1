@@ -20,7 +20,7 @@ namespace Trainer_v5
 
 			if (plans.Count == 0)
 			{
-				WindowManager.SpawnDialog("NoPressReleaseCampaigns".LocDef("Trainer: No active press release campaigns to complete!"), false, DialogWindow.DialogType.Information);
+				Notification.ShowInfo("NoPressReleaseCampaigns".LocDef("Trainer: No active press release campaigns to complete!"));
 				return;
 			}
 
@@ -29,7 +29,7 @@ namespace Trainer_v5
 				CompletePressRelease(plan);
 			}
 
-			HUD.Instance.AddPopupMessage("PressReleaseCampaignsCompleted".LocDef("Trainer: Press release campaigns have been completed!"), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, 0);
+			Notification.Popup("PressReleaseCampaignsCompleted".LocDef("Trainer: Press release campaigns have been completed!"));
 		}
 
 		internal static void PushReward()
