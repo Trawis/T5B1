@@ -3,11 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// The opt-in for extra diagnostic lines (#278). Off by default; independent of Enable Experimental Features. Like
-	// ExperimentalOptions it lives in the mod's own game-managed settings (ModController.DLLMod.Settings, saved by the
-	// game to DLLMods/<mod>Setting.txt): global, read once when the mod loads, never part of a save. Normal logging
-	// (feature failures and skipped-action warnings) does not look at it. Every call site of Logger.LogDebug is guarded
-	// by DebugEnabled so nothing is built while it is off.
+	// Global opt-in in the mod's own game settings (DLLMod.Settings); read at load, never part of a save.
 	internal static class LoggingOptions
 	{
 		public const string StorageKey = "DebugLogging";
@@ -22,7 +18,6 @@ namespace Trainer_v5
 			_debug = modSettings != null && modSettings.TryGetValue(StorageKey, out stored) && Parse(stored);
 		}
 
-		// Anything that is not the word True (missing, empty, damaged) stays off.
 		public static bool Parse(string stored)
 		{
 			bool value;

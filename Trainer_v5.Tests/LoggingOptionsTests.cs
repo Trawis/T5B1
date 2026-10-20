@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Debug logging is an opt-in of the native mod Options, stored like the Experimental opt-in and not in saves (#278).
 	[Collection(SettingsCollection.Name)]
 	public class LoggingOptionsTests
 	{
