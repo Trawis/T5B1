@@ -116,14 +116,16 @@ namespace Trainer_v5
 			{
 
 				InputHelper.RequestFloat(
-					"How many base skill do you want?\nMin = 0, Max = 1.0",
+					"How many base skill do you want?\nMin = 0, Max = 1.0\nThis also raises each selected employee's skill ceiling to 1.0.",
 					$"Set base skill for {selectedActors.Count} actor(s)",
 					val => selectedActors.Where(EmployeeTarget.IsLive).ToList().ForEach(actor => selectedRoles.ForEach(role =>
 					{
 						actor.employee.SkillCeiling = 1f;
 						actor.employee.ChangeSkillDirect(role, val);
 					}
-					)));
+					)),
+					0f,
+					1f);
 			}
 		}
 	}

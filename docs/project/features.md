@@ -123,7 +123,7 @@ the game's employee detail window let you edit selected employees.
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
 | Set Skills     | Sets specialization stars (-3 to 3) for selected roles/specs       |
-| Set Base Skills| Sets base role skill (0 to 1.0)                                     |
+| Set Base Skills| Sets base role skill (0 to 1.0); also raises the employee skill ceiling to 1.0 |
 | Trait          | Toggles an employee's traits                                       |
 | Demand         | Toggles a lead's design demands                                    |
 | LeadSpec       | Sets lead specialization values per software type                  |
