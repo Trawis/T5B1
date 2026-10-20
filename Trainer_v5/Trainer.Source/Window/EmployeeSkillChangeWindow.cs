@@ -36,15 +36,12 @@ namespace Trainer_v5.Window
 
 		public static void Refresh()
 		{
-			var window = Window;
-			if (window == null || !window.Shown)
+			TargetSource source;
+			if (!EmployeeTarget.TryResolveFor(Window, out _target, out source))
 			{
-				_target = null;
 				return;
 			}
 
-			TargetSource source;
-			_target = EmployeeTarget.Resolve(out source);
 			_targetName = EmployeeTarget.Describe(_target, source);
 			UpdateScope();
 		}
@@ -153,7 +150,7 @@ namespace Trainer_v5.Window
 			var title = _allSelected.isOn
 				? string.Format("EditSkillsSelectedTitle".LocDef("Edit skills for {0} selected employee(s)"), selectedCount)
 				: string.Format("EditSkillsTitle".LocDef("Edit skills for {0}"), _targetName);
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = title;
+			window.SetTitle(title);
 		}
 
 		// The employees the next write may touch, captured at the click; null after the error shown for an empty choice.

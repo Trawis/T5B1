@@ -58,6 +58,20 @@ namespace Trainer_v5
 			}
 		}
 
+		// An editor window that is closed or missing has no target; true means the target and source are fresh.
+		public static bool TryResolveFor(GUIWindow window, out EmployeeTarget target, out TargetSource source)
+		{
+			if (window == null || !window.Shown)
+			{
+				target = null;
+				source = TargetSource.None;
+				return false;
+			}
+
+			target = Resolve(out source);
+			return true;
+		}
+
 		// Every live selected employee, captured at once so a later selection change cannot change who is edited.
 		public static List<EmployeeTarget> ResolveSelection()
 		{

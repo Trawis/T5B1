@@ -16,11 +16,17 @@ namespace Trainer_v5
 		public static GUIWindow SpawnWindow(string title, string name, string panelName)
 		{
 			var window = WindowManager.SpawnWindow();
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = title;
+			window.SetTitle(title);
 			window.name = name;
 			window.MainPanel.name = panelName;
 
 			return window;
+		}
+
+		// The three title fields must change together or the game redraws the old title.
+		public static void SetTitle(this GUIWindow window, string title)
+		{
+			window.InitialTitle = window.TitleText.text = window.NonLocTitle = title;
 		}
 
 		public static GameObject CreateLabel(string text = null, string name = null)

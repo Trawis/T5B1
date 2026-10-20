@@ -30,17 +30,13 @@ namespace Trainer_v5.Window
 		public void Refresh()
 		{
 			var window = _window;
-			if (window == null || !window.Shown)
-			{
-				_target = null;
-				return;
-			}
-
 			TargetSource source;
-			_target = EmployeeTarget.Resolve(out source);
+			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
+				return;
+
 
 			var employee = _target?.Employee;
-			window.InitialTitle = window.TitleText.text = window.NonLocTitle = string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(_target, source));
+			window.SetTitle(string.Format("EditLeadSpecTitle".LocDef("Edit lead specialization for {0}"), EmployeeTarget.Describe(_target, source)));
 
 			_isRefreshing = true;
 			foreach (var pair in _specToggles)
