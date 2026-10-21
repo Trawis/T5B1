@@ -6,6 +6,25 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [Unreleased]
+
+- Fixed Trainer popups not appearing in the HUD.
+- Fixed the Trainer Settings window being larger than its content; it now
+  matches the content size and can no longer be resized.
+- Fixed hosting deals created by older trainer versions showing an empty
+  company.
+- Moved the employee editing buttons (Trait, Demand, Inspiration, LeadSpec,
+  Founder, Skills) above the Employees window; they edit the employee selected
+  there.
+- Efficiency and Lead Efficiency are now shown side by side in the Settings tab.
+- Optimize Team Assignments now reports how many assignments changed, were
+  skipped or failed, and no longer reports success when nothing changed.
+- The Settings window title now shows the running game version, and the log
+  notes when it differs from the version the trainer targets.
+- Added the experimental No Forgetful Skill Loss toggle. It appears in Trainer
+  Settings only while Enable Experimental Features is on, and turning that
+  option off switches it off. Postponed timers stay in saves.
+
 ## [5.5.0] - 2026-10-20
 
 - Fixed No Sickness, Auto Accept Hosting Deals, Extend Deadline, Sell Product
