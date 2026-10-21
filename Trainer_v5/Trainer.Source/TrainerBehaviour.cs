@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Trainer_v5.Experimental;
 using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -175,6 +176,11 @@ namespace Trainer_v5
 			if (LoggingOptions.DebugEnabled)
 			{
 				"game ready".LogDebug();
+			}
+
+			if (!ExperimentalOptions.Enabled)
+			{
+				ExperimentalToggles.TurnOffAll(Helpers.Settings);
 			}
 
 			EmployeesWindowTrainer.Install();

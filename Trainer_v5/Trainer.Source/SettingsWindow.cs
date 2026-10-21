@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Trainer_v5.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -209,6 +210,11 @@ namespace Trainer_v5
 		{
 			var rows = SettingToggleRows.Create();
 			rows.AddRange(SettingToggleRows.CreateImmediate());
+			if (ExperimentalOptions.Enabled)
+			{
+				rows.AddRange(SettingToggleRows.CreateExperimental());
+			}
+
 			foreach (var row in rows)
 			{
 				toggleCells[(int)row.Domain].Add(CreateSettingToggle(row));

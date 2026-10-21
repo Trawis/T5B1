@@ -69,7 +69,7 @@ namespace Trainer_v5
 			}
 
 			Text note = WindowManager.SpawnLabel();
-			note.text = "ExperimentalNone".LocDef("No experimental features are available yet, so turning this on changes nothing today. The choice applies to every save game.");
+			note.text = "ExperimentalNone".LocDef("Shows additional, unfinished options in Trainer Settings. Turning it off switches them off. The choice applies to every save game.");
 			WindowManager.AddElementToElement(note.gameObject, parent.gameObject, new Rect(0, y, 400, 64),
 				new Rect(0, 0, 0, 0));
 			y += 64;
@@ -135,6 +135,10 @@ namespace Trainer_v5
 		private void SetExperimentalEnabled(bool enabled)
 		{
 			ExperimentalOptions.Set(enabled, _mod.SaveSetting);
+			if (!enabled)
+			{
+				ExperimentalToggles.TurnOffAll(Helpers.Settings);
+			}
 		}
 
 		private void SetDebugLoggingEnabled(bool enabled)

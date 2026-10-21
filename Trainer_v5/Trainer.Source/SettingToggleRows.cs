@@ -82,5 +82,13 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(TrainerDomain.Environment, "ShowRoomCeilings", "Show Room Ceilings", SettingKeys.ShowRoomCeilings));
 			return rows;
 		}
+
+		// Shown only while the Experimental option is on; see ExperimentalToggles.
+		public static List<SettingToggleRow> CreateExperimental()
+		{
+			var rows = new List<SettingToggleRow>();
+			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "NoForgetfulSkillLoss", "No Forgetful Skill Loss", SettingKeys.NoForgetfulSkillLoss));
+			return rows;
+		}
 	}
 }

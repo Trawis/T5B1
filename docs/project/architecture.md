@@ -199,7 +199,7 @@ The other toggles fall into these groups (checked against the vendored
   values are per furniture type or item and are not captured.
 - Saved state with no recorded original: `Employee` salary fields
   (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
-  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  (`NoVacation`), `Actor.ForgetfulETA` (`NoForgetfulSkillLoss`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
   ticket timestamps, work items advanced or started by the `Auto*` toggles,
   deals added by `MoreHostingDeals`, closed or removed distribution platforms
   (`DigitalDistributionMonopol`), despawned burglars and inspectors,
@@ -263,10 +263,15 @@ not in saves and not in `Helpers.Settings`:
 - `ExperimentalOptions` (`Trainer.Source/Experimental/`) is the single
   accessor; only a stored `True` enables it, missing or damaged values stay off.
 - Experimental-only code goes in `Trainer.Source/Experimental/` (namespace
-  `Trainer_v5.Experimental`), is checked against `ExperimentalOptions.Enabled`
-  by its caller, and is never added to `FeatureRegistry`, `SettingToggleRows`
-  or the Trainer Settings window. There is no experimental feature yet, and the
-  Trainer Settings window has no Experimental toggle or Test button.
+  `Trainer_v5.Experimental`) and is checked against `ExperimentalOptions.Enabled`.
+  An experimental toggle is an ordinary persisted toggle (`SettingKeys`,
+  `FeatureRegistry` rows) whose row is in `SettingToggleRows.CreateExperimental()`,
+  which `SettingsWindow` adds only while the option is on; its action returns
+  while the option is off. `ExperimentalToggles` lists them: turning the option
+  off, and `OnGameReady` while it is off, set them all to false. The only one is
+  `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with
+  no recorded original, never restored). The Trainer Settings window has no
+  Experimental toggle or Test button.
 
 Not verified in the game: the Options layout, the toggle round trip and that
 the game writes the settings file for a Workshop source mod the same way as for

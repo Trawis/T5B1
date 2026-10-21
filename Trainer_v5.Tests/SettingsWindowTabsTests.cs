@@ -246,7 +246,12 @@ namespace Trainer_v5.Tests
 			{
 				var source = SourceCode.Read(file);
 
-				Assert.DoesNotContain("ExperimentalOptions", source);
+				// Only the toggle list reads the option, to show the experimental rows (#457).
+				if (file != "SettingsWindow.cs")
+				{
+					Assert.DoesNotContain("ExperimentalOptions", source);
+				}
+
 				Assert.DoesNotContain("\"Experimental\"", source);
 				Assert.DoesNotContain("SettingKeys.Experimental", source);
 				Assert.DoesNotContain("IsDebug", source);
