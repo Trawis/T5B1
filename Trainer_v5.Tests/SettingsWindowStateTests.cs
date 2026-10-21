@@ -112,6 +112,27 @@ namespace Trainer_v5.Tests
 			Assert.True(SettingsWindowState.SettingsPageRows <= SettingsWindowState.VisibleRows(System.Math.Max(actionRows, toggleRowCount), SettingsWindowState.SettingsPageRows, 6));
 		}
 
+		[Theory]
+		[InlineData(0, 0, 0)]
+		[InlineData(1, 0, 1)]
+		[InlineData(2, 1, 0)]
+		[InlineData(3, 1, 1)]
+		[InlineData(4, 0, 3)]
+		public void EfficiencyGroupsSitSideBySideWithTheLabelAboveItsDropDownAndDiscordBelowAGap(int cell, int column, int row)
+		{
+			Assert.Equal(column, SettingsWindowState.SettingsCellColumn(cell));
+			Assert.Equal(row, SettingsWindowState.SettingsCellRow(cell));
+			Assert.True(SettingsWindowState.SettingsCellRow(cell) < SettingsWindowState.SettingsPageRows);
+		}
+
+		[Fact]
+		public void TheDiscordButtonSitsOnTheLastPageRowWithAGapAboveIt()
+		{
+			Assert.Equal(SettingsWindowState.SettingsPageRows - 1, SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount));
+			Assert.True(SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount) > SettingsWindowState.SettingsCellRow(3) + 1);
+			Assert.True(SettingsWindowState.SettingsCellColumn(2) < SettingsWindowState.Columns);
+		}
+
 		[Fact]
 		public void TheWindowIsFourSlotsWide()
 		{

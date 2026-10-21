@@ -168,6 +168,21 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void TheSettingsPageUsesTheSharedCellSlotsAndLeftAlignsTheEfficiencyLabels()
+		{
+			var source = Window();
+			var place = SourceCode.Body(source, "private static void PlaceSettingsPage(");
+			var row = SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow(");
+
+			Assert.Contains("SettingsWindowState.SettingsCellColumn(i)", place);
+			Assert.Contains("SettingsWindowState.SettingsCellRow(i)", place);
+			Assert.Contains("Constants.ELEMENT_WIDTH", place);
+			Assert.Equal(1, Count(place, "UIHelper.PlaceInElement("));
+			Assert.Contains("TextAnchor.MiddleLeft", row);
+			SourceCode.AssertInOrder(row, "UIHelper.CreateLabel(", "UIHelper.CreateComboBox(", "the label is the cell before its drop-down");
+		}
+
+		[Fact]
 		public void TheProductNameFieldIsTheFirstControlOfTheProductSection()
 		{
 			var actions = SourceCode.Body(Window(), "private static void BuildActions(");

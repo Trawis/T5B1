@@ -8,8 +8,21 @@ namespace Trainer_v5
 		public const int ColumnPitch = Constants.THIRD_COLUMN - Constants.SECOND_COLUMN;
 		public const int WindowWidth = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH + Constants.FIRST_COLUMN;
 
-		// Two label + drop-down pairs (4 rows), a gap and the Discord button.
-		public const int SettingsPageRows = 6;
+		// Two label + drop-down groups side by side (2 rows), a gap row and the Discord button.
+		public const int SettingsPageRows = 4;
+
+		// Settings cells arrive as label, drop-down, label, drop-down, then the Discord button.
+		public const int EfficiencyCellCount = 4;
+
+		public static int SettingsCellColumn(int cellIndex)
+		{
+			return cellIndex < EfficiencyCellCount ? cellIndex / 2 : 0;
+		}
+
+		public static int SettingsCellRow(int cellIndex)
+		{
+			return cellIndex < EfficiencyCellCount ? cellIndex % 2 : SettingsPageRows - 1;
+		}
 
 		// Title bar, tab strip and the content rows; the size the window is locked to.
 		public static int WindowHeight(int visibleRows)
