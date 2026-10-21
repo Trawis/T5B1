@@ -26,8 +26,8 @@ Status: `active`, maintained for the current *Software Inc.* Beta 1 branch.
 ## Usage
 
 Load a game and press the **Trainer** button (or **F1**; **F2** closes the
-window). The extra buttons on the employee detail window (including **Skills**) edit
-the shown employee, or all selected employees in the skill editor. See
+window). The extra buttons above the **Employees** window (including **Skills**) edit
+the one selected employee, or all selected employees in the skill editor. See
 [`docs/project/features.md`](docs/project/features.md) for every feature.
 
 ### Experimental options
@@ -35,8 +35,9 @@ the shown employee, or all selected employees in the skill editor. See
 The game's Options screen lists the trainer with an *Enable Experimental
 Features* switch, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
-part of a save. No experimental feature exists yet, so turning it on changes
-nothing today. The Trainer Settings window has no Experimental control.
+part of a save. Turning it on shows additional, unfinished toggles in Trainer
+Settings (currently *No Forgetful Skill Loss*); turning it off switches them
+off. The Trainer Settings window has no Experimental control of its own.
 
 ### Retired settings
 

@@ -10,8 +10,8 @@ Discord). Switching tabs runs nothing and keeps typed and selected values. On
 the Actions tab the *Product Name Here* input box, first in the Product section,
 supplies the product name for the product actions. Set Product Price, Stock and Active
 Users match the name exactly across every company (player and AI) and report a
-conflict instead of guessing when several products share it; Max Followers and
-Fix Bugs only look at your own company's work items.
+conflict instead of guessing when several products share it; Max Followers,
+Max Followers (Old) and Fix Bugs only look at your own company's work items.
 
 ## Buttons
 
@@ -23,6 +23,7 @@ the Settings tab.
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
 | Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
 | Max Followers          | Product Name           | Fills the followers of your active (not paused) in-development product to its current cap |
+| Max Followers (Old)    | Product Name           | Adds a billion followers on every click, no limits |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
 | Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a Yes/No confirmation naming the company; one-way, and your own company and its subsidiaries are not accepted |
@@ -118,9 +119,18 @@ Active for as long as they are enabled. Toggles are saved with the save game.
 The game's Options screen lists the trainer under its mods and offers *Enable
 Experimental Features*, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
-saved in one. No experimental feature exists yet, so turning it on changes
-nothing today. The Trainer Settings window has no Experimental toggle and no
-Test button.
+saved in one. Turning it on shows additional, unfinished toggles on the Toggles
+page of Trainer Settings (currently *No Forgetful Skill Loss*, off until you
+switch it on); the window shows them the next time it is created, that is, in
+the next loaded game. Turning the option off switches all of them off, and a
+save that still has one on is cleared when its game is ready. The Trainer
+Settings window has no Experimental toggle and no Test button.
+
+*No Forgetful Skill Loss* (experimental, not tested in the game): every month,
+and once when switched on, the loss timer of Forgetful employees that is due
+within 3 months is pushed 12 months ahead, so they keep their specialization
+stars and the game skips the loss popup. A timer already pushed ahead stays
+pushed and is saved with the employee; lost stars are never restored.
 
 The same Options screen offers *Debug Logging*, off by default and independent
 of the experimental switch. When on, extra `Trainer [debug]:` trace lines (toggle
@@ -152,11 +162,12 @@ value is not recorded, so the trainer cannot put it back.
 | Disable Fires                | The fire-starting chance of furniture stays at 0 (not saved, so a reload drops it); fires already put out stay out |
 | Free Employees               | Salaries and salary demands stay at 0 and employees no longer negotiate salary; the previous values are not captured and are saved with the employee |
 | Lock Age of Employees        | Employee birth dates stay shifted; ages are not restored |
+| No Forgetful Skill Loss      | Timers already pushed ahead stay pushed and are saved with the employee (previous values not captured), so the Forgetful loss happens later than the game would have; lost stars are never restored |
 | No Vacation                  | Next vacation dates stay pushed back and employees already called back from vacation stay back; the game sets new vacation dates through its own scheduling, when not determined |
 | Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
 | No Missed Support Tickets    | Ticket ages stay reset |
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
-| More Hosting Deals           | Deals and rewards already added stay |
+| More Hosting Deals           | Deals and rewards already added stay; on loading a game, hosting offers that older builds left without a visible company are corrected (see architecture.md) |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
 | Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
@@ -164,8 +175,9 @@ value is not recorded, so the trainer cannot put it back.
 
 ## Employee editing
 
-The extra buttons added to the game's employee detail window edit the employee
-it shows. **Skills** opens the skill editor for that employee; its **All selected**
+The extra buttons above the game's Employees window edit the one employee
+selected in its list; with none or several selected the single-employee actions
+only show a message. **Skills** opens the skill editor for that employee; its **All selected**
 option applies a write to every selected employee instead.
 
 |  Feature       | Description                                                        |

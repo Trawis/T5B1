@@ -23,7 +23,12 @@ game's `DLLMods` folder. It compiles against the current vendored Beta 1
 assemblies in `Trainer.Libraries/` only, with no compatibility layer for older
 builds and no reflection or runtime API bypasses; a game update is absorbed by
 refreshing `Trainer.Libraries/` (including `mcs.dll`) and fixing what breaks.
-`Helpers.Version` is the release version source of truth.
+`Helpers.Version` is the release version source of truth. The targeted game
+build is `GameVersionCheck.TargetText` (Beta 1.8.42, from the vendored
+`Versioning.CurrentVersion`); the running game's value is shown in the Settings
+title and a mismatch is only logged. When refreshing `Trainer.Libraries/`,
+update the `GameVersionCheck` target constants; `GameVersionCheckTests` fails
+until they match the new assembly.
 
 ## Components
 
@@ -52,6 +57,16 @@ tears both down. Entering the main scene and leaving the game also reset the
 per-game caches (`TrainerBehaviour.ResetPerGameState`: window references, the
 specialization list, hosting timing flags, the pending-list warning and the
 printer baselines); persisted settings are never part of that reset.
+
+On every game load (`GameSettings.GameReady`, independent of any toggle)
+`MarketFeatures.RepairLegacyHostingRequests` clears `Deal.Request` on a
+`ServerDeal` that has `Request` set, no resolvable bidder and the product's
+developer as client. Older trainer builds created such deals (`Request = true`
+after construction left `_bidder` at 0, so `Deal.CompanyName` read the empty
+bidder). The game constructs every `ServerDeal` with `Request` false and only
+`IPDeal` logic reads the flag, so the repair changes the displayed company only;
+client, `PerPower`, validity and server registration are untouched. It is
+idempotent and not verified in the game.
 
 Scheduled features are rows in `FeatureRegistry`: an id, the setting that
 gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
@@ -184,7 +199,7 @@ The other toggles fall into these groups (checked against the vendored
   values are per furniture type or item and are not captured.
 - Saved state with no recorded original: `Employee` salary fields
   (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
-  (`NoVacation`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
+  (`NoVacation`), `Actor.ForgetfulETA` (`NoForgetfulSkillLoss`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
   ticket timestamps, work items advanced or started by the `Auto*` toggles,
   deals added by `MoreHostingDeals`, closed or removed distribution platforms
   (`DigitalDistributionMonopol`), despawned burglars and inspectors,
@@ -248,10 +263,15 @@ not in saves and not in `Helpers.Settings`:
 - `ExperimentalOptions` (`Trainer.Source/Experimental/`) is the single
   accessor; only a stored `True` enables it, missing or damaged values stay off.
 - Experimental-only code goes in `Trainer.Source/Experimental/` (namespace
-  `Trainer_v5.Experimental`), is checked against `ExperimentalOptions.Enabled`
-  by its caller, and is never added to `FeatureRegistry`, `SettingToggleRows`
-  or the Trainer Settings window. There is no experimental feature yet, and the
-  Trainer Settings window has no Experimental toggle or Test button.
+  `Trainer_v5.Experimental`) and is checked against `ExperimentalOptions.Enabled`.
+  An experimental toggle is an ordinary persisted toggle (`SettingKeys`,
+  `FeatureRegistry` rows) whose row is in `SettingToggleRows.CreateExperimental()`,
+  which `SettingsWindow` adds only while the option is on; its action returns
+  while the option is off. `ExperimentalToggles` lists them: turning the option
+  off, and `OnGameReady` while it is off, set them all to false. The only one is
+  `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with
+  no recorded original, never restored). The Trainer Settings window has no
+  Experimental toggle or Test button.
 
 Not verified in the game: the Options layout, the toggle round trip and that
 the game writes the settings file for a Workshop source mod the same way as for
@@ -404,15 +424,16 @@ toggles). The last tab is a static for the running game, not a save key. The
 Experimental opt-in and future diagnostics stay in the mod Options and have no
 tab. Employee editors (traits,
 demands, lead specialization, inspiration, founder, skill changes) are separate
-windows on shared layout helpers; their buttons sit above the native detail
-window (`DetailButtonLayout`).
+windows on shared layout helpers; their buttons sit above the native Employees
+window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Window`).
 
 - Trait, Demand, LeadSpec, Inspiration and Founder resolve their employee
-  through `EmployeeTarget`: the open detail window's employee, else exactly one
-  selected employee, never the first of several. A deferred dialog re-checks
+  through `EmployeeTarget`: exactly one employee selected in the Employees
+  window's list (`EmployeeList.GetSelected<Actor>()`; an open detail window or
+  the world selection is never consulted), never the first of several. A deferred dialog re-checks
   that the same live employee is still there before writing.
-- Skills (`EmployeeSkillChangeWindow`, #450) is opened from the detail window
-  and edits the shown employee, or with its "All selected" option every live
+- Skills (`EmployeeSkillChangeWindow`, #450) is opened from the Employees window
+  and edits the one selected employee, or with its "All selected" option every live
   selected employee (`EmployeeTarget.ResolveSelection`), captured at the click.
   Each write re-checks its target and skips stale ones, reporting how many of
   them were edited. The option is off on every opening. The role and
@@ -459,6 +480,10 @@ window (`DetailButtonLayout`).
 
 - CI builds and validates `Release` only; `Debug` is for local development.
   `dotnet format` and `dotnet build` are the local static checks.
+- `Trainer_v5.csproj` lists a few project-owned compiler warnings (unused
+  locals and fields, unreachable code, member hiding) in `WarningsAsErrors`, so
+  the SDK build fails on them. There is no blanket warnings-as-errors; the game's
+  `mcs` build of the Workshop source is not affected by csproj settings.
 - `Trainer_v5.Tests` (xUnit, `net462`) runs real trainer code against the
   vendored assemblies outside Unity: setting keys, serialization, input
   validation, toggle transitions, scheduling, localization and the Workshop

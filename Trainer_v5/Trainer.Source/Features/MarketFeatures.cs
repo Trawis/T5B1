@@ -78,6 +78,42 @@ namespace Trainer_v5
 			}
 		}
 
+		// Older builds set Request after construction, leaving the bidder unset (#328); the stored client is the developer.
+		// Returns how many deals were corrected.
+		internal static int RepairLegacyHostingRequests()
+		{
+			var dealWindow = HUD.Instance.dealWindow;
+			var repaired = 0;
+			if (dealWindow == null)
+			{
+				return repaired;
+			}
+
+			foreach (var deal in dealWindow.AllDeals.Values.OfType<ServerDeal>().ToList())
+			{
+				var product = deal.Product;
+				var client = deal.Client;
+				if (product == null || client == null)
+				{
+					continue;
+				}
+
+				if (IsLegacyRequestDeal(deal.Request, deal.Bidder != null, client == product.DevCompany, client == Settings.MyCompany))
+				{
+					deal.Request = false;
+					repaired++;
+				}
+			}
+
+			return repaired;
+		}
+
+		// The game never sets Request on a ServerDeal, so request with no bidder and the developer as client is trainer-made.
+		internal static bool IsLegacyRequestDeal(bool request, bool hasBidder, bool clientIsDeveloper, bool clientIsPlayer)
+		{
+			return request && !hasBidder && clientIsDeveloper && !clientIsPlayer;
+		}
+
 		internal static void ApplyHostingDealTiming()
 		{
 			int inGameHour = TimeOfDay.Instance.Hour;

@@ -12,7 +12,7 @@ namespace Trainer_v5
 		private static readonly FeatureGuard _featureGuard;
 
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.5.0";
+		public static string Version => "5.6.0";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
 
@@ -172,7 +172,6 @@ namespace Trainer_v5
 
 		#endregion
 
-		// No reliable build number is committed, so the vendored Beta 1 target is reported generically.
-		public static string GetGameVersion() => "Beta 1";
+		public static string GetGameVersion() => GameVersionCheck.Running();
 	}
 }

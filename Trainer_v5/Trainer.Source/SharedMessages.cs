@@ -56,7 +56,12 @@ namespace Trainer_v5
 
 		public static string SelectEmployeeFirst()
 		{
-			return "SelectEmployeeFirst".LocDef("Select an employee first (select one employee, then close and reopen this window).");
+			return "SelectEmployeeFirst".LocDef("Select an employee first (select one employee in the Employees window, then close and reopen this window).");
+		}
+
+		public static string SelectOneEmployee()
+		{
+			return "SelectOneEmployee".LocDef("Select exactly one employee in the Employees window for this action.");
 		}
 
 		public static string EmployeeChangedNothingEdited()

@@ -25,7 +25,7 @@ namespace Trainer_v5.Window
 				Window.Toggle();
 			}
 
-			// Bulk editing is always a fresh choice: every opening starts with the shown employee.
+			// Bulk editing is always a fresh choice: every opening starts with the one selected employee.
 			if (_allSelected != null)
 			{
 				_allSelected.isOn = false;

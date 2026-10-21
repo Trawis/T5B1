@@ -9,30 +9,36 @@ namespace Trainer_v5
 
 		internal static void OptimizeTeamAssignments()
 		{
-			int reassigned = 0;
+			int changed = 0;
+			int skipped = 0;
+			int failed = 0;
 
 			foreach (WorkItem item in Settings.MyCompany.WorkItems.ToList())
 			{
 				if (item.AutoDev || item.DevTeams.Count != 1)
 				{
+					skipped++;
 					continue;
 				}
 
 				Employee.RoleBit? roleBit = GetOptimizerRoleBit(item);
 				if (roleBit == null)
 				{
+					skipped++;
 					continue;
 				}
 
 				DesignDocument designDocument = item as DesignDocument;
 				if (designDocument != null && designDocument.NeedsLead() && designDocument.LeadWork != null)
 				{
+					skipped++;
 					continue;
 				}
 
 				Team currentTeam = GameSettings.GetTeam(item.DevTeams.First());
 				if (currentTeam == null)
 				{
+					skipped++;
 					continue;
 				}
 
@@ -52,17 +58,40 @@ namespace Trainer_v5
 				if (bestTeam != currentTeam)
 				{
 					item.SetDevTeams(new List<string> { bestTeam.Name });
-					reassigned++;
+					if (TeamAssignmentResult.Applied(item.DevTeams, bestTeam.Name))
+					{
+						changed++;
+					}
+					else
+					{
+						failed++;
+					}
+				}
+				else
+				{
+					skipped++;
 				}
 			}
 
-			if (reassigned == 0)
+			if (TeamAssignmentResult.ChangedNothing(changed, failed))
 			{
-				Notification.ShowInfo("TeamsAlreadyOptimal".LocDef("Trainer: All eligible work is already assigned to its best available team!"));
+				Notification.ShowInfo(string.Format("TeamAssignmentsNoChange".LocDef("Trainer: No team assignment was changed. {0} skipped."), skipped));
 				return;
 			}
 
-			Notification.Popup("TeamAssignmentsOptimized".LocDef("Trainer: Team assignments optimized!"));
+			string summary = string.Format("TeamAssignmentsSummary".LocDef("Trainer: Team assignments: {0} changed, {1} skipped, {2} failed."), changed, skipped, failed);
+			if (failed == 0)
+			{
+				Notification.Popup(summary);
+			}
+			else if (changed > 0)
+			{
+				Notification.ShowWarning(summary);
+			}
+			else
+			{
+				Notification.ShowError(summary);
+			}
 		}
 
 		internal static void InstantPorting()
@@ -147,6 +176,29 @@ namespace Trainer_v5
 		internal static void MaxFollowers()
 		{
 			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
+		}
+
+		internal static void MaxFollowersOldAction(string input)
+		{
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && !item.Paused);
+
+			if (WorkItem == null)
+			{
+				return;
+			}
+
+			WorkItem.MaxFollowers += 1000000000;
+			WorkItem.ReEvaluateMaxFollowers();
+
+			WorkItem.FollowerChange += 1000000000f;
+			WorkItem.Followers += 1000000000f;
+		}
+
+		internal static void MaxFollowersOld()
+		{
+			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersOldTitle".LocDef("Max Followers (Old)"), "", MaxFollowersOldAction);
 		}
 
 		internal static void InstantResearch()
