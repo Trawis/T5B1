@@ -178,7 +178,6 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
 		}
 
-		// The pre-#232 action, kept as it was (#489).
 		internal static void MaxFollowersOldAction(string input)
 		{
 			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
