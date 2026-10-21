@@ -179,6 +179,14 @@ namespace Trainer_v5
 
 			DetailWindowTrainer.Install();
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
+			Helpers.TryExecute("RepairLegacyHostingRequests", () =>
+			{
+				var repaired = MarketFeatures.RepairLegacyHostingRequests();
+				if (LoggingOptions.DebugEnabled)
+				{
+					("legacy hosting deals repaired: " + repaired).LogDebug();
+				}
+			});
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
