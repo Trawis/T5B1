@@ -23,7 +23,12 @@ game's `DLLMods` folder. It compiles against the current vendored Beta 1
 assemblies in `Trainer.Libraries/` only, with no compatibility layer for older
 builds and no reflection or runtime API bypasses; a game update is absorbed by
 refreshing `Trainer.Libraries/` (including `mcs.dll`) and fixing what breaks.
-`Helpers.Version` is the release version source of truth.
+`Helpers.Version` is the release version source of truth. The targeted game
+build is `GameVersionCheck.TargetText` (Beta 1.8.42, from the vendored
+`Versioning.CurrentVersion`); the running game's value is shown in the Settings
+title and a mismatch is only logged. When refreshing `Trainer.Libraries/`,
+update the `GameVersionCheck` target constants; `GameVersionCheckTests` fails
+until they match the new assembly.
 
 ## Components
 
