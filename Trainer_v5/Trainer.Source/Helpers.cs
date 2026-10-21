@@ -172,7 +172,6 @@ namespace Trainer_v5
 
 		#endregion
 
-		// No reliable build number is committed, so the vendored Beta 1 target is reported generically.
-		public static string GetGameVersion() => "Beta 1";
+		public static string GetGameVersion() => GameVersionCheck.Running();
 	}
 }

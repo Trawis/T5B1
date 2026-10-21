@@ -21,6 +21,7 @@ namespace Trainer_v5
 			// The game has already read the mod's own settings file; this runs when the mod loads, before any game.
 			ExperimentalOptions.Load(parentMod.Settings);
 			LoggingOptions.Load(parentMod.Settings);
+			GameVersionCheck.LogRunningVersion();
 		}
 
 		public static void OpenSettingsWindow()

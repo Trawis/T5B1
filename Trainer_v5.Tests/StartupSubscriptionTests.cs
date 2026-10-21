@@ -12,7 +12,7 @@ namespace Trainer_v5.Tests
 			var branch = SourceCode.Span(SourceCode.Read("TrainerBehaviour.cs"), "case SceneRoute.MainScene:", "break;");
 
 			SourceCode.AssertInOrder(branch, "SubscribeToEvents()", "Main.CreateUIButtons()", "the main scene must subscribe before creating UI");
-			SourceCode.AssertInOrder(branch, "SubscribeToEvents()", "DetailWindowTrainer.Install()", "the main scene must subscribe before installing UI");
+			SourceCode.AssertInOrder(branch, "SubscribeToEvents()", "EmployeesWindowTrainer.Install()", "the main scene must subscribe before installing UI");
 		}
 
 		[Fact]
@@ -39,9 +39,9 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheDetailControlsAreOnlyMarkedInstalledWhenTheyWerePlaced()
+		public void TheEmployeesToolbarIsOnlyMarkedInstalledWhenTheyWerePlaced()
 		{
-			var source = SourceCode.Read("DetailWindowTrainer.cs");
+			var source = SourceCode.Read("EmployeesWindowTrainer.cs");
 
 			SourceCode.AssertInOrder(source, "if (!placed)", "_installedOn = target;", "the installed marker follows the placement check");
 		}

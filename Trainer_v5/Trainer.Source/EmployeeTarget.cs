@@ -2,15 +2,14 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
+	// The only origin is the Employees window's own list: no other open window and no world selection is consulted.
 	internal enum TargetSource
 	{
 		None = 0,
-		// The employee shown in the open detail window: the editors are opened from it.
-		DetailWindow = 1,
-		// Exactly one employee selected while no detail window is open.
-		Selection = 2,
-		// Several selected and no detail window: there is no single intended employee.
-		Ambiguous = 3
+		// Exactly one employee is selected in the shown Employees window.
+		Selection = 1,
+		// Several are selected there: there is no single intended employee.
+		Ambiguous = 2
 	}
 
 	// The employee an editor acts on: resolved once, checked again before every write (#235).
@@ -25,14 +24,8 @@ namespace Trainer_v5
 			Employee = actor.employee;
 		}
 
-		// An open detail window is the context the editor buttons live in, so it wins over a wider selection.
-		public static TargetSource Decide(bool detailWindowHasLiveEmployee, int liveSelectedCount)
+		public static TargetSource Decide(int liveSelectedCount)
 		{
-			if (detailWindowHasLiveEmployee)
-			{
-				return TargetSource.DetailWindow;
-			}
-
 			if (liveSelectedCount == 1)
 			{
 				return TargetSource.Selection;
@@ -43,19 +36,23 @@ namespace Trainer_v5
 
 		public static EmployeeTarget Resolve(out TargetSource source)
 		{
-			var detailActor = ShownDetailActor();
 			var selected = LiveSelectedActors();
 
-			source = Decide(IsLive(detailActor), selected.Count);
-			switch (source)
+			source = Decide(selected.Count);
+			return source == TargetSource.Selection ? new EmployeeTarget(selected[0]) : null;
+		}
+
+		// For an action on exactly one employee: tells the player why nothing happens without a single selection.
+		public static EmployeeTarget RequireOne()
+		{
+			TargetSource source;
+			var target = Resolve(out source);
+			if (target == null)
 			{
-				case TargetSource.DetailWindow:
-					return new EmployeeTarget(detailActor);
-				case TargetSource.Selection:
-					return new EmployeeTarget(selected[0]);
-				default:
-					return null;
+				Notification.ShowError(SharedMessages.SelectOneEmployee());
 			}
+
+			return target;
 		}
 
 		// An editor window that is closed or missing has no target; true means the target and source are fresh.
@@ -105,19 +102,21 @@ namespace Trainer_v5
 			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
 		}
 
+		// What the Employees window's list shows as selected right now; nothing while that window is closed or missing.
 		private static List<Actor> LiveSelectedActors()
 		{
 			var selected = new List<Actor>();
-			var selection = SelectorController.Instance != null ? SelectorController.Instance.Selected : null;
-			if (selection != null)
+			var window = HUD.Instance != null ? HUD.Instance.employeeWindow : null;
+			if (window == null || window.Window == null || !window.Window.Shown || window.EmployeeList == null)
 			{
-				foreach (var item in selection)
+				return selected;
+			}
+
+			foreach (var actor in window.EmployeeList.GetSelected<Actor>())
+			{
+				if (IsLive(actor) && IsInActiveGame(actor))
 				{
-					var actor = item as Actor;
-					if (IsLive(actor))
-					{
-						selected.Add(actor);
-					}
+					selected.Add(actor);
 				}
 			}
 
@@ -129,18 +128,6 @@ namespace Trainer_v5
 		{
 			var settings = GameSettings.Instance;
 			return settings != null && settings.sActorManager != null && settings.sActorManager.Actors.Contains(actor);
-		}
-
-		// DetailWindow.CurrentEmployee can stay set after the window closes, so it only counts while shown.
-		private static Actor ShownDetailActor()
-		{
-			var detail = HUD.Instance != null ? HUD.Instance.DetailWindow : null;
-			if (detail == null || detail.Window == null || !detail.Window.Shown)
-			{
-				return null;
-			}
-
-			return detail.CurrentEmployee;
 		}
 	}
 }

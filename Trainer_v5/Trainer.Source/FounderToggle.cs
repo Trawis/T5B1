@@ -1,6 +1,6 @@
 namespace Trainer_v5
 {
-	// Flips Employee.Founder on the shown employee (#190). A founder is unpaid and cannot be fired.
+	// Flips Employee.Founder on the one selected employee (#190). A founder is unpaid and cannot be fired.
 	internal static class FounderToggle
 	{
 		public static string BuildPrompt(string name, bool founder)
@@ -10,9 +10,8 @@ namespace Trainer_v5
 
 		public static void Start()
 		{
-			TargetSource source;
-			var target = EmployeeTarget.Resolve(out source);
-			if (source != TargetSource.DetailWindow)
+			var target = EmployeeTarget.RequireOne();
+			if (target == null)
 				return;
 
 			var blocked = FindBlocker(target);

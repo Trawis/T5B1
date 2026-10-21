@@ -166,7 +166,7 @@ value is not recorded, so the trainer cannot put it back.
 | Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
 | No Missed Support Tickets    | Ticket ages stay reset |
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
-| More Hosting Deals           | Deals and rewards already added stay |
+| More Hosting Deals           | Deals and rewards already added stay; on loading a game, hosting offers that older builds left without a visible company are corrected (see architecture.md) |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
 | Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
@@ -174,8 +174,9 @@ value is not recorded, so the trainer cannot put it back.
 
 ## Employee editing
 
-The extra buttons added to the game's employee detail window edit the employee
-it shows. **Skills** opens the skill editor for that employee; its **All selected**
+The extra buttons above the game's Employees window edit the one employee
+selected in its list; with none or several selected the single-employee actions
+only show a message. **Skills** opens the skill editor for that employee; its **All selected**
 option applies a write to every selected employee instead.
 
 |  Feature       | Description                                                        |

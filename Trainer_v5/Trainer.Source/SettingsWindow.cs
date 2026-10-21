@@ -104,8 +104,8 @@ namespace Trainer_v5
 			BuildTabStrip();
 			SetActiveTab(_activeTab);
 
-			// Title bar and tab strip rows, then the content rows.
-			Window.SetWindowSize(visibleRows + 1, SettingsWindowState.WindowWidth);
+			Window.SetMinSize(SettingsWindowState.WindowWidth, SettingsWindowState.WindowHeight(visibleRows));
+			Window.LockWindowSize();
 		}
 
 		// Everything is built once in Init, so a tab switch creates nothing and adds no listeners.
@@ -265,7 +265,9 @@ namespace Trainer_v5
 			var storesSettings = Helpers.StoresSettings;
 			var efficiencySelectItems = Helpers.EfficiencySelectItems;
 
-			settingsCells.Add(UIHelper.CreateLabel(label));
+			var labelCell = UIHelper.CreateLabel(label);
+			labelCell.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
+			settingsCells.Add(labelCell);
 			var comboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
 				selection: efficiencySelectItems.GetIndex(storesSettings, key, 2)
@@ -280,8 +282,12 @@ namespace Trainer_v5
 		{
 			for (int i = 0; i < settingsCells.Count; i++)
 			{
-				int row = i < 4 ? i : i + 1;
-				UIHelper.PlaceInElement(settingsCells[i], container, UIHelper.GetGridSlot(row, 1, 0));
+				var slot = new Rect(
+					UIHelper.GetGridColumnX(SettingsWindowState.SettingsCellColumn(i)),
+					SettingsWindowState.SettingsCellRow(i) * Constants.ELEMENT_HEIGHT,
+					Constants.ELEMENT_WIDTH,
+					Constants.ELEMENT_HEIGHT);
+				UIHelper.PlaceInElement(settingsCells[i], container, slot);
 			}
 		}
 
