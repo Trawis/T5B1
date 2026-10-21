@@ -459,6 +459,10 @@ window (`DetailButtonLayout`).
 
 - CI builds and validates `Release` only; `Debug` is for local development.
   `dotnet format` and `dotnet build` are the local static checks.
+- `Trainer_v5.csproj` lists a few project-owned compiler warnings (unused
+  locals and fields, unreachable code, member hiding) in `WarningsAsErrors`, so
+  the SDK build fails on them. There is no blanket warnings-as-errors; the game's
+  `mcs` build of the Workshop source is not affected by csproj settings.
 - `Trainer_v5.Tests` (xUnit, `net462`) runs real trainer code against the
   vendored assemblies outside Unity: setting keys, serialization, input
   validation, toggle transitions, scheduling, localization and the Workshop
