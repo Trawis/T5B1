@@ -8,6 +8,7 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
 ## [Unreleased]
 
+- Added a Max Followers (Old) button.
 - Fixed Trainer popups not appearing in the HUD.
 - Fixed the Trainer Settings window being larger than its content; it now
   matches the content size and can no longer be resized.
