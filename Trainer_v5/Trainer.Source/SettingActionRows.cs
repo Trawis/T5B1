@@ -45,6 +45,7 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SetProductStock", "Set Product Stock", ProductFeatures.SetProductStock));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SetActiveUsers", "Set Active Users", ProductFeatures.AddActiveUsers));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "MaxFollowers", "Max Followers", WorkItemFeatures.MaxFollowers));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "MaxFollowersOld", "Max Followers (Old)", WorkItemFeatures.MaxFollowersOld));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "MaxMarketRecognition", "Max Market Recognition", CompanyFeatures.MaxMarketRecognition));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "InstantMarketing", "Instant Marketing", MarketFeatures.InstantMarketing));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SellProductsStock", "Sell products stock", ProductFeatures.SellProductStock));

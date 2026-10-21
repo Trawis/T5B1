@@ -14,7 +14,7 @@ namespace Trainer_v5.Tests
 			"Bankrupt=Actions/Company", "BankruptAll=Actions/Company", "ClearAllLoans=Actions/Company", "TransferOffshoreFunds=Actions/Company",
 			"MaxReputation=Actions/Company", "DaysPerMonth=Actions/Company", "UnlockAndClaimRewards=Actions/Company",
 			"MaxSkill=Actions/Employee", "ResetAge=Actions/Employee",
-			"SetProductPrice=Actions/Product", "SetProductStock=Actions/Product", "SetActiveUsers=Actions/Product", "MaxFollowers=Actions/Product",
+			"SetProductPrice=Actions/Product", "SetProductStock=Actions/Product", "SetActiveUsers=Actions/Product", "MaxFollowers=Actions/Product", "MaxFollowersOld=Actions/Product",
 			"MaxMarketRecognition=Actions/Product", "InstantMarketing=Actions/Product", "SellProductsStock=Actions/Product",
 			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
 			"UnlockAllFurniture=Actions/Environment", "UnlockAllSpace=Actions/Environment",

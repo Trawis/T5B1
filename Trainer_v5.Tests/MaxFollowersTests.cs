@@ -16,5 +16,56 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("FollowerChange", body);
 			Assert.DoesNotContain("+=", body);
 		}
+
+		// #489: the pre-#232 action, kept exactly as it was.
+		[Fact]
+		public void TheOldActionRunsTheFourOriginalStatementsInOrder()
+		{
+			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersOldAction");
+
+			Assert.Contains("item.Name == input && !item.Paused", body);
+			Assert.Contains("FirstOrDefault(", body);
+			SourceCode.AssertInOrder(body, "WorkItem.MaxFollowers += 1000000000;", "WorkItem.ReEvaluateMaxFollowers();", "the cap is raised first");
+			SourceCode.AssertInOrder(body, "WorkItem.ReEvaluateMaxFollowers();", "WorkItem.FollowerChange += 1000000000f;", "then recomputed");
+			SourceCode.AssertInOrder(body, "WorkItem.FollowerChange += 1000000000f;", "WorkItem.Followers += 1000000000f;", "then the change and followers");
+		}
+
+		[Fact]
+		public void TheOldActionReturnsSilentlyWhenNothingMatchesAndAddsNoSafeguards()
+		{
+			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersOldAction");
+
+			SourceCode.AssertInOrder(body, "if (WorkItem == null)", "return;", "nothing is shown when not found");
+			SourceCode.AssertInOrder(body, "return;", "WorkItem.MaxFollowers +=", "the lookup comes first");
+			Assert.DoesNotContain("Notification", body);
+			Assert.DoesNotContain("Confirmation", body);
+			Assert.DoesNotContain("ExperimentalOptions", body);
+			Assert.DoesNotContain("Math.", body);
+		}
+
+		[Fact]
+		public void TheOldButtonOpensTheProductNameDialogAndSitsRightAfterMaxFollowers()
+		{
+			var open = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersOld()");
+			Assert.Contains("SharedMessages.ProductNamePrompt()", open);
+			Assert.Contains("MaxFollowersOldAction", open);
+
+			var keys = new System.Collections.Generic.List<string>();
+			foreach (var row in SettingActionRows.Create())
+			{
+				keys.Add(row.LocKey);
+			}
+
+			Assert.Equal(keys.IndexOf("MaxFollowers") + 1, keys.IndexOf("MaxFollowersOld"));
+		}
+
+		[Fact]
+		public void TheCurrentActionIsStillTheSafeOneAndTheButtonsAreSeparate()
+		{
+			var source = SourceCode.Read("Features", "WorkItemFeatures.cs");
+
+			Assert.Contains("WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), \"MaxFollowersTitle\".LocDef(\"Max Followers\"), \"\", MaxFollowersAction);", source);
+			Assert.NotEqual(SourceCode.Body(source, "internal static void MaxFollowersAction"), SourceCode.Body(source, "internal static void MaxFollowersOldAction"));
+		}
 	}
 }

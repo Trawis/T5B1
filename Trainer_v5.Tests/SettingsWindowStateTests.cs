@@ -107,7 +107,7 @@ namespace Trainer_v5.Tests
 			var actionRows = SettingsWindowState.PageRows(Counts(actions, SettingsWindowState.ActionDomains()), SettingsWindowState.Columns);
 			var toggleRowCount = SettingsWindowState.PageRows(Counts(toggles, SettingsWindowState.ToggleDomains()), SettingsWindowState.Columns);
 
-			Assert.Equal(14, actionRows);
+			Assert.Equal(15, actionRows);
 			Assert.Equal(18, toggleRowCount);
 			Assert.True(SettingsWindowState.SettingsPageRows <= SettingsWindowState.VisibleRows(System.Math.Max(actionRows, toggleRowCount), SettingsWindowState.SettingsPageRows, 6));
 		}

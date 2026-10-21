@@ -178,6 +178,30 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
 		}
 
+		// The pre-#232 action, kept as it was on purpose (#489): not idempotent, FollowerChange accumulates on every use.
+		internal static void MaxFollowersOldAction(string input)
+		{
+			SoftwareAlpha WorkItem = Settings.MyCompany.WorkItems
+				.OfType<SoftwareAlpha>().FirstOrDefault(item =>
+					item.Name == input && !item.Paused);
+
+			if (WorkItem == null)
+			{
+				return;
+			}
+
+			WorkItem.MaxFollowers += 1000000000;
+			WorkItem.ReEvaluateMaxFollowers();
+
+			WorkItem.FollowerChange += 1000000000f;
+			WorkItem.Followers += 1000000000f;
+		}
+
+		internal static void MaxFollowersOld()
+		{
+			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersOldTitle".LocDef("Max Followers (Old)"), "", MaxFollowersOldAction);
+		}
+
 		internal static void InstantResearch()
 		{
 			var eligibleResearch = Settings.MyCompany.WorkItems
