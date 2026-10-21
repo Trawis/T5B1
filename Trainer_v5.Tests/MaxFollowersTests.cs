@@ -17,7 +17,6 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("+=", body);
 		}
 
-		// #489: the pre-#232 action, kept exactly as it was.
 		[Fact]
 		public void TheOldActionRunsTheFourOriginalStatementsInOrder()
 		{
@@ -25,9 +24,9 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("item.Name == input && !item.Paused", body);
 			Assert.Contains("FirstOrDefault(", body);
-			SourceCode.AssertInOrder(body, "WorkItem.MaxFollowers += 1000000000;", "WorkItem.ReEvaluateMaxFollowers();", "the cap is raised first");
-			SourceCode.AssertInOrder(body, "WorkItem.ReEvaluateMaxFollowers();", "WorkItem.FollowerChange += 1000000000f;", "then recomputed");
-			SourceCode.AssertInOrder(body, "WorkItem.FollowerChange += 1000000000f;", "WorkItem.Followers += 1000000000f;", "then the change and followers");
+			SourceCode.AssertInOrder(body, "WorkItem.MaxFollowers += 1000000000;", "WorkItem.ReEvaluateMaxFollowers();", "order");
+			SourceCode.AssertInOrder(body, "WorkItem.ReEvaluateMaxFollowers();", "WorkItem.FollowerChange += 1000000000f;", "order");
+			SourceCode.AssertInOrder(body, "WorkItem.FollowerChange += 1000000000f;", "WorkItem.Followers += 1000000000f;", "order");
 		}
 
 		[Fact]
@@ -35,8 +34,8 @@ namespace Trainer_v5.Tests
 		{
 			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersOldAction");
 
-			SourceCode.AssertInOrder(body, "if (WorkItem == null)", "return;", "nothing is shown when not found");
-			SourceCode.AssertInOrder(body, "return;", "WorkItem.MaxFollowers +=", "the lookup comes first");
+			SourceCode.AssertInOrder(body, "if (WorkItem == null)", "return;", "silent");
+			SourceCode.AssertInOrder(body, "return;", "WorkItem.MaxFollowers +=", "lookup first");
 			Assert.DoesNotContain("Notification", body);
 			Assert.DoesNotContain("Confirmation", body);
 			Assert.DoesNotContain("ExperimentalOptions", body);

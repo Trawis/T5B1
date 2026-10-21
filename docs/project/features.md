@@ -23,7 +23,7 @@ the Settings tab.
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
 | Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
 | Max Followers          | Product Name           | Fills the followers of your active (not paused) in-development product to its current cap |
-| Max Followers (Old)    | Product Name           | The original pre-#232 action, kept on purpose: adds a billion to the product's followers and to its daily follower change on every click, so repeated use accumulates. No confirmation or limits; nothing happens when no active (not paused) in-development product has that name |
+| Max Followers (Old)    | Product Name           | The original pre-#232 action: adds a billion followers on every click, no limits |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
 | Subsidiary Company     | Company Name           | Specified company becomes your company's subsidiary         |
 | Bankrupt               | Company Name           | Marks the specified AI company as going bankrupt after a Yes/No confirmation naming the company; one-way, and your own company and its subsidiaries are not accepted |
