@@ -119,6 +119,21 @@ namespace Trainer_v5
 			window.SetMinSize(xWindowSize, (rows + 1) * Constants.ELEMENT_HEIGHT);
 		}
 
+		// Elements are placed top-left with fixed offsets, so a window larger than its content strands them in a corner.
+		public static void LockWindowSize(this GUIWindow window)
+		{
+			var rect = window.GetComponent<RectTransform>();
+			if (rect != null)
+			{
+				rect.sizeDelta = window.MinSize;
+			}
+
+			if (window.SizeButton != null)
+			{
+				window.SizeButton.SetActive(false);
+			}
+		}
+
 		public static void SetMinSize(this GUIWindow window, int width, int height)
 		{
 			window.MinSize.x = width;

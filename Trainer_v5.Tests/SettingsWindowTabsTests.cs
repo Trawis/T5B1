@@ -207,8 +207,21 @@ namespace Trainer_v5.Tests
 			var init = SourceCode.Body(Window(), "private static void Init()");
 
 			Assert.Contains("UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 1)", init);
-			Assert.Contains("Window.SetWindowSize(visibleRows + 1, SettingsWindowState.WindowWidth);", init);
+			Assert.Contains("Window.SetMinSize(SettingsWindowState.WindowWidth, SettingsWindowState.WindowHeight(visibleRows));", init);
 			Assert.Equal(3, Count(init, "CreateTabPage("));
+		}
+
+		// Elements are top-left anchored with fixed offsets (WindowManager.SetElementDimension), so the window must not outgrow them.
+		[Fact]
+		public void TheWindowIsLockedToItsContentAfterTheMinimumSizeIsSet()
+		{
+			var init = SourceCode.Body(Window(), "private static void Init()");
+			var helper = SourceCode.Body(SourceCode.Read("UIHelper.cs"), "public static void LockWindowSize(");
+
+			SourceCode.AssertInOrder(init, "Window.SetMinSize(", "Window.LockWindowSize();", "the lock copies MinSize");
+			Assert.Contains("rect.sizeDelta = window.MinSize;", helper);
+			Assert.Contains("window.SizeButton.SetActive(false);", helper);
+			Assert.Equal(1, Count(Window(), "AddListener(() => Shown = false)"));
 		}
 
 		[Fact]

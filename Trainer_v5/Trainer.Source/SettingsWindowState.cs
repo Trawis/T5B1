@@ -11,6 +11,12 @@ namespace Trainer_v5
 		// Two label + drop-down pairs (4 rows), a gap and the Discord button.
 		public const int SettingsPageRows = 6;
 
+		// Title bar, tab strip and the content rows; the size the window is locked to.
+		public static int WindowHeight(int visibleRows)
+		{
+			return (visibleRows + 2) * Constants.ELEMENT_HEIGHT;
+		}
+
 		public static SettingsTab ClampTab(SettingsTab tab)
 		{
 			return tab < SettingsTab.Actions || tab > SettingsTab.Settings ? SettingsTab.Actions : tab;
