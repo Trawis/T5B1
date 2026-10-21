@@ -156,7 +156,7 @@ value is not recorded, so the trainer cannot put it back.
 | Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
 | No Missed Support Tickets    | Ticket ages stay reset |
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
-| More Hosting Deals           | Deals and rewards already added stay |
+| More Hosting Deals           | Deals and rewards already added stay; on loading a game, hosting offers that older builds left without a visible company are corrected (see architecture.md) |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
 | Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
