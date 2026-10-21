@@ -26,6 +26,22 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, SettingsWindowState.VisibleRows(tallest, other, maxVisible));
 		}
 
+		// Title bar + tab strip + content rows: the page viewports end exactly at the window's bottom edge.
+		[Theory]
+		[InlineData(6, 256)]
+		[InlineData(16, 576)]
+		public void TheWindowHeightIsTitleBarTabStripAndTheContentRows(int visibleRows, int expected)
+		{
+			Assert.Equal(expected, SettingsWindowState.WindowHeight(visibleRows));
+			Assert.Equal(visibleRows * Constants.ELEMENT_HEIGHT + 2 * Constants.ELEMENT_HEIGHT, SettingsWindowState.WindowHeight(visibleRows));
+		}
+
+		[Fact]
+		public void TheWindowWidthIsTheViewportWidthTheTabPagesUse()
+		{
+			Assert.Equal(634, SettingsWindowState.WindowWidth);
+		}
+
 		[Theory]
 		[InlineData(0, 1)]
 		[InlineData(1, 1)]

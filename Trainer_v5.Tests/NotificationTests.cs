@@ -74,6 +74,15 @@ namespace Trainer_v5.Tests
 			Assert.True(offenders.Count == 0, "Use Notification.Popup / ShowInfo / ShowWarning / ShowError: " + string.Join("; ", offenders));
 		}
 
+		// HUD.AddPopupMessage ignores every id except PopupIDs.None (-1); the trainer once passed 0 and nothing showed.
+		[Fact]
+		public void ThePopupUsesTheNoneIdSoTheGameShowsIt()
+		{
+			var body = SourceCode.Body(SourceCode.Read("Notification.cs"), "public static void Popup(");
+
+			Assert.Contains(", PopupManager.PopupIDs.None);", body);
+		}
+
 		[Fact]
 		public void EveryPopupGoesThroughThePrefixRuleAndNoDialogDoes()
 		{

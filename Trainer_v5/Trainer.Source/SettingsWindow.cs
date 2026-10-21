@@ -103,8 +103,8 @@ namespace Trainer_v5
 			BuildTabStrip();
 			SetActiveTab(_activeTab);
 
-			// Title bar and tab strip rows, then the content rows.
-			Window.SetWindowSize(visibleRows + 1, SettingsWindowState.WindowWidth);
+			Window.SetMinSize(SettingsWindowState.WindowWidth, SettingsWindowState.WindowHeight(visibleRows));
+			Window.LockWindowSize();
 		}
 
 		// Everything is built once in Init, so a tab switch creates nothing and adds no listeners.
