@@ -164,8 +164,9 @@ value is not recorded, so the trainer cannot put it back.
 
 ## Employee editing
 
-The extra buttons added to the game's employee detail window edit the employee
-it shows. **Skills** opens the skill editor for that employee; its **All selected**
+The extra buttons above the game's Employees window edit the one employee
+selected in its list; with none or several selected the single-employee actions
+only show a message. **Skills** opens the skill editor for that employee; its **All selected**
 option applies a write to every selected employee instead.
 
 |  Feature       | Description                                                        |

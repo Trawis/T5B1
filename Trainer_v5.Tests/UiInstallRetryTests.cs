@@ -17,14 +17,14 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheDetailControlsAreDestroyedInAFinallyBlockWhenPlacementDidNotComplete()
+		public void TheEmployeesToolbarControlsAreDestroyedInAFinallyBlockWhenPlacementDidNotComplete()
 		{
-			var source = Read("DetailWindowTrainer.cs");
+			var source = Read("EmployeesWindowTrainer.cs");
 			var install = source.Substring(Index(source, "public static void Install()"));
 			install = install.Substring(0, Index(install, "private static void SetInspiration"));
 
-			Assert.True(Index(install, "try") < Index(install, "AddToElement"));
-			Assert.True(Index(install, "AddToElement") < Index(install, "finally"));
+			Assert.True(Index(install, "try") < Index(install, "PlaceInElement"));
+			Assert.True(Index(install, "PlaceInElement") < Index(install, "finally"));
 			Assert.True(Index(install, "finally") < Index(install, "Object.Destroy"));
 			Assert.True(Index(install, "Object.Destroy") < Index(install, "_installedOn = target;"));
 			Assert.DoesNotContain("catch", install);

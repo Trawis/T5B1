@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Trainer_v5
 {
-	internal static class DetailWindowTrainer
+	internal static class EmployeesWindowTrainer
 	{
-		// The DetailWindow the controls were injected into; the game recreates it on save reloads.
-		private static DetailWindow _installedOn;
+		// The Employees window the controls were added to; the game recreates it with the HUD on save reloads.
+		private static EmployeeWindow _installedOn;
 
 		public static void Reset()
 		{
@@ -16,8 +16,8 @@ namespace Trainer_v5
 
 		public static void Install()
 		{
-			var target = HUD.Instance?.DetailWindow;
-			if (target == null || target == _installedOn)
+			var target = HUD.Instance?.employeeWindow;
+			if (target == null || target.Window == null || target == _installedOn)
 				return;
 
 			var components = new List<Component>
@@ -31,22 +31,22 @@ namespace Trainer_v5
 			};
 
 			const int width = 80, height = 32, spacing = 4;
-			var windowRect = target.Window != null ? ((RectTransform)target.Window.transform).rect : new Rect();
+			var windowRect = ((RectTransform)target.Window.transform).rect;
 			var slots = DetailButtonLayout.Place(components.Count, windowRect.width, width, height, spacing);
 			var placed = false;
 			try
 			{
-				var allAdded = true;
+				// Above the window's top edge, so no list row, filter, header or scrollbar of the native window is covered.
 				for (var i = 0; i < components.Count; i++)
 				{
-					allAdded &= components[i].gameObject.AddToElement("DetailWindow", slots[i]);
+					UIHelper.PlaceInElement(components[i].gameObject, target.Window.gameObject, slots[i]);
 				}
 
-				placed = allAdded;
+				placed = true;
 			}
 			finally
 			{
-				// A missing window element or an exception partway drops every control, so a retry starts clean
+				// An exception partway drops every control, so a retry starts clean
 				// instead of stacking a second set on top of the buttons that were already added.
 				if (!placed)
 				{
@@ -66,9 +66,8 @@ namespace Trainer_v5
 
 		private static void SetInspiration()
 		{
-			TargetSource source;
-			var target = EmployeeTarget.Resolve(out source);
-			if (source != TargetSource.DetailWindow)
+			var target = EmployeeTarget.RequireOne();
+			if (target == null)
 				return;
 			var employee = target.Employee;
 
