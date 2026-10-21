@@ -6,7 +6,7 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
-## [Unreleased]
+## [5.6.0] - 2026-10-21
 
 - Added a Max Followers (Old) button.
 - Fixed Trainer popups not appearing in the HUD.
