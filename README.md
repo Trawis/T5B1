@@ -35,9 +35,9 @@ the shown employee, or all selected employees in the skill editor. See
 The game's Options screen lists the trainer with an *Enable Experimental
 Features* switch, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
-part of a save. Turning it on enables *No Forgetful Skill Loss* (Forgetful
-employees keep their specialization stars; not tested in the game). The Trainer
-Settings window has no Experimental control.
+part of a save. Turning it on shows additional, unfinished toggles in Trainer
+Settings (currently *No Forgetful Skill Loss*); turning it off switches them
+off. The Trainer Settings window has no Experimental control of its own.
 
 ### Retired settings
 

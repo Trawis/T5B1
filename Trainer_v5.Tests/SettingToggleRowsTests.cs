@@ -12,6 +12,9 @@ namespace Trainer_v5.Tests
 	{
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
+		// Rows shown only while the Experimental option is on.
+		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss" };
+
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
 		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
 
@@ -30,7 +33,7 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			var missing = Enumerable.ToList(Enumerable.Where(declared, key => !rowKeys.Contains(key) && System.Array.IndexOf(Explicit, key) < 0 && System.Array.IndexOf(WithoutToggle, key) < 0));
+			var missing = Enumerable.ToList(Enumerable.Where(declared, key => !rowKeys.Contains(key) && System.Array.IndexOf(Explicit, key) < 0 && System.Array.IndexOf(ExperimentalKeys, key) < 0 && System.Array.IndexOf(WithoutToggle, key) < 0));
 			Assert.True(missing.Count == 0, "No Settings window row for: " + string.Join(", ", missing));
 			Assert.All(rowKeys, key => Assert.Contains(key, declared));
 		}
@@ -39,7 +42,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] GoldenToggleDomains =
 		{
 			"NoNeeds=Employee", "NoStress=Employee", "FreeEmployees=Employee", "FreeStaff=Employee", "FullSatisfaction=Employee", "LockAge=Employee",
-			"NoVacation=Employee", "NoSickness=Employee", "NoEducationCost=Employee", "IncreaseWalkSpeed=Employee", "IncreaseBookshelfSkill=Employee", "MoreInspiration=Employee",
+			"NoVacation=Employee", "NoSickness=Employee", "NoForgetfulSkillLoss=Employee", "NoEducationCost=Employee", "IncreaseWalkSpeed=Employee", "IncreaseBookshelfSkill=Employee", "MoreInspiration=Employee",
 			"DisableFireInspection=Environment", "FullEnvironment=Environment", "FullRoomBrightness=Environment", "TemperatureLock=Environment", "NoMaintenance=Environment",
 			"NoiseReduction=Environment", "CleanRooms=Environment", "DisableFires=Environment", "DisableBurglars=Environment", "DisableFurnitureStealing=Environment",
 			"NoWaterElectricity=Environment", "ForceLights=Environment", "ShowRoomCeilings=Environment",
@@ -55,6 +58,7 @@ namespace Trainer_v5.Tests
 		{
 			var rows = SettingToggleRows.Create();
 			rows.AddRange(SettingToggleRows.CreateImmediate());
+			rows.AddRange(SettingToggleRows.CreateExperimental());
 			return rows;
 		}
 

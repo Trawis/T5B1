@@ -121,14 +121,14 @@ namespace Trainer_v5.Tests
 
 			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override WriteDictionary Serialize("));
 			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override void Deserialize("));
-			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Read("TrainerBehaviour.cs"));
+			Assert.DoesNotContain("ExperimentalOptions.Set(", SourceCode.Read("TrainerBehaviour.cs"));
 		}
 
 		[Fact]
 		public void ExperimentalCodeIsNotRegisteredAsAStableFeature()
 		{
 			Assert.DoesNotContain("Experimental", SourceCode.Read("FeatureRegistry.cs"));
-			Assert.DoesNotContain("Experimental", SourceCode.Read("SettingToggleRows.cs"));
+			Assert.DoesNotContain("NoForgetfulSkillLoss", SourceCode.Body(SourceCode.Read("SettingToggleRows.cs"), "public static List<SettingToggleRow> Create()"));
 			Assert.Equal("Trainer_v5.Experimental", typeof(ExperimentalOptions).Namespace);
 		}
 	}

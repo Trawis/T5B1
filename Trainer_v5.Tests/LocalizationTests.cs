@@ -236,6 +236,7 @@ namespace Trainer_v5.Tests
 			var misplaced = new List<string>();
 			var toggleRows = SettingToggleRows.Create();
 			toggleRows.AddRange(SettingToggleRows.CreateImmediate());
+			toggleRows.AddRange(SettingToggleRows.CreateExperimental());
 			foreach (var row in toggleRows)
 			{
 				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Toggles")

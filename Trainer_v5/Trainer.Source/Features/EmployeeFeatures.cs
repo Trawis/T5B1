@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrbCreationExtensions;
+using Trainer_v5.Experimental;
 
 namespace Trainer_v5
 {
@@ -143,6 +144,29 @@ namespace Trainer_v5
 				actor.VacationMonth = SDateTime.NextMonth(24);
 				if (actor.SpecialState == Actor.HomeState.Vacation)
 					actor.SpecialState = Actor.HomeState.Default;
+			}
+		}
+
+		// The game loses a Forgetful employee's specialization only when the actor leaves the office after ForgetfulETA has
+		// passed (AI.Despawn); keeping the timer ahead of the clock skips the loss, the popup and the re-arm. Unarmed (0) stays.
+		internal static void ApplyNoForgetfulSkillLoss()
+		{
+			if (!ExperimentalOptions.Enabled || TimeOfDay.Instance == null)
+				return;
+
+			SDateTime now = SDateTime.Now();
+			SDateTime unarmed = new SDateTime(0);
+			SDateTime threshold = now + 3;
+
+			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
+			{
+				Actor actor = Settings.sActorManager.Actors[i];
+
+				if (actor.employee == null || !actor.employee.HasTrait(Employee.Trait.Forgetful))
+					continue;
+
+				if (actor.ForgetfulETA != unarmed && actor.ForgetfulETA <= threshold)
+					actor.ForgetfulETA = now + 12;
 			}
 		}
 

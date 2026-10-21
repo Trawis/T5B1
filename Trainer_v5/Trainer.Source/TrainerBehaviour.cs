@@ -178,9 +178,13 @@ namespace Trainer_v5
 				"game ready".LogDebug();
 			}
 
+			if (!ExperimentalOptions.Enabled)
+			{
+				ExperimentalToggles.TurnOffAll(Helpers.Settings);
+			}
+
 			DetailWindowTrainer.Install();
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
-			Helpers.TryExecute("NoForgetfulSkillLoss", NoForgetfulSkillLoss.Apply);
 		}
 
 		private void OnHourPassed(object obj, EventArgs args)
@@ -227,7 +231,6 @@ namespace Trainer_v5
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
 			GetDispatcher().Run(FeatureTrigger.Month);
-			Helpers.TryExecute("NoForgetfulSkillLoss", NoForgetfulSkillLoss.Apply);
 		}
 
 		private void Update()
