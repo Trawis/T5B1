@@ -63,6 +63,34 @@ namespace Trainer_v5.Tests
 			}
 		}
 
+		// The game rebuilds room meshes for floors -1..MaxFloor late in LoadGame; the trainer's raised limit must already be set.
+		[Fact]
+		public void MaxFloorIsSetOnceAndBeforeTheReadinessGate()
+		{
+			var source = SourceCode.Read("TrainerBehaviour.cs");
+			var update = SourceCode.Body(source, "private void Update(");
+
+			SourceCode.AssertInOrder(update, "!Helpers.IsGameLoaded", "Helpers.TryExecute(\"MaxFloor\", ApplyMaxFloorOnce);", "only once a game exists");
+			SourceCode.AssertInOrder(update, "Helpers.TryExecute(\"MaxFloor\", ApplyMaxFloorOnce);", "if (!Helpers.IsSimulationReady())", "before the gate");
+
+			var once = SourceCode.Body(source, "private void ApplyMaxFloorOnce(");
+			SourceCode.AssertInOrder(once, "if (!_oneTimeSettingsApplied)", "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "guarded by the one-time flag");
+			SourceCode.AssertInOrder(once, "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "_oneTimeSettingsApplied = true;", "flag set after the push");
+			Assert.DoesNotContain("MaxFloor", SourceCode.Body(source, "private void ApplyProcessStaticSettings("));
+		}
+
+		[Fact]
+		public void OnlyTheMaxFloorStepRunsBeforeTheGate()
+		{
+			var update = SourceCode.Body(SourceCode.Read("TrainerBehaviour.cs"), "private void Update(");
+			var beforeGate = update.Substring(0, update.IndexOf("if (!Helpers.IsSimulationReady())", System.StringComparison.Ordinal));
+
+			foreach (var gated in new[] { "ProcessStaticSettings", "RunTransitions", "Poll()", "FeatureTrigger.", "LoadSpecializations", "ShowDiscordInvite" })
+			{
+				Assert.DoesNotContain(gated, beforeGate);
+			}
+		}
+
 		[Fact]
 		public void GameReadyInitializationIsNotGatedOnTheSimulationBeingReady()
 		{

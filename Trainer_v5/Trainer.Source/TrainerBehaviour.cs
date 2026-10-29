@@ -278,6 +278,9 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
+			// The game reads MaxFloor while it loads the rooms, before the simulation is ready.
+			Helpers.TryExecute("MaxFloor", ApplyMaxFloorOnce);
+
 			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
 			if (!Helpers.IsSimulationReady())
 			{
@@ -303,14 +306,17 @@ namespace Trainer_v5
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
 
-		private void ApplyProcessStaticSettings()
+		private void ApplyMaxFloorOnce()
 		{
 			if (!_oneTimeSettingsApplied)
 			{
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
 				_oneTimeSettingsApplied = true;
 			}
+		}
 
+		private void ApplyProcessStaticSettings()
+		{
 			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{
