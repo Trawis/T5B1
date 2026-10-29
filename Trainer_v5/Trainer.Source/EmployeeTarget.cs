@@ -58,18 +58,13 @@ namespace Trainer_v5
 		// For an editor that also edits several employees on request: a launch needs at least one live selected employee.
 		public static bool RequireAny()
 		{
-			if (!HasAny(ResolveSelection().Count))
+			if (ResolveSelection().Count == 0)
 			{
 				Notification.ShowError(SharedMessages.SelectEmployeesError());
 				return false;
 			}
 
 			return true;
-		}
-
-		public static bool HasAny(int liveSelectedCount)
-		{
-			return liveSelectedCount > 0;
 		}
 
 		// An editor window that is closed or missing has no target; true means the target and source are fresh.

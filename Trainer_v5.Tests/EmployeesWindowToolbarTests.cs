@@ -133,14 +133,13 @@ namespace Trainer_v5.Tests
 		}
 
 		[Theory]
-		[InlineData(0, false, false)]
-		[InlineData(1, true, true)]
-		[InlineData(2, false, true)]
-		[InlineData(9, false, true)]
-		public void ZeroOneAndSeveralSelectedEmployeesDecideWhichEditorsMayOpen(int liveSelected, bool singleEditorsOpen, bool skillsOpens)
+		[InlineData(0, false)]
+		[InlineData(1, true)]
+		[InlineData(2, false)]
+		[InlineData(9, false)]
+		public void OnlyExactlyOneSelectedEmployeeLetsTheSingleEmployeeEditorsOpen(int liveSelected, bool opens)
 		{
-			Assert.Equal(singleEditorsOpen, EmployeeTarget.Decide(liveSelected) == TargetSource.Selection);
-			Assert.Equal(skillsOpens, EmployeeTarget.HasAny(liveSelected));
+			Assert.Equal(opens, EmployeeTarget.Decide(liveSelected) == TargetSource.Selection);
 		}
 
 		[Fact]
@@ -150,7 +149,7 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("SharedMessages.SelectOneEmployee()", SourceCode.Body(target, "public static EmployeeTarget RequireOne()"));
 			Assert.Contains("SharedMessages.SelectEmployeesError()", SourceCode.Body(target, "public static bool RequireAny()"));
-			Assert.Contains("ResolveSelection()", SourceCode.Body(target, "public static bool RequireAny()"));
+			Assert.Contains("ResolveSelection().Count == 0", SourceCode.Body(target, "public static bool RequireAny()"));
 			Assert.DoesNotContain("SelectEmployeesError\".LocDef", SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"));
 		}
 
