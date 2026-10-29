@@ -91,5 +91,80 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("SelectOneEmployee\t", english);
 		}
+
+		// #506: the guard runs first, so an invalid launch creates, toggles, focuses, refreshes and resets nothing.
+		[Theory]
+		[InlineData("EmployeeTraitChangeWindow.cs", "public void Show()")]
+		[InlineData("EmployeeDemandChangeWindow.cs", "public void Show()")]
+		[InlineData("EmployeeLeadSpecChangeWindow.cs", "public void Show()")]
+		public void TheSingleEmployeeEditorsRequireExactlyOneEmployeeBeforeAnyWindowOperation(string file, string signature)
+		{
+			var show = SourceCode.Body(SourceCode.Read("Window", file), signature);
+
+			Assert.StartsWith(signature + " { if (EmployeeTarget.RequireOne() == null)", show);
+			foreach (var windowOperation in new[] { "CreateWindow()", "_window.Toggle()", "Refresh()" })
+			{
+				SourceCode.AssertInOrder(show, "EmployeeTarget.RequireOne()", windowOperation, "the guard precedes " + windowOperation);
+			}
+		}
+
+		[Fact]
+		public void SkillsNeedsAtLeastOneEmployeeBeforeAnyWindowOperationOrBulkReset()
+		{
+			var show = SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "public static void Show()");
+
+			Assert.StartsWith("public static void Show() { if (!EmployeeTarget.RequireAny())", show);
+			foreach (var operation in new[] { "CreateWindow()", "Window.Toggle()", "_allSelected.isOn = false", "Refresh()" })
+			{
+				SourceCode.AssertInOrder(show, "EmployeeTarget.RequireAny()", operation, "the guard precedes " + operation);
+			}
+
+			Assert.DoesNotContain("RequireOne", show);
+			Assert.DoesNotContain("isOn = true", show);
+		}
+
+		[Fact]
+		public void SkillsKeepsItsFreshBulkChoiceOnEveryValidOpening()
+		{
+			var show = SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "public static void Show()");
+
+			SourceCode.AssertInOrder(show, "Window.Toggle()", "_allSelected.isOn = false", "every valid opening resets bulk to off");
+			SourceCode.AssertInOrder(show, "_allSelected.isOn = false", "Refresh()", "then the scope follows the selection");
+		}
+
+		[Theory]
+		[InlineData(0, false, false)]
+		[InlineData(1, true, true)]
+		[InlineData(2, false, true)]
+		[InlineData(9, false, true)]
+		public void ZeroOneAndSeveralSelectedEmployeesDecideWhichEditorsMayOpen(int liveSelected, bool singleEditorsOpen, bool skillsOpens)
+		{
+			Assert.Equal(singleEditorsOpen, EmployeeTarget.Decide(liveSelected) == TargetSource.Selection);
+			Assert.Equal(skillsOpens, EmployeeTarget.HasAny(liveSelected));
+		}
+
+		[Fact]
+		public void TheLaunchGuardsUseTheMessagesAlreadyDefinedForThem()
+		{
+			var target = SourceCode.Read("EmployeeTarget.cs");
+
+			Assert.Contains("SharedMessages.SelectOneEmployee()", SourceCode.Body(target, "public static EmployeeTarget RequireOne()"));
+			Assert.Contains("SharedMessages.SelectEmployeesError()", SourceCode.Body(target, "public static bool RequireAny()"));
+			Assert.Contains("ResolveSelection()", SourceCode.Body(target, "public static bool RequireAny()"));
+			Assert.DoesNotContain("SelectEmployeesError\".LocDef", SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"));
+		}
+
+		[Fact]
+		public void TheLaunchFixLeavesTheRefreshResolverAndTheInspirationAndFounderGuardsAlone()
+		{
+			var target = SourceCode.Read("EmployeeTarget.cs");
+			var tryResolve = SourceCode.Body(target, "public static bool TryResolveFor(");
+
+			Assert.Contains("window == null || !window.Shown", tryResolve);
+			Assert.DoesNotContain("RequireOne", tryResolve);
+			Assert.DoesNotContain("RequireAny", tryResolve);
+			Assert.Contains("EmployeeTarget.RequireOne()", SourceCode.Body(SourceCode.Read("EmployeesWindowTrainer.cs"), "private static void SetInspiration()"));
+			Assert.Contains("EmployeeTarget.RequireOne()", SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start()"));
+		}
 	}
 }
