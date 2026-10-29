@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: Trawis/repo-seed/.github/workflows/sync.yml@v6.0.0
+    uses: Trawis/repo-seed/.github/workflows/sync.yml@v6.0.2
     # with:
     #   pack-version: "6.0.0"   # pin the pack instead of using the latest release
     # secrets:
