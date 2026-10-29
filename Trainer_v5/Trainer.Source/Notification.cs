@@ -10,11 +10,11 @@ namespace Trainer_v5
 
 		private const string PrefixWithoutSpace = "Trainer:";
 
-		// Cogs icon, no action, default sound and importance. The game shows the message only for PopupIDs.None (-1);
-		// any other id, including 0 (Teamcompat), makes HUD.AddPopupMessage do nothing.
+		// Cogs icon, no action. The game shows the message only for PopupIDs.None (-1), and NotificationSound 0 is Issue
+		// (an undismissable entry in the Issues panel), so the sound is Neutral.
 		public static void Popup(string msg)
 		{
-			HUD.Instance.AddPopupMessage(WithPrefix(msg), "Cogs", PopupManager.PopUpAction.None, 0, 0, 0, PopupManager.PopupIDs.None);
+			HUD.Instance.AddPopupMessage(WithPrefix(msg), "Cogs", PopupManager.PopUpAction.None, 0, PopupManager.NotificationSound.Neutral, 0f, PopupManager.PopupIDs.None);
 		}
 
 		public static void ShowInfo(string msg)
