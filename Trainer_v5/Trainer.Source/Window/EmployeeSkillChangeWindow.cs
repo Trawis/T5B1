@@ -16,6 +16,11 @@ namespace Trainer_v5.Window
 
 		public static void Show()
 		{
+			if (!EmployeeTarget.RequireAny())
+			{
+				return;
+			}
+
 			if (Window == null)
 			{
 				Window = CreateWindow();
@@ -170,7 +175,7 @@ namespace Trainer_v5.Window
 
 			if (allSelected)
 			{
-				Notification.ShowError("SelectEmployeesError".LocDef("Select one or more employees."));
+				Notification.ShowError(SharedMessages.SelectEmployeesError());
 			}
 			else if (_target == null)
 			{

@@ -19,6 +19,9 @@ namespace Trainer_v5.Window
 
 		public void Show()
 		{
+			if (EmployeeTarget.RequireOne() == null)
+				return;
+
 			if (_window == null)
 				CreateWindow();
 			else
