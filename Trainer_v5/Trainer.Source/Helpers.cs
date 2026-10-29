@@ -12,7 +12,7 @@ namespace Trainer_v5
 		private static readonly FeatureGuard _featureGuard;
 
 		public static bool IsGameLoaded => GameSettings.Instance != null && HUD.Instance != null;
-		public static string Version => "5.6.0";
+		public static string Version => "5.6.1";
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
 
@@ -138,6 +138,28 @@ namespace Trainer_v5
 
 		internal static bool IsGameReady(bool requireSelector = false) =>
 			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
+
+		// Scheduled work waits for this. GameReady is raised just before DoneLoading is set (and after pre-simulation for a
+		// new game), so GameReady initialization must not be gated on it.
+		internal static bool IsSimulationReady()
+		{
+			GameSettings game = GameSettings.Instance;
+			SelectorController selector = SelectorController.Instance;
+
+			return SimulationReady(
+				game != null,
+				HUD.Instance != null,
+				selector != null,
+				selector != null && selector.DoneLoading,
+				game != null && game.PreSimActive,
+				game != null && game.PreSimFinished,
+				TimeOfDay.Instance != null);
+		}
+
+		internal static bool SimulationReady(bool hasGame, bool hasHud, bool hasSelector, bool doneLoading, bool preSimActive, bool preSimFinished, bool hasClock)
+		{
+			return hasGame && hasHud && hasSelector && hasClock && doneLoading && !preSimActive && !preSimFinished;
+		}
 
 		// For user-triggered actions: checks readiness before any game manager is touched and says why nothing happened.
 		internal static bool RequireGameReady(string action, bool requireSelector = false)

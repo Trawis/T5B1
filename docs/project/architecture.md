@@ -68,6 +68,13 @@ bidder). The game constructs every `ServerDeal` with `Request` false and only
 client, `PerPower`, validity and server registration are untouched. It is
 idempotent and not verified in the game.
 
+Scheduled work (every trigger, toggle transitions and the minute poll) runs only
+while `Helpers.IsSimulationReady()`: the singletons exist,
+`SelectorController.DoneLoading` is set and pre-simulation is neither running
+nor finishing. Events raised before that are dropped, not replayed. `GameReady`
+initialization is not gated, because the game raises `GameReady` just before it
+sets `DoneLoading` (and after pre-simulation for a new game).
+
 Scheduled features are rows in `FeatureRegistry`: an id, the setting that
 gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
 trigger in registration order, each through `Helpers.TryExecute`. Triggers are
@@ -226,7 +233,7 @@ writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
-A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
+A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use. The game calls `Main.Deserialize` only for an active mod whose entry is in the save, so `SettingsSession` also notices a game (by its `GameSettings` instance id) that never received a full load, at game ready and on activation, and applies its own `ModData` entry or the defaults; reactivating in the same game keeps the values in use.
 `ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`, `ReduceExpansionCost`, `DisableSkillDecay` and the old per-save `Experimental` are
 retired (`RetiredSettingsTests`): they are declared with `SettingKeys.Retired(...)`, which reserves the name and keeps
 the declaration but leaves the key out of `Helpers.Settings`, `Serialize` and `Deserialize` (#439). New saves do not

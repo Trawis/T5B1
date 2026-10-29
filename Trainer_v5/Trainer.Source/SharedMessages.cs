@@ -59,6 +59,11 @@ namespace Trainer_v5
 			return "SelectEmployeeFirst".LocDef("Select an employee first (select one employee in the Employees window, then close and reopen this window).");
 		}
 
+		public static string SelectEmployeesError()
+		{
+			return "SelectEmployeesError".LocDef("Select one or more employees.");
+		}
+
 		public static string SelectOneEmployee()
 		{
 			return "SelectOneEmployee".LocDef("Select exactly one employee in the Employees window for this action.");

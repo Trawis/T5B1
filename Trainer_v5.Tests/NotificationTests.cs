@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
@@ -81,6 +82,24 @@ namespace Trainer_v5.Tests
 			var body = SourceCode.Body(SourceCode.Read("Notification.cs"), "public static void Popup(");
 
 			Assert.Contains(", PopupManager.PopupIDs.None);", body);
+		}
+
+		// Sound 0 is NotificationSound.Issue, which the game files under Issues; Neutral is a dismissable Message.
+		[Fact]
+		public void ThePopupNamesANonIssueSoundAndKeepsTheOtherArguments()
+		{
+			var body = SourceCode.Body(SourceCode.Read("Notification.cs"), "public static void Popup(");
+
+			Assert.Contains("HUD.Instance.AddPopupMessage(WithPrefix(msg), \"Cogs\", PopupManager.PopUpAction.None, 0, PopupManager.NotificationSound.Neutral, 0f, PopupManager.PopupIDs.None);", body);
+			Assert.DoesNotContain("NotificationSound.Issue", body);
+		}
+
+		[Fact]
+		public void TheNamedGameConstantsHaveTheValuesTheRoutingRelies()
+		{
+			Assert.Equal(0, Convert.ToInt32(typeof(PopupManager.NotificationSound).GetField("Issue").GetRawConstantValue()));
+			Assert.Equal(3, Convert.ToInt32(typeof(PopupManager.NotificationSound).GetField("Neutral").GetRawConstantValue()));
+			Assert.Equal(-1, Convert.ToInt32(typeof(PopupManager.PopupIDs).GetField("None").GetRawConstantValue()));
 		}
 
 		[Fact]

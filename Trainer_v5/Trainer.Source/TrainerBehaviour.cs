@@ -38,11 +38,14 @@ namespace Trainer_v5
 			if (SceneManager.GetActiveScene().name == "MainScene")
 			{
 				SubscribeToEvents();
+				// A game loaded while the mod was inactive never reached Main.Deserialize.
+				Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
 			}
 		}
 
 		public override void OnDeactivate()
 		{
+			SettingsSession.Deactivated();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
 			UnsubscribeFromSceneEvents();
@@ -69,6 +72,7 @@ namespace Trainer_v5
 					case SceneRoute.MainScene:
 						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
+						SettingsSession.BeginGame();
 						ResetPerGameState();
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
@@ -97,6 +101,23 @@ namespace Trainer_v5
 			ResetPerGameState();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
+		}
+
+		// The first time this game is seen without a full load having given it its settings, they come from its own
+		// ModData or the declared defaults, never from the previous game.
+		private void EstablishSettingsForGame()
+		{
+			GameSettings game = Settings;
+			if (game == null || !SettingsSession.NeedsDefaults(game.GetInstanceID()))
+			{
+				return;
+			}
+
+			Main.ApplyForGame(game.ModData);
+			if (LoggingOptions.DebugEnabled)
+			{
+				"settings established for a game without a trainer load".LogDebug();
+			}
 		}
 
 		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
@@ -178,6 +199,8 @@ namespace Trainer_v5
 				"game ready".LogDebug();
 			}
 
+			Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
+
 			if (!ExperimentalOptions.Enabled)
 			{
 				ExperimentalToggles.TurnOffAll(Helpers.Settings);
@@ -197,11 +220,21 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Hour);
 		}
 
 		private void OnMinutePassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Minute);
 		}
 
@@ -233,11 +266,21 @@ namespace Trainer_v5
 		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Day);
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Month);
 		}
 
@@ -256,6 +299,15 @@ namespace Trainer_v5
 			if (Input.GetKeyDown(KeyCode.F2))
 			{
 				Main.CloseSettingsWindow();
+			}
+
+			// The game reads MaxFloor while it loads the rooms, before the simulation is ready.
+			Helpers.TryExecute("MaxFloor", ApplyMaxFloorOnce);
+
+			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
 			}
 
 			if (!EmployeeFeatures.SpecializationsLoaded && Settings.MyCompany != null)
@@ -277,14 +329,17 @@ namespace Trainer_v5
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
 
-		private void ApplyProcessStaticSettings()
+		private void ApplyMaxFloorOnce()
 		{
 			if (!_oneTimeSettingsApplied)
 			{
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
 				_oneTimeSettingsApplied = true;
 			}
+		}
 
+		private void ApplyProcessStaticSettings()
+		{
 			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{

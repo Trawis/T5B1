@@ -6,6 +6,17 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [5.6.1] - 2026-10-29
+
+- Fixed Trainer success messages being added to the Issues panel, where they
+  could not be dismissed; they now show in Messages.
+- Fixed trainer settings carrying over into a game whose save has no trainer
+  data; such a game now starts from its own or default settings.
+- Fixed trainer features running while a game was still loading or in
+  pre-simulation.
+- Fixed the Trait, Demand, LeadSpec and Skill editors opening without a valid
+  employee selected; they now ask you to select one or more employees.
+
 ## [5.6.0] - 2026-10-21
 
 - Added a Max Followers (Old) button.
