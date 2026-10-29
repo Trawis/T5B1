@@ -226,7 +226,7 @@ writes the same string keys. Code references settings through `SettingKeys`
 (a misspelled setting fails to compile) rather than raw strings. The key string
 passed when declaring a setting is the save-file key and must never change; a
 new setting is one new declaration there plus its UI and behavior.
-A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use.
+A full load takes every key the save lacks from its declared default, so settings never carry over from the previously loaded save; building and company loads keep the values in use. The game calls `Main.Deserialize` only for an active mod whose entry is in the save, so `SettingsSession` also notices a game (by its `GameSettings` instance id) that never received a full load, at game ready and on activation, and applies its own `ModData` entry or the defaults; reactivating in the same game keeps the values in use.
 `ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`, `ReduceExpansionCost`, `DisableSkillDecay` and the old per-save `Experimental` are
 retired (`RetiredSettingsTests`): they are declared with `SettingKeys.Retired(...)`, which reserves the name and keeps
 the declaration but leaves the key out of `Helpers.Settings`, `Serialize` and `Deserialize` (#439). New saves do not

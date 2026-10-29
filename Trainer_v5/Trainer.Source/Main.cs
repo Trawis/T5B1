@@ -10,7 +10,9 @@ namespace Trainer_v5
 	{
 		private ModController.DLLMod _mod;
 
-		public override string Name => "TrainerByTrawis";
+		internal const string ModName = "TrainerByTrawis";
+
+		public override string Name => ModName;
 		public static Button TrainerButton { get; set; }
 
 		public override void Initialize(ModController.DLLMod parentMod)
@@ -112,9 +114,25 @@ namespace Trainer_v5
 
 		public override void Deserialize(WriteDictionary data, GameReader.LoadMode mode)
 		{
-			// A full load replaces the whole game, so a key the save lacks takes its declared default; building and
-			// company loads are partial and keep the values already in use.
 			var isFullLoad = mode == GameReader.LoadMode.Full;
+			ApplySaved(data, isFullLoad);
+			if (isFullLoad)
+			{
+				SettingsSession.FullLoadApplied();
+			}
+		}
+
+		// For a game the game did not call Deserialize for: its trainer entry if ModData has one, else the declared defaults.
+		internal static void ApplyForGame(WriteDictionary modData)
+		{
+			WriteDictionary saved = modData == null ? null : modData.Get<WriteDictionary>(ModName, null);
+			ApplySaved(saved ?? new WriteDictionary(), true);
+		}
+
+		// A full load replaces the whole game, so a key the save lacks takes its declared default; building and
+		// company loads are partial and keep the values already in use.
+		internal static void ApplySaved(WriteDictionary data, bool isFullLoad)
+		{
 			var toggleDefaults = SettingKeys.CreateToggleDefaults();
 			var settings = Helpers.Settings.Keys.ToList();
 			foreach (var setting in settings)

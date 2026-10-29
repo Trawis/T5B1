@@ -38,11 +38,14 @@ namespace Trainer_v5
 			if (SceneManager.GetActiveScene().name == "MainScene")
 			{
 				SubscribeToEvents();
+				// A game loaded while the mod was inactive never reached Main.Deserialize.
+				Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
 			}
 		}
 
 		public override void OnDeactivate()
 		{
+			SettingsSession.Deactivated();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
 			UnsubscribeFromSceneEvents();
@@ -69,6 +72,7 @@ namespace Trainer_v5
 					case SceneRoute.MainScene:
 						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
+						SettingsSession.BeginGame();
 						ResetPerGameState();
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
@@ -97,6 +101,23 @@ namespace Trainer_v5
 			ResetPerGameState();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
+		}
+
+		// The first time this game is seen without a full load having given it its settings, they come from its own
+		// ModData or the declared defaults, never from the previous game.
+		private void EstablishSettingsForGame()
+		{
+			GameSettings game = Settings;
+			if (game == null || !SettingsSession.NeedsDefaults(game.GetInstanceID()))
+			{
+				return;
+			}
+
+			Main.ApplyForGame(game.ModData);
+			if (LoggingOptions.DebugEnabled)
+			{
+				"settings established for a game without a trainer load".LogDebug();
+			}
 		}
 
 		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
@@ -177,6 +198,8 @@ namespace Trainer_v5
 			{
 				"game ready".LogDebug();
 			}
+
+			Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
 
 			if (!ExperimentalOptions.Enabled)
 			{
