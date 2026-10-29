@@ -220,11 +220,21 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Hour);
 		}
 
 		private void OnMinutePassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Minute);
 		}
 
@@ -256,11 +266,21 @@ namespace Trainer_v5
 		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Day);
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Month);
 		}
 
@@ -279,6 +299,15 @@ namespace Trainer_v5
 			if (Input.GetKeyDown(KeyCode.F2))
 			{
 				Main.CloseSettingsWindow();
+			}
+
+			// The game reads MaxFloor while it loads the rooms, before the simulation is ready.
+			Helpers.TryExecute("MaxFloor", ApplyMaxFloorOnce);
+
+			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
 			}
 
 			if (!EmployeeFeatures.SpecializationsLoaded && Settings.MyCompany != null)
@@ -300,14 +329,17 @@ namespace Trainer_v5
 			GetDispatcher().Run(FeatureTrigger.Frame);
 		}
 
-		private void ApplyProcessStaticSettings()
+		private void ApplyMaxFloorOnce()
 		{
 			if (!_oneTimeSettingsApplied)
 			{
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
 				_oneTimeSettingsApplied = true;
 			}
+		}
 
+		private void ApplyProcessStaticSettings()
+		{
 			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{
