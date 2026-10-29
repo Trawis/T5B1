@@ -197,11 +197,21 @@ namespace Trainer_v5
 
 		private void OnHourPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Hour);
 		}
 
 		private void OnMinutePassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Minute);
 		}
 
@@ -233,11 +243,21 @@ namespace Trainer_v5
 		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Day);
 		}
 
 		private void OnMonthPassed(object obj, EventArgs args)
 		{
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
+			}
+
 			GetDispatcher().Run(FeatureTrigger.Month);
 		}
 
@@ -256,6 +276,12 @@ namespace Trainer_v5
 			if (Input.GetKeyDown(KeyCode.F2))
 			{
 				Main.CloseSettingsWindow();
+			}
+
+			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
+			if (!Helpers.IsSimulationReady())
+			{
+				return;
 			}
 
 			if (!EmployeeFeatures.SpecializationsLoaded && Settings.MyCompany != null)

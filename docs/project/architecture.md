@@ -68,6 +68,8 @@ bidder). The game constructs every `ServerDeal` with `Request` false and only
 client, `PerPower`, validity and server registration are untouched. It is
 idempotent and not verified in the game.
 
+Scheduled work (every trigger, toggle transitions and the minute poll) runs only while `Helpers.IsSimulationReady()`: the singletons exist, `SelectorController.DoneLoading` is set and pre-simulation is neither running nor finishing. Events raised before that are dropped, not replayed. `GameReady` initialization is not gated, because the game raises `GameReady` just before it sets `DoneLoading` (and after pre-simulation for a new game).
+
 Scheduled features are rows in `FeatureRegistry`: an id, the setting that
 gates it, a trigger and the action. `FeatureDispatcher` runs the rows for a
 trigger in registration order, each through `Helpers.TryExecute`. Triggers are
