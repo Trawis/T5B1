@@ -205,6 +205,8 @@ ProductNotFound			"Trainer: Product {0} not found!"
 ProductNameAmbiguous			"Trainer: Product name {0} is ambiguous (owned by: {1}). Rename the product or use a unique name."
 CompanyNotFound			"Trainer: Company {0} not found!"
 CompanyNameAmbiguous			"Trainer: Company name {0} is ambiguous. Rename the company or use a unique name."
+ProductChangedNothingEdited			"The product is no longer available. Nothing was changed."
+CompanyChangedNothingEdited			"The company is no longer available. Nothing was changed."
 ProductNotInBeta			"Trainer: No product named {0} is in beta!"
 
 #Notifications

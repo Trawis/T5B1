@@ -47,9 +47,11 @@ namespace Trainer_v5.Tests
 		public void TheConfirmationChecksTheCompanyAgainBeforeSettingTheFlag()
 		{
 			var body = Member("private static void ConfirmForceBankrupt(");
+			var live = Member("private static bool IsLiveAICompany(");
 
-			Assert.Contains("Companies.TryGetValue(company.ID", body);
-			Assert.Contains("IsBankruptTarget(company)", body);
+			Assert.Contains("IsLiveAICompany(company)", body);
+			Assert.Contains("Companies.TryGetValue(company.ID", live);
+			Assert.Contains("IsBankruptTarget(company)", live);
 			Assert.Contains("!company.Bankrupt", body);
 			Assert.DoesNotContain("= !", body);
 			Assert.DoesNotContain("answer", body);

@@ -96,12 +96,9 @@ namespace Trainer_v5
 
 		internal static void TakeoverCompanyAction(string input)
 		{
-			var simulatedCompany = Settings.simulation.Companies
-				.FirstOrDefault(simCompany => simCompany.Value.Name == input).Value;
-
+			var simulatedCompany = FindCompanyByName(input);
 			if (simulatedCompany == null)
 			{
-				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
@@ -131,12 +128,9 @@ namespace Trainer_v5
 
 		internal static void SubDCompanyAction(string input)
 		{
-			SimulatedCompany Company =
-				Settings.simulation.Companies.FirstOrDefault(company => company.Value.Name == input).Value;
-
+			SimulatedCompany Company = FindCompanyByName(input);
 			if (Company == null)
 			{
-				Notification.ShowError(SharedMessages.CompanyNotFound(input));
 				return;
 			}
 
@@ -223,6 +217,12 @@ namespace Trainer_v5
 			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), SharedMessages.AddAIFundsTitle(), "100000",
 				amount =>
 				{
+					if (!IsLiveAICompany(company))
+					{
+						Notification.ShowError("CompanyChangedNothingEdited".LocDef("The company is no longer available. Nothing was changed."));
+						return;
+					}
+
 					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
 					Notification.Popup(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name));
 				}, 0, int.MaxValue);
@@ -461,12 +461,36 @@ namespace Trainer_v5
 		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
 		private static void ConfirmForceBankrupt(SimulatedCompany company)
 		{
-			SimulatedCompany current;
-			bool stillThere = Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company;
-			if (stillThere && IsBankruptTarget(company) && !company.Bankrupt)
+			if (IsLiveAICompany(company) && !company.Bankrupt)
 			{
 				company.Bankrupt = true;
 			}
+		}
+
+		// Still the same object in the current game's simulation and still not the player's.
+		private static bool IsLiveAICompany(SimulatedCompany company)
+		{
+			SimulatedCompany current;
+			return Settings != null && Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company && IsBankruptTarget(company);
+		}
+
+		// Exactly one company with the name, or null after telling the player that none or several have it.
+		private static SimulatedCompany FindCompanyByName(string input)
+		{
+			List<SimulatedCompany> matches = Settings.simulation.Companies.Values.Where(company => company.Name == input).ToList();
+			if (matches.Count == 0)
+			{
+				Notification.ShowError(SharedMessages.CompanyNotFound(input));
+				return null;
+			}
+
+			if (matches.Count > 1)
+			{
+				Notification.ShowError(SharedMessages.CompanyNameAmbiguous(input));
+				return null;
+			}
+
+			return matches[0];
 		}
 
 		private static float GetDefaultISPCostFactor()
