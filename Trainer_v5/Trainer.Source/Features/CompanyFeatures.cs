@@ -30,15 +30,15 @@ namespace Trainer_v5
 			if (!Helpers.RequireGameReady("Clear all loans"))
 				return;
 
-			int count = Settings.Loans.Count;
-			if (count == 0)
+			List<Loan> loans = new List<Loan>(Settings.Loans);
+			if (loans.Count == 0)
 			{
 				Notification.ShowInfo("NoLoansToClear".LocDef("There are no loans to clear."));
 				return;
 			}
 
 			GameSettings game = Settings;
-			Confirmation.Ask("Clear all loans", string.Format("ClearLoansConfirm".LocDef("Remove all {0} loan(s) without repaying them?\nNo payment is made, the remaining payments are cancelled and this cannot be undone."), count), () => ApplyClearLoans(game, count));
+			Confirmation.Ask("Clear all loans", string.Format("ClearLoansConfirm".LocDef("Remove all {0} loan(s) without repaying them?\nNo payment is made, the remaining payments are cancelled and this cannot be undone."), loans.Count), () => ApplyClearLoans(game, loans));
 		}
 
 		internal static void AIBankrupt()
@@ -46,15 +46,15 @@ namespace Trainer_v5
 			if (!Helpers.RequireGameReady("AI Bankrupt All"))
 				return;
 
-			int count = FindAllBankruptTargets().Count;
-			if (count == 0)
+			List<SimulatedCompany> companies = FindAllBankruptTargets();
+			if (companies.Count == 0)
 			{
 				Notification.ShowInfo("NoAICompaniesToBankrupt".LocDef("There is no AI company left to bankrupt."));
 				return;
 			}
 
 			GameSettings game = Settings;
-			Confirmation.Ask("AI Bankrupt All", string.Format("BankruptAllConfirm".LocDef("Bankrupt all {0} AI company(ies)?\nThe game cancels their deals and removes them from the market. This cannot be undone.\nYour own company and its subsidiaries are not affected."), count), () => ApplyAIBankrupt(game, count));
+			Confirmation.Ask("AI Bankrupt All", string.Format("BankruptAllConfirm".LocDef("Bankrupt all {0} AI company(ies)?\nThe game cancels their deals and removes them from the market. This cannot be undone.\nYour own company and its subsidiaries are not affected."), companies.Count), () => ApplyAIBankrupt(game, companies));
 		}
 
 		internal static void UnlockAllSpace()
@@ -400,7 +400,7 @@ namespace Trainer_v5
 		}
 
 		// The dialog stays open while the game runs, so game and targets are re-checked first.
-		private static void ApplyAIBankrupt(GameSettings game, int shownCount)
+		private static void ApplyAIBankrupt(GameSettings game, List<SimulatedCompany> shown)
 		{
 			if (!ReferenceEquals(game, Settings))
 			{
@@ -409,7 +409,7 @@ namespace Trainer_v5
 			}
 
 			List<SimulatedCompany> targets = FindAllBankruptTargets();
-			if (!Confirmation.IsScopeUnchanged(shownCount, targets.Count))
+			if (!Confirmation.IsSameTargets(shown, targets))
 			{
 				Confirmation.ShowScopeChanged();
 				return;
@@ -421,9 +421,9 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void ApplyClearLoans(GameSettings game, int shownCount)
+		private static void ApplyClearLoans(GameSettings game, List<Loan> shown)
 		{
-			if (!ReferenceEquals(game, Settings) || !Confirmation.IsScopeUnchanged(shownCount, Settings.Loans.Count))
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsSameTargets(shown, Settings.Loans))
 			{
 				Confirmation.ShowScopeChanged();
 				return;

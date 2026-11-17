@@ -37,6 +37,19 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void OnlyTheSameTargetsInAnyOrderAreConfirmed()
+		{
+			object a = new object(), b = new object(), c = new object();
+			var shown = new List<object> { a, b };
+
+			Assert.True(Confirmation.IsSameTargets(shown, new List<object> { b, a }));
+			Assert.False(Confirmation.IsSameTargets(shown, new List<object> { a, c }));
+			Assert.False(Confirmation.IsSameTargets(shown, new List<object> { a }));
+			Assert.False(Confirmation.IsSameTargets(shown, new List<object> { a, b, c }));
+			Assert.False(Confirmation.IsSameTargets(new List<object>(), new List<object>()));
+		}
+
+		[Fact]
 		public void TheHelperUsesTheNativeYesNoDialogWithoutQuestionIdOrPause()
 		{
 			var source = SourceCode.Read("Confirmation.cs");
@@ -78,10 +91,10 @@ namespace Trainer_v5.Tests
 			var loans = Company("private static void ApplyClearLoans");
 			var rewards = Company("private static void ApplyUnlockAndClaimAllRewards");
 
-			SourceCode.AssertInOrder(bankrupt, "ReferenceEquals(game, Settings)", "IsScopeUnchanged", "the game, then the scope");
-			SourceCode.AssertInOrder(bankrupt, "IsScopeUnchanged", "Bankrupt = true", "the scope is checked before the flag");
-			SourceCode.AssertInOrder(loans, "ReferenceEquals(game, Settings)", "IsScopeUnchanged", "the game, then the scope");
-			SourceCode.AssertInOrder(loans, "IsScopeUnchanged", ".Clear()", "the scope is checked before the loans go");
+			SourceCode.AssertInOrder(bankrupt, "ReferenceEquals(game, Settings)", "IsSameTargets", "the game, then the scope");
+			SourceCode.AssertInOrder(bankrupt, "IsSameTargets", "Bankrupt = true", "the scope is checked before the flag");
+			SourceCode.AssertInOrder(loans, "ReferenceEquals(game, Settings)", "IsSameTargets", "the game, then the scope");
+			SourceCode.AssertInOrder(loans, "IsSameTargets", ".Clear()", "the scope is checked before the loans go");
 			SourceCode.AssertInOrder(rewards, "ReferenceEquals(game, Settings)", "IsScopeUnchanged", "the game, then the scope");
 			SourceCode.AssertInOrder(rewards, "IsScopeUnchanged", "AddRange", "the scope is checked before the rewards are set");
 		}
