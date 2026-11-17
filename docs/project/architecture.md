@@ -475,8 +475,10 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   prefix, and bulk actions show the count taken when the dialog opened; with a
   scope of zero they only show a message. On Yes the game is checked again
   (`Helpers.RequireGameReady`, same `GameSettings` instance) and the scope is
-  re-resolved (`Confirmation.IsScopeUnchanged`); if it changed nothing is applied
-  and the player is told. Adding a confirmation means updating this list and
+  re-resolved: AI Bankrupt All and Clear all loans need exactly the companies or
+  loans shown (`Confirmation.IsSameTargets`), rewards the same count
+  (`Confirmation.IsScopeUnchanged`); if it changed nothing is applied and the
+  player is told. Adding a confirmation means updating this list and
   `ConfirmationTests`, which pins the exact set.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and
