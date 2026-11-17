@@ -39,64 +39,67 @@ namespace Trainer_v5
 			Notification.ShowInfo(StockSale.Summary(Products.Length, total));
 		}
 
-		internal static void SetProductPriceAction(float price)
+		internal static void SetProductPriceAction(SoftwareProduct product, float price)
 		{
-			string error;
-			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
-
-			if (Product == null)
+			if (!IsLiveProduct(product))
 			{
-				Notification.ShowError(error);
+				Notification.ShowError(SharedMessages.ProductChangedNothingEdited());
 				return;
 			}
 
-			Product.Price = price;
-			Notification.Popup(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), Product.Name));
+			product.Price = price;
+			Notification.Popup(string.Format("ProductPriceSet".LocDef("Trainer: Price for {0} has been setted up!"), product.Name));
 		}
 
 		internal static void SetProductPrice()
 		{
-			InputHelper.RequestFloat("ProductPricePrompt".LocDef("Type product price:"), "ProductPriceTitle".LocDef("Product price"), SetProductPriceAction, 0f, float.MaxValue);
+			SoftwareProduct product = RequireNamedProduct();
+			if (product == null)
+				return;
+
+			InputHelper.RequestFloat("ProductPricePrompt".LocDef("Type product price:"), "ProductPriceTitle".LocDef("Product price"), price => SetProductPriceAction(product, price), 0f, float.MaxValue);
 		}
 
-		internal static void SetProductStockAction(uint stock)
+		internal static void SetProductStockAction(SoftwareProduct product, uint stock)
 		{
-			string error;
-			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
-
-			if (Product == null)
+			if (!IsLiveProduct(product))
 			{
-				Notification.ShowError(error);
+				Notification.ShowError(SharedMessages.ProductChangedNothingEdited());
 				return;
 			}
 
-			Product.PhysicalCopies = stock;
-			Notification.Popup(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), Product.Name));
+			product.PhysicalCopies = stock;
+			Notification.Popup(string.Format("ProductStockSet".LocDef("Trainer: Stock for {0} has been setted up!"), product.Name));
 		}
 
 		internal static void SetProductStock()
 		{
-			InputHelper.RequestUInt("ProductStockPrompt".LocDef("Type product stock:"), "ProductStockTitle".LocDef("Product stock"), "100000", SetProductStockAction);
+			SoftwareProduct product = RequireNamedProduct();
+			if (product == null)
+				return;
+
+			InputHelper.RequestUInt("ProductStockPrompt".LocDef("Type product stock:"), "ProductStockTitle".LocDef("Product stock"), "100000", stock => SetProductStockAction(product, stock));
 		}
 
-		internal static void AddActiveUsersAction(int users)
+		internal static void AddActiveUsersAction(SoftwareProduct product, int users)
 		{
-			string error;
-			SoftwareProduct Product = ResolveProductByName(Helpers.ProductPriceName, out error);
-
-			if (Product == null)
+			if (!IsLiveProduct(product))
 			{
-				Notification.ShowError(error);
+				Notification.ShowError(SharedMessages.ProductChangedNothingEdited());
 				return;
 			}
 
-			Product.Userbase = users;
-			Notification.Popup(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), Product.Name));
+			product.Userbase = users;
+			Notification.Popup(string.Format("ProductUsersSet".LocDef("Trainer: Active users for {0} has been setted up!"), product.Name));
 		}
 
 		internal static void AddActiveUsers()
 		{
-			InputHelper.RequestInt("ProductUsersPrompt".LocDef("Type product active users:"), "ProductUsersTitle".LocDef("Product active users"), "100000", AddActiveUsersAction, 0, int.MaxValue);
+			SoftwareProduct product = RequireNamedProduct();
+			if (product == null)
+				return;
+
+			InputHelper.RequestInt("ProductUsersPrompt".LocDef("Type product active users:"), "ProductUsersTitle".LocDef("Product active users"), "100000", users => AddActiveUsersAction(product, users), 0, int.MaxValue);
 		}
 
 		internal static void ApplyFreePrint()
@@ -144,6 +147,24 @@ namespace Trainer_v5
 			HashSet<int> live = new HashSet<int>();
 			Settings.ProductPrinters.ForEach(p => live.Add(p.GetInstanceID()));
 			_printerSpeeds.Retain(live);
+		}
+
+		// The product is chosen when the action starts, so renaming it while the dialog is open cannot redirect the edit.
+		private static SoftwareProduct RequireNamedProduct()
+		{
+			string error;
+			SoftwareProduct product = ResolveProductByName(Helpers.ProductPriceName, out error);
+			if (product == null)
+			{
+				Notification.ShowError(error);
+			}
+
+			return product;
+		}
+
+		private static bool IsLiveProduct(SoftwareProduct product)
+		{
+			return Settings != null && Settings.simulation.GetAllProducts(false).Contains(product);
 		}
 
 		// Shared by the price, stock and active-users actions; rejects ambiguous names.

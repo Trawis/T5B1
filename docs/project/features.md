@@ -10,7 +10,10 @@ Discord). Switching tabs runs nothing and keeps typed and selected values. On
 the Actions tab the *Product Name Here* input box, first in the Product section,
 supplies the product name for the product actions. Set Product Price, Stock and Active
 Users match the name exactly across every company (player and AI) and report a
-conflict instead of guessing when several products share it; Max Followers,
+conflict instead of guessing when several products share it. The product is
+chosen when the button is pressed, and the value applies only if that product
+still exists. Company names (Takeover, Subsidiary, Add AI Funds, Bankrupt) are
+also matched exactly and refused when ambiguous. Max Followers,
 Max Followers (Old) and Fix Bugs only look at your own company's work items.
 
 ## Buttons

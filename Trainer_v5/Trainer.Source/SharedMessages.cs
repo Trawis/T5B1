@@ -74,6 +74,11 @@ namespace Trainer_v5
 			return "EmployeeChangedNothingEdited".LocDef("The employee changed or is not available. Nothing was edited.");
 		}
 
+		public static string ProductChangedNothingEdited()
+		{
+			return "ProductChangedNothingEdited".LocDef("The product is no longer available. Nothing was changed.");
+		}
+
 		public static string EmployeeChangedPressRefresh()
 		{
 			return "EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh.");
