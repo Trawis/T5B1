@@ -23,7 +23,7 @@ namespace Trainer_v5.Window
 
 			if (Window == null)
 			{
-				Window = CreateWindow();
+				CreateWindow();
 			}
 			else
 			{
@@ -70,10 +70,27 @@ namespace Trainer_v5.Window
 			_allSelected = null;
 		}
 
-		private static GUIWindow CreateWindow()
+		private static void CreateWindow()
 		{
-			var window = UIHelper.SpawnWindow(SharedMessages.EditSkillsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditEmployee", "EditEmployeePanel");
+			// Owned before it is built, so a failure below still leaves nothing behind.
+			Window = UIHelper.SpawnWindow(SharedMessages.EditSkillsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditEmployee", "EditEmployeePanel");
+			var built = false;
+			try
+			{
+				BuildWindow(Window);
+				built = true;
+			}
+			finally
+			{
+				if (!built)
+				{
+					Discard();
+				}
+			}
+		}
 
+		private static void BuildWindow(GUIWindow window)
+		{
 			var firstHeader = FirstColumnHeader();
 			var roleToggles = RoleToggles();
 			var firstFooter = FirstColumnFooter();
@@ -96,8 +113,6 @@ namespace Trainer_v5.Window
 				Constants.ELEMENT_HEIGHT, 0, maxVisibleRows);
 
 			window.MinSize = new Vector2(Constants.X_EMPLOYEESKILLCHANGE_WINDOW, UIHelper.GetColumnWindowHeight(firstColumnHeight, secondColumnHeight, 0));
-
-			return window;
 		}
 
 		private static GameObject[] FirstColumnHeader()

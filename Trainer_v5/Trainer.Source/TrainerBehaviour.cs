@@ -121,19 +121,16 @@ namespace Trainer_v5
 			}
 		}
 
-		// Destroys only what the trainer created; objects the scene already destroyed are skipped.
+		// Destroys only what the trainer created, each part on its own so one failure cannot keep the rest alive.
 		private static void TearDownUI()
 		{
-			Helpers.TryExecute("TearDownUI", () =>
-			{
-				Main.DestroyUIButtons();
-				SettingsWindow.Discard();
-				EmployeesWindowTrainer.Discard();
-				EmployeeTraitChangeWindow.Instance.Discard();
-				EmployeeDemandChangeWindow.Instance.Discard();
-				EmployeeLeadSpecChangeWindow.Instance.Discard();
-				EmployeeSkillChangeWindow.Discard();
-			});
+			Helpers.TryExecute("TearDownTrainerButton", Main.DestroyUIButtons);
+			Helpers.TryExecute("TearDownSettingsWindow", SettingsWindow.Discard);
+			Helpers.TryExecute("TearDownEmployeesToolbar", EmployeesWindowTrainer.Discard);
+			Helpers.TryExecute("TearDownTraitEditor", () => EmployeeTraitChangeWindow.Instance.Discard());
+			Helpers.TryExecute("TearDownDemandEditor", () => EmployeeDemandChangeWindow.Instance.Discard());
+			Helpers.TryExecute("TearDownLeadSpecEditor", () => EmployeeLeadSpecChangeWindow.Instance.Discard());
+			Helpers.TryExecute("TearDownSkillEditor", EmployeeSkillChangeWindow.Discard);
 		}
 
 		// The first time this game is seen without a full load having given it its settings, they come from its own
@@ -237,6 +234,12 @@ namespace Trainer_v5
 			if (!ExperimentalOptions.Enabled)
 			{
 				ExperimentalToggles.TurnOffAll(Helpers.Settings);
+			}
+
+			// HUD.Start, not Awake, sets HUD.Instance, so an activation during loading may have had no HUD to add it to.
+			if (Main.TrainerButton == null)
+			{
+				Helpers.TryExecute("TrainerButton", Main.CreateUIButtons);
 			}
 
 			EmployeesWindowTrainer.Install();

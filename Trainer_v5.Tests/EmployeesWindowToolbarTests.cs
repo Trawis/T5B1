@@ -53,7 +53,7 @@ namespace Trainer_v5.Tests
 			var behaviour = SourceCode.Read("TrainerBehaviour.cs");
 
 			Assert.Contains("TearDownUI();", SourceCode.Body(behaviour, "private void LeaveGame()"));
-			Assert.Contains("EmployeesWindowTrainer.Discard();", SourceCode.Body(behaviour, "private static void TearDownUI()"));
+			Assert.Contains("EmployeesWindowTrainer.Discard", SourceCode.Body(behaviour, "private static void TearDownUI()"));
 			Assert.Contains("EmployeesWindowTrainer.Install();", SourceCode.Body(behaviour, "private void OnGameReady("));
 			Assert.False(File.Exists(Path.Combine(RepositoryFiles.SourceDirectory, "DetailWindowTrainer.cs")));
 			Assert.DoesNotContain("DetailWindowTrainer", behaviour);

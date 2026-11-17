@@ -59,8 +59,24 @@ namespace Trainer_v5.Window
 
 		private void CreateWindow()
 		{
+			// Owned before it is built, so a failure below still leaves nothing behind.
+			_window = UIHelper.SpawnWindow(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
+			var built = false;
+			try
+			{
+				BuildWindow(_window);
+				built = true;
+			}
+			finally
+			{
+				if (!built)
+					Discard();
+			}
+		}
+
+		private void BuildWindow(GUIWindow window)
+		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
 
 			var demands = EmployeeHelper.Demands.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleDemand(t, on)));
@@ -76,7 +92,6 @@ namespace Trainer_v5.Window
 
 			window.SetMinSize(Constants.SECOND_COLUMN - 1, UIHelper.GetColumnWindowHeight(height, 0, 0));
 
-			_window = window;
 			_demandToggles = demands;
 		}
 

@@ -59,8 +59,24 @@ namespace Trainer_v5.Window
 
 		private void CreateWindow()
 		{
+			// Owned before it is built, so a failure below still leaves nothing behind.
+			_window = UIHelper.SpawnWindow(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
+			var built = false;
+			try
+			{
+				BuildWindow(_window);
+				built = true;
+			}
+			finally
+			{
+				if (!built)
+					Discard();
+			}
+		}
+
+		private void BuildWindow(GUIWindow window)
+		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
 
 			var traits = EmployeeHelper.Traits.ToDictionary(t => t, t =>
 				UIFactory.Toggle(t.ToString(), false, on => ToggleTrait(t, on)));
@@ -101,7 +117,6 @@ namespace Trainer_v5.Window
 
 			window.SetMinSize(Constants.FOURTH_COLUMN - 1, UIHelper.GetColumnWindowHeight(UIHelper.GetColumnWindowHeight(col1Height, col2Height, 0), col3Height, 0));
 
-			_window = window;
 			_traitsToggles = traits;
 		}
 

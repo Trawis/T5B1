@@ -61,8 +61,24 @@ namespace Trainer_v5.Window
 
 		private void CreateWindow()
 		{
+			// Owned before it is built, so a failure below still leaves nothing behind.
+			_window = UIHelper.SpawnWindow(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
+			var built = false;
+			try
+			{
+				BuildWindow(_window);
+				built = true;
+			}
+			finally
+			{
+				if (!built)
+					Discard();
+			}
+		}
+
+		private void BuildWindow(GUIWindow window)
+		{
 			var self = this;
-			var window = UIHelper.SpawnWindow(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
 
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes;
 			var toggles = new Dictionary<string, Toggle>();
@@ -108,7 +124,6 @@ namespace Trainer_v5.Window
 			int totalHeight = UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding);
 			window.SetMinSize(totalWidth, totalHeight);
 
-			_window = window;
 			_softwareTypes = softwareTypes;
 			_specToggles = toggles;
 		}

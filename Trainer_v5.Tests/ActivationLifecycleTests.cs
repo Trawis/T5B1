@@ -137,14 +137,13 @@ namespace Trainer_v5.Tests
 		{
 			var tearDown = SourceCode.Body(Behaviour(), "private static void TearDownUI()");
 
-			Assert.Contains("Main.DestroyUIButtons();", tearDown);
-			Assert.Contains("SettingsWindow.Discard();", tearDown);
-			Assert.Contains("EmployeesWindowTrainer.Discard();", tearDown);
-			Assert.Contains("EmployeeTraitChangeWindow.Instance.Discard();", tearDown);
-			Assert.Contains("EmployeeDemandChangeWindow.Instance.Discard();", tearDown);
-			Assert.Contains("EmployeeLeadSpecChangeWindow.Instance.Discard();", tearDown);
-			Assert.Contains("EmployeeSkillChangeWindow.Discard();", tearDown);
-			Assert.Contains("Helpers.TryExecute(\"TearDownUI\"", tearDown);
+			Assert.Contains("Main.DestroyUIButtons", tearDown);
+			Assert.Contains("SettingsWindow.Discard", tearDown);
+			Assert.Contains("EmployeesWindowTrainer.Discard", tearDown);
+			Assert.Contains("EmployeeTraitChangeWindow.Instance.Discard()", tearDown);
+			Assert.Contains("EmployeeDemandChangeWindow.Instance.Discard()", tearDown);
+			Assert.Contains("EmployeeLeadSpecChangeWindow.Instance.Discard()", tearDown);
+			Assert.Contains("EmployeeSkillChangeWindow.Discard", tearDown);
 		}
 
 		[Theory]
