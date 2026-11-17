@@ -27,7 +27,7 @@ Status: `active`, maintained for the current *Software Inc.* Beta 1 branch.
 
 Load a game and press the **Trainer** button (or **F1**; **F2** closes the
 window). The extra buttons above the **Employees** window (including **Skills**) edit
-the one selected employee, or all selected employees in the skill editor. See
+the one selected employee, or every selected employee in the skill editor. See
 [`docs/project/features.md`](docs/project/features.md) for every feature.
 
 ### Experimental options

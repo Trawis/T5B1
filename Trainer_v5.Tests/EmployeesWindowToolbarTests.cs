@@ -78,7 +78,7 @@ namespace Trainer_v5.Tests
 			{
 				var source = SourceCode.Read("Window", file);
 
-				Assert.Contains("EmployeeTarget.TryResolveFor(", source);
+				Assert.Contains(file == "EmployeeSkillChangeWindow.cs" ? "EmployeeTarget.ResolveSelection(" : "EmployeeTarget.TryResolveFor(", source);
 				Assert.DoesNotContain("DetailWindow", source);
 				Assert.DoesNotContain("HUD.Instance", source);
 			}
@@ -109,27 +109,18 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void SkillsNeedsAtLeastOneEmployeeBeforeAnyWindowOperationOrBulkReset()
+		public void SkillsNeedsAtLeastOneEmployeeBeforeAnyWindowOperation()
 		{
 			var show = SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "public static void Show()");
 
 			Assert.StartsWith("public static void Show() { if (!EmployeeTarget.RequireAny())", show);
-			foreach (var operation in new[] { "CreateWindow()", "Window.Toggle()", "_allSelected.isOn = false", "Refresh()" })
+			foreach (var operation in new[] { "CreateWindow()", "Window.Toggle()", "Refresh()" })
 			{
 				SourceCode.AssertInOrder(show, "EmployeeTarget.RequireAny()", operation, "the guard precedes " + operation);
 			}
 
 			Assert.DoesNotContain("RequireOne", show);
 			Assert.DoesNotContain("isOn = true", show);
-		}
-
-		[Fact]
-		public void SkillsKeepsItsFreshBulkChoiceOnEveryValidOpening()
-		{
-			var show = SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "public static void Show()");
-
-			SourceCode.AssertInOrder(show, "Window.Toggle()", "_allSelected.isOn = false", "every valid opening resets bulk to off");
-			SourceCode.AssertInOrder(show, "_allSelected.isOn = false", "Refresh()", "then the scope follows the selection");
 		}
 
 		[Theory]

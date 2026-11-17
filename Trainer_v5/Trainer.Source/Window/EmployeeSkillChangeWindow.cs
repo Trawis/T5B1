@@ -8,10 +8,6 @@ namespace Trainer_v5.Window
 {
 	public class EmployeeSkillChangeWindow : MonoBehaviour
 	{
-		private static EmployeeTarget _target;
-		private static string _targetName;
-		private static Toggle _allSelected;
-
 		public static GUIWindow Window { get; set; }
 
 		public static void Show()
@@ -30,34 +26,28 @@ namespace Trainer_v5.Window
 				Window.Toggle();
 			}
 
-			// Bulk editing is always a fresh choice: every opening starts with the one selected employee.
-			if (_allSelected != null)
-			{
-				_allSelected.isOn = false;
-			}
-
 			Refresh();
 		}
 
+		// The title follows the Employees window selection; each write captures that selection again.
 		public static void Refresh()
 		{
-			TargetSource source;
-			if (!EmployeeTarget.TryResolveFor(Window, out _target, out source))
+			var window = Window;
+			if (window == null || !window.Shown)
 			{
 				return;
 			}
 
-			_targetName = EmployeeTarget.Describe(_target, source);
-			UpdateScope();
+			var selection = EmployeeTarget.ResolveSelection();
+			window.SetTitle(selection.Count == 1
+				? SharedMessages.EditSkillsTitle(selection[0].Employee.Name)
+				: string.Format("EditSkillsSelectedTitle".LocDef("Edit skills for {0} selected employee(s)"), selection.Count));
 		}
 
 		// The window's toggles are bound to the specialization list of one game, so both go together.
 		public static void Reset()
 		{
 			Window = null;
-			_target = null;
-			_targetName = null;
-			_allSelected = null;
 		}
 
 		private static GUIWindow CreateWindow()
@@ -92,12 +82,9 @@ namespace Trainer_v5.Window
 
 		private static GameObject[] FirstColumnHeader()
 		{
-			_allSelected = UIFactory.Toggle(ScopeLabel(0), false, isOn => UpdateScope());
-
 			return new[]
 			{
-				UIFactory.Label("RolesLabel".LocDef("Roles")).gameObject,
-				_allSelected.gameObject
+				UIFactory.Label("RolesLabel".LocDef("Roles")).gameObject
 			};
 		}
 
@@ -123,8 +110,7 @@ namespace Trainer_v5.Window
 		{
 			return new[]
 			{
-				UIFactory.Label("SpecializationsLabel".LocDef("Specializations")).gameObject,
-				UIFactory.EmptyBox().gameObject
+				UIFactory.Label("SpecializationsLabel".LocDef("Specializations")).gameObject
 			};
 		}
 
@@ -136,57 +122,17 @@ namespace Trainer_v5.Window
 				.ToArray();
 		}
 
-		private static string ScopeLabel(int selectedCount)
-		{
-			return string.Format("SkillScopeAllSelected".LocDef("All selected ({0})"), selectedCount);
-		}
-
-		private static void UpdateScope()
-		{
-			var window = Window;
-			if (window == null || _allSelected == null)
-			{
-				return;
-			}
-
-			var selectedCount = EmployeeTarget.ResolveSelection().Count;
-			_allSelected.GetComponentInChildren<Text>().text = ScopeLabel(selectedCount);
-
-			var title = _allSelected.isOn
-				? string.Format("EditSkillsSelectedTitle".LocDef("Edit skills for {0} selected employee(s)"), selectedCount)
-				: SharedMessages.EditSkillsTitle(_targetName);
-			window.SetTitle(title);
-		}
-
 		// The employees the next write may touch, captured at the click; null after the error shown for an empty choice.
 		private static List<EmployeeTarget> CaptureTargets()
 		{
-			var allSelected = _allSelected != null && _allSelected.isOn;
-			var selection = allSelected ? EmployeeTarget.ResolveSelection() : new List<EmployeeTarget>();
-			var viewedIsValid = _target != null && _target.IsStillValid();
-
-			switch (SkillEdit.Decide(allSelected, viewedIsValid, selection.Count))
-			{
-				case SkillTargets.Selection:
-					return selection;
-				case SkillTargets.Viewed:
-					return new List<EmployeeTarget> { _target };
-			}
-
-			if (allSelected)
+			var targets = EmployeeTarget.ResolveSelection();
+			if (targets.Count == 0)
 			{
 				Notification.ShowError(SharedMessages.SelectEmployeesError());
-			}
-			else if (_target == null)
-			{
-				Notification.ShowError(SharedMessages.SelectEmployeeFirst());
-			}
-			else
-			{
-				Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
+				return null;
 			}
 
-			return null;
+			return targets;
 		}
 
 		private static List<Employee.EmployeeRole> CaptureRoles()

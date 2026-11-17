@@ -440,10 +440,9 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   the world selection is never consulted), never the first of several. A deferred dialog re-checks
   that the same live employee is still there before writing.
 - Skills (`EmployeeSkillChangeWindow`, #450) is opened from the Employees window
-  and edits the one selected employee, or with its "All selected" option every live
-  selected employee (`EmployeeTarget.ResolveSelection`), captured at the click.
-  Each write re-checks its target and skips stale ones, reporting how many of
-  them were edited. The option is off on every opening. The role and
+  and edits every live selected employee (`EmployeeTarget.ResolveSelection`),
+  captured at the click. Each write re-checks its target and skips stale ones,
+  reporting how many of them were edited. The role and
   specialization choices stay in `Helpers.RolesList`/`SpecializationsList`.
 - Founder (`FounderToggle`, #190) flips only `Employee.Founder` after a Yes/No
   confirmation; the game treats a founder as unpaid (`Actor.WorksForFree`) and disables
