@@ -30,6 +30,14 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
+		public void Discard()
+		{
+			if (_window != null)
+				UnityEngine.Object.Destroy(_window.gameObject);
+			_window = null;
+			_target = null;
+		}
+
 		public void Refresh()
 		{
 			var window = _window;

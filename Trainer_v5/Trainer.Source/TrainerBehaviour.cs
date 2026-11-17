@@ -30,8 +30,10 @@ namespace Trainer_v5
 		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
 		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
 
+		// The game calls this before it enables the behaviour and before it saves the Active setting.
 		public override void OnActivate()
 		{
+			TrainerLifecycle.Activate();
 			SubscribeToSceneEvents();
 
 			// No sceneLoaded event fires on reactivation inside MainScene, so subscribe directly.
@@ -40,11 +42,15 @@ namespace Trainer_v5
 				SubscribeToEvents();
 				// A game loaded while the mod was inactive never reached Main.Deserialize.
 				Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
+				Helpers.TryExecute("InstallUI", InstallForRunningGame);
 			}
 		}
 
+		// The game calls this before it disables the behaviour, so the lifecycle flag is what stops the callbacks.
 		public override void OnDeactivate()
 		{
+			TrainerLifecycle.Deactivate();
+			TearDownUI();
 			SettingsSession.Deactivated();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
@@ -73,6 +79,8 @@ namespace Trainer_v5
 						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
 						SettingsSession.BeginGame();
+						TrainerLifecycle.NewGame();
+						TearDownUI();
 						ResetPerGameState();
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
@@ -91,16 +99,41 @@ namespace Trainer_v5
 
 		private void LeaveGame()
 		{
-			if (Main.TrainerButton != null)
-			{
-				Destroy(Main.TrainerButton.gameObject);
-				Main.TrainerButton = null;
-			}
-
-			EmployeesWindowTrainer.Reset();
+			TrainerLifecycle.NewGame();
+			TearDownUI();
 			ResetPerGameState();
 			_toggleStates.Reset();
 			UnsubscribeFromEvents();
+		}
+
+		// Activation inside a running game gets no sceneLoaded and, once the game is ready, no GameReady either.
+		private void InstallForRunningGame()
+		{
+			TearDownUI();
+			if (HUD.Instance != null)
+			{
+				Main.CreateUIButtons();
+			}
+
+			if (Helpers.IsSimulationReady())
+			{
+				OnGameReady(this, EventArgs.Empty);
+			}
+		}
+
+		// Destroys only what the trainer created; objects the scene already destroyed are skipped.
+		private static void TearDownUI()
+		{
+			Helpers.TryExecute("TearDownUI", () =>
+			{
+				Main.DestroyUIButtons();
+				SettingsWindow.Discard();
+				EmployeesWindowTrainer.Discard();
+				EmployeeTraitChangeWindow.Instance.Discard();
+				EmployeeDemandChangeWindow.Instance.Discard();
+				EmployeeLeadSpecChangeWindow.Instance.Discard();
+				EmployeeSkillChangeWindow.Discard();
+			});
 		}
 
 		// The first time this game is seen without a full load having given it its settings, they come from its own
@@ -286,7 +319,7 @@ namespace Trainer_v5
 
 		private void Update()
 		{
-			if (!isActiveAndEnabled || !Helpers.IsGameLoaded)
+			if (!isActiveAndEnabled || !TrainerLifecycle.Active || !Helpers.IsGameLoaded)
 			{
 				return;
 			}

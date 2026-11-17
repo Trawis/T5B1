@@ -51,6 +51,16 @@ namespace Trainer_v5.Window
 			UpdateScope();
 		}
 
+		public static void Discard()
+		{
+			if (Window != null)
+			{
+				Destroy(Window.gameObject);
+			}
+
+			Reset();
+		}
+
 		// The window's toggles are bound to the specialization list of one game, so both go together.
 		public static void Reset()
 		{
@@ -241,7 +251,7 @@ namespace Trainer_v5.Window
 				return;
 			}
 
-			WindowManager.SpawnInputDialog(
+			InputHelper.RequestText(
 				"StarsPrompt".LocDef("By how many stars do you want to change the specialization?\nAllowed: -3, -2, -1, 1, 2, 3 (a specialization stays between 0 and 3 stars)"),
 				"StarsTitle".LocDef("Stars amount"),
 				"3",

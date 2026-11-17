@@ -12,7 +12,7 @@ namespace Trainer_v5
 			float min,
 			float max)
 		{
-			WindowManager.SpawnInputDialog(prompt, title,
+			RequestText(prompt, title,
 				string.Empty,
 				input =>
 				{
@@ -27,7 +27,7 @@ namespace Trainer_v5
 			string title,
 			Action<float> onFinish)
 		{
-			WindowManager.SpawnInputDialog(prompt, title, string.Empty,
+			RequestText(prompt, title, string.Empty,
 				input =>
 				{
 					var val = TryParseAndValidate<float>(input, ParseFloat);
@@ -44,7 +44,7 @@ namespace Trainer_v5
 			int min,
 			int max)
 		{
-			WindowManager.SpawnInputDialog(prompt, title,
+			RequestText(prompt, title,
 				defaultValue,
 				input =>
 				{
@@ -60,7 +60,7 @@ namespace Trainer_v5
 			string defaultValue,
 			Action<int> onFinish)
 		{
-			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
+			RequestText(prompt, title, defaultValue,
 				input =>
 				{
 					var val = TryParseAndValidate<int>(input, ParseInt);
@@ -77,7 +77,7 @@ namespace Trainer_v5
 			uint min,
 			uint max)
 		{
-			WindowManager.SpawnInputDialog(prompt, title,
+			RequestText(prompt, title,
 				defaultValue,
 				input =>
 				{
@@ -93,13 +93,19 @@ namespace Trainer_v5
 			string defaultValue,
 			Action<uint> onFinish)
 		{
-			WindowManager.SpawnInputDialog(prompt, title, defaultValue,
+			RequestText(prompt, title, defaultValue,
 				input =>
 				{
 					var val = TryParseAndValidate<uint>(input, ParseUInt);
 					if (val != null)
 						onFinish.Invoke(val.Value);
 				});
+		}
+
+		// A dialog can outlive a deactivation, so its answer is bound to the current trainer session.
+		public static void RequestText(string prompt, string title, string defaultValue, Action<string> onFinish)
+		{
+			WindowManager.SpawnInputDialog(prompt, title, defaultValue, TrainerLifecycle.Bind(onFinish));
 		}
 
 		internal delegate bool TryParse<T>(string s, out T result) where T : struct;

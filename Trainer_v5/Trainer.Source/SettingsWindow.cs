@@ -40,6 +40,16 @@ namespace Trainer_v5
 			Shown = Window.Shown;
 		}
 
+		public static void Discard()
+		{
+			if (Window != null)
+			{
+				Destroy(Window.gameObject);
+			}
+
+			Reset();
+		}
+
 		// The game destroys its windows with the scene; a stale Shown would make F1 do nothing in the next game.
 		public static void Reset()
 		{
@@ -272,7 +282,8 @@ namespace Trainer_v5
 				selectableItems: efficiencySelectItems,
 				selection: efficiencySelectItems.GetIndex(storesSettings, key, 2)
 			);
-			comboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(key, efficiencySelectItems.GetAt(comboBox.Selected).Value));
+			var select = TrainerLifecycle.Bind(() => storesSettings.Set(key, efficiencySelectItems.GetAt(comboBox.Selected).Value));
+			comboBox.OnSelectedChanged.AddListener(() => select());
 			settingsCells.Add(comboBox.gameObject);
 			return comboBox;
 		}

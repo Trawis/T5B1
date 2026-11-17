@@ -126,7 +126,7 @@ namespace Trainer_v5
 
 		internal static void TakeoverCompany()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
+			InputHelper.RequestText(SharedMessages.CompanyNamePrompt(), "TakeoverCompanyTitle".LocDef("Takeover Company"), "", TakeoverCompanyAction);
 		}
 
 		internal static void SubDCompanyAction(string input)
@@ -153,7 +153,7 @@ namespace Trainer_v5
 
 		internal static void SubDCompany()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
+			InputHelper.RequestText(SharedMessages.CompanyNamePrompt(), "SubsidiaryCompanyTitle".LocDef("Subsidiary Company"), "", SubDCompanyAction);
 		}
 
 		internal static void ForceBankruptAction(string input)
@@ -187,7 +187,7 @@ namespace Trainer_v5
 
 		internal static void ForceBankrupt()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.CompanyNamePrompt(), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
+			InputHelper.RequestText(SharedMessages.CompanyNamePrompt(), "ForceBankruptTitle".LocDef("Force Bankrupt"), "", ForceBankruptAction);
 		}
 
 		internal static void IncreaseMoneyAction(int amount)
@@ -230,7 +230,7 @@ namespace Trainer_v5
 
 		internal static void AddAIFunds()
 		{
-			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AddAIFundsTitle(), "", AddAIFundsAction);
+			InputHelper.RequestText("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AddAIFundsTitle(), "", AddAIFundsAction);
 		}
 
 		internal static void MaxReputation()

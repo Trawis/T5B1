@@ -8,11 +8,12 @@ namespace Trainer_v5
 		// No questionID: with one the game offers "Don't ask again" and then skips the dialog.
 		internal static void Ask(string actionName, string message, Action onConfirm)
 		{
-			WindowManager.Instance.ShowMessageBox(message, false, DialogWindow.DialogType.Warning, () =>
+			var confirm = TrainerLifecycle.Bind(() =>
 			{
 				if (Helpers.RequireGameReady(actionName))
 					onConfirm();
 			});
+			WindowManager.Instance.ShowMessageBox(message, false, DialogWindow.DialogType.Warning, () => confirm());
 		}
 
 		internal static bool IsScopeUnchanged(int shown, int current)

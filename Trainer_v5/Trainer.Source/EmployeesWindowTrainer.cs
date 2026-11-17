@@ -8,9 +8,21 @@ namespace Trainer_v5
 	{
 		// The Employees window the controls were added to; the game recreates it with the HUD on save reloads.
 		private static EmployeeWindow _installedOn;
+		private static List<Component> _controls;
 
-		public static void Reset()
+		// Removes only the trainer's own buttons; the native window keeps everything else.
+		public static void Discard()
 		{
+			if (_controls != null)
+			{
+				foreach (var control in _controls)
+				{
+					if (control != null)
+						Object.Destroy(control.gameObject);
+				}
+			}
+
+			_controls = null;
 			_installedOn = null;
 		}
 
@@ -61,6 +73,8 @@ namespace Trainer_v5
 				return;
 
 			// Marked installed only after every control was placed, so a failure leaves a retry possible.
+			Discard();
+			_controls = components;
 			_installedOn = target;
 		}
 

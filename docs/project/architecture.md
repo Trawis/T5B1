@@ -58,6 +58,18 @@ per-game caches (`TrainerBehaviour.ResetPerGameState`: window references, the
 specialization list, hosting timing flags, the pending-list warning and the
 printer baselines); persisted settings are never part of that reset.
 
+The game calls `OnActivate` and `OnDeactivate` before it changes the
+behaviour's `enabled` flag and the saved Active setting, so
+`TrainerLifecycle` is the trainer's own record of being active. Every trainer
+control (`UIFactory`), input dialog (`InputHelper`) and confirmation
+(`Confirmation.Ask`) is bound to the current session: after a deactivation or
+a game change it does nothing, also once the trainer is active again. Only the
+mod Options toggles are exempt. Deactivation destroys the trainer's own UI
+(HUD button, Settings window, Employees toolbar buttons and the employee
+editors); native windows are not touched. Activation inside a running game
+installs one new set and, if `GameReady` has already fired, runs its setup.
+Toggle effects are not undone on deactivation.
+
 On every game load (`GameSettings.GameReady`, independent of any toggle)
 `MarketFeatures.RepairLegacyHostingRequests` clears `Deal.Request` on a
 `ServerDeal` that has `Request` set, no resolvable bidder and the product's

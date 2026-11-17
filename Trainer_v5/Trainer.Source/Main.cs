@@ -64,7 +64,7 @@ namespace Trainer_v5
 			float y = 0;
 			if (_mod != null)
 			{
-				Toggle toggle = UIFactory.Toggle("EnableExperimentalFeatures".LocDef("Enable Experimental Features"), ExperimentalOptions.Enabled, SetExperimentalEnabled);
+				Toggle toggle = UIFactory.Toggle("EnableExperimentalFeatures".LocDef("Enable Experimental Features"), ExperimentalOptions.Enabled, SetExperimentalEnabled, whileInactive: true);
 				WindowManager.AddElementToElement(toggle.gameObject, parent.gameObject, new Rect(0, y, 400, Constants.ELEMENT_HEIGHT),
 					new Rect(0, 0, 0, 0));
 				y += Constants.ELEMENT_HEIGHT;
@@ -78,7 +78,7 @@ namespace Trainer_v5
 
 			if (_mod != null)
 			{
-				Toggle debugToggle = UIFactory.Toggle("DebugLogging".LocDef("Debug Logging"), LoggingOptions.DebugEnabled, SetDebugLoggingEnabled);
+				Toggle debugToggle = UIFactory.Toggle("DebugLogging".LocDef("Debug Logging"), LoggingOptions.DebugEnabled, SetDebugLoggingEnabled, whileInactive: true);
 				WindowManager.AddElementToElement(debugToggle.gameObject, parent.gameObject, new Rect(0, y, 400, Constants.ELEMENT_HEIGHT),
 					new Rect(0, 0, 0, 0));
 				y += Constants.ELEMENT_HEIGHT;
@@ -164,7 +164,7 @@ namespace Trainer_v5
 			LoggingOptions.Set(enabled, _mod.SaveSetting);
 		}
 
-		private static void DestroyUIButtons()
+		internal static void DestroyUIButtons()
 		{
 			DestroyButton(TrainerButton);
 			TrainerButton = null;

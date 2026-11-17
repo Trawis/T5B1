@@ -101,7 +101,7 @@ namespace Trainer_v5.Tests
 
 			SourceCode.AssertInOrder(skills, "CaptureTargets()", "CaptureRoles()", "employees are checked first, as before");
 			SourceCode.AssertInOrder(skills, "CaptureRoles()", "CaptureSpecializations()", "roles come before specializations, as before");
-			SourceCode.AssertInOrder(skills, "CaptureSpecializations()", "SpawnInputDialog(", "nothing is asked for before the choices are valid");
+			SourceCode.AssertInOrder(skills, "CaptureSpecializations()", "InputHelper.RequestText(", "nothing is asked for before the choices are valid");
 			SourceCode.AssertInOrder(baseSkills, "CaptureRoles()", "RequestFloat(", "nothing is asked for before the choices are valid");
 			Assert.DoesNotContain("CaptureSpecializations", baseSkills);
 			SourceCode.AssertInOrder(skills, "TryParseStars(", "AddSpecialization(", "the stars are validated before anything is written");

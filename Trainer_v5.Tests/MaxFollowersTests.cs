@@ -63,7 +63,7 @@ namespace Trainer_v5.Tests
 		{
 			var source = SourceCode.Read("Features", "WorkItemFeatures.cs");
 
-			Assert.Contains("WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), \"MaxFollowersTitle\".LocDef(\"Max Followers\"), \"\", MaxFollowersAction);", source);
+			Assert.Contains("InputHelper.RequestText(SharedMessages.ProductNamePrompt(), \"MaxFollowersTitle\".LocDef(\"Max Followers\"), \"\", MaxFollowersAction);", source);
 			Assert.NotEqual(SourceCode.Body(source, "internal static void MaxFollowersAction"), SourceCode.Body(source, "internal static void MaxFollowersOldAction"));
 		}
 	}

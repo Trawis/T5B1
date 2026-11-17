@@ -153,7 +153,7 @@ namespace Trainer_v5
 
 		internal static void FixBugs()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "FixBugsTitle".LocDef("Fix Bugs"), "", FixBugsAction);
+			InputHelper.RequestText(SharedMessages.ProductNamePrompt(), "FixBugsTitle".LocDef("Fix Bugs"), "", FixBugsAction);
 		}
 
 		internal static void MaxFollowersAction(string input)
@@ -175,7 +175,7 @@ namespace Trainer_v5
 
 		internal static void MaxFollowers()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
+			InputHelper.RequestText(SharedMessages.ProductNamePrompt(), "MaxFollowersTitle".LocDef("Max Followers"), "", MaxFollowersAction);
 		}
 
 		internal static void MaxFollowersOldAction(string input)
@@ -198,7 +198,7 @@ namespace Trainer_v5
 
 		internal static void MaxFollowersOld()
 		{
-			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersOldTitle".LocDef("Max Followers (Old)"), "", MaxFollowersOldAction);
+			InputHelper.RequestText(SharedMessages.ProductNamePrompt(), "MaxFollowersOldTitle".LocDef("Max Followers (Old)"), "", MaxFollowersOldAction);
 		}
 
 		internal static void InstantResearch()

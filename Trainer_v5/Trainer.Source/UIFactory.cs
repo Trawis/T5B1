@@ -27,11 +27,13 @@ namespace Trainer_v5
 			return r;
 		}
 
+		// Trainer controls stop acting once the trainer is deactivated or the game changes.
 		public static Button Button(string text, UnityAction action, string name = null)
 		{
 			var button = WindowManager.SpawnButton();
 			button.GetComponentInChildren<Text>().text = text;
-			button.onClick.AddListener(action);
+			var bound = TrainerLifecycle.Bind(() => action());
+			button.onClick.AddListener(() => bound());
 			if (name != null)
 			{
 				button.name = name;
@@ -39,12 +41,22 @@ namespace Trainer_v5
 			return button;
 		}
 
-		public static Toggle Toggle(string text, bool isOn, UnityAction<bool> action)
+		// The mod's Options screen is the game's, not the trainer's: its toggles also work while the trainer is inactive.
+		public static Toggle Toggle(string text, bool isOn, UnityAction<bool> action, bool whileInactive = false)
 		{
 			var toggle = WindowManager.SpawnCheckbox();
 			toggle.GetComponentInChildren<Text>().text = text;
 			toggle.isOn = isOn;
-			toggle.onValueChanged.AddListener(action);
+			if (whileInactive)
+			{
+				toggle.onValueChanged.AddListener(action);
+			}
+			else
+			{
+				var bound = TrainerLifecycle.Bind<bool>(value => action(value));
+				toggle.onValueChanged.AddListener(value => bound(value));
+			}
+
 			return toggle;
 		}
 
@@ -52,7 +64,8 @@ namespace Trainer_v5
 		{
 			var inputBox = WindowManager.SpawnInputbox();
 			inputBox.text = text;
-			inputBox.onValueChanged.AddListener(action);
+			var bound = TrainerLifecycle.Bind<string>(value => action(value));
+			inputBox.onValueChanged.AddListener(value => bound(value));
 			return inputBox;
 		}
 	}
