@@ -6,12 +6,28 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   nightly:
     name: Nightly build
     runs-on: windows-latest
+    permissions:
+      contents: read
+    outputs:
+      has_commits: ${{ steps.check.outputs.has_commits }}
+      stamp: ${{ steps.version.outputs.stamp }}
+      tag: ${{ steps.version.outputs.tag }}
+      name: ${{ steps.version.outputs.name }}
+      display_time: ${{ steps.version.outputs.display_time }}
+      artifact: ${{ steps.version.outputs.artifact }}
+      zip: ${{ steps.version.outputs.zip }}
+      product_version: ${{ steps.version.outputs.product_version }}
+      version: ${{ steps.version.outputs.version }}
+      run_number: ${{ steps.version.outputs.run_number }}
+      run_attempt: ${{ steps.version.outputs.run_attempt }}
+      commit: ${{ steps.version.outputs.commit }}
+      short_sha: ${{ steps.version.outputs.short_sha }}
 
     steps:
       - name: Checkout
@@ -95,48 +111,6 @@ jobs:
             Add-Content -Path $env:GITHUB_OUTPUT -Value "$key=$($identity[$key])" -Encoding utf8
           }
 
-      - name: Check existing nightly release
-        if: steps.check.outputs.has_commits == 'true'
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          TAG: ${{ steps.version.outputs.tag }}
-          COMMIT: ${{ steps.version.outputs.commit }}
-        run: |
-          # The tag carries the UTC time, run number and attempt, so a new run or attempt gets a new tag.
-          # A published release is immutable: it is never overwritten, moved or retagged.
-          # A draft with this exact tag is reused only when it targets the current commit.
-          $lines = gh api "repos/$env:GH_REPO/releases?per_page=100" --paginate --jq '.[] | {tag_name, draft, target_commitish} | tojson'
-          if ($LASTEXITCODE -ne 0) {
-            throw "Could not list releases."
-          }
-
-          $existing = @($lines | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object { $_.tag_name -eq $env:TAG })
-          $tagCommit = $null
-          if (git tag --list $env:TAG) {
-            $tagCommit = git rev-list -n 1 $env:TAG
-          }
-
-          if ($existing | Where-Object { -not $_.draft }) {
-            throw "Release $env:TAG is already published and immutable. Do not retry this run; start a new nightly run for a new tag."
-          }
-
-          if ($tagCommit -and $tagCommit -ne $env:COMMIT) {
-            throw "Tag $env:TAG already points to commit $tagCommit, not $env:COMMIT. Resolve it manually."
-          }
-
-          if ($existing) {
-            $draft = $existing[0]
-            if ($draft.target_commitish -ne $env:COMMIT) {
-              throw "Draft release $env:TAG targets $($draft.target_commitish), not $env:COMMIT. Resolve it manually."
-            }
-
-            Write-Output "Reusing leftover draft release $env:TAG for commit $env:COMMIT."
-          } elseif ($tagCommit) {
-            throw "Tag $env:TAG already exists without a release. Resolve it manually before retrying."
-          }
-
       - name: Setup .NET
         if: steps.check.outputs.has_commits == 'true'
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
@@ -176,37 +150,99 @@ jobs:
           path: ${{ steps.version.outputs.zip }}
           if-no-files-found: error
 
+  publish:
+    name: Publish nightly
+    needs: nightly
+    if: needs.nightly.outputs.has_commits == 'true'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.nightly.outputs.commit }}
+          fetch-depth: 0
+
+      # Drafts are listed only to a token that can write, so the check runs here.
+      - name: Check existing nightly release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.nightly.outputs.tag }}
+          COMMIT: ${{ needs.nightly.outputs.commit }}
+        run: |
+          # The tag carries the UTC time, run number and attempt, so a new run or attempt gets a new tag.
+          # A published release is immutable: it is never overwritten, moved or retagged.
+          # A draft with this exact tag is reused only when it targets the current commit.
+          $lines = gh api "repos/$env:GH_REPO/releases?per_page=100" --paginate --jq '.[] | {tag_name, draft, target_commitish} | tojson'
+          if ($LASTEXITCODE -ne 0) {
+            throw "Could not list releases."
+          }
+
+          $existing = @($lines | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object { $_.tag_name -eq $env:TAG })
+          $tagCommit = $null
+          if (git tag --list $env:TAG) {
+            $tagCommit = git rev-list -n 1 $env:TAG
+          }
+
+          if ($existing | Where-Object { -not $_.draft }) {
+            throw "Release $env:TAG is already published and immutable. Do not retry this run; start a new nightly run for a new tag."
+          }
+
+          if ($tagCommit -and $tagCommit -ne $env:COMMIT) {
+            throw "Tag $env:TAG already points to commit $tagCommit, not $env:COMMIT. Resolve it manually."
+          }
+
+          if ($existing) {
+            $draft = $existing[0]
+            if ($draft.target_commitish -ne $env:COMMIT) {
+              throw "Draft release $env:TAG targets $($draft.target_commitish), not $env:COMMIT. Resolve it manually."
+            }
+
+            Write-Output "Reusing leftover draft release $env:TAG for commit $env:COMMIT."
+          } elseif ($tagCommit) {
+            throw "Tag $env:TAG already exists without a release. Resolve it manually before retrying."
+          }
+
+      # The package built and tested above for this commit, not a rebuild.
+      - name: Download artifact
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: ${{ needs.nightly.outputs.artifact }}
+          path: .
+
       - name: Create nightly release
         id: release
-        if: steps.check.outputs.has_commits == 'true'
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: ${{ steps.version.outputs.name }}
+          tag_name: ${{ needs.nightly.outputs.tag }}
+          name: ${{ needs.nightly.outputs.name }}
           body: |
             Nightly development build of `develop`. This is not a release candidate and not a stable release.
 
-            - Source commit: [`${{ steps.version.outputs.short_sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.version.outputs.commit }}) (`${{ steps.version.outputs.commit }}`)
+            - Source commit: [`${{ needs.nightly.outputs.short_sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ needs.nightly.outputs.commit }}) (`${{ needs.nightly.outputs.commit }}`)
             - Branch: `develop`
-            - Built: ${{ steps.version.outputs.display_time }} (`${{ steps.version.outputs.stamp }}`)
-            - Workflow run: ${{ steps.version.outputs.run_number }}, attempt ${{ steps.version.outputs.run_attempt }}
-            - Product version it was built from (`Helpers.Version`, shown in game): ${{ steps.version.outputs.product_version }}
-            - Assembly and file build version: `${{ steps.version.outputs.version }}`; an identifier of this build, not a release version
-          target_commitish: ${{ steps.version.outputs.commit }}
-          files: ${{ steps.version.outputs.zip }}
+            - Built: ${{ needs.nightly.outputs.display_time }} (`${{ needs.nightly.outputs.stamp }}`)
+            - Workflow run: ${{ needs.nightly.outputs.run_number }}, attempt ${{ needs.nightly.outputs.run_attempt }}
+            - Product version it was built from (`Helpers.Version`, shown in game): ${{ needs.nightly.outputs.product_version }}
+            - Assembly and file build version: `${{ needs.nightly.outputs.version }}`; an identifier of this build, not a release version
+          target_commitish: ${{ needs.nightly.outputs.commit }}
+          files: ${{ needs.nightly.outputs.zip }}
           draft: true
           prerelease: true
           generate_release_notes: false
           make_latest: false
 
       - name: Publish nightly release
-        if: steps.check.outputs.has_commits == 'true'
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           RELEASE_ID: ${{ steps.release.outputs.id }}
-          ASSET_NAME: ${{ steps.version.outputs.zip }}
+          ASSET_NAME: ${{ needs.nightly.outputs.zip }}
         run: |
           # Assets can only be attached while the release is a draft; publishing makes it immutable.
           $release = gh api "repos/$env:GH_REPO/releases/$env:RELEASE_ID" | ConvertFrom-Json

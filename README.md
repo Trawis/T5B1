@@ -111,6 +111,8 @@ Report bugs and suggestions through GitHub Issues; community chat is on
 
 Increase `Helpers.Version` before merging another release to `main`.
 
+In Nightly and Release, build, format check and tests run read-only; only a separate publish job can write, and it publishes the zip that job built and tested.
+
 #### Nightly development builds
 
 A nightly is an independent development build of `develop`, not a release candidate and not a stable release. It does not guess or imply the next release version; the UTC build time and the workflow run identify it.
