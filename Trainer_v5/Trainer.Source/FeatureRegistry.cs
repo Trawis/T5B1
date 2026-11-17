@@ -69,7 +69,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "NoMaintenance", SettingKeys.NoMaintenance, EnvironmentFeatures.ApplyNoMaintenance);
 			Add(entries, FeatureTrigger.Enabled, "NoVacation", SettingKeys.NoVacation, EmployeeFeatures.ApplyNoVacation);
 			Add(entries, FeatureTrigger.Enabled, "NoForgetfulSkillLoss", SettingKeys.NoForgetfulSkillLoss, EmployeeFeatures.ApplyNoForgetfulSkillLoss);
-			Add(entries, FeatureTrigger.Enabled, "MoreHostingDeals", SettingKeys.MoreHostingDeals, MarketFeatures.ApplyHostingDealTiming);
+			Add(entries, FeatureTrigger.Enabled, "MoreHostingDeals", SettingKeys.MoreHostingDeals, MarketFeatures.ApplyHostingDealCatchUp);
 			Add(entries, FeatureTrigger.Enabled, "AutoEndDesign", SettingKeys.AutoEndDesign, WorkItemFeatures.ApplyAutoEndDesign);
 			Add(entries, FeatureTrigger.Enabled, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);
 			Add(entries, FeatureTrigger.Enabled, "AutoEndResearch", SettingKeys.AutoEndResearch, WorkItemFeatures.ApplyAutoEndResearch);

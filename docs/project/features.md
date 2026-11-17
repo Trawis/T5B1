@@ -96,7 +96,7 @@ Active for as long as they are enabled. Toggles are saved with the save game.
 | Increase Bookshelf Skill    | Bookshelves provide more skill                               |
 | Increase Courier Capacity   | Couriers can carry more boxes                                |
 | Increase Print Speed        | Printers print faster                                       |
-| More Hosting Deals          | Generates extra hosting deals and rewards                    |
+| More Hosting Deals          | Generates extra hosting deals and rewards; the reward is paid when the clock reaches noon, not when the toggle is enabled or a game is loaded |
 | Reduce Internet Cost        | Halves ISP cost                                             |
 | No Server Cost              | Servers are free                                            |
 | Disable Force Pause         | Prevents the game from force-pausing                         |
