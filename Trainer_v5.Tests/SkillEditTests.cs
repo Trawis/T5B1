@@ -47,19 +47,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Theory]
-		[InlineData(false, true, 0, "Viewed")]
-		[InlineData(false, true, 7, "Viewed")]
-		[InlineData(false, false, 7, "None")]
-		[InlineData(false, false, 0, "None")]
-		[InlineData(true, false, 3, "Selection")]
-		[InlineData(true, true, 3, "Selection")]
-		[InlineData(true, true, 0, "None")]
-		public void TheScopeChoosesTheShownEmployeeOrTheWholeSelection(bool allSelected, bool viewedValid, int selected, string expected)
-		{
-			Assert.Equal(expected, SkillEdit.Decide(allSelected, viewedValid, selected).ToString());
-		}
-
-		[Theory]
 		[InlineData(0, 0, "None")]
 		[InlineData(0, 4, "None")]
 		[InlineData(1, 1, "All")]
@@ -109,15 +96,11 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void EachOpeningStartsWithTheShownEmployeeAndTheEditorKeepsItsLifecycle()
+		public void TheEditorKeepsItsLifecycle()
 		{
 			var source = EditorSource();
 
-			SourceCode.AssertInOrder(SourceCode.Body(source, "public static void Show()"), "_allSelected.isOn = false", "Refresh();", "the scope is reset before the target is resolved");
-			var reset = SourceCode.Body(source, "public static void Reset()");
-			Assert.Contains("Window = null;", reset);
-			Assert.Contains("_target = null;", reset);
-			Assert.Contains("_allSelected = null;", reset);
+			Assert.Contains("Window = null;", SourceCode.Body(source, "public static void Reset()"));
 		}
 
 		[Fact]

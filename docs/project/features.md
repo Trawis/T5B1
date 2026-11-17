@@ -178,9 +178,8 @@ value is not recorded, so the trainer cannot put it back.
 The extra buttons above the game's Employees window edit the one employee
 selected in its list; with none or several selected the single-employee actions
 (including the Trait, Demand and LeadSpec editors) only show a message and open
-nothing. **Skills** needs at least one selected employee to open and edits that
-employee; with several selected it opens too, and its **All selected** option
-(off at every opening) applies a write to every selected employee instead.
+nothing. **Skills** needs at least one selected employee to open; **Set Skills**
+and **Set Base Skills** edit every employee selected when they are pressed.
 
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
