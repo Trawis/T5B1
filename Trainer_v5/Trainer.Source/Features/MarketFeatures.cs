@@ -116,6 +116,23 @@ namespace Trainer_v5
 
 		internal static void ApplyHostingDealTiming()
 		{
+			ApplyHostingDealCatchUp();
+
+			int inGameHour = TimeOfDay.Instance.Hour;
+			if (!Helpers.RewardIsGained && inGameHour == 12)
+			{
+				PushReward();
+			}
+			else if (inGameHour != 12 && Helpers.RewardIsGained)
+			{
+				Helpers.RewardIsGained = false;
+			}
+		}
+
+		// Enabling or loading catches up only the offers: the noon cash is paid by the hour change alone, so a reload or
+		// a retried enable cannot pay it twice.
+		internal static void ApplyHostingDealCatchUp()
+		{
 			int inGameHour = TimeOfDay.Instance.Hour;
 
 			if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
@@ -125,15 +142,6 @@ namespace Trainer_v5
 			else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
 			{
 				Helpers.DealIsPushed = false;
-			}
-
-			if (!Helpers.RewardIsGained && inGameHour == 12)
-			{
-				PushReward();
-			}
-			else if (inGameHour != 12 && Helpers.RewardIsGained)
-			{
-				Helpers.RewardIsGained = false;
 			}
 		}
 
