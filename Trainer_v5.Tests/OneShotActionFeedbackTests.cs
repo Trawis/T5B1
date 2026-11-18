@@ -30,7 +30,7 @@ namespace Trainer_v5.Tests
 			var body = Between("CompanyFeatures.cs", "internal static void SubDCompanyAction", "internal static void SubDCompany()");
 
 			Assert.True(body.IndexOf("FindCompanyByName(input)", System.StringComparison.Ordinal) < body.IndexOf("Company == null", System.StringComparison.Ordinal));
-			Assert.True(body.IndexOf("!IsBankruptTarget(Company)", System.StringComparison.Ordinal) < body.IndexOf("MakeSubsidiary", System.StringComparison.Ordinal));
+			Assert.True(body.IndexOf("!IsBankruptTarget(Company)", System.StringComparison.Ordinal) < body.IndexOf("Company.MakeSubsidiary(", System.StringComparison.Ordinal));
 			Assert.Equal(1, body.Split(new[] { "Notification.Show" }, System.StringSplitOptions.None).Length - 1);
 		}
 
