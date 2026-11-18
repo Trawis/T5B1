@@ -46,6 +46,7 @@ the Settings tab.
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
 | Reset age of employees | None                   | Resets every employee to the youngest age                   |
+| Make All Employees Happy Now | None (confirmation) | Once, after a Yes/No confirmation showing the employee count, gives every current employee the Full Satisfaction treatment: removes negative, lawsuit and quit thoughts (not restored), keeps positive ones, clears active complaints, maxes job satisfaction and adds the Love Work thought; with no employees it only says so |
 | Days per month         | Amount                 | Changes days per month (requires restart)                   |
 | Clear all loans        | None                   | Removes all loans without repaying them, after a Yes/No confirmation showing the loan count; with none it only says so |
 | Extend Deadline        | None                   | Extends every contract deadline by one year                 |
@@ -184,6 +185,7 @@ selected in its list; with none or several selected the single-employee actions
 (including the Trait, Demand and LeadSpec editors) only show a message and open
 nothing. **Skills** needs at least one selected employee to open; **Set Skills**
 and **Set Base Skills** edit every employee selected when they are pressed.
+**Make Happy** needs at least one selected employee and works on every one selected.
 
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
@@ -194,3 +196,4 @@ and **Set Base Skills** edit every employee selected when they are pressed.
 | LeadSpec       | Sets lead specialization values per software type                  |
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
 | Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) after a Yes/No confirmation naming the employee and both states |
+| Make Happy     | Once, after a Yes/No confirmation showing the selected count, gives the selected employees the same treatment as Make All Employees Happy Now |

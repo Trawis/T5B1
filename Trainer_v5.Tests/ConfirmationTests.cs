@@ -136,7 +136,7 @@ namespace Trainer_v5.Tests
 			}
 
 			found.Sort(StringComparer.Ordinal);
-			Assert.Equal("CompanyFeatures.cs:5, FounderToggle.cs:1", string.Join(", ", found));
+			Assert.Equal("CompanyFeatures.cs:5, EmployeeFeatures.cs:2, FounderToggle.cs:1", string.Join(", ", found));
 
 			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards", "ForceBankruptAction", "MaxReputation" })
 			{
@@ -144,6 +144,11 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start"));
+
+			foreach (var name in new[] { "MakeAllEmployeesHappy", "MakeSelectedEmployeesHappy" })
+			{
+				Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("Features", "EmployeeFeatures.cs"), "internal static void " + name));
+			}
 		}
 
 		[Fact]
