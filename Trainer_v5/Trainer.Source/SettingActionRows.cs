@@ -52,6 +52,7 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SellProductsStock", "Sell products stock", ProductFeatures.SellProductStock));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "FixBugs", "Fix Bugs", WorkItemFeatures.FixBugs));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "InstantResearch", "Instant Research", WorkItemFeatures.InstantResearch));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "InstantPatent", "Instant Patent", WorkItemFeatures.InstantPatent));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "InstantPorting", "Instant Porting", WorkItemFeatures.InstantPorting));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "OptimizeTeamAssignments", "Optimize Team Assignments", WorkItemFeatures.OptimizeTeamAssignments));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "ExtendDeadline", "Extend Deadline", WorkItemFeatures.ExtendDeadline));
