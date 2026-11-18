@@ -38,6 +38,8 @@ namespace Trainer_v5
 				UIFactory.Button("ProductsSetPriceButton".LocDef("Set Price"), SetPrice),
 				UIFactory.Button("ProductsSetStockButton".LocDef("Set Stock"), SetStock),
 				UIFactory.Button("ProductsSetUsersButton".LocDef("Set Active Users"), SetActiveUsers),
+				UIFactory.Button("ProductsFixBugsButton".LocDef("Fix Product Bugs"), FixProductBugs),
+				UIFactory.Button("ProductsMaxAwarenessButton".LocDef("Max Awareness"), MaxAwareness),
 			};
 
 			const int width = 110, height = 32, spacing = 4;
@@ -144,6 +146,40 @@ namespace Trainer_v5
 				},
 				0,
 				int.MaxValue);
+		}
+
+		private static void FixProductBugs()
+		{
+			var product = RequireOneProduct();
+			if (product == null)
+				return;
+
+			var bugs = product.Bugss;
+			if (bugs <= 0)
+			{
+				Notification.ShowInfo(string.Format("ProductNoBugs".LocDef("Trainer: {0} has no bugs to fix."), product.Name));
+				return;
+			}
+
+			product.FixBugs(bugs);
+			Notification.Popup(string.Format("ProductBugsFixed".LocDef("Trainer: {0} bug(s) of {1} have been fixed!"), bugs, product.Name));
+		}
+
+		private static void MaxAwareness()
+		{
+			var product = RequireOneProduct();
+			if (product == null)
+				return;
+
+			var max = GameSettings.Instance.simulation.GetMaxAwareness(product);
+			if (product.GetRealAwareness() >= max)
+			{
+				Notification.ShowInfo(string.Format("ProductAwarenessAlreadyMax".LocDef("Trainer: Awareness of {0} is already at its maximum."), product.Name));
+				return;
+			}
+
+			product.SetAwareness(max, false);
+			Notification.Popup(string.Format("ProductAwarenessMaxed".LocDef("Trainer: Awareness of {0} is now at its maximum. It fades over time as usual."), product.Name));
 		}
 
 		// The one product selected in the player's Products list when a button is pressed; null after telling the player why.
