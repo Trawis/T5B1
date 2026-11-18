@@ -433,12 +433,30 @@ tab. Employee editors (traits,
 demands, lead specialization, inspiration, founder, skill changes) are separate
 windows on shared layout helpers; their buttons sit above the native Employees
 window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Window`).
+The product buttons sit above the player's native Products window the same way
+(`ProductsWindowTrainer`; `HUD.PlayerProductWindow.Window`, the instance
+`HUD.ShowMyReleases` shows). Each toolbar is one self-contained class: `Install`
+adds its buttons once per live window and removes a partial set on failure,
+`Reset` forgets the window when the game is left, and both are called next to
+each other from `TrainerBehaviour`. A further product button is one more entry
+in the `ProductsWindowTrainer.Install` list that starts from `RequireOneProduct`.
 
 - Trait, Demand, LeadSpec, Inspiration and Founder resolve their employee
   through `EmployeeTarget`: exactly one employee selected in the Employees
   window's list (`EmployeeList.GetSelected<Actor>()`; an open detail window or
   the world selection is never consulted), never the first of several. A deferred dialog re-checks
   that the same live employee is still there before writing.
+- The product buttons act on exactly one row selected in
+  `ProductWindow.ProductList` while the window is shown in mode 0 (software
+  products; modes 1 and 2 list add-ons and frameworks, which are not
+  `SoftwareProduct`), and only on a product that is live
+  (`ProductFeatures.IsLiveProduct`, not archived) and owned by
+  `GameSettings.MyCompany`. The product object is captured at the click and
+  checked again before the deferred write, which then reuses the existing
+  `ProductFeatures` actions. Price is written directly, as before: the game's
+  `SoftwareProduct.ChangePrice` refuses prices below 1 and records a price
+  change (market event, lowest price, price-change factor), which the trainer's
+  price 0 and direct value do not go through.
 - Skills (`EmployeeSkillChangeWindow`, #450) is opened from the Employees window
   and edits every live selected employee (`EmployeeTarget.ResolveSelection`),
   captured at the click. Each write re-checks its target and skips stale ones,
