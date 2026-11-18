@@ -1,7 +1,8 @@
 # Features
 
 Current user-visible features. Open the trainer with the **Trainer** button
-(or F1; F2 closes it). The window has three tabs and reopens on the tab last
+(or F1, which also brings an open window to the front and expands it when
+collapsed; F2 only closes it). The window has three tabs and reopens on the tab last
 used in the running game: **Actions** (the buttons below, in Company, Employee,
 Product, Work and Environment sections), **Toggles** (the toggles below, in
 Employee, Environment, Work, Company and Product sections; the page scrolls
