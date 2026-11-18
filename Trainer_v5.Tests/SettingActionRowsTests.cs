@@ -16,7 +16,7 @@ namespace Trainer_v5.Tests
 			"MaxSkill=Actions/Employee", "ResetAge=Actions/Employee",
 			"SetProductPrice=Actions/Product", "SetProductStock=Actions/Product", "SetActiveUsers=Actions/Product", "MaxFollowers=Actions/Product", "MaxFollowersOld=Actions/Product",
 			"MaxMarketRecognition=Actions/Product", "InstantMarketing=Actions/Product", "SellProductsStock=Actions/Product",
-			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
+			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPatent=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
 			"UnlockAllFurniture=Actions/Environment", "UnlockAllSpace=Actions/Environment",
 			"Discord=Settings/None"
 		};

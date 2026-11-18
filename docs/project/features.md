@@ -33,6 +33,7 @@ the Settings tab.
 | AI Bankrupt All        | None                   | After a Yes/No confirmation showing how many AI companies are affected, marks every simulated AI company as going bankrupt except your own company and companies you own (subsidiaries); with none left it only says so |
 | Fix Bugs               | Product Name           | Fixes all bugs of your product with that name that is in beta |
 | Instant Research       | None                   | Immediately completes all of your currently active, unfinished research |
+| Instant Patent         | None                   | Completes your patent work (finished or not) through the game's own patent step, paying the game's patent price for each; skips work whose patent is expired, already owned, no longer patentable or part of a multiplayer deal, and any patent you cannot afford. Lawsuits are not affected |
 | Instant Porting        | None                   | Immediately completes your active porting work, one target platform at a time |
 | Instant Marketing      | None                   | Immediately completes your active press release campaigns (other campaign types run continuously and have no completion to force) |
 | Transfer Offshore Funds | None                  | Moves your entire offshore account balance into your company's main balance |

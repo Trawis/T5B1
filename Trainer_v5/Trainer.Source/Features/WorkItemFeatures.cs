@@ -224,6 +224,58 @@ namespace Trainer_v5
 			Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
 		}
 
+		internal static void InstantPatent()
+		{
+			var patentWorks = Settings.MyCompany.WorkItems
+								.OfType<LegalWork>()
+								.Where(lw => lw.Type == LegalWork.WorkType.Patent && !lw.Done)
+								.ToList();
+
+			if (patentWorks.Count == 0)
+			{
+				Notification.ShowInfo("NoPatentWork".LocDef("Trainer: No patent work to complete!"));
+				return;
+			}
+
+			int patented = 0;
+			int notPatentable = 0;
+			int unaffordable = 0;
+
+			foreach (LegalWork legalWork in patentWorks)
+			{
+				if (!CanPatentNow(legalWork))
+				{
+					notPatentable++;
+					continue;
+				}
+
+				// PatentNow charges without a funds check; the game's AI checks this first.
+				if (!Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice))
+				{
+					unaffordable++;
+					continue;
+				}
+
+				if (legalWork.Progress < 1f)
+				{
+					legalWork.Progress = 1f;
+				}
+
+				legalWork.PatentNow();
+				patented++;
+			}
+
+			string summary = string.Format("PatentsSummary".LocDef("Trainer: Patents: {0} filed, {1} skipped for lack of money, {2} skipped as not patentable."), patented, unaffordable, notPatentable);
+			if (unaffordable == 0 && notPatentable == 0)
+			{
+				Notification.Popup(summary);
+			}
+			else
+			{
+				Notification.ShowWarning(summary);
+			}
+		}
+
 		internal static void ApplyAutoEndDesign()
 		{
 			// PromoteAction() blocks without this precondition, so it is checked here first.
@@ -360,6 +412,20 @@ namespace Trainer_v5
 			}
 			HUD.Instance.researchWindow.UpdateLists();
 			researchWork.Kill(false);
+		}
+
+		// PatentNow charges even when nothing transfers; expiry goes before PatentOwner, whose getter clears expired patents.
+		private static bool CanPatentNow(LegalWork legalWork)
+		{
+			TechLevel patent = legalWork.Patent;
+			return !legalWork.Done
+				&& legalWork.Type == LegalWork.WorkType.Patent
+				&& Settings.MyCompany.WorkItems.Contains(legalWork)
+				&& legalWork.GetNetworkDealState() == WorkItem.NetworkDealState.None
+				&& patent != null
+				&& patent.CanPatent
+				&& TimeOfDay.Instance.Year - patent.Year <= TechLevel.PatentExpiration
+				&& patent.PatentOwner == 0;
 		}
 
 		// Mirrors SoftwarePort.DoWork at Progress == Goal.
