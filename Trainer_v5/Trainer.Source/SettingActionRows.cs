@@ -29,7 +29,7 @@ namespace Trainer_v5
 		{
 			var rows = new List<SettingActionRow>();
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "AddMoney", "Add Money", CompanyFeatures.IncreaseMoney));
-			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "AddAIFunds", "Add AI Funds", CompanyFeatures.AddAIFunds));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "AddAIFunds", "Adjust AI Funds", CompanyFeatures.AddAIFunds));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "TakeoverCompany", "Takeover Company", CompanyFeatures.TakeoverCompany));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "SubsidiaryCompany", "Subsidiary Company", CompanyFeatures.SubDCompany));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "Bankrupt", "Bankrupt", CompanyFeatures.ForceBankrupt));

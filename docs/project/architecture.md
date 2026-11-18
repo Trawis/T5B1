@@ -441,6 +441,26 @@ adds its buttons once per live window and removes a partial set on failure,
 each other from `TrainerBehaviour`. A further product button is one more entry
 in the `ProductsWindowTrainer.Install` list that starts from `RequireOneProduct`.
 
+The company buttons (Adjust AI Funds, Force Bankrupt, Take Over, Make
+Subsidiary) sit above the native Companies window the same way
+(`CompaniesWindowTrainer`; `HUD.companyWindow.Window`), installed once per
+window instance with the same rollback and reset as the Employees buttons.
+
+- The company buttons act on exactly one selected row of
+  `CompanyWindow.CompanyList` (`GetSelected<object>()`), which must be a
+  `SimulatedCompany` passing `CompanyFeatures.IsLiveAICompany` (the same object
+  in the current game's `simulation.Companies`, not the player's company or a
+  subsidiary) and not `Bankrupt`; otherwise only a message is shown, never a
+  name match. The captured company goes to the same bodies as the typed-name
+  actions (`AdjustAIFunds`, `AskForceBankrupt`, `TakeOver`, `MakeSubsidiary`),
+  and deferred dialogs check it again before writing.
+- Adjust AI Funds (one implementation for the typed name and the toolbar)
+  accepts any `int` and calls `Company.MakeTransaction(amount, Deals)`. In the
+  game a negative amount debits the company, 0 is ignored and, for an AI
+  company that is not bankrupt, an amount that `CanMakeTransaction` refuses
+  (money would go below zero) sets `Bankrupt` and buys the company out at once.
+  So a negative amount is confirmed, with that warning when it applies.
+
 - Trait, Demand, LeadSpec, Inspiration and Founder resolve their employee
   through `EmployeeTarget`: exactly one employee selected in the Employees
   window's list (`EmployeeList.GetSelected<Actor>()`; an open detail window or
@@ -487,7 +507,8 @@ in the `ProductsWindowTrainer.Install` list that starts from `RequireOneProduct`
   typed dialog is itself the approval for value entry. Only the audited
   high-impact set asks, always
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
-  Rewards, targeted Bankrupt, Max Reputation, Founder, Make All Employees Happy
+  Rewards, targeted Bankrupt (typed name or Companies list), Adjust AI Funds
+  with a negative amount, Max Reputation, Founder, Make All Employees Happy
   Now and Make Happy (selected employees). `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
@@ -498,9 +519,11 @@ in the `ProductsWindowTrainer.Install` list that starts from `RequireOneProduct`
   re-resolved: AI Bankrupt All and Clear all loans need exactly the companies or
   loans shown (`Confirmation.IsSameTargets`), the happy actions exactly the
   employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
-  rewards the same count
-  (`Confirmation.IsScopeUnchanged`); if it changed nothing is applied and the
-  player is told. Adding a confirmation means updating this list and
+  rewards the same count (`Confirmation.IsScopeUnchanged`), Bankrupt and Adjust
+  AI Funds the same live AI company that is not bankrupt (a reduction confirmed
+  without the bankruptcy warning must still not bankrupt it); if it changed
+  nothing is applied and the player is told. Adding a confirmation means
+  updating this list and
   `ConfirmationTests`, which pins the exact set.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and
