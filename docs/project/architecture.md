@@ -442,7 +442,7 @@ each other from `TrainerBehaviour`. A further product button is one more entry
 in the `ProductsWindowTrainer.Install` list that starts from `RequireOneProduct`.
 
 The company buttons (Adjust AI Funds, Force Bankrupt, Take Over, Make
-Subsidiary) sit above the native Companies window the same way
+Subsidiary, Set Reputation) sit above the native Companies window the same way
 (`CompaniesWindowTrainer`; `HUD.companyWindow.Window`), installed once per
 window instance with the same rollback and reset as the Employees buttons.
 
@@ -452,7 +452,8 @@ window instance with the same rollback and reset as the Employees buttons.
   in the current game's `simulation.Companies`, not the player's company or a
   subsidiary) and not `Bankrupt`; otherwise only a message is shown, never a
   name match. The captured company goes to the same bodies as the typed-name
-  actions (`AdjustAIFunds`, `AskForceBankrupt`, `TakeOver`, `MakeSubsidiary`),
+  actions (`AdjustAIFunds`, `AskForceBankrupt`, `TakeOver`, `MakeSubsidiary`,
+  `SetAIBusinessReputation`),
   and deferred dialogs check it again before writing.
 - Adjust AI Funds (one implementation for the typed name and the toolbar)
   accepts any `int` and calls `Company.MakeTransaction(amount, Deals)`. In the

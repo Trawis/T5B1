@@ -246,6 +246,39 @@ namespace Trainer_v5
 			Confirmation.Ask("Max Reputation", "MaxReputationConfirm".LocDef("Set your business reputation to the maximum in all categories?"), ApplyMaxReputation);
 		}
 
+		internal static void SetBusinessReputation()
+		{
+			if (!Helpers.RequireGameReady("Set Business Reputation"))
+				return;
+
+			GameSettings game = Settings;
+			Company company = game.MyCompany;
+			RequestBusinessStars(company, () =>
+			{
+				if (ReferenceEquals(game, Settings) && Settings.MyCompany == company)
+					return true;
+
+				Confirmation.ShowScopeChanged();
+				return false;
+			});
+		}
+
+		internal static void SetAIBusinessReputation(SimulatedCompany company)
+		{
+			RequestBusinessStars(company, () => IsAdjustableAICompany(company));
+		}
+
+		// Just above the star boundary: the game's float rounding could otherwise show one star less.
+		internal static float BusinessReputationFor(int stars)
+		{
+			return stars >= Company.BusinessRepStars ? 1f : (stars + 0.001f) / Company.BusinessRepStars;
+		}
+
+		internal static bool IsBusinessReputationAt(float reputation, int stars)
+		{
+			return Math.Abs(reputation * Company.BusinessRepStars - stars) < 0.01f;
+		}
+
 		internal static void MaxMarketRecognition()
 		{
 			var softwareTypes = MarketSimulation.Active.SoftwareTypes.Values.Where(value => !value.OneClient).ToList();
@@ -521,6 +554,31 @@ namespace Trainer_v5
 			}
 
 			return true;
+		}
+
+		private static void RequestBusinessStars(Company company, Func<bool> isStillTarget)
+		{
+			string prompt = string.Format("SetBusinessRepPrompt".LocDef("How many business reputation stars (0 to 6) should {0} have?\nCurrent stars: {1}"), company.Name, company.BusinessStars);
+			InputHelper.RequestInt(prompt, "SetBusinessRepTitle".LocDef("Set Business Reputation"), company.BusinessStars.ToString(), stars =>
+			{
+				if (isStillTarget())
+				{
+					ApplyBusinessStars(company, stars);
+				}
+			}, 0, Company.BusinessRepStars);
+		}
+
+		// As the game's own reputation cheat; history is recorded only for the player.
+		private static void ApplyBusinessStars(Company company, int stars)
+		{
+			if (IsBusinessReputationAt(company.BusinessReputation, stars))
+			{
+				Notification.ShowInfo(string.Format("BusinessRepUnchanged".LocDef("{0} already has {1} business reputation star(s). Nothing was changed."), company.Name, stars));
+				return;
+			}
+
+			company.ChangeBusinessRep((BusinessReputationFor(stars) - company.BusinessReputation) * Company.BusinessRepStars, "Cheat", Company.BusinessRepStars);
+			Notification.Popup(string.Format("BusinessRepSet".LocDef("Trainer: Business reputation of {0} is set to {1} star(s)!"), company.Name, company.BusinessStars));
 		}
 
 		private static void ApplyAIFunds(SimulatedCompany company, int amount)

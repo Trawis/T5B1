@@ -26,6 +26,7 @@ namespace Trainer_v5
 				UIFactory.Button("CompanyForceBankruptButton".LocDef("Force Bankrupt"), () => WithSelectedCompany(CompanyFeatures.AskForceBankrupt)),
 				UIFactory.Button("CompanyTakeOverButton".LocDef("Take Over"), () => WithSelectedCompany(CompanyFeatures.TakeOver)),
 				UIFactory.Button("CompanyMakeSubsidiaryButton".LocDef("Make Subsidiary"), () => WithSelectedCompany(CompanyFeatures.MakeSubsidiary)),
+				UIFactory.Button("CompanySetReputationButton".LocDef("Set Reputation"), () => WithSelectedCompany(CompanyFeatures.SetAIBusinessReputation)),
 			};
 
 			const int width = 120, height = 32, spacing = 4;
