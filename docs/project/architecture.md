@@ -500,11 +500,11 @@ window instance with the same rollback and reset as the Employees buttons.
   re-resolved: AI Bankrupt All and Clear all loans need exactly the companies or
   loans shown (`Confirmation.IsSameTargets`), the happy actions exactly the
   employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
-  rewards the same count
-  (`Confirmation.IsScopeUnchanged`), Bankrupt and Adjust AI Funds the same live
-  AI company that is not bankrupt, and a reduction confirmed without the
-  bankruptcy warning must still not bankrupt it; if it changed nothing is applied and the
-  player is told. Adding a confirmation means updating this list and
+  rewards the same count (`Confirmation.IsScopeUnchanged`), Bankrupt and Adjust
+  AI Funds the same live AI company that is not bankrupt (a reduction confirmed
+  without the bankruptcy warning must still not bankrupt it); if it changed
+  nothing is applied and the player is told. Adding a confirmation means
+  updating this list and
   `ConfirmationTests`, which pins the exact set.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and
