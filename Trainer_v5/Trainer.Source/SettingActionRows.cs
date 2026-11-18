@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Trainer_v5.Experimental;
 using UnityEngine.Events;
 
 namespace Trainer_v5
@@ -60,6 +61,14 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Environment, "UnlockAllSpace", "Unlock all space", CompanyFeatures.UnlockAllSpace));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Environment, "CleanOfficeNow", "Clean Office Now", EnvironmentFeatures.CleanOfficeNow));
 			rows.Add(new SettingActionRow(SettingsTab.Settings, TrainerDomain.None, "Discord", "DISCORD", () => Helpers.ShowDiscordInvite()));
+			return rows;
+		}
+
+		// Shown only while the Experimental option is on.
+		public static List<SettingActionRow> CreateExperimental()
+		{
+			var rows = new List<SettingActionRow>();
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "AmazingCompatibility", "Amazing Compatibility", AmazingCompatibility.Run));
 			return rows;
 		}
 	}

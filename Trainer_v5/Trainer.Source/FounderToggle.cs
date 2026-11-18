@@ -55,7 +55,7 @@ namespace Trainer_v5
 
 			if (GameData.MultiplayerMode)
 			{
-				return "NotAvailableInMultiplayer".LocDef("Not available in multiplayer.");
+				return SharedMessages.NotAvailableInMultiplayer();
 			}
 
 			return null;

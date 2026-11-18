@@ -470,7 +470,8 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   high-impact set asks, always
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
   Rewards, targeted Bankrupt, Max Reputation, Founder, Make All Employees Happy
-  Now and Make Happy (selected employees). `Ask` is the game's own
+  Now, Make Happy (selected employees) and the experimental Amazing
+  Compatibility. `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
   never run the action). Prompts name the action and scope, carry no `Trainer: `
@@ -481,8 +482,9 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   loans shown (`Confirmation.IsSameTargets`), the happy actions exactly the
   employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
   rewards the same count
-  (`Confirmation.IsScopeUnchanged`); if it changed nothing is applied and the
-  player is told. Adding a confirmation means updating this list and
+  (`Confirmation.IsScopeUnchanged`), Amazing Compatibility the same game and
+  personality graph, still outside multiplayer, with pairs still below the
+  maximum; if it changed nothing is applied and the player is told. Adding a confirmation means updating this list and
   `ConfirmationTests`, which pins the exact set.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and

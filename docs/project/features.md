@@ -126,11 +126,13 @@ Active for as long as they are enabled. Toggles are saved with the save game.
 The game's Options screen lists the trainer under its mods and offers *Enable
 Experimental Features*, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
-saved in one. Turning it on shows additional, unfinished toggles on the Toggles
-page of Trainer Settings (currently *No Forgetful Skill Loss*, off until you
-switch it on); the window shows them the next time it is created, that is, in
-the next loaded game. Turning the option off switches all of them off, and a
-save that still has one on is cleared when its game is ready. The Trainer
+saved in one. Turning it on shows additional, unfinished controls in Trainer
+Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*, off
+until you switch it on) and buttons in the Employee section of the Actions page
+(currently *Amazing Compatibility*); the window shows them the next time it is
+created, that is, in the next loaded game. Turning the option off switches the
+experimental toggles off, and a save that still has one on is cleared when its
+game is ready. The Trainer
 Settings window has no Experimental toggle and no Test button.
 
 *No Forgetful Skill Loss* (experimental, not tested in the game): every month,
@@ -138,6 +140,20 @@ and once when switched on, the loss timer of Forgetful employees that is due
 within 3 months is pushed 12 months ahead, so they keep their specialization
 stars and the game skips the loss popup. A timer already pushed ahead stays
 pushed and is saved with the employee; lost stars are never restored.
+
+*Amazing Compatibility* (experimental, not tested in the game): a one-shot
+button, not a toggle. It raises every pair of different personalities in the
+save's personality compatibility graph that is below 2, the value the game gives
+two equal personalities, to 2; higher values are left alone. It first asks a
+Yes/No question showing the number of pairs and warning that the change is
+permanent in this save and its autosaves, has no undo (disabling or removing the
+trainer does not restore it), affects current and future employees and makes
+HR personality matching for new hires neutral; back up the save first. No, Esc
+or closing changes nothing. Team compatibility is recalculated afterwards. The
+shown compatibility still includes friendship, so no exact percentage is
+promised. With no pair left below 2 it only says so; it is not available in
+multiplayer. It overwrites lower compatibility values that other personality
+mods put into this save.
 
 The same Options screen offers *Debug Logging*, off by default and independent
 of the experimental switch. When on, extra `Trainer [debug]:` trace lines (toggle
