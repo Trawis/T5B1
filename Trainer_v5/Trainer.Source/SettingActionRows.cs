@@ -57,6 +57,7 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Work, "ExtendDeadline", "Extend Deadline", WorkItemFeatures.ExtendDeadline));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Environment, "UnlockAllFurniture", "Unlock all furniture", CompanyFeatures.UnlockFurniture));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Environment, "UnlockAllSpace", "Unlock all space", CompanyFeatures.UnlockAllSpace));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Environment, "CleanOfficeNow", "Clean Office Now", EnvironmentFeatures.CleanOfficeNow));
 			rows.Add(new SettingActionRow(SettingsTab.Settings, TrainerDomain.None, "Discord", "DISCORD", () => Helpers.ShowDiscordInvite()));
 			return rows;
 		}
