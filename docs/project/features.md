@@ -214,3 +214,15 @@ and **Set Base Skills** edit every employee selected when they are pressed.
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
 | Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) after a Yes/No confirmation naming the employee and both states |
 | Make Happy     | Once, after a Yes/No confirmation showing the selected count, gives the selected employees the same treatment as Make All Employees Happy Now |
+
+## Product editing
+
+**Set Price**, **Set Stock** and **Set Active Users** sit above the game's list
+of your own products and edit the one software product selected in it. With
+none or several selected, with the add-on or framework view shown, or with an
+archived or foreign product selected, they only show a message and open
+nothing. The product is taken when the button is pressed, never looked up by
+name, so products that share a name are not mixed up; the value applies only
+if that product is still yours and on the market when the dialog is confirmed.
+Values and ranges match the Actions-tab buttons (price from 0), which stay
+unchanged.

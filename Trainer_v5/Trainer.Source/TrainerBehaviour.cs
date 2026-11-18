@@ -77,6 +77,7 @@ namespace Trainer_v5
 						Main.CreateUIButtons();
 						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
 						EmployeesWindowTrainer.Install();
+						ProductsWindowTrainer.Install();
 						CompaniesWindowTrainer.Install();
 						break;
 					case SceneRoute.Customization:
@@ -99,6 +100,7 @@ namespace Trainer_v5
 			}
 
 			EmployeesWindowTrainer.Reset();
+			ProductsWindowTrainer.Reset();
 			CompaniesWindowTrainer.Reset();
 			ResetPerGameState();
 			_toggleStates.Reset();
@@ -209,6 +211,7 @@ namespace Trainer_v5
 			}
 
 			EmployeesWindowTrainer.Install();
+			ProductsWindowTrainer.Install();
 			CompaniesWindowTrainer.Install();
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
 			Helpers.TryExecute("RepairLegacyHostingRequests", () =>
