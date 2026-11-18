@@ -8,7 +8,7 @@ namespace Trainer_v5.Experimental
 	{
 		public static ToggleKey[] Keys()
 		{
-			return new[] { SettingKeys.NoForgetfulSkillLoss };
+			return new[] { SettingKeys.NoForgetfulSkillLoss, SettingKeys.AutoInstantPatent };
 		}
 
 		public static void TurnOffAll(Dictionary<string, bool> settings)

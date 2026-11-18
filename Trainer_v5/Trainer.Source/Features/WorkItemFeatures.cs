@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Trainer_v5.Experimental;
 
 namespace Trainer_v5
 {
@@ -226,10 +227,7 @@ namespace Trainer_v5
 
 		internal static void InstantPatent()
 		{
-			var patentWorks = Settings.MyCompany.WorkItems
-								.OfType<LegalWork>()
-								.Where(lw => lw.Type == LegalWork.WorkType.Patent && !lw.Done)
-								.ToList();
+			var patentWorks = PendingPatentWorks();
 
 			if (patentWorks.Count == 0)
 			{
@@ -243,26 +241,18 @@ namespace Trainer_v5
 
 			foreach (LegalWork legalWork in patentWorks)
 			{
-				if (!CanPatentNow(legalWork))
+				switch (TryPatentNow(legalWork))
 				{
-					notPatentable++;
-					continue;
+					case PatentOutcome.Patented:
+						patented++;
+						break;
+					case PatentOutcome.Unaffordable:
+						unaffordable++;
+						break;
+					default:
+						notPatentable++;
+						break;
 				}
-
-				// PatentNow charges without a funds check; the game's AI checks this first.
-				if (!Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice))
-				{
-					unaffordable++;
-					continue;
-				}
-
-				if (legalWork.Progress < 1f)
-				{
-					legalWork.Progress = 1f;
-				}
-
-				legalWork.PatentNow();
-				patented++;
 			}
 
 			string summary = string.Format("PatentsSummary".LocDef("Trainer: Patents: {0} filed, {1} skipped for lack of money, {2} skipped as not patentable."), patented, unaffordable, notPatentable);
@@ -273,6 +263,19 @@ namespace Trainer_v5
 			else
 			{
 				Notification.ShowWarning(summary);
+			}
+		}
+
+		internal static void ApplyAutoInstantPatent()
+		{
+			if (!ExperimentalOptions.Enabled)
+			{
+				return;
+			}
+
+			foreach (LegalWork legalWork in PendingPatentWorks())
+			{
+				TryPatentNow(legalWork);
 			}
 		}
 
@@ -412,6 +415,36 @@ namespace Trainer_v5
 			}
 			HUD.Instance.researchWindow.UpdateLists();
 			researchWork.Kill(false);
+		}
+
+		private static List<LegalWork> PendingPatentWorks()
+		{
+			return Settings.MyCompany.WorkItems
+					.OfType<LegalWork>()
+					.Where(lw => lw.Type == LegalWork.WorkType.Patent && !lw.Done)
+					.ToList();
+		}
+
+		private static PatentOutcome TryPatentNow(LegalWork legalWork)
+		{
+			if (!CanPatentNow(legalWork))
+			{
+				return PatentOutcome.NotPatentable;
+			}
+
+			// PatentNow charges without a funds check; the game's AI checks this first.
+			if (!Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice))
+			{
+				return PatentOutcome.Unaffordable;
+			}
+
+			if (legalWork.Progress < 1f)
+			{
+				legalWork.Progress = 1f;
+			}
+
+			legalWork.PatentNow();
+			return PatentOutcome.Patented;
 		}
 
 		// PatentNow charges even when nothing transfers; expiry goes before PatentOwner, whose getter clears expired patents.

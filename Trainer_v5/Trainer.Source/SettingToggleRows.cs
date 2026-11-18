@@ -88,6 +88,7 @@ namespace Trainer_v5
 		{
 			var rows = new List<SettingToggleRow>();
 			rows.Add(new SettingToggleRow(TrainerDomain.Employee, "NoForgetfulSkillLoss", "No Forgetful Skill Loss", SettingKeys.NoForgetfulSkillLoss));
+			rows.Add(new SettingToggleRow(TrainerDomain.Work, "AutoInstantPatent", "Auto Instant Patent", SettingKeys.AutoInstantPatent));
 			return rows;
 		}
 	}
