@@ -465,8 +465,8 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
 - Confirmation policy (#242): value-entry and routine one-shot actions
   (takeover, subsidiary, max market recognition, max skill, reset age, sell
   stock, unlock furniture/space, clean office, instant buttons, extend
-  deadline, offshore transfer, team optimization, editors) never ask; the typed dialog is itself
-  the approval for value entry. Only the audited high-impact set asks, always
+  deadline, offshore transfer, team optimization, editors) never ask; the
+  typed dialog is itself the approval for value entry. Only the audited high-impact set asks, always
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
   Rewards, targeted Bankrupt, Max Reputation and Founder. `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
