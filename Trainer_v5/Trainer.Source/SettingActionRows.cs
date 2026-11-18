@@ -41,6 +41,7 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "UnlockAndClaimRewards", "Unlock and Claim Rewards", CompanyFeatures.UnlockAndClaimAllRewards));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "MaxSkill", "Max skill of employees", EmployeeFeatures.EmployeesToMax));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "ResetAge", "Reset age of employees", EmployeeFeatures.ResetAgeOfEmployees));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "MakeAllEmployeesHappy", "Make All Employees Happy Now", EmployeeFeatures.MakeAllEmployeesHappy));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SetProductPrice", "Set Product Price", ProductFeatures.SetProductPrice));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SetProductStock", "Set Product Stock", ProductFeatures.SetProductStock));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Product, "SetActiveUsers", "Set Active Users", ProductFeatures.AddActiveUsers));
