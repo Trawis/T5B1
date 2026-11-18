@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Trainer_v5.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +19,9 @@ namespace Trainer_v5
 		private static GUICombobox _leadEfficiencyComboBox;
 
 		public static GUIWindow Window { get; set; }
-		public static bool Shown { get; set; }
+
+		// Read from the native window each time: the game can close or destroy it without the trainer knowing.
+		public static bool Shown => Window != null && Window.Shown;
 
 		public static void Toggle()
 		{
@@ -31,20 +32,39 @@ namespace Trainer_v5
 			else
 			{
 				Window.Toggle();
-				if (Window.Shown)
+				if (Shown)
 				{
 					RefreshFromSettings();
 				}
 			}
-
-			Shown = Window.Shown;
 		}
 
-		// The game destroys its windows with the scene; a stale Shown would make F1 do nothing in the next game.
+		// GUIWindow.Show opens a hidden window, focuses a visible one and expands a collapsed one.
+		public static void Open()
+		{
+			if (Window == null)
+			{
+				Init();
+			}
+			else
+			{
+				Window.Show();
+				RefreshFromSettings();
+			}
+		}
+
+		public static void Close()
+		{
+			if (Shown)
+			{
+				Window.Close();
+			}
+		}
+
+		// The game destroys its windows with the scene; the stale references are dropped with it.
 		public static void Reset()
 		{
 			Window = null;
-			Shown = false;
 			_refreshing = false;
 			_tabButtons = null;
 			_tabPages = null;
@@ -56,26 +76,6 @@ namespace Trainer_v5
 		private static void Init()
 		{
 			Window = UIHelper.SpawnWindow(_title, "TrainerSettings", "TrainerSettingsPanel");
-
-			if (Window.name == "TrainerSettings")
-			{
-				var closeButtons = Window.GetComponentsInChildren<Button>()
-				  .Where(x => x.name == "CloseButton")
-				  .ToList();
-
-				if (closeButtons.Count == 1)
-				{
-					closeButtons[0].onClick.AddListener(() => Shown = false);
-				}
-				else if (closeButtons.Count == 0)
-				{
-					"SettingsWindow: no CloseButton found on the spawned window; close button listener was not attached.".Log();
-				}
-				else
-				{
-					$"SettingsWindow: expected exactly one CloseButton but found {closeButtons.Count}; close button listener was not attached.".Log();
-				}
-			}
 
 			_toggleBindings = new List<ToggleBinding>();
 			var actionCells = CreateSectionLists();
