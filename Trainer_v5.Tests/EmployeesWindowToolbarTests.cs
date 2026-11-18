@@ -10,7 +10,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Labels = { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder", "Skills" };
 
 		[Fact]
-		public void TheToolbarHasTheSixExistingActionsWithTheirExistingKeys()
+		public void TheToolbarHasTheSixExistingActionsWithTheirExistingKeysAndMakeHappy()
 		{
 			var install = SourceCode.Body(SourceCode.Read("EmployeesWindowTrainer.cs"), "public static void Install()");
 
@@ -19,7 +19,8 @@ namespace Trainer_v5.Tests
 				Assert.Contains("UIFactory.Button(\"Detail" + label + "Button\".LocDef(\"" + label + "\")", install);
 			}
 
-			Assert.Equal(Labels.Length, Regex.Matches(install, @"UIFactory\.Button\(").Count);
+			Assert.Contains("UIFactory.Button(\"DetailMakeHappyButton\".LocDef(\"Make Happy\"), EmployeeFeatures.MakeSelectedEmployeesHappy)", install);
+			Assert.Equal(Labels.Length + 1, Regex.Matches(install, @"UIFactory\.Button\(").Count);
 		}
 
 		[Fact]
