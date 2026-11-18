@@ -50,6 +50,7 @@ the Settings tab.
 | Extend Deadline        | None                   | Extends every contract deadline by one year                 |
 | Unlock all furniture   | None                   | Unlocks all furniture                                       |
 | Unlock all space       | None                   | Unlocks all plots of land                                   |
+| Clean Office Now       | None                   | Removes the floor dirt once from every dirty room your company uses (all rooms, or only the rooms you own when renting), as a janitor would; smell is left to the game. Reports how many rooms were cleaned; with none dirty it only says so. Does not turn on Rooms Never Dirty |
 | Unlock and Claim Rewards | None                 | Completes and claims all task rewards, after a Yes/No confirmation showing how many are still open; with none it only says so |
 | Discord                | None                   | Opens the Discord invite message                            |
 
