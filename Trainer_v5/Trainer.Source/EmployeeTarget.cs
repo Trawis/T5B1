@@ -93,6 +93,27 @@ namespace Trainer_v5
 			return targets;
 		}
 
+		// Every live employee of the active game, for an action on all of them.
+		public static List<EmployeeTarget> ResolveAll()
+		{
+			var targets = new List<EmployeeTarget>();
+			var settings = GameSettings.Instance;
+			if (settings == null || settings.sActorManager == null)
+			{
+				return targets;
+			}
+
+			foreach (var actor in settings.sActorManager.Actors)
+			{
+				if (IsLive(actor))
+				{
+					targets.Add(new EmployeeTarget(actor));
+				}
+			}
+
+			return targets;
+		}
+
 		public static string Describe(EmployeeTarget target, TargetSource source)
 		{
 			if (target != null)

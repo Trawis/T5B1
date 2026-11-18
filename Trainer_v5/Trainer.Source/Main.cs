@@ -28,18 +28,12 @@ namespace Trainer_v5
 
 		public static void OpenSettingsWindow()
 		{
-			if (!SettingsWindow.Shown)
-			{
-				SettingsWindow.Toggle();
-			}
+			SettingsWindow.Open();
 		}
 
 		public static void CloseSettingsWindow()
 		{
-			if (SettingsWindow.Shown)
-			{
-				SettingsWindow.Toggle();
-			}
+			SettingsWindow.Close();
 		}
 
 		public static void CreateUIButtons()

@@ -76,6 +76,34 @@ namespace Trainer_v5
 			}
 		}
 
+		// Janitor scope (AI.FindCleanRoom): never the world Outside room; in rent mode only rooms the player owns.
+		internal static void CleanOfficeNow()
+		{
+			if (!Helpers.RequireGameReady("Clean Office Now"))
+				return;
+
+			int cleaned = 0;
+			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)
+			{
+				Room room = Settings.sRoomManager.Rooms[i];
+				if (room.Outside || !room.IsPlayerControlled() || room.Dirts.Count == 0)
+				{
+					continue;
+				}
+
+				room.ClearDirt();
+				cleaned++;
+			}
+
+			if (cleaned == 0)
+			{
+				Notification.ShowInfo("NoDirtyRooms".LocDef("Trainer: No dirty rooms to clean!"));
+				return;
+			}
+
+			Notification.Popup(string.Format("RoomsCleaned".LocDef("Trainer: {0} room(s) cleaned!"), cleaned));
+		}
+
 		internal static void ApplyNoSickness()
 		{
 			for (int i = 0; i < Settings.sRoomManager.Rooms.Count; i++)

@@ -464,11 +464,13 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   `NotificationTests` enforces this.
 - Confirmation policy (#242): value-entry and routine one-shot actions
   (takeover, subsidiary, max market recognition, max skill, reset age, sell
-  stock, unlock furniture/space, instant buttons, extend deadline, offshore
-  transfer, team optimization, editors) never ask; the typed dialog is itself
-  the approval for value entry. Only the audited high-impact set asks, always
+  stock, unlock furniture/space, clean office, instant buttons, extend
+  deadline, offshore transfer, team optimization, editors) never ask; the
+  typed dialog is itself the approval for value entry. Only the audited
+  high-impact set asks, always
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
-  Rewards, targeted Bankrupt, Max Reputation and Founder. `Ask` is the game's own
+  Rewards, targeted Bankrupt, Max Reputation, Founder, Make All Employees Happy
+  Now and Make Happy (selected employees). `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
   never run the action). Prompts name the action and scope, carry no `Trainer: `
@@ -476,7 +478,9 @@ window (`EmployeesWindowTrainer`, `DetailButtonLayout`; `HUD.employeeWindow.Wind
   scope of zero they only show a message. On Yes the game is checked again
   (`Helpers.RequireGameReady`, same `GameSettings` instance) and the scope is
   re-resolved: AI Bankrupt All and Clear all loans need exactly the companies or
-  loans shown (`Confirmation.IsSameTargets`), rewards the same count
+  loans shown (`Confirmation.IsSameTargets`), the happy actions exactly the
+  employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
+  rewards the same count
   (`Confirmation.IsScopeUnchanged`); if it changed nothing is applied and the
   player is told. Adding a confirmation means updating this list and
   `ConfirmationTests`, which pins the exact set.

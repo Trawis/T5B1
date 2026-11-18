@@ -60,6 +60,55 @@ namespace Trainer_v5
 			Notification.Popup("AllEmployeesMaxSkilled".LocDef("Trainer: All employees are now max skilled!"));
 		}
 
+		internal static void MakeAllEmployeesHappy()
+		{
+			if (!Helpers.RequireGameReady("Make All Employees Happy Now"))
+				return;
+
+			List<EmployeeTarget> targets = EmployeeTarget.ResolveAll();
+			if (targets.Count == 0)
+			{
+				Notification.ShowInfo("NoEmployeesToMakeHappy".LocDef("There are no employees to make happy."));
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Make All Employees Happy Now", string.Format("MakeAllHappyConfirm".LocDef("Make all {0} employee(s) happy now?\nTheir negative, lawsuit and quit thoughts are removed and not restored. Positive thoughts stay."), targets.Count), () => ApplyMakeHappy(game, targets, EmployeeTarget.ResolveAll()));
+		}
+
+		internal static void MakeSelectedEmployeesHappy()
+		{
+			if (!Helpers.RequireGameReady("Make Selected Employees Happy Now"))
+				return;
+
+			List<EmployeeTarget> targets = EmployeeTarget.ResolveSelection();
+			if (targets.Count == 0)
+			{
+				Notification.ShowError(SharedMessages.SelectEmployeesError());
+				return;
+			}
+
+			GameSettings game = Settings;
+			Confirmation.Ask("Make Selected Employees Happy Now", string.Format("MakeSelectedHappyConfirm".LocDef("Make the {0} selected employee(s) happy now?\nTheir negative, lawsuit and quit thoughts are removed and not restored. Positive thoughts stay."), targets.Count), () => ApplyMakeHappy(game, targets, EmployeeTarget.ResolveSelection()));
+		}
+
+		// The dialog stays open while the game runs, so the game and the exact employees are re-checked first.
+		private static void ApplyMakeHappy(GameSettings game, List<EmployeeTarget> shown, List<EmployeeTarget> current)
+		{
+			if (!ReferenceEquals(game, Settings) || !Confirmation.IsSameTargets(shown.Select(x => x.Actor).ToList(), current.Select(x => x.Actor).ToList()) || !shown.All(x => x.IsStillValid()))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			for (int i = 0; i < shown.Count; i++)
+			{
+				ApplyFullSatisfactionToActor(shown[i].Actor);
+			}
+
+			Notification.Popup(string.Format("EmployeesMadeHappy".LocDef("Trainer: {0} employee(s) are happy now!"), shown.Count));
+		}
+
 		internal static void RestoreIncreaseWalkSpeed()
 		{
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)

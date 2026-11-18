@@ -28,6 +28,7 @@ namespace Trainer_v5
 				UIFactory.Button("DetailLeadSpecButton".LocDef("LeadSpec"), () => EmployeeLeadSpecChangeWindow.Instance.Show()),
 				UIFactory.Button("DetailFounderButton".LocDef("Founder"), FounderToggle.Start),
 				UIFactory.Button("DetailSkillsButton".LocDef("Skills"), EmployeeSkillChangeWindow.Show),
+				UIFactory.Button("DetailMakeHappyButton".LocDef("Make Happy"), EmployeeFeatures.MakeSelectedEmployeesHappy),
 			};
 
 			const int width = 80, height = 32, spacing = 4;

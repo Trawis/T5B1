@@ -37,12 +37,14 @@ namespace Trainer_v5.Tests
 		{
 			var source = Window();
 			var toggle = SourceCode.Body(source, "public static void Toggle()");
+			var open = SourceCode.Body(source, "public static void Open()");
 
-			Assert.Equal(1, Count(source, "Init();"));
+			Assert.Equal(2, Count(source, "Init();"));
 			SourceCode.AssertInOrder(toggle, "if (Window == null) { Init(); }", "Window.Toggle();", "built only when there is no window");
+			SourceCode.AssertInOrder(open, "if (Window == null) { Init(); }", "Window.Show();", "built only when there is no window");
 			Assert.Equal(1, Count(source, "BuildTabStrip();"));
 			Assert.Equal(1, Count(source, "UIHelper.SpawnWindow("));
-			foreach (var body in new[] { toggle, SourceCode.Body(source, "private static void RefreshFromSettings()") })
+			foreach (var body in new[] { toggle, open, SourceCode.Body(source, "private static void RefreshFromSettings()") })
 			{
 				Assert.DoesNotContain("AddListener", body);
 				Assert.DoesNotContain("Spawn", body);
@@ -197,7 +199,7 @@ namespace Trainer_v5.Tests
 		{
 			var reset = SourceCode.Body(Window(), "public static void Reset()");
 
-			foreach (var statement in new[] { "Window = null;", "Shown = false;", "_tabButtons = null;", "_tabPages = null;", "_toggleBindings = null;", "_efficiencyComboBox = null;", "_leadEfficiencyComboBox = null;" })
+			foreach (var statement in new[] { "Window = null;", "_tabButtons = null;", "_tabPages = null;", "_toggleBindings = null;", "_efficiencyComboBox = null;", "_leadEfficiencyComboBox = null;" })
 			{
 				Assert.Contains(statement, reset);
 			}
@@ -236,7 +238,6 @@ namespace Trainer_v5.Tests
 			SourceCode.AssertInOrder(init, "Window.SetMinSize(", "Window.LockWindowSize();", "the lock copies MinSize");
 			Assert.Contains("rect.sizeDelta = window.MinSize;", helper);
 			Assert.Contains("window.SizeButton.SetActive(false);", helper);
-			Assert.Equal(1, Count(Window(), "AddListener(() => Shown = false)"));
 		}
 
 		[Fact]
@@ -306,7 +307,6 @@ namespace Trainer_v5.Tests
 			var createToggle = SourceCode.Body(source, "private static GameObject CreateSettingToggle(");
 
 			Assert.Equal(1, Count(efficiencyRow, "AddListener("));
-			Assert.Equal(1, Count(source, "onClick.AddListener("));
 			Assert.DoesNotContain("AddListener", refreshEfficiency);
 			Assert.DoesNotContain("AddListener", createToggle);
 			Assert.Equal(1, Count(createToggle, "_toggleBindings.Add("));

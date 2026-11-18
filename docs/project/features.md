@@ -1,7 +1,8 @@
 # Features
 
 Current user-visible features. Open the trainer with the **Trainer** button
-(or F1; F2 closes it). The window has three tabs and reopens on the tab last
+(or F1, which also brings an open window to the front and expands it when
+collapsed; F2 only closes it). The window has three tabs and reopens on the tab last
 used in the running game: **Actions** (the buttons below, in Company, Employee,
 Product, Work and Environment sections), **Toggles** (the toggles below, in
 Employee, Environment, Work, Company and Product sections; the page scrolls
@@ -46,11 +47,13 @@ the Settings tab.
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
 | Reset age of employees | None                   | Resets every employee to the youngest age                   |
+| Make All Employees Happy Now | None (confirmation) | Once, after a Yes/No confirmation showing the employee count, gives every current employee the Full Satisfaction treatment: removes negative, lawsuit and quit thoughts (not restored), keeps positive ones, clears active complaints, maxes job satisfaction and adds the Love Work thought; with no employees it only says so |
 | Days per month         | Amount                 | Changes days per month (requires restart)                   |
 | Clear all loans        | None                   | Removes all loans without repaying them, after a Yes/No confirmation showing the loan count; with none it only says so |
 | Extend Deadline        | None                   | Extends every contract deadline by one year                 |
 | Unlock all furniture   | None                   | Unlocks all furniture                                       |
 | Unlock all space       | None                   | Unlocks all plots of land                                   |
+| Clean Office Now       | None                   | Removes the floor dirt once from every dirty room your company uses (all rooms, or only the rooms you own when renting), as a janitor would; smell is left to the game. Reports how many rooms were cleaned; with none dirty it only says so. Does not turn on Rooms Never Dirty |
 | Unlock and Claim Rewards | None                 | Completes and claims all task rewards, after a Yes/No confirmation showing how many are still open; with none it only says so |
 | Discord                | None                   | Opens the Discord invite message                            |
 
@@ -184,6 +187,7 @@ selected in its list; with none or several selected the single-employee actions
 (including the Trait, Demand and LeadSpec editors) only show a message and open
 nothing. **Skills** needs at least one selected employee to open; **Set Skills**
 and **Set Base Skills** edit every employee selected when they are pressed.
+**Make Happy** needs at least one selected employee and works on every one selected.
 
 |  Feature       | Description                                                        |
 |:--------------:|:-----------------------------------------------------------------:|
@@ -194,3 +198,4 @@ and **Set Base Skills** edit every employee selected when they are pressed.
 | LeadSpec       | Sets lead specialization values per software type                  |
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
 | Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) after a Yes/No confirmation naming the employee and both states |
+| Make Happy     | Once, after a Yes/No confirmation showing the selected count, gives the selected employees the same treatment as Make All Employees Happy Now |

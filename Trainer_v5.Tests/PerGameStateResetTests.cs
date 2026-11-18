@@ -65,7 +65,6 @@ namespace Trainer_v5.Tests
 			var reset = Between(Read("SettingsWindow.cs"), "public static void Reset()", "private static void Init()");
 
 			Assert.Contains("Window = null;", reset);
-			Assert.Contains("Shown = false;", reset);
 		}
 
 		[Fact]
