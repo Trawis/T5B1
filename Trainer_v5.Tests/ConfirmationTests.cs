@@ -136,13 +136,14 @@ namespace Trainer_v5.Tests
 			}
 
 			found.Sort(StringComparer.Ordinal);
-			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:5, EmployeeFeatures.cs:2, FounderToggle.cs:1", string.Join(", ", found));
+			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:6, EmployeeFeatures.cs:2, FounderToggle.cs:1", string.Join(", ", found));
 
-			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards", "ForceBankruptAction", "MaxReputation" })
+			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards", "AskForceBankrupt", "MaxReputation" })
 			{
 				Assert.Contains("Confirmation.Ask(", Company("internal static void " + name));
 			}
 
+			Assert.Contains("Confirmation.Ask(", Company("private static void AdjustAIFundsBy"));
 			Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start"));
 			Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("Experimental", "AmazingCompatibility.cs"), "internal static void Run"));
 
@@ -155,7 +156,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void RoutineActionsDoNotAsk()
 		{
-			foreach (var method in new[] { "TakeoverCompanyAction", "SubDCompanyAction", "MaxMarketRecognition", "TransferOffshoreFunds", "UnlockFurniture", "UnlockAllSpace", "MonthDays" })
+			foreach (var method in new[] { "TakeoverCompanyAction", "SubDCompanyAction", "TakeOver(", "MakeSubsidiary(", "AdjustAIFunds(", "MaxMarketRecognition", "TransferOffshoreFunds", "UnlockFurniture", "UnlockAllSpace", "MonthDays" })
 			{
 				Assert.DoesNotContain("Confirmation.", Company("internal static void " + method));
 			}

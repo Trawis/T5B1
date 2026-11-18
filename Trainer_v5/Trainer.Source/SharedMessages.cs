@@ -24,9 +24,14 @@ namespace Trainer_v5
 			return "ProductNamePrompt".LocDef("Type product name:");
 		}
 
-		public static string AddAIFundsTitle()
+		public static string CompanyAlreadyBankrupt(string name)
 		{
-			return "AddAIFundsTitle".LocDef("Add AI Funds");
+			return string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), name);
+		}
+
+		public static string AdjustAIFundsTitle()
+		{
+			return "AdjustAIFundsTitle".LocDef("Adjust AI Funds");
 		}
 
 		public static string EditorRefreshButton()

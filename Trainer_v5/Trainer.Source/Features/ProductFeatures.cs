@@ -162,7 +162,7 @@ namespace Trainer_v5
 			return product;
 		}
 
-		private static bool IsLiveProduct(SoftwareProduct product)
+		internal static bool IsLiveProduct(SoftwareProduct product)
 		{
 			return Settings != null && Settings.simulation.GetAllProducts(false).Contains(product);
 		}

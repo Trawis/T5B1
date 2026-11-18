@@ -13,7 +13,7 @@ supplies the product name for the product actions. Set Product Price, Stock and 
 Users match the name exactly across every company (player and AI) and report a
 conflict instead of guessing when several products share it. The product is
 chosen when the button is pressed, and the value applies only if that product
-still exists. Company names (Takeover, Subsidiary, Add AI Funds, Bankrupt) are
+still exists. Company names (Takeover, Subsidiary, Adjust AI Funds, Bankrupt) are
 also matched exactly and refused when ambiguous. Max Followers,
 Max Followers (Old) and Fix Bugs only look at your own company's work items.
 
@@ -25,7 +25,7 @@ the Settings tab.
 |  Feature               | Parameters             | Description                                                 |
 |:----------------------:|:----------------------:|:-----------------------------------------------------------:|
 | Add Money              | Amount                 | Adds money to your company (Deals category)                 |
-| Add AI Funds           | Company Name, Amount   | Adds money to the specified AI company (Deals category)     |
+| Adjust AI Funds        | Company Name, Amount   | Changes the money of the specified AI company (Deals category): a positive amount adds, a negative one subtracts after a Yes/No confirmation and 0 changes nothing; see Companies list |
 | Max Followers          | Product Name           | Fills the followers of your active (not paused) in-development product to its current cap |
 | Max Followers (Old)    | Product Name           | Adds a billion followers on every click, no limits |
 | Takeover Company       | Company Name           | Buys out the specified company                              |
@@ -196,6 +196,21 @@ value is not recorded, so the trainer cannot put it back.
 | No Insurance Cost, No Loan Interest, Free Marketing, No Founder Dividends | Money already refunded stays refunded |
 | Disable Needs, Disable Stress, Lock Temperature To 21, Rooms Never Dirty, No Sickness, More Inspiration, No Offshore Heat, No Server Cost, Free Staff, Disable Force Pause, Disable Force Freeze | The last applied values stay until the game writes them again; how soon that happens is not determined. Sickness, dirt and similar states already cleared stay cleared |
 
+## Companies list
+
+Buttons above the game's Companies list act on the one company selected in it,
+captured when the button is pressed. With none or several selected, your own
+company or one of its subsidiaries, or a company already going bankrupt, they
+only show a message. A company that is gone (another game was loaded) by the
+time a dialog is answered is not changed.
+
+|  Feature        | Description                                                        |
+|:---------------:|:------------------------------------------------------------------:|
+| Adjust AI Funds | Asks for an amount, as the Adjust AI Funds action does. A negative amount is subtracted only after a Yes/No confirmation naming the company and amount; when it is more than the company's money the confirmation warns that the game then bankrupts the company at once (one-way). If its money dropped below the amount while the question was open, nothing is changed |
+| Force Bankrupt  | Same as Bankrupt, for the selected company                         |
+| Take Over       | Same as Takeover Company, for the selected company                 |
+| Make Subsidiary | Same as Subsidiary Company, for the selected company               |
+
 ## Employee editing
 
 The extra buttons above the game's Employees window edit the one employee
@@ -215,3 +230,15 @@ and **Set Base Skills** edit every employee selected when they are pressed.
 | Inspiration    | Sets an employee's inspiration (0 to 2.0)                          |
 | Founder        | Turns an employee's Founder flag on or off (a founder is unpaid and cannot be fired) after a Yes/No confirmation naming the employee and both states |
 | Make Happy     | Once, after a Yes/No confirmation showing the selected count, gives the selected employees the same treatment as Make All Employees Happy Now |
+
+## Product editing
+
+**Set Price**, **Set Stock** and **Set Active Users** sit above the game's list
+of your own products and edit the one software product selected in it. With
+none or several selected, with the add-on or framework view shown, or with an
+archived or foreign product selected, they only show a message and open
+nothing. The product is taken when the button is pressed, never looked up by
+name, so products that share a name are not mixed up; the value applies only
+if that product is still yours and on the market when the dialog is confirmed.
+Values and ranges match the Actions-tab buttons (price from 0), which stay
+unchanged.

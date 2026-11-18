@@ -102,6 +102,11 @@ namespace Trainer_v5
 				return;
 			}
 
+			TakeOver(simulatedCompany);
+		}
+
+		internal static void TakeOver(SimulatedCompany simulatedCompany)
+		{
 			if (!simulatedCompany.CanBuyOut(Settings.MyCompany))
 			{
 				Notification.ShowError("CompanyCannotBeBought".LocDef("Trainer: Company can't be bought!"));
@@ -118,7 +123,7 @@ namespace Trainer_v5
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
-			Notification.ShowInfo(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), input));
+			Notification.ShowInfo(string.Format("CompanyTakenOver".LocDef("Trainer: Company {0} has been takovered by you!"), simulatedCompany.Name));
 		}
 
 		internal static void TakeoverCompany()
@@ -134,6 +139,11 @@ namespace Trainer_v5
 				return;
 			}
 
+			MakeSubsidiary(Company);
+		}
+
+		internal static void MakeSubsidiary(SimulatedCompany Company)
+		{
 			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
 			if (!IsBankruptTarget(Company))
 			{
@@ -168,10 +178,14 @@ namespace Trainer_v5
 				return;
 			}
 
-			SimulatedCompany company = matches[0];
+			AskForceBankrupt(matches[0]);
+		}
+
+		internal static void AskForceBankrupt(SimulatedCompany company)
+		{
 			if (company.Bankrupt)
 			{
-				Notification.ShowInfo(string.Format("CompanyAlreadyBankrupt".LocDef("Trainer: {0} is already going bankrupt."), company.Name));
+				Notification.ShowInfo(SharedMessages.CompanyAlreadyBankrupt(company.Name));
 				return;
 			}
 
@@ -213,24 +227,18 @@ namespace Trainer_v5
 				return;
 			}
 
-			SimulatedCompany company = matches[0];
-			InputHelper.RequestInt(string.Format("AddAIFundsPrompt".LocDef("How much money do you want to add to {0}?"), company.Name), SharedMessages.AddAIFundsTitle(), "100000",
-				amount =>
-				{
-					if (!IsLiveAICompany(company))
-					{
-						Notification.ShowError("CompanyChangedNothingEdited".LocDef("The company is no longer available. Nothing was changed."));
-						return;
-					}
-
-					company.MakeTransaction(amount, Company.TransactionCategory.Deals);
-					Notification.Popup(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name));
-				}, 0, int.MaxValue);
+			AdjustAIFunds(matches[0]);
 		}
 
 		internal static void AddAIFunds()
 		{
-			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AddAIFundsTitle(), "", AddAIFundsAction);
+			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AdjustAIFundsTitle(), "", AddAIFundsAction);
+		}
+
+		// A positive amount adds, a negative one subtracts its size and 0 changes nothing; any int is accepted.
+		internal static void AdjustAIFunds(SimulatedCompany company)
+		{
+			InputHelper.RequestInt(string.Format("AdjustAIFundsPrompt".LocDef("How much money do you want to add to {0}? A negative amount subtracts.\nCurrent funds: {1}"), company.Name, company.Money.Currency()), SharedMessages.AdjustAIFundsTitle(), "100000", amount => AdjustAIFundsBy(company, amount));
 		}
 
 		internal static void MaxReputation()
@@ -458,6 +466,76 @@ namespace Trainer_v5
 			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
 		}
 
+		// The game bankrupts an AI company whose money a transaction would take below zero, so that case is warned about.
+		private static void AdjustAIFundsBy(SimulatedCompany company, int amount)
+		{
+			if (!IsAdjustableAICompany(company))
+				return;
+
+			if (amount == 0)
+			{
+				Notification.ShowInfo("AIFundsZero".LocDef("The amount is 0. Nothing was changed."));
+				return;
+			}
+
+			if (amount > 0)
+			{
+				ApplyAIFunds(company, amount);
+				return;
+			}
+
+			double reduction = -(double)amount;
+			double money = company.Money;
+			bool bankrupts = !company.CanMakeTransaction(amount);
+			string message = bankrupts
+				? string.Format("AIFundsBankruptConfirm".LocDef("Subtract {1} from {0}?\nThat is more than its funds of {2}: the game bankrupts the company at once, cancels its deals and removes it from the market. This cannot be undone."), company.Name, reduction.Currency(), money.Currency())
+				: string.Format("AIFundsReduceConfirm".LocDef("Subtract {1} from {0}?\nIts funds go from {2} to {3}."), company.Name, reduction.Currency(), money.Currency(), (money + amount).Currency());
+			Confirmation.Ask("Adjust AI Funds", message, () =>
+			{
+				if (!IsAdjustableAICompany(company))
+					return;
+
+				// Its funds may have dropped while the question was open; a bankruptcy needs its own warning.
+				if (!bankrupts && !company.CanMakeTransaction(amount))
+				{
+					Confirmation.ShowScopeChanged();
+					return;
+				}
+
+				ApplyAIFunds(company, amount);
+			});
+		}
+
+		private static bool IsAdjustableAICompany(SimulatedCompany company)
+		{
+			if (!IsLiveAICompany(company))
+			{
+				Notification.ShowError("CompanyChangedNothingEdited".LocDef("The company is no longer available. Nothing was changed."));
+				return false;
+			}
+
+			if (company.Bankrupt)
+			{
+				Notification.ShowInfo(SharedMessages.CompanyAlreadyBankrupt(company.Name));
+				return false;
+			}
+
+			return true;
+		}
+
+		private static void ApplyAIFunds(SimulatedCompany company, int amount)
+		{
+			company.MakeTransaction(amount, Company.TransactionCategory.Deals);
+			if (amount > 0)
+			{
+				Notification.Popup(string.Format("AIFundsAdded".LocDef("Trainer: Money has been added to {0}!"), company.Name));
+			}
+			else
+			{
+				Notification.Popup(string.Format("AIFundsSubtracted".LocDef("Trainer: Money has been subtracted from {0}!"), company.Name));
+			}
+		}
+
 		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
 		private static void ConfirmForceBankrupt(SimulatedCompany company)
 		{
@@ -468,7 +546,7 @@ namespace Trainer_v5
 		}
 
 		// Still the same object in the current game's simulation and still not the player's.
-		private static bool IsLiveAICompany(SimulatedCompany company)
+		internal static bool IsLiveAICompany(SimulatedCompany company)
 		{
 			SimulatedCompany current;
 			return Settings != null && Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company && IsBankruptTarget(company);
