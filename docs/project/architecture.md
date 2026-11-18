@@ -509,7 +509,8 @@ window instance with the same rollback and reset as the Employees buttons.
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
   Rewards, targeted Bankrupt (typed name or Companies list), Adjust AI Funds
   with a negative amount, Max Reputation, Founder, Make All Employees Happy
-  Now and Make Happy (selected employees). `Ask` is the game's own
+  Now, Make Happy (selected employees) and the experimental Amazing
+  Compatibility. `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
   never run the action). Prompts name the action and scope, carry no `Trainer: `
@@ -521,9 +522,11 @@ window instance with the same rollback and reset as the Employees buttons.
   employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
   rewards the same count (`Confirmation.IsScopeUnchanged`), Bankrupt and Adjust
   AI Funds the same live AI company that is not bankrupt (a reduction confirmed
-  without the bankruptcy warning must still not bankrupt it); if it changed
-  nothing is applied and the player is told. Adding a confirmation means
-  updating this list and
+  without the bankruptcy warning must still not bankrupt it), and Amazing
+  Compatibility the same game and personality graph, still outside
+  multiplayer, with pairs still below the maximum; if it changed nothing is
+  applied and the player is told. Adding a confirmation means updating this
+  list and
   `ConfirmationTests`, which pins the exact set.
 - Most UI text is localized (a localization key with an English default) in
   `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and

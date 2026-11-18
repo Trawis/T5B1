@@ -245,7 +245,9 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			foreach (var row in SettingActionRows.Create())
+			var actionRows = SettingActionRows.Create();
+			actionRows.AddRange(SettingActionRows.CreateExperimental());
+			foreach (var row in actionRows)
 			{
 				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Actions")
 				{

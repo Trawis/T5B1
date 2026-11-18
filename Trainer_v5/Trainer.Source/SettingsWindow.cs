@@ -192,7 +192,13 @@ namespace Trainer_v5
 			// Helpers.ProductPriceName is static so the field text survives a rebuild.
 			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 
-			foreach (var row in SettingActionRows.Create())
+			var rows = SettingActionRows.Create();
+			if (ExperimentalOptions.Enabled)
+			{
+				rows.AddRange(SettingActionRows.CreateExperimental());
+			}
+
+			foreach (var row in rows)
 			{
 				var button = UIHelper.CreateButton(row.LocKey.LocDef(row.DefaultText), row.Action);
 				if (row.Tab == SettingsTab.Settings)

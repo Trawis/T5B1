@@ -18,14 +18,22 @@ namespace Trainer_v5.Tests
 			"MaxMarketRecognition=Actions/Product", "InstantMarketing=Actions/Product", "SellProductsStock=Actions/Product",
 			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPatent=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
 			"UnlockAllFurniture=Actions/Environment", "UnlockAllSpace=Actions/Environment", "CleanOfficeNow=Actions/Environment",
-			"Discord=Settings/None"
+			"Discord=Settings/None",
+			"AmazingCompatibility=Actions/Employee"
 		};
+
+		private static List<SettingActionRow> AllRows()
+		{
+			var rows = SettingActionRows.Create();
+			rows.AddRange(SettingActionRows.CreateExperimental());
+			return rows;
+		}
 
 		[Fact]
 		public void EveryActionButtonIsOnExactlyTheGoldenTabAndDomain()
 		{
 			var actual = new List<string>();
-			foreach (var row in SettingActionRows.Create())
+			foreach (var row in AllRows())
 			{
 				actual.Add(row.LocKey + "=" + row.Tab + "/" + row.Domain);
 			}
@@ -37,7 +45,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void EveryRowHasAUniqueKeyATextAHandlerAndAValidPlace()
 		{
-			var rows = SettingActionRows.Create();
+			var rows = AllRows();
 			var keys = new HashSet<string>();
 			foreach (var row in rows)
 			{
@@ -54,7 +62,7 @@ namespace Trainer_v5.Tests
 		public void EveryActionDomainOfThePageIsUsedAndEveryUsedDomainIsOnThePage()
 		{
 			var used = new HashSet<TrainerDomain>();
-			foreach (var row in SettingActionRows.Create())
+			foreach (var row in AllRows())
 			{
 				if (row.Tab == SettingsTab.Actions)
 				{
@@ -78,7 +86,7 @@ namespace Trainer_v5.Tests
 			}
 
 			var wrong = new List<string>();
-			foreach (var row in SettingActionRows.Create())
+			foreach (var row in AllRows())
 			{
 				string text;
 				if (!english.TryGetValue(row.LocKey, out text))

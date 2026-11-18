@@ -84,6 +84,11 @@ namespace Trainer_v5
 			return "ProductChangedNothingEdited".LocDef("The product is no longer available. Nothing was changed.");
 		}
 
+		public static string NotAvailableInMultiplayer()
+		{
+			return "NotAvailableInMultiplayer".LocDef("Not available in multiplayer.");
+		}
+
 		public static string EmployeeChangedPressRefresh()
 		{
 			return "EmployeeChangedPressRefresh".LocDef("The employee changed or is not available. Press Refresh.");
