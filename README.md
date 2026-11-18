@@ -107,11 +107,11 @@ Report bugs and suggestions through GitHub Issues; community chat is on
 | Push to `develop`, PR to `develop` or `main` | CI | Release build + format check + tests |
 | Daily schedule or manual dispatch | Nightly | When `develop` has commits from the last 24 hours: build + format check + tests, a nightly zip, and a prerelease development build tagged `nightly-<UTC time>-r<run>-a<attempt>` that does not replace the latest stable release |
 | PR to `main` | Release Version Guard | Fails when the `v<Helpers.Version>` tag already exists |
-| Push to `main` | Release | Build + format check + tests, versioned zip + GitHub Release tagged `v<Helpers.Version>` |
+| Push to `main` | Release | Build + format check + tests, versioned zip + GitHub Release tagged `v<Helpers.Version>`, with the notes of the matching `CHANGELOG.md` section |
 
-Increase `Helpers.Version` before merging another release to `main`.
+Increase `Helpers.Version` before merging another release to `main`, and add exactly one `## [<Helpers.Version>] - YYYY-MM-DD` section with notes to `CHANGELOG.md`. Release fails without publishing when that section is missing, empty, malformed or duplicated.
 
-In Nightly and Release, build, format check and tests run read-only; only a separate publish job can write, and it publishes the zip that job built and tested.
+In Nightly and Release, build, format check and tests run read-only; only a separate publish job can write, and it publishes the zip that job built and tested (in Release, with the notes that job extracted from the same commit).
 
 #### Nightly development builds
 
