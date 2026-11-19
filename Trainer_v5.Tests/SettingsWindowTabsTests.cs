@@ -56,7 +56,7 @@ namespace Trainer_v5.Tests
 		public void EveryListenerIsAddedWhileTheWindowIsBuilt()
 		{
 			var source = Window();
-			var allowed = new[] { "private static void Init()", "private static GUICombobox AddEfficiencyRow(" };
+			var allowed = new[] { "private static void Build()", "private static GUICombobox AddEfficiencyRow(" };
 			var inAllowed = 0;
 			foreach (var marker in allowed)
 			{
@@ -166,7 +166,7 @@ namespace Trainer_v5.Tests
 			Assert.Equal(2, Count(efficiency, "AddEfficiencyRow(settingsCells,"));
 			Assert.Contains("_efficiencyComboBox = AddEfficiencyRow(", efficiency);
 			Assert.Contains("_leadEfficiencyComboBox = AddEfficiencyRow(", efficiency);
-			Assert.Contains("PlaceSettingsPage(settingsPage.Content, settingsCells);", SourceCode.Body(source, "private static void Init()"));
+			Assert.Contains("PlaceSettingsPage(settingsPage.Content, settingsCells);", SourceCode.Body(source, "private static void Build()"));
 		}
 
 		[Fact]
@@ -221,7 +221,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheWindowHeightReservesTheTabStripAndIsTheSameOnEveryTab()
 		{
-			var init = SourceCode.Body(Window(), "private static void Init()");
+			var init = SourceCode.Body(Window(), "private static void Build()");
 
 			Assert.Contains("UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 1)", init);
 			Assert.Contains("Window.SetMinSize(SettingsWindowState.WindowWidth, SettingsWindowState.WindowHeight(visibleRows));", init);
@@ -232,7 +232,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheWindowIsLockedToItsContentAfterTheMinimumSizeIsSet()
 		{
-			var init = SourceCode.Body(Window(), "private static void Init()");
+			var init = SourceCode.Body(Window(), "private static void Build()");
 			var helper = SourceCode.Body(SourceCode.Read("UIHelper.cs"), "public static void LockWindowSize(");
 
 			SourceCode.AssertInOrder(init, "Window.SetMinSize(", "Window.LockWindowSize();", "the lock copies MinSize");
@@ -310,7 +310,7 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("AddListener", refreshEfficiency);
 			Assert.DoesNotContain("AddListener", createToggle);
 			Assert.Equal(1, Count(createToggle, "_toggleBindings.Add("));
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Init()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells);", "the list is replaced before the toggles register in it");
+			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Build()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells);", "the list is replaced before the toggles register in it");
 		}
 
 		private static int Count(string source, string text)
