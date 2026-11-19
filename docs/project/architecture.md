@@ -200,8 +200,8 @@ list:
 - Clear all loans, Unlock and Claim Rewards, Max Reputation
 - Founder, Make All Employees Happy Now and Make Happy
 - Optimize Team Assignments
-- Experimental: Amazing Compatibility, Skip 1 Day, Skip To Hour and Hire
-  Employees
+- Experimental: Amazing Compatibility, Skip 1 Day, Skip To Hour, Hire
+  Employees and Fire Quietly
 
 **Messages.** Only `Notification` calls the game's popup and dialog APIs.
 Popups start with `Trainer: ` once and use `PopupIDs.None`, the only id the
@@ -217,6 +217,10 @@ game shows.
   Removal changes `DemandResults`, `DemandsMet` and `DemandsRequested`
   together, because the detail window shows demands only while `DemandsMet` is
   set.
+- `Actor.Fire` skips the coworker `TeammateFired` mood, `NoteFiring` and the
+  Negligence lawsuit check when `QuitAmicably` is set. Fire Quietly calls
+  `NoteFiring` itself and runs only when that lawsuit is impossible
+  (employed 12 months or less, or `ComplaintLevel` at most 1).
 - `PatentNow` charges without checking funds, so funds, expiry and ownership
   are checked first.
 

@@ -188,7 +188,8 @@ Toggles tabs.
 | Auto Max Followers | Toggle | Max Followers every hour for your unpaused beta products |
 | Amazing Compatibility ⚠ | Action | Raises every personality pair below 2 to 2. **Permanent in this save and its autosaves. No undo. Back up first.** |
 | Hire Employees ⚠ | Action | Hires 1–10 medium-wage candidates of one role through the game's hiring steps and pays their upfront demands. Skips candidates your reputation or money cannot cover |
+| Fire Quietly ⚠ | Action | Fires the one employee selected in the Employees window like the game does (severance, hiring reputation, stats), but teammates get no "teammate fired" mood. Not for founders. Refused when the employee could sue for negligence; use the game's Fire button then. **Permanent** |
 | Skip 1 Hour, Skip 1 Day ⚠, Skip To Hour ⚠ | Action | Advances the clock hour by hour through the game's updates, so salaries, bills, deadlines and autosaves happen. Staff in the office do no work during skipped hours. Refused while the game holds time |
 
-Amazing Compatibility, Hire Employees and the skips are not available in
-multiplayer.
+Amazing Compatibility, Hire Employees, Fire Quietly and the skips are not
+available in multiplayer.
