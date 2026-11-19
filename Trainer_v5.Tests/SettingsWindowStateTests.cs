@@ -113,16 +113,25 @@ namespace Trainer_v5.Tests
 		}
 
 		[Theory]
-		[InlineData(0, 0, 0)]
-		[InlineData(1, 0, 1)]
-		[InlineData(2, 1, 0)]
-		[InlineData(3, 1, 1)]
-		[InlineData(4, 0, 3)]
-		public void EfficiencyGroupsSitSideBySideWithTheLabelAboveItsDropDownAndDiscordBelowAGap(int cell, int column, int row)
+		[InlineData(0, 0, 1)]
+		[InlineData(1, 0, 2)]
+		[InlineData(2, 1, 1)]
+		[InlineData(3, 1, 2)]
+		[InlineData(4, 0, 4)]
+		public void EfficiencyGroupsSitSideBySideUnderTheEmployeeHeaderAndDiscordBelowAGap(int cell, int column, int row)
 		{
 			Assert.Equal(column, SettingsWindowState.SettingsCellColumn(cell));
 			Assert.Equal(row, SettingsWindowState.SettingsCellRow(cell));
 			Assert.True(SettingsWindowState.SettingsCellRow(cell) < SettingsWindowState.SettingsPageRows);
+		}
+
+		[Theory]
+		[InlineData(7, 0, 7)]
+		[InlineData(7, 2, 10)]
+		[InlineData(0, 1, 2)]
+		public void ExperimentalSectionsAddTheirOwnHeaderOnlyWhenTheyHaveControls(int regular, int experimental, int expected)
+		{
+			Assert.Equal(expected, SettingsWindowState.PageRowsWithExperimental(regular, experimental));
 		}
 
 		[Fact]

@@ -427,7 +427,9 @@ three panels that are built once in `Init` and shown with `SetActive`, so a tab
 switch creates nothing, adds no listener and keeps typed and selected values.
 Actions and Toggles are one page each with a header per domain
 (`TrainerDomain`: Company, Employee, Product, Work, Environment) and scroll when
-the canvas is short; Settings holds the efficiency dropdowns and Discord. Buttons
+the canvas is short; experimental rows follow under one Experimental header,
+again per domain, only while the option is on. Settings holds the efficiency
+dropdowns under an Employee header, and Discord. Buttons
 are rows in `SettingActionRows` (tab, domain, localization key, default text,
 handler) and toggles are rows in `SettingToggleRows` (domain, localization key,
 default text, setting); the three toggles with an immediate side effect are

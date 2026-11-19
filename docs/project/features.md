@@ -6,8 +6,10 @@ collapsed; F2 only closes it). The window has three tabs and reopens on the tab 
 used in the running game: **Actions** (the buttons below, in Company, Employee,
 Product, Work and Environment sections), **Toggles** (the toggles below, in
 Employee, Environment, Work, Company and Product sections; the page scrolls
-when the screen is short) and **Settings** (the two efficiency dropdowns and
-Discord). Switching tabs runs nothing and keeps typed and selected values. On
+when the screen is short) and **Settings** (the two efficiency dropdowns under
+Employee, and Discord). With Experimental on, Actions and Toggles end with an
+**Experimental** section, also grouped by domain. Switching tabs runs nothing
+and keeps typed and selected values. On
 the Actions tab the *Product Name Here* input box, first in the Product section,
 supplies the product name for the product actions. Set Product Price, Stock and Active
 Users match the name exactly across every company (player and AI) and report a

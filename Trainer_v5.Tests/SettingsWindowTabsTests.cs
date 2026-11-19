@@ -253,7 +253,8 @@ namespace Trainer_v5.Tests
 					Assert.DoesNotContain("ExperimentalOptions", source);
 				}
 
-				Assert.DoesNotContain("\"Experimental\"", source);
+				// The only allowed use is the Experimental section header, not an Experimental toggle or button.
+				Assert.DoesNotContain("\"Experimental\"", source.Replace("\"SectionExperimental\".LocDef(\"Experimental\")", string.Empty));
 				Assert.DoesNotContain("SettingKeys.Experimental", source);
 				Assert.DoesNotContain("IsDebug", source);
 				Assert.DoesNotContain("testButton", source);
@@ -310,7 +311,7 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("AddListener", refreshEfficiency);
 			Assert.DoesNotContain("AddListener", createToggle);
 			Assert.Equal(1, Count(createToggle, "_toggleBindings.Add("));
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Build()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells);", "the list is replaced before the toggles register in it");
+			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Build()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells, experimentalToggleCells);", "the list is replaced before the toggles register in it");
 		}
 
 		private static int Count(string source, string text)
