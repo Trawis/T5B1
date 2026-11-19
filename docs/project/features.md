@@ -235,8 +235,10 @@ and **Set Base Skills** edit every employee selected when they are pressed.
 
 ## Product editing
 
-**Set Price**, **Set Stock** and **Set Active Users** sit above the game's list
-of your own products and edit the one software product selected in it. With
+**Set Price**, **Set Stock**, **Set Active Users**, **Fix Product Bugs** and
+**Max Awareness** sit above the game's list of your own products and edit the
+one software product selected in it; on a narrow window the buttons wrap
+upward. With
 none or several selected, with the add-on or framework view shown, or with an
 archived or foreign product selected, they only show a message and open
 nothing. The product is taken when the button is pressed, never looked up by
@@ -244,3 +246,12 @@ name, so products that share a name are not mixed up; the value applies only
 if that product is still yours and on the market when the dialog is confirmed.
 Values and ranges match the Actions-tab buttons (price from 0), which stay
 unchanged.
+
+**Fix Product Bugs** and **Max Awareness** act at once, without a dialog.
+Fix Product Bugs removes every remaining bug of the released product, including
+bugs not yet found, through the game's own bug-fixing call; with no bugs left it
+only says so. It is separate from the Actions-tab **Fix Bugs**, which still
+fixes a product in beta by name. Max Awareness sets the product's awareness to
+the maximum of its category, the 100% shown by the game, and says so instead
+when it is already there. It is a one-time boost: awareness then fades as it
+normally does.
