@@ -21,7 +21,6 @@ namespace Trainer_v5.Tests
 
 			Assert.True(body.IndexOf("ChangeAllPhysicalStock", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
 			Assert.True(body.IndexOf("MakeTransaction", System.StringComparison.Ordinal) < body.IndexOf("Notification.Show", System.StringComparison.Ordinal));
-			Assert.Contains("StockSale.Summary(", body);
 		}
 
 		[Fact]

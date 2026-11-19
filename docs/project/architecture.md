@@ -542,9 +542,11 @@ window instance with the same rollback and reset as the Employees buttons.
   applied and the player is told. Adding a confirmation means updating this
   list and
   `ConfirmationTests`, which pins the exact set.
-- Most UI text is localized (a localization key with an English default) in
-  `Trainer_v5/Trainer.Localization/<language>/`; some popups, dialogs and
-  labels are English-only.
+- Active UI text is localized (a localization key with an English default) in
+  `Trainer_v5/Trainer.Localization/<language>/`; a missing translation shows
+  the English default. Pure helpers return values (for example `InputError`)
+  and the text is localized where it is shown. Log lines and internal names
+  stay English.
 
 ## Validation
 

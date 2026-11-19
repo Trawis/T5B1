@@ -6,17 +6,6 @@ namespace Trainer_v5.Tests
 	public class FounderToggleTests
 	{
 		[Fact]
-		public void ThePromptNamesTheEmployeeAndBothStates()
-		{
-			var turnOn = FounderToggle.BuildPrompt("Ann", true);
-			var turnOff = FounderToggle.BuildPrompt("Ann", false);
-
-			Assert.Contains("Ann: Founder off -> on", turnOn);
-			Assert.Contains("Ann: Founder on -> off", turnOff);
-			Assert.DoesNotContain("YES", turnOn);
-		}
-
-		[Fact]
 		public void TheToggleChecksAgainAfterTheConfirmationAndOnlyFlipsTheFlagOnTheExistingEmployee()
 		{
 			var source = SourceCode.Read("FounderToggle.cs");

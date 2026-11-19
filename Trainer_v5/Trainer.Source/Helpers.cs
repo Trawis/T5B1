@@ -169,7 +169,7 @@ namespace Trainer_v5
 				return true;
 			}
 
-			string message = $"{action}: the game is not ready yet, nothing was changed.";
+			string message = string.Format("GameNotReady".LocDef("{0}: the game is not ready yet, nothing was changed."), action);
 			message.Log();
 			if (HUD.Instance != null)
 			{

@@ -27,4 +27,12 @@ namespace Trainer_v5
 		Unaffordable = 2,
 		NotPatentable = 3
 	}
+
+	internal enum InputError
+	{
+		None = 0,
+		Invalid = 1,
+		BelowMin = 2,
+		AboveMax = 3
+	}
 }
