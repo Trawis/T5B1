@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Instant Research and Auto Research End must finish research the way ResearchWork.FinishNow does (#231).
+	// Instant Research and Auto Research End must finish research the way ResearchWork.FinishNow does.
 	public class ResearchCompletionTests
 	{
 		private static string CompletionBody()

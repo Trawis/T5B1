@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The global sick list is cleared once per pass, not once per actor (#268), and employees are not marked as recently sick (#360).
+	// The global sick list is cleared once per pass, not once per actor, and employees are not marked as recently sick.
 	public class NoSicknessTests
 	{
 		private static string Source()

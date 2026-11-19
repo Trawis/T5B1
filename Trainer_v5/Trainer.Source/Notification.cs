@@ -2,7 +2,7 @@ using System;
 
 namespace Trainer_v5
 {
-	// The one place trainer-owned messages reach the game (#451). A HUD popup starts with "Trainer: " exactly once;
+	// The one place trainer-owned messages reach the game. A HUD popup starts with "Trainer: " exactly once;
 	// dialogs state their own context and get no prefix, and are not modal. Input dialogs (InputHelper) are separate.
 	public static class Notification
 	{
@@ -32,8 +32,7 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog(msg, false, DialogWindow.DialogType.Error);
 		}
 
-		// Pure text rule, no game types: text that already starts with the prefix is returned unchanged (ordinal, case
-		// sensitive); a translation that wrote "Trainer:" without the space gets the space; anything else gets the prefix.
+		// Pure text rule, no game types.
 		internal static string WithPrefix(string message)
 		{
 			if (message == null)

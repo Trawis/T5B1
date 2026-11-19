@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// A retried UI install leaves exactly one set of controls (#371).
+	// A retried UI install leaves exactly one set of controls.
 	public class UiInstallRetryTests
 	{
 		private static string Read(string file)

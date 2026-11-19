@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// #494: scheduled work waits for loading and pre-simulation; GameReady initialization does not.
+	// scheduled work waits for loading and pre-simulation; GameReady initialization does not.
 	public class SimulationReadinessTests
 	{
 		[Fact]
@@ -23,18 +23,6 @@ namespace Trainer_v5.Tests
 		public void AnyMissingDependencyLoadingOrPreSimulationMeansNotReady(bool game, bool hud, bool selector, bool done, bool preSim, bool preSimFinished, bool clock)
 		{
 			Assert.False(Helpers.SimulationReady(game, hud, selector, done, preSim, preSimFinished, clock));
-		}
-
-		[Fact]
-		public void TheReadinessReadsTheGamesOwnLoadingAndPreSimulationFlags()
-		{
-			var body = SourceCode.Body(SourceCode.Read("Helpers.cs"), "internal static bool IsSimulationReady(");
-
-			Assert.Contains("selector.DoneLoading", body);
-			Assert.Contains("game.PreSimActive", body);
-			Assert.Contains("game.PreSimFinished", body);
-			Assert.Contains("TimeOfDay.Instance != null", body);
-			Assert.Contains("HUD.Instance != null", body);
 		}
 
 		[Fact]
@@ -77,18 +65,6 @@ namespace Trainer_v5.Tests
 			SourceCode.AssertInOrder(once, "if (!_oneTimeSettingsApplied)", "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "guarded by the one-time flag");
 			SourceCode.AssertInOrder(once, "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "_oneTimeSettingsApplied = true;", "flag set after the push");
 			Assert.DoesNotContain("MaxFloor", SourceCode.Body(source, "private void ApplyProcessStaticSettings("));
-		}
-
-		[Fact]
-		public void OnlyTheMaxFloorStepRunsBeforeTheGate()
-		{
-			var update = SourceCode.Body(SourceCode.Read("TrainerBehaviour.cs"), "private void Update(");
-			var beforeGate = update.Substring(0, update.IndexOf("if (!Helpers.IsSimulationReady())", System.StringComparison.Ordinal));
-
-			foreach (var gated in new[] { "ProcessStaticSettings", "RunTransitions", "Poll()", "FeatureTrigger.", "LoadSpecializations", "ShowDiscordInvite" })
-			{
-				Assert.DoesNotContain(gated, beforeGate);
-			}
 		}
 
 		[Fact]

@@ -1,6 +1,6 @@
 namespace Trainer_v5
 {
-	// The employee's demand bit sets, changed together; the detail window shows demands only while DemandsMet is set (#185).
+	// The employee's demand bit sets, changed together; the detail window shows demands only while DemandsMet is set.
 	internal sealed class DemandBits
 	{
 		public readonly uint Results;

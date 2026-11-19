@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// More Hosting Deals builds offers the way the game's own simulation does (#199).
+	// More Hosting Deals builds offers the way the game's own simulation does.
 	public class HostingRequestTests
 	{
 		private static string PushDealBody()

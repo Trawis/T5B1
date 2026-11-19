@@ -78,7 +78,7 @@ namespace Trainer_v5
 			}
 		}
 
-		// Older builds set Request after construction, leaving the bidder unset (#328); the stored client is the developer.
+		// Older builds set Request after construction, leaving the bidder unset; the stored client is the developer.
 		// Returns how many deals were corrected.
 		internal static int RepairLegacyHostingRequests()
 		{
@@ -232,7 +232,7 @@ namespace Trainer_v5
 			return strongest;
 		}
 
-		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit (#196).
+		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit.
 		internal static void MarkAllProgressComplete(float[] progress)
 		{
 			if (progress == null)

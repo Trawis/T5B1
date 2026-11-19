@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The team optimizer reports the post-action state instead of a generic success (#260).
+	// The team optimizer reports the post-action state instead of a generic success.
 	public class TeamAssignmentResultTests
 	{
 		[Fact]

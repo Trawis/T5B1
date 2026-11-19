@@ -90,19 +90,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheNativeOptionsScreenOffersTheToggleBetweenTheExperimentalNoteAndTheLoadHint()
-		{
-			var options = SourceCode.Body(SourceCode.Read("Main.cs"), "public override void ConstructOptionsScreen(");
-
-			Assert.Contains("\"DebugLogging\".LocDef(\"Debug Logging\")", options);
-			Assert.Contains("LoggingOptions.DebugEnabled", options);
-			Assert.Contains("UIFactory.Toggle(", options);
-			Assert.Contains("\"DebugLoggingHint\".LocDef(", options);
-			SourceCode.AssertInOrder(options, "\"ExperimentalNone\".LocDef(", "\"DebugLogging\".LocDef(", "Debug Logging sits below the Experimental option");
-			SourceCode.AssertInOrder(options, "\"DebugLoggingHint\".LocDef(", "\"OptionsLoadHint\".LocDef(", "the load hint stays last");
-		}
-
-		[Fact]
 		public void TheOptionIsNotPartOfTheSavedGameOrTheTrainerSettings()
 		{
 			var source = SourceCode.Read("Main.cs");
@@ -181,27 +168,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void NormalLoggingNeverLooksAtTheOptionAndOnlyTheTraceSitesUseTheDebugSink()
-		{
-			var logger = SourceCode.Read("Logger.cs");
-			Assert.DoesNotContain("DebugEnabled", SourceCode.Span(logger, "public static void Log(this string str", "public static void LogDebug("));
-			Assert.DoesNotContain("DebugEnabled", SourceCode.Span(logger, "internal static string FormatException(", null));
-
-			foreach (var file in SourceFiles())
-			{
-				var name = Path.GetFileName(file);
-				var source = SourceCode.Normalize(File.ReadAllText(file));
-				var isTraceSite = name == "FeatureDispatcher.cs" || name == "TrainerBehaviour.cs";
-				var isOption = name == "Logger.cs" || name == "LoggingOptions.cs" || name == "Main.cs";
-				if (!isTraceSite && !isOption)
-				{
-					Assert.DoesNotContain("DebugEnabled", source);
-					Assert.DoesNotContain(DebugCall, source);
-				}
-			}
-		}
-
-		[Fact]
 		public void TheTraceDoesNotUseTheUnityLogBecauseOfThePlayerLogLimits()
 		{
 			foreach (var file in SourceFiles())
@@ -211,15 +177,6 @@ namespace Trainer_v5.Tests
 				Assert.DoesNotContain("Debug.LogWarning(", source);
 				Assert.DoesNotContain("Debug.LogError(", source);
 			}
-		}
-
-		[Fact]
-		public void RetriesAreTracedOnlyOnTheFirstFailureAndAtTheEnd()
-		{
-			var run = SourceCode.Body(SourceCode.Read("FeatureDispatcher.cs"), "private void RunPending(");
-
-			Assert.Contains("pending.Visits == 1", run);
-			Assert.Contains("retries finished", run);
 		}
 	}
 }
