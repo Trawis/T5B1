@@ -25,7 +25,6 @@ namespace Trainer_v5
 		public static void LogException(this Exception ex) => ConsoleLog(FormatException(ex, null));
 		public static void LogException(this Exception ex, string featureId) => ConsoleLog(FormatException(ex, featureId));
 
-		// Debug lines go to the dev console only: Debug.Log* would count against the game's Player.log size limits.
 		public static void LogDebug(this string str)
 		{
 			if (LoggingOptions.DebugEnabled)
@@ -39,7 +38,6 @@ namespace Trainer_v5
 			return "Trainer [debug]: " + FormatValue(message);
 		}
 
-		// Exception.ToString() carries the type, message, stack trace and the inner exception chain.
 		internal static string FormatException(Exception exception, string featureId)
 		{
 			var details = exception == null ? "null exception" : exception.ToString();

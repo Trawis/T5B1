@@ -3,8 +3,6 @@ using System.IO;
 
 namespace Trainer_v5.Tests
 {
-	// Publishes the patched game-compiler copy that concurrent test hosts share, and refuses to trust
-	// a cached file unless its bytes equal the expected image (equal length is not equal content).
 	internal static class CompilerImageCache
 	{
 		public static string Ensure(string directory, string fileName, byte[] image)
@@ -35,7 +33,6 @@ namespace Trainer_v5.Tests
 				if (!info.Exists || info.Length != expected.Length)
 					return false;
 
-				// Compare bytes; a same-length stale or damaged file must not be loaded.
 				var actual = File.ReadAllBytes(path);
 				if (actual.Length != expected.Length)
 					return false;
@@ -49,7 +46,6 @@ namespace Trainer_v5.Tests
 			}
 			catch (IOException)
 			{
-				// Being replaced or written by another host right now; treat as not yet valid.
 				return false;
 			}
 			catch (UnauthorizedAccessException)
@@ -58,8 +54,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// A complete temporary file is moved into place in one step, so readers never observe a partial copy.
-		// If another host wins the race, its file is accepted only when it matches the expected content.
 		private static void Promote(string temporary, string path, byte[] image)
 		{
 			try
@@ -84,7 +78,6 @@ namespace Trainer_v5.Tests
 			}
 			catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
 			{
-				// A leftover uniquely named temporary file is harmless.
 			}
 		}
 	}

@@ -2,19 +2,16 @@ namespace Trainer_v5
 {
 	internal enum SkillOutcome
 	{
-		// No target was still valid at the write.
 		None = 0,
 		Partial = 1,
 		All = 2
 	}
 
-	// Rules of the skill editor that need no game objects.
 	internal static class SkillEdit
 	{
 		public const int MinStars = -3;
 		public const int MaxStars = 3;
 
-		// A zero change is rejected; the game clamps each specialization to 0..3 stars.
 		public static bool IsValidStars(int stars)
 		{
 			return stars != 0 && stars >= MinStars && stars <= MaxStars;

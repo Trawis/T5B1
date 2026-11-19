@@ -1,6 +1,5 @@
 namespace Trainer_v5
 {
-	// Flips Employee.Founder on the one selected employee. A founder is unpaid and cannot be fired.
 	internal static class FounderToggle
 	{
 		public static void Start()
@@ -21,7 +20,6 @@ namespace Trainer_v5
 			Confirmation.Ask("Founder", string.Format("FounderPrompt".LocDef("{0}: Founder {1} -> {2}"), employee.Name, Label(shown), Label(!shown)), () => Apply(target, shown));
 		}
 
-		// The dialog stays open while the game runs, so the target is checked again before writing.
 		private static void Apply(EmployeeTarget target, bool shown)
 		{
 			var blocked = FindBlocker(target);

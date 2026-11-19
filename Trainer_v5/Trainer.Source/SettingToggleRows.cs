@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types.
 	internal sealed class SettingToggleRow
 	{
 		public readonly TrainerDomain Domain;
@@ -19,7 +18,6 @@ namespace Trainer_v5
 		}
 	}
 
-	// Trainer Settings toggles per domain in display order. Built in methods (see Workshop Source Build).
 	internal static class SettingToggleRows
 	{
 		public static List<SettingToggleRow> Create()
@@ -73,7 +71,6 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Their handler also applies the value to the running game; shown after the standard rows.
 		public static List<SettingToggleRow> CreateImmediate()
 		{
 			var rows = new List<SettingToggleRow>();
@@ -83,7 +80,6 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Shown only while the Experimental option is on; see ExperimentalToggles.
 		public static List<SettingToggleRow> CreateExperimental()
 		{
 			var rows = new List<SettingToggleRow>();

@@ -4,8 +4,6 @@ using System.Text;
 
 namespace Trainer_v5.Tests
 {
-	// Reads the TypeRef table of a managed assembly straight from its metadata (ECMA-335 II.22.38): the list of types the
-	// image refers to, which is what the game's DLL mod loader checks. Nothing is loaded or executed.
 	internal static class TypeReferenceTable
 	{
 		private const int ModuleTable = 0;
@@ -66,7 +64,6 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			// ResolutionScope is a coded index over Module, ModuleRef, AssemblyRef and TypeRef (2 tag bits).
 			var scopeIndex = Math.Max(Math.Max(rowCounts[ModuleTable], rowCounts[ModuleRefTable]), Math.Max(rowCounts[AssemblyRefTable], rowCounts[TypeRefTable])) < (1 << 14) ? 2 : 4;
 			var moduleRow = 2 + stringIndex + 3 * guidIndex;
 			var typeRefRow = scopeIndex + 2 * stringIndex;
@@ -98,7 +95,6 @@ namespace Trainer_v5.Tests
 			return Encoding.UTF8.GetString(image, heap + index, end - heap - index);
 		}
 
-		// File offset of the metadata root (the "BSJB" header), found through the CLR header's MetaData directory.
 		private static int LocateMetadata(byte[] image)
 		{
 			var pe = BitConverter.ToInt32(image, 0x3C);

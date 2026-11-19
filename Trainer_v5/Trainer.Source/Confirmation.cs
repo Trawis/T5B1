@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// The one place a trainer action asks Yes/No, through the game's own dialog; prompts have no "Trainer: " prefix.
 	internal static class Confirmation
 	{
-		// No questionID: with one the game offers "Don't ask again" and then skips the dialog.
 		internal static void Ask(string actionName, string message, Action onConfirm)
 		{
 			WindowManager.Instance.ShowMessageBox(message, false, DialogWindow.DialogType.Warning, () =>
@@ -21,7 +19,6 @@ namespace Trainer_v5
 			return current > 0 && current == shown;
 		}
 
-		// The same non-empty targets in any order: nothing added, removed or replaced, even at the same count.
 		internal static bool IsSameTargets<T>(List<T> shown, List<T> current) where T : class
 		{
 			if (shown.Count == 0 || shown.Count != current.Count)

@@ -5,8 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// One message convention: every trainer HUD popup starts with "Trainer: " exactly once, dialogs and input
-	// prompts get no automatic prefix, and Notification is the only code that talks to the game's popup and dialog APIs.
 	public class NotificationTests
 	{
 		[Theory]
@@ -42,8 +40,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void OnlyNotificationCallsTheGamePopupAndDialogApis()
 		{
-			// Allow-list: Notification.cs. Input dialogs (SpawnInputDialog, via InputHelper) are a separate surface and are
-			// not listed here because they never get the popup prefix.
 			var offenders = new List<string>();
 			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
 			{
@@ -65,7 +61,6 @@ namespace Trainer_v5.Tests
 			Assert.True(offenders.Count == 0, "Use Notification.Popup / ShowInfo / ShowWarning / ShowError: " + string.Join("; ", offenders));
 		}
 
-		// HUD.AddPopupMessage ignores every id except PopupIDs.None (-1); sound 0 (Issue) would file the popup under Issues.
 		[Fact]
 		public void ThePopupUsesTheNoneIdAndANonIssueSound()
 		{

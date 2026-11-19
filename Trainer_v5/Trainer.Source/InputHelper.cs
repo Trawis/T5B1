@@ -104,8 +104,6 @@ namespace Trainer_v5
 
 		internal delegate bool TryParse<T>(string s, out T result) where T : struct;
 
-		// Input is parsed with the invariant culture and no thousands separators, whatever the OS locale:
-		// "." is the only decimal separator (the dialog prompts use it) and "0,5" or "1,234" are rejected, not guessed.
 		internal static bool ParseFloat(string s, out float result)
 		{
 			return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result);

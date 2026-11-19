@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Lead demands: the first demand must also mark the choice as met so the native window shows it.
 	public class DemandBitsTests
 	{
 		private const uint Rate = 1, NonBinding = 2, Choice = 0x10;

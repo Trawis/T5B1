@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The six employee editors are reached from the native Employees window.
 	public class EmployeesWindowToolbarTests
 	{
 		[Fact]
@@ -54,7 +53,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// the guard runs first, so an invalid launch creates, toggles, focuses, refreshes and resets nothing.
 		[Theory]
 		[InlineData("EmployeeTraitChangeWindow.cs", "public void Show()")]
 		[InlineData("EmployeeDemandChangeWindow.cs", "public void Show()")]

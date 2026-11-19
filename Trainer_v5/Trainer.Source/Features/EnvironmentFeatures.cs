@@ -4,12 +4,10 @@ namespace Trainer_v5
 {
 	internal static class EnvironmentFeatures
 	{
-		// RepairMe scales its repair step by this factor and calls the private FixNow when done: a large factor repairs in one pass.
 		private const float RepairFactor = 1000000f;
 
 		private static GameSettings Settings => GameSettings.Instance;
 
-		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
 		internal static void ApplyForceLights(bool enabled)
 		{
 			Cheats.ForceLights = enabled;
@@ -19,7 +17,6 @@ namespace Trainer_v5
 		{
 			Cheats.CeilingMeshes = enabled;
 
-			// Mirrors CameraScript.RefreshFlyMode: marking rooms dirty regenerates the ceiling meshes.
 			if (Helpers.IsGameLoaded)
 			{
 				foreach (Room room in Settings.sRoomManager.Rooms)
@@ -30,7 +27,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// HashList.GetEnumerator boxes a list enumerator, so the per-frame furniture passes index the list instead of using foreach.
 		internal static void ApplyNoiseReduction()
 		{
 			HashList<Furniture> allFurniture = Settings.sRoomManager.AllFurniture;
@@ -76,7 +72,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Janitor scope (AI.FindCleanRoom): never the world Outside room; in rent mode only rooms the player owns.
 		internal static void CleanOfficeNow()
 		{
 			if (!Helpers.RequireGameReady("Clean Office Now"))
@@ -111,7 +106,6 @@ namespace Trainer_v5
 				ApplyNoSicknessToRoom(Settings.sRoomManager.Rooms[i]);
 			}
 
-			// The sick list is global to the day, not per actor: clear it once per pass.
 			TimeOfDay.Instance.Sick.Clear();
 
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
@@ -219,7 +213,6 @@ namespace Trainer_v5
 			Settings.sRoomManager.AllFurniture.ForEach(ApplyDisableFiresFireStarterToFurniture);
 		}
 
-		// Burglars and inspectors are removed with Writeable.DestroyGO (as AI.GuestDespawn does); Actor.OnDestroy unregisters them.
 		private static void RemoveActorsOfGroup(string group)
 		{
 			var actors = new List<Actor>(Settings.sActorManager.Others[group]);

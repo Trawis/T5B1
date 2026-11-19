@@ -22,7 +22,6 @@ namespace Trainer_v5.Tests
 		public string Description { get; }
 	}
 
-	// Maps injected positions back to repository lines: LCS for aligned lines, prefix for rewritten ones, the rest is injector code.
 	internal sealed class GameSourceMap
 	{
 		private readonly InjectedSource _source;
@@ -117,7 +116,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// Between two aligned lines: a rewritten line is a prefix of the original it came from; the rest was generated.
 		private void AssignGap(int sFrom, int sTo, int tFrom, int tTo)
 		{
 			var next = sFrom;

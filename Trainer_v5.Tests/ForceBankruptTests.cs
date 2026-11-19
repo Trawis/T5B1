@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Bankruptcy is one-way, unambiguous, never the player's own company.
 	public class ForceBankruptTests
 	{
 		private static string Member(string signature)

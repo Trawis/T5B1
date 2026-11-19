@@ -5,7 +5,6 @@ using System.Reflection.Emit;
 
 namespace Trainer_v5.Tests
 {
-	// Minimal IL walker, so compiled output is inspected rather than executed.
 	internal static class IlReader
 	{
 		private static readonly Dictionary<short, OpCode> OpCodesByValue = BuildOpCodeTable();

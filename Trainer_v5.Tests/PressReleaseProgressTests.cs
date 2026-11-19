@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// MarketingPlan.Progress has one slot per enabled press option, so all seven option subsets matter.
 	public class PressReleaseProgressTests
 	{
 		[Theory]

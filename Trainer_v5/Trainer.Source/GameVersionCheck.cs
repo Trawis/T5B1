@@ -1,7 +1,5 @@
 namespace Trainer_v5
 {
-	// Compares the running game's Versioning.CurrentVersion (a runtime struct, so DLL and Workshop builds read the
-	// same value) with the vendored target. Diagnostic only: a mismatch is logged and never blocks anything.
 	internal static class GameVersionCheck
 	{
 		public const int TargetTypeInt = 2;

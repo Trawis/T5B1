@@ -6,7 +6,6 @@ namespace Trainer_v5
 {
 	internal static class CompaniesWindowTrainer
 	{
-		// The Companies window the controls were added to; the game recreates it with the HUD on save reloads.
 		private static CompanyWindow _installedOn;
 
 		public static void Reset()
@@ -35,7 +34,6 @@ namespace Trainer_v5
 			var placed = false;
 			try
 			{
-				// Above the window's top edge, so no list row, filter, header or scrollbar of the native window is covered.
 				for (var i = 0; i < components.Count; i++)
 				{
 					UIHelper.PlaceInElement(components[i].gameObject, target.Window.gameObject, slots[i]);
@@ -60,7 +58,6 @@ namespace Trainer_v5
 			_installedOn = target;
 		}
 
-		// The company is captured at the click; each action checks it again before a deferred write.
 		private static void WithSelectedCompany(Action<SimulatedCompany> action)
 		{
 			var company = RequireSelectedCompany();
@@ -70,7 +67,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Exactly one row selected in the shown Companies list, holding a live AI company that is not going bankrupt.
 		private static SimulatedCompany RequireSelectedCompany()
 		{
 			var window = HUD.Instance != null ? HUD.Instance.companyWindow : null;

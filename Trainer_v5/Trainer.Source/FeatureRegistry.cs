@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order.
 	internal static class FeatureRegistry
 	{
-		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
 		public static readonly string[] NoCatchUp =
 		{
 			"NoMissedSupportTickets",
@@ -21,7 +19,6 @@ namespace Trainer_v5
 		public static List<FeatureEntry> Create()
 		{
 			var entries = new List<FeatureEntry>();
-			// Hour
 			Add(entries, FeatureTrigger.Hour, "MoreHostingDeals", SettingKeys.MoreHostingDeals, MarketFeatures.ApplyHostingDealTiming);
 			Add(entries, FeatureTrigger.Hour, "FreeStaff", SettingKeys.FreeStaff, CompanyFeatures.ApplyFreeStaff);
 			Add(entries, FeatureTrigger.Hour, "NoServerCost", SettingKeys.NoServerCost, CompanyFeatures.ApplyNoServerCost);
@@ -32,7 +29,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Hour, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.ApplyIncreasePrintSpeed);
 			Add(entries, FeatureTrigger.Hour, "AutoMaxFollowers", SettingKeys.AutoMaxFollowers, WorkItemFeatures.ApplyAutoMaxFollowers);
 
-			// Minute
 			Add(entries, FeatureTrigger.Minute, "AutoEndDesign", SettingKeys.AutoEndDesign, WorkItemFeatures.ApplyAutoEndDesign);
 			Add(entries, FeatureTrigger.Minute, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);
 			Add(entries, FeatureTrigger.Minute, "AutoEndResearch", SettingKeys.AutoEndResearch, WorkItemFeatures.ApplyAutoEndResearch);
@@ -51,12 +47,10 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Minute, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.ApplyIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Minute, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 
-			// Day
 			Add(entries, FeatureTrigger.Day, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
 			Add(entries, FeatureTrigger.Day, "NoInsuranceCost", SettingKeys.NoInsuranceCost, CompanyFeatures.ApplyNoInsuranceCost);
 			Add(entries, FeatureTrigger.Day, "FreeMarketing", SettingKeys.FreeMarketing, MarketFeatures.ApplyFreeMarketing);
 
-			// Month
 			Add(entries, FeatureTrigger.Month, "FreeEmployees", SettingKeys.FreeEmployees, EmployeeFeatures.ApplyFreeEmployees);
 			Add(entries, FeatureTrigger.Month, "DisableBurglars", SettingKeys.DisableBurglars, EnvironmentFeatures.ApplyDisableBurglars);
 			Add(entries, FeatureTrigger.Month, "DisableFireInspection", SettingKeys.DisableFireInspection, EnvironmentFeatures.ApplyDisableFireInspection);
@@ -67,7 +61,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Month, "NoLoanInterest", SettingKeys.NoLoanInterest, CompanyFeatures.ApplyNoLoanInterest);
 			Add(entries, FeatureTrigger.Month, "NoFounderDividends", SettingKeys.NoFounderDividends, CompanyFeatures.ApplyNoFounderDividends);
 
-			// Enabled / Disabled (observed once per frame, in this order)
 			Add(entries, FeatureTrigger.Enabled, "NoMaintenance", SettingKeys.NoMaintenance, EnvironmentFeatures.ApplyNoMaintenance);
 			Add(entries, FeatureTrigger.Enabled, "NoVacation", SettingKeys.NoVacation, EmployeeFeatures.ApplyNoVacation);
 			Add(entries, FeatureTrigger.Enabled, "NoForgetfulSkillLoss", SettingKeys.NoForgetfulSkillLoss, EmployeeFeatures.ApplyNoForgetfulSkillLoss);
@@ -112,9 +105,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 			Add(entries, FeatureTrigger.Disabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.RestoreReduceISPCost);
 
-			// Frame: values the game recomputes or overwrites faster than the Minute cadence, so a slower
-			// trigger would let them degrade between runs; none was moved without in-game verification.
-			// Passes must stay allocation-free: index loops, no LINQ, ToList or per-frame delegates.
 			Add(entries, FeatureTrigger.Frame, "NoiseReduction", SettingKeys.NoiseReduction, EnvironmentFeatures.ApplyNoiseReduction);
 			Add(entries, FeatureTrigger.Frame, "DisableFires", SettingKeys.DisableFires, EnvironmentFeatures.ApplyDisableActiveFires);
 			Add(entries, FeatureTrigger.Frame, "CleanRooms", SettingKeys.CleanRooms, EnvironmentFeatures.ApplyCleanRooms);

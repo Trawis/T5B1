@@ -7,7 +7,6 @@ namespace Trainer_v5.Tests
 {
 	public class SettingActionRowsTests
 	{
-		// A moved or removed button fails here until this list is edited on purpose.
 		private static readonly string[] GoldenActions =
 		{
 			"AddMoney=Actions/Company", "AddAIFunds=Actions/Company", "TakeoverCompany=Actions/Company", "SubsidiaryCompany=Actions/Company",

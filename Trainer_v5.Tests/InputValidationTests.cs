@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Every test sets its own culture and restores it, so the parsing policy is proven under comma-decimal locales.
 	public class InputValidationTests : System.IDisposable
 	{
 		private readonly CultureInfo _originalCulture = Thread.CurrentThread.CurrentCulture;

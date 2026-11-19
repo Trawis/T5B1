@@ -18,7 +18,6 @@ namespace Trainer_v5.Tests
 		public IList<string> Misplaced { get; }
 	}
 
-	// Text-level checks on the injector's output and on source shapes its compiler mishandles.
 	internal static class InjectedSourceAudit
 	{
 		private static readonly Regex InjectedOpen = new Regex(@"\{[ \t]*\r?\n[ \t]*try \{[ \t]*\r?\n", RegexOptions.Compiled);
@@ -28,7 +27,6 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Return = new Regex(@"\breturn\b", RegexOptions.Compiled);
 		private static readonly Regex Throw = new Regex(@"^throw\b", RegexOptions.Compiled);
 
-		// Every injected try must follow the opening brace of a method or constructor.
 		public static AuditResult Audit(InjectedSource source)
 		{
 			var misplaced = new List<string>();
@@ -47,7 +45,6 @@ namespace Trainer_v5.Tests
 			return new AuditResult(InjectedCatch.Matches(source.Injected).Count, misplaced);
 		}
 
-		// Bodies with no return that end in a throw compile to a branch past the method end (invalid IL) once wrapped.
 		public static IList<string> FindBodiesEndingInThrow(string name, string original)
 		{
 			var code = SourceText.Strip(original, keepStrings: false);

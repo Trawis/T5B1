@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// No Maintenance repairs through the game's RepairMe, with a factor that completes the repair.
 	public class NoMaintenanceTests
 	{
 		[Fact]

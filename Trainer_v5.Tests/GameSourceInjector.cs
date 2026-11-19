@@ -6,7 +6,6 @@ using System.Text;
 
 namespace Trainer_v5.Tests
 {
-	// One source file after the game's source-mod injector has rewritten it.
 	internal sealed class InjectedSource
 	{
 		public InjectedSource(string name, string original, string stripped, string injected, int prefixLines)
@@ -29,7 +28,6 @@ namespace Trainer_v5.Tests
 		public int PrefixLines { get; }
 	}
 
-	// Test-only bridge to the game's injector, which cannot run outside Unity: Inject repeats its loop, VerifyMirror detects drift.
 	internal static class GameSourceInjector
 	{
 		public const string ModName = "t5b1tests";
@@ -38,7 +36,6 @@ namespace Trainer_v5.Tests
 
 		private static readonly Type ModControllerType = typeof(ModController);
 
-		// Serializes calls into the game's static helpers; tests run in parallel.
 		private static readonly object Gate = new object();
 
 		private static readonly string[] ExpectedGameCalls =

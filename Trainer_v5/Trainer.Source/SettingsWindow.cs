@@ -7,7 +7,6 @@ namespace Trainer_v5
 {
 	public class SettingsWindow : MonoBehaviour
 	{
-		// The page last shown, kept for the running game only (not a save key).
 		private static SettingsTab _activeTab;
 		private static bool _refreshing;
 		private static Button[] _tabButtons;
@@ -18,7 +17,6 @@ namespace Trainer_v5
 
 		public static GUIWindow Window { get; set; }
 
-		// Read from the native window each time: the game can close or destroy it without the trainer knowing.
 		public static bool Shown => Window != null && Window.Shown;
 
 		public static void Toggle()
@@ -37,7 +35,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// GUIWindow.Show opens a hidden window, focuses a visible one and expands a collapsed one.
 		public static void Open()
 		{
 			if (Window == null)
@@ -59,7 +56,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The game destroys its windows with the scene; the stale references are dropped with it.
 		public static void Reset()
 		{
 			Window = null;
@@ -77,7 +73,6 @@ namespace Trainer_v5
 			Build();
 		}
 
-		// Replaces the content of the existing window, so its position, shown and collapsed state stay native.
 		public static void Rebuild()
 		{
 			if (Window == null || _tabButtons == null || _tabPages == null)
@@ -95,7 +90,6 @@ namespace Trainer_v5
 				Destroy(page);
 			}
 
-			// Locking the size of a collapsed window would expand it; collapse restores the size it had before.
 			bool collapsed = Window.IsCollapsed;
 			if (collapsed)
 			{
@@ -144,7 +138,6 @@ namespace Trainer_v5
 			Window.LockWindowSize();
 		}
 
-		// Everything is built in Build, so a tab switch creates nothing and adds no listeners.
 		private static void SetActiveTab(SettingsTab tab)
 		{
 			_activeTab = SettingsWindowState.ClampTab(tab);
@@ -167,7 +160,6 @@ namespace Trainer_v5
 			button.GetComponentInChildren<Text>().fontStyle = isActive ? FontStyle.Bold : FontStyle.Normal;
 		}
 
-		// The UI cannot set a toggle without raising its change event, hence the _refreshing guard.
 		private static void RefreshFromSettings()
 		{
 			if (_toggleBindings == null)
@@ -225,7 +217,6 @@ namespace Trainer_v5
 
 		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject>[] experimentalCells, List<GameObject> settingsCells)
 		{
-			// Helpers.ProductPriceName is static so the field text survives a rebuild.
 			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 
 			var rows = SettingActionRows.Create();
@@ -302,7 +293,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Efficiency controls come first: the order PlaceSettingsPage lays them out in.
 		private static void BuildEfficiency(List<GameObject> settingsCells)
 		{
 			_efficiencyComboBox = AddEfficiencyRow(settingsCells, "EfficiencyLabel".LocDef("Efficiency"), SettingKeys.EfficiencyStore);
@@ -326,7 +316,6 @@ namespace Trainer_v5
 			return comboBox;
 		}
 
-		// The drop-downs open from a fixed place because this page never scrolls.
 		private static void PlaceSettingsPage(GameObject container, List<GameObject> settingsCells)
 		{
 			PlaceHeader(container, DomainLabel(TrainerDomain.Employee), TrainerDomain.Employee + "_Header", 0);
@@ -380,7 +369,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Returns the first row after the placed sections.
 		private static int PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order, int row)
 		{
 			foreach (var domain in order)
@@ -432,7 +420,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// A page taller than the window scrolls on its own; one that fits gets no scroll area.
 		private static TabPage CreateTabPage(string name, int rows, int visibleRows)
 		{
 			var viewport = WindowManager.SpawnPanel();
@@ -452,7 +439,6 @@ namespace Trainer_v5
 			return new TabPage(viewport.gameObject, content.gameObject);
 		}
 
-		// Not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types.
 		private sealed class ToggleBinding
 		{
 			public readonly Toggle Control;

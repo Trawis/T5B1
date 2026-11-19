@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Game UI types cannot be built in the test host, so these guard the window's event wiring by source shape.
 	public class SettingsWindowTabsTests
 	{
 		private static string Window()

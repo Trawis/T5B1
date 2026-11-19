@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Time events must be subscribed before any fallible UI installation on scene load.
 	public class StartupSubscriptionTests
 	{
 		[Fact]

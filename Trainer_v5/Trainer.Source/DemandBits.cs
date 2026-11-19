@@ -1,6 +1,5 @@
 namespace Trainer_v5
 {
-	// The employee's demand bit sets, changed together; the detail window shows demands only while DemandsMet is set.
 	internal sealed class DemandBits
 	{
 		public readonly uint Results;
@@ -14,7 +13,6 @@ namespace Trainer_v5
 			Requested = requested;
 		}
 
-		// demand/sibling: the toggled flag and the other flag of its choice (0 if none); choiceId: DemandChoice.ID.
 		public static DemandBits Apply(DemandBits current, uint demand, uint sibling, uint choiceId, bool on)
 		{
 			var results = current.Results;

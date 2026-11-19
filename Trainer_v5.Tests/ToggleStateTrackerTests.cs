@@ -73,9 +73,7 @@ namespace Trainer_v5.Tests
 
 			tracker.Reset();
 
-			// The next save has FreePrint on again: the enable hook must run for it, not be skipped as unchanged.
 			Assert.Equal(ToggleTransitionEnum.JustEnabled, tracker.Observe("FreePrint", true));
-			// A toggle that was on in the previous save and is off here must not run its restore hook.
 			Assert.Equal(ToggleTransitionEnum.Unchanged, tracker.Observe("NoMaintenance", false));
 		}
 

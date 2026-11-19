@@ -20,7 +20,6 @@ namespace Trainer_v5
 			base.Initialize(parentMod);
 			_mod = parentMod;
 
-			// The game has already read the mod's own settings file; this runs when the mod loads, before any game.
 			ExperimentalOptions.Load(parentMod.Settings);
 			LoggingOptions.Load(parentMod.Settings);
 			GameVersionCheck.LogRunningVersion();
@@ -38,13 +37,10 @@ namespace Trainer_v5
 
 		public static void CreateUIButtons()
 		{
-			// The button is tracked in the static as soon as it exists, so a retry after a failure (or a second
-			// scene load) removes what is left before creating a new one instead of stacking a second one.
 			DestroyUIButtons();
 
 			TrainerButton = UIFactory.Button(Helpers.TrainerVersion, () => SettingsWindow.Toggle(), "TrainerButton");
 
-			// A button whose parent element is missing is dropped rather than left loose in the scene.
 			if (!TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32)))
 			{
 				DestroyButton(TrainerButton);
@@ -54,7 +50,6 @@ namespace Trainer_v5
 
 		public override void ConstructOptionsScreen(RectTransform parent, bool inGame)
 		{
-			// The game builds this once per Options window and keeps it, so the toggle is the only writer of the value.
 			float y = 0;
 			if (_mod != null)
 			{
@@ -116,15 +111,12 @@ namespace Trainer_v5
 			}
 		}
 
-		// For a game the game did not call Deserialize for: its trainer entry if ModData has one, else the declared defaults.
 		internal static void ApplyForGame(WriteDictionary modData)
 		{
 			WriteDictionary saved = modData == null ? null : modData.Get<WriteDictionary>(ModName, null);
 			ApplySaved(saved ?? new WriteDictionary(), true);
 		}
 
-		// A full load replaces the whole game, so a key the save lacks takes its declared default; building and
-		// company loads are partial and keep the values already in use.
 		internal static void ApplySaved(WriteDictionary data, bool isFullLoad)
 		{
 			var toggleDefaults = SettingKeys.CreateToggleDefaults();

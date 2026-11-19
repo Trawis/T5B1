@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Set Base Skills enforces the 0-1 range it shows and states its skill-ceiling side effect.
 	public class SetBaseSkillsTests
 	{
 		private static string SetBaseSkillsBody()

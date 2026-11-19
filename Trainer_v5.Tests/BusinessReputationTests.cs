@@ -5,7 +5,6 @@ namespace Trainer_v5.Tests
 {
 	public class BusinessReputationTests
 	{
-		// Company.ChangeBusinessRep as the game computes it, with every step rounded to float.
 		private static float NativeChange(float reputation, float percentStars, float max)
 		{
 			if (percentStars == 0f)
@@ -16,7 +15,6 @@ namespace Trainer_v5.Tests
 			return Math.Max(0f, Math.Min(1f, sum));
 		}
 
-		// Company.BusinessStars: Mathf.Approximately(rep, 1) gives 6, otherwise FloorToInt(rep * 6).
 		private static int NativeStars(float reputation)
 		{
 			float tolerance = Math.Max(1e-6f * Math.Max(Math.Abs(reputation), 1f), float.Epsilon * 8f);
@@ -58,7 +56,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void AReputationBetweenStarsIsNotTakenForTheLowerStar()
 		{
-			// 3.5 stars shows 3, but setting 3 still lowers it to exactly 3.
 			Assert.False(CompanyFeatures.IsBusinessReputationAt(3.5f / 6f, 3));
 			Assert.False(CompanyFeatures.IsBusinessReputationAt(2.98f / 6f, 3));
 			Assert.False(CompanyFeatures.IsBusinessReputationAt(5.5f / 6f, 6));

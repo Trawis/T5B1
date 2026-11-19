@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Lead Spec window must be tall enough for its footer buttons: the title bar needs one extra row.
 	public class LeadSpecWindowLayoutTests
 	{
 		[Fact]

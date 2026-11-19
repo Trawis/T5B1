@@ -4,7 +4,6 @@ using UnityEngine.Events;
 
 namespace Trainer_v5
 {
-	// Not generic: the game's source-mod compiler emits invalid IL for fields of user-defined generic types.
 	internal sealed class SettingActionRow
 	{
 		public readonly SettingsTab Tab;
@@ -23,7 +22,6 @@ namespace Trainer_v5
 		}
 	}
 
-	// Global actions only, in display order per domain. Built in a method (see Workshop Source Build).
 	internal static class SettingActionRows
 	{
 		public static List<SettingActionRow> Create()
@@ -65,7 +63,6 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Shown only while the Experimental option is on.
 		public static List<SettingActionRow> CreateExperimental()
 		{
 			var rows = new List<SettingActionRow>();

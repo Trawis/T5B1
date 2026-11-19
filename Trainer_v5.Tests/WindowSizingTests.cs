@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The editors share the scrolling column layout, so no window can be taller than the canvas allows.
 	public class WindowSizingTests
 	{
 		[Theory]

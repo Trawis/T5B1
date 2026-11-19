@@ -4,7 +4,6 @@ using Tyd;
 
 namespace Trainer_v5.Experimental
 {
-	// 2 is what the game gives two equal personalities; the graph is saved with the game, so this is never undone.
 	internal static class AmazingCompatibility
 	{
 		private const string ActionName = "Amazing Compatibility";
@@ -39,7 +38,6 @@ namespace Trainer_v5.Experimental
 			Confirmation.Ask(ActionName, string.Format("AmazingCompatibilityConfirm".LocDef("Raise {0} personality pair(s) to the game's maximum compatibility?\nThis permanently changes the personality compatibility of this save, including its autosaves and every later save of it. There is no undo: disabling or removing the trainer does not restore it.\nIt affects current and future employees and makes HR personality matching for new hires neutral.\nBack up your save first."), count), () => Apply(game, graph));
 		}
 
-		// The dialog stays open while the game runs, so the game, the graph and the remaining pairs are re-checked first.
 		private static void Apply(GameSettings game, PersonalityGraph graph)
 		{
 			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(graph, game.Personalities) || GameData.MultiplayerMode)
@@ -71,7 +69,6 @@ namespace Trainer_v5.Experimental
 			Notification.Popup(string.Format("AmazingCompatibilityApplied".LocDef("Trainer: {0} personality pair(s) raised to maximum compatibility."), pairs.Count));
 		}
 
-		// Each pair of different personalities once, only where the graph is below the maximum, so nothing is lowered.
 		internal static List<KeyValuePair<string, string>> PairsToRaise(PersonalityGraph graph)
 		{
 			var pairs = new List<KeyValuePair<string, string>>();
@@ -90,7 +87,6 @@ namespace Trainer_v5.Experimental
 			return pairs;
 		}
 
-		// The game's reader requires traits for every named personality; any failure returns null before the live graph changes.
 		internal static PersonalityGraph BuildSource(PersonalityGraph graph, List<KeyValuePair<string, string>> pairs)
 		{
 			try

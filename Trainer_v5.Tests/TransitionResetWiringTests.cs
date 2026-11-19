@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Leaving the game or deactivating the mod must reset the transition tracker.
 	public class TransitionResetWiringTests
 	{
 		[Fact]

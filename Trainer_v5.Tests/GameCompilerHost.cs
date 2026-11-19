@@ -54,7 +54,6 @@ namespace Trainer_v5.Tests
 		public IEnumerable<CompilerDiagnostic> Errors => Enumerable.Where(Diagnostics, d => d.IsError);
 	}
 
-	// Test-only host for the game's bundled C# compiler (Trainer.Libraries/mcs.dll).
 	internal static class GameCompiler
 	{
 		private static readonly object Gate = new object();
@@ -91,8 +90,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// Syntax check only: mcs reports syntax errors before loading references, so an impossible reference leaves one CS0006.
-		// Type resolution is the SDK build's job.
 		public static ParseCheck CheckSyntax(IList<InjectedSource> sources)
 		{
 			var directory = CreateTemporaryDirectory();
@@ -170,7 +167,6 @@ namespace Trainer_v5.Tests
 			return method;
 		}
 
-		// mcs.dll is flagged 32-bit-only, which a 64-bit test host rejects; load a copy with that flag cleared.
 		private static string LoadableCopy()
 		{
 			var image = PeImage.WithoutRequires32BitProcess(File.ReadAllBytes(AssemblyPath));

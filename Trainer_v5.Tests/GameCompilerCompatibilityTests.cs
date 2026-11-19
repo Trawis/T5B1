@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The game's compiler emits invalid IL for fields of user-defined generic types; generic methods and delegates are fine.
 	public class GameCompilerCompatibilityTests
 	{
 		private static readonly Regex GenericType = new Regex(@"\b(class|struct)\s+\w+\s*<", RegexOptions.Compiled);

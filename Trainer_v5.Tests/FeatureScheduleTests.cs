@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// A persistent toggle needs a cadence and a decision about what happens the moment it is switched on.
 	public class FeatureScheduleTests
 	{
 		private static readonly string[] Periodic = { "Minute", "Hour", "Day", "Month" };
@@ -59,7 +58,6 @@ namespace Trainer_v5.Tests
 		private static Dictionary<string, HashSet<string>> Triggers()
 		{
 			var triggers = new Dictionary<string, HashSet<string>>();
-			// The registry the trainer actually runs, not its source text: delegates are created, nothing is invoked.
 			foreach (var entry in FeatureRegistry.Create())
 			{
 				if (!triggers.ContainsKey(entry.Id))

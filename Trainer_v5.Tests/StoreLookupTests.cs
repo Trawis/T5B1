@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Missing object-store values fall back predictably instead of mapping to a wrong option.
 	[Collection(SettingsCollection.Name)]
 	public class StoreLookupTests
 	{
@@ -31,7 +30,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void AnUnsetEfficiencyStoreIsNullAndOnlyStoreGatedRowsReadIt()
 		{
-			// null means "not set": the dispatcher skips the row, so MakeFloat is never asked to turn it into 0.
 			Assert.Null(Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.EfficiencyStore));
 			Assert.Null(Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.LeadEfficiencyStore));
 

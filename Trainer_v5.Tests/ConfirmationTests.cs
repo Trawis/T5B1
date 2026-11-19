@@ -122,7 +122,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheAuditedSetIsExactlyTheDocumentedOne()
 		{
-			// A new confirmation needs a row in the architecture.md decision matrix and in this list.
 			var found = new List<string>();
 			foreach (var item in AllSources())
 			{

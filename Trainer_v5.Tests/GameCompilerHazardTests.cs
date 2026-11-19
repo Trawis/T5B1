@@ -6,10 +6,8 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Known Workshop failures as fixtures; they also fail when a game update changes the injector or compiler.
 	public class GameCompilerHazardTests
 	{
-		// Helpers.cs in v5.3.2: a call in a property initializer.
 		private const string CallInPropertyInitializer =
 			"using System.Collections.Generic;\n" +
 			"\n" +
@@ -32,7 +30,6 @@ namespace Trainer_v5.Tests
 			"\t}\n" +
 			"}\n";
 
-		// The fix: the call moved into a static constructor.
 		private const string CallInStaticConstructor =
 			"using System.Collections.Generic;\n" +
 			"\n" +
@@ -170,28 +167,28 @@ namespace Trainer_v5.Tests
 		public void ADiagnosticIsReportedAgainstTheOriginalLineEvenAfterEarlierBodiesWereWrapped()
 		{
 			var source =
-				"class Many\n" +                                    // 1
-				"{\n" +                                             // 2
-				"\tint a;\n" +                                      // 3
-				"\tvoid One()\n" +                                  // 4
-				"\t{\n" +                                           // 5
-				"\t\ta++;\n" +                                      // 6
-				"\t}\n" +                                           // 7
-				"\n" +                                              // 8
-				"\tvoid Two()\n" +                                  // 9
-				"\t{\n" +                                           // 10
-				"\t\ta--;\n" +                                      // 11
-				"\t}\n" +                                           // 12
-				"\n" +                                              // 13
-				"\tvoid Three()\n" +                                // 14
-				"\t{\n" +                                           // 15
-				"\t\tchar open = '{';\n" +                          // 16
-				"\t}\n" +                                           // 17
-				"\n" +                                              // 18
-				"\tvoid Four()\n" +                                 // 19
-				"\t{\n" +                                           // 20
-				"\t}\n" +                                           // 21
-				"}\n";                                              // 22
+				"class Many\n" +
+				"{\n" +
+				"\tint a;\n" +
+				"\tvoid One()\n" +
+				"\t{\n" +
+				"\t\ta++;\n" +
+				"\t}\n" +
+				"\n" +
+				"\tvoid Two()\n" +
+				"\t{\n" +
+				"\t\ta--;\n" +
+				"\t}\n" +
+				"\n" +
+				"\tvoid Three()\n" +
+				"\t{\n" +
+				"\t\tchar open = '{';\n" +
+				"\t}\n" +
+				"\n" +
+				"\tvoid Four()\n" +
+				"\t{\n" +
+				"\t}\n" +
+				"}\n";
 
 			var check = Check("Many.cs", source);
 

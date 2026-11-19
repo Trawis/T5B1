@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// English is the reference locale: every key must exist there once; other languages may be incomplete.
 	public class LocalizationTests
 	{
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);
@@ -20,7 +19,6 @@ namespace Trainer_v5.Tests
 
 		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
-		// Buttons and toggles of the Settings window tables, then labels, dialogs (information, confirmations, prompts), errors and HUD popups.
 		private static readonly string[] EnglishSections = { "#Input fields", "#Actions", "#Toggles", "#Labels", "#Dialogs", "#Errors", "#Notifications" };
 
 		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization");
@@ -155,7 +153,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void MessagesWithPlaceholdersAreFormattedByTheCode()
 		{
-			// A numbered placeholder in the English text is only filled in when the code passes the looked-up text to string.Format.
 			var formatted = new SortedSet<string>();
 			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
 			{
@@ -306,7 +303,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void MessageKeysAreNotFakedInOtherLanguages()
 		{
-			// Other languages fall back to English through LocDef until a native speaker translates a key.
 			foreach (var key in new[] { "EfficiencyLabel", "LeadEfficiencyLabel", "SelectEmployeesError", "NoActiveResearch", "ResearchCompleted" })
 			{
 				var english = Value("English", key);

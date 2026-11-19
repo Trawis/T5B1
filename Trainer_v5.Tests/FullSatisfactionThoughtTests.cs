@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Full Satisfaction runs every frame: it must drop the same thoughts as the old Values.ToList() pass without copying the list.
 	public class FullSatisfactionThoughtTests
 	{
 		private static readonly FieldInfo MoodField = typeof(Employee.ThoughtEffect).GetField("_mood", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -80,7 +79,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(new[] { "x", "y" }, Keys(clean));
 		}
 
-		// HashList.GetEnumerator boxes a list enumerator, and Thoughts.Values.ToList() copies: neither belongs in a per-frame pass.
 		[Fact]
 		public void TheFramePassesDoNotCopyListsOrBoxEnumerators()
 		{

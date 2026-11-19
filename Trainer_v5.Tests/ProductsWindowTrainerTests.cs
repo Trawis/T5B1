@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Which product the Products-list buttons act on. Liveness and ownership need game objects and are covered in-game.
 	public class ProductsWindowTrainerTests
 	{
 		[Theory]

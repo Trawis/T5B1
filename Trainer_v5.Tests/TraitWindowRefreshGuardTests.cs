@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Refresh() sets Toggle.isOn on every trait, which raises the callback; the callback must ignore those events.
 	public class TraitWindowRefreshGuardTests
 	{
 		[Fact]

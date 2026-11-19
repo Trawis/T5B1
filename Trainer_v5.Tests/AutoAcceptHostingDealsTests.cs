@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Auto Accept Hosting Deals: only the game's pending list is considered, and registration follows a real accept.
 	public class AutoAcceptHostingDealsTests
 	{
 		[Fact]

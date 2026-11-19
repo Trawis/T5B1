@@ -23,7 +23,6 @@ namespace Trainer_v5
 			return window;
 		}
 
-		// The three title fields must change together or the game redraws the old title.
 		public static void SetTitle(this GUIWindow window, string title)
 		{
 			window.InitialTitle = window.TitleText.text = window.NonLocTitle = title;
@@ -70,7 +69,6 @@ namespace Trainer_v5
 			return comboBox;
 		}
 
-		// False when the game has no element at the path, which the game's own lookup reports as null.
 		public static bool AddToElement(this GameObject gameObject, string elementPath, Rect location)
 		{
 			var parent = WindowManager.FindElementPath(elementPath);
@@ -94,7 +92,6 @@ namespace Trainer_v5
 			WindowManager.AddElementToElement(element, container, location, new Rect(0, 0, 0, 0));
 		}
 
-		// Makes a viewport scroll vertically over its content, one step per mouse-wheel notch.
 		public static void MakeVerticallyScrollable(GameObject viewport, RectTransform content, float step)
 		{
 			viewport.AddComponent<RectMask2D>();
@@ -119,7 +116,6 @@ namespace Trainer_v5
 			window.SetMinSize(xWindowSize, (rows + 1) * Constants.ELEMENT_HEIGHT);
 		}
 
-		// Elements are placed top-left with fixed offsets, so a window larger than its content strands them in a corner.
 		public static void LockWindowSize(this GUIWindow window)
 		{
 			var rect = window.GetComponent<RectTransform>();
@@ -140,7 +136,6 @@ namespace Trainer_v5
 			window.MinSize.y = height;
 		}
 
-		/// <summary>Estimates how many rows of rowHeight fit on screen after window chrome and reservedRows.</summary>
 		public static int GetMaxVisibleRows(int rowHeight, int reservedRows, int gap = 0)
 		{
 			float canvasHeight = FALLBACK_CANVAS_HEIGHT;
@@ -155,7 +150,6 @@ namespace Trainer_v5
 			return FitRows(canvasHeight, rowHeight + gap, reservedRows);
 		}
 
-		// The preferred minimum of rows gives way when the canvas cannot hold it; a larger MinSize would push the footer off screen.
 		internal static int FitRows(float canvasHeight, int rowStep, int reservedRows)
 		{
 			int availableRows = (int)System.Math.Floor((canvasHeight - WINDOW_CHROME_HEIGHT) / rowStep) - reservedRows;
@@ -163,7 +157,6 @@ namespace Trainer_v5
 			return System.Math.Max(1, System.Math.Max(System.Math.Min(MIN_VISIBLE_ROWS, fittingRows), availableRows));
 		}
 
-		/// <summary>Lays out a header, scrolling rows (up to maxVisibleRows) and a footer; returns the column height.</summary>
 		public static int CreateScrollableColumn(GUIWindow window, Rect origin, GameObject[] header, GameObject[] scrollableItems, GameObject[] footer, int itemHeight, int gap, int maxVisibleRows)
 		{
 			float x = origin.x;
@@ -225,7 +218,6 @@ namespace Trainer_v5
 			return totalSlots > 0 ? Mathf.RoundToInt(y - origin.y - gap) : 0;
 		}
 
-		/// <summary>Window height for two scrollable columns: the taller column, the offset its origin sits below the top (0 when it starts at y = 0), and one title-bar row (else the footer falls outside).</summary>
 		internal static int GetColumnWindowHeight(int firstColumnHeight, int secondColumnHeight, int columnOriginY)
 		{
 			return System.Math.Max(firstColumnHeight, secondColumnHeight) + columnOriginY + TITLE_BAR_HEIGHT;
@@ -236,7 +228,6 @@ namespace Trainer_v5
 			return new Rect(column, (index - (isComboBox ? 1 : 0)) * Constants.ELEMENT_HEIGHT + (isComboBox && index % 2 == 0 ? 16 : 0), Constants.ELEMENT_WIDTH, Constants.ELEMENT_HEIGHT);
 		}
 
-		// Same x slots as the FIRST_COLUMN..FOURTH_COLUMN constants.
 		internal static int GetGridColumnX(int column)
 		{
 			return column <= 0 ? Constants.FIRST_COLUMN : Constants.SECOND_COLUMN + (column - 1) * (Constants.THIRD_COLUMN - Constants.SECOND_COLUMN);

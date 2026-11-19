@@ -10,16 +10,13 @@ namespace Trainer_v5
 		None = 0,
 		One = 1,
 		Several = 2,
-		// The list shows add-ons or frameworks, or the selected row is not a software product.
 		Unsupported = 3
 	}
 
 	internal static class ProductsWindowTrainer
 	{
-		// The native Products window lists software products in mode 0, add-ons in 1 and frameworks in 2.
 		private const int SoftwareProductsMode = 0;
 
-		// The player's Products window the controls were added to; the game recreates it with the HUD on save reloads.
 		private static ProductWindow _installedOn;
 
 		public static void Reset()
@@ -48,7 +45,6 @@ namespace Trainer_v5
 			var placed = false;
 			try
 			{
-				// Above the window's top edge, so no list row, filter, header or scrollbar of the native window is covered.
 				for (var i = 0; i < components.Count; i++)
 				{
 					UIHelper.PlaceInElement(components[i].gameObject, target.Window.gameObject, slots[i]);
@@ -182,7 +178,6 @@ namespace Trainer_v5
 			Notification.Popup(string.Format("ProductAwarenessMaxed".LocDef("Trainer: Awareness of {0} is now at its maximum. It fades over time as usual."), product.Name));
 		}
 
-		// The one product selected in the player's Products list when a button is pressed; null after telling the player why.
 		private static SoftwareProduct RequireOneProduct()
 		{
 			var window = HUD.Instance != null ? HUD.Instance.PlayerProductWindow : null;
@@ -226,7 +221,6 @@ namespace Trainer_v5
 			return true;
 		}
 
-		// Checked again when the dialog is submitted: the product may have been archived, sold or left behind by a save reload.
 		private static bool IsStillEditable(SoftwareProduct product)
 		{
 			if (ProductFeatures.IsLiveProduct(product) && IsOwnedByPlayer(product))

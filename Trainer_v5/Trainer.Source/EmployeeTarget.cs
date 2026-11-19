@@ -2,17 +2,13 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// The only origin is the Employees window's own list: no other open window and no world selection is consulted.
 	internal enum TargetSource
 	{
 		None = 0,
-		// Exactly one employee is selected in the shown Employees window.
 		Selection = 1,
-		// Several are selected there: there is no single intended employee.
 		Ambiguous = 2
 	}
 
-	// The employee an editor acts on: resolved once, checked again before every write.
 	internal sealed class EmployeeTarget
 	{
 		public readonly Actor Actor;
@@ -42,7 +38,6 @@ namespace Trainer_v5
 			return source == TargetSource.Selection ? new EmployeeTarget(selected[0]) : null;
 		}
 
-		// For an action on exactly one employee: tells the player why nothing happens without a single selection.
 		public static EmployeeTarget RequireOne()
 		{
 			TargetSource source;
@@ -55,7 +50,6 @@ namespace Trainer_v5
 			return target;
 		}
 
-		// For an editor that also edits several employees on request: a launch needs at least one live selected employee.
 		public static bool RequireAny()
 		{
 			if (ResolveSelection().Count == 0)
@@ -67,7 +61,6 @@ namespace Trainer_v5
 			return true;
 		}
 
-		// An editor window that is closed or missing has no target; true means the target and source are fresh.
 		public static bool TryResolveFor(GUIWindow window, out EmployeeTarget target, out TargetSource source)
 		{
 			if (window == null || !window.Shown)
@@ -81,7 +74,6 @@ namespace Trainer_v5
 			return true;
 		}
 
-		// Every live selected employee, captured at once so a later selection change cannot change who is edited.
 		public static List<EmployeeTarget> ResolveSelection()
 		{
 			var targets = new List<EmployeeTarget>();
@@ -93,7 +85,6 @@ namespace Trainer_v5
 			return targets;
 		}
 
-		// Every live employee of the active game, for an action on all of them.
 		public static List<EmployeeTarget> ResolveAll()
 		{
 			var targets = new List<EmployeeTarget>();
@@ -129,13 +120,11 @@ namespace Trainer_v5
 			return actor != null && actor.employee != null && !actor.employee.Dismissed;
 		}
 
-		// False once the actor is gone, dismissed, replaced, or no longer part of the active game.
 		public bool IsStillValid()
 		{
 			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
 		}
 
-		// What the Employees window's list shows as selected right now; nothing while that window is closed or missing.
 		private static List<Actor> LiveSelectedActors()
 		{
 			var selected = new List<Actor>();
@@ -156,7 +145,6 @@ namespace Trainer_v5
 			return selected;
 		}
 
-		// A save reload or scene change leaves old actors referenced; only the current game's actors count.
 		private static bool IsInActiveGame(Actor actor)
 		{
 			var settings = GameSettings.Instance;

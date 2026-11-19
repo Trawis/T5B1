@@ -5,9 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// What the game's injected try/catch does to a FeatureGuard-style boundary. The real
-	// ModController.HandleException shows the error window and unloads the mod (verified in the game assembly,
-	// not run); the stub here only records that it was called. These tests show which exceptions reach it.
 	public class WorkshopExceptionBoundaryTests
 	{
 		private const string Stubs =

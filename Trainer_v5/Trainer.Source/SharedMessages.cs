@@ -1,7 +1,5 @@
 namespace Trainer_v5
 {
-	// Texts looked up from more than one place (guarded by LocalizationTests). The key and its English fallback stay
-	// together as one literal pair so the localization scans see them. Single-use texts stay inline at their call site.
 	internal static class SharedMessages
 	{
 		public static string TeamAssignmentsNoChange(int skipped)

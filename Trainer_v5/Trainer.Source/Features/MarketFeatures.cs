@@ -5,7 +5,6 @@ namespace Trainer_v5
 {
 	internal static class MarketFeatures
 	{
-		// ServerDeal.StillValid rejects a product released more than 24 months ago.
 		private const float MaxHostedProductAgeMonths = 24f;
 
 		private static bool _warnedAboutPendingList;
@@ -68,7 +67,6 @@ namespace Trainer_v5
 			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
 			{
-				// Built like the game's own offers: the developer is the client. Setting Request later would read an unset bidder.
 				ServerDeal deal = new ServerDeal(Products[index]);
 				deal.PerPower *= 2f;
 
@@ -78,8 +76,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Older builds set Request after construction, leaving the bidder unset; the stored client is the developer.
-		// Returns how many deals were corrected.
 		internal static int RepairLegacyHostingRequests()
 		{
 			var dealWindow = HUD.Instance.dealWindow;
@@ -108,7 +104,6 @@ namespace Trainer_v5
 			return repaired;
 		}
 
-		// The game never sets Request on a ServerDeal, so request with no bidder and the developer as client is trainer-made.
 		internal static bool IsLegacyRequestDeal(bool request, bool hasBidder, bool clientIsDeveloper, bool clientIsPlayer)
 		{
 			return request && !hasBidder && clientIsDeveloper && !clientIsPlayer;
@@ -129,8 +124,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Enabling or loading catches up only the offers: the noon cash is paid by the hour change alone, so a reload or
-		// a retried enable cannot pay it twice.
 		internal static void ApplyHostingDealCatchUp()
 		{
 			int inGameHour = TimeOfDay.Instance.Hour;
@@ -145,7 +138,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// PostMarket spend is settled into LastSpent daily; this refunds it.
 		internal static void ApplyFreeMarketing()
 		{
 			foreach (MarketingPlan plan in Settings.MyCompany.WorkItems.OfType<MarketingPlan>())
@@ -183,7 +175,6 @@ namespace Trainer_v5
 
 		internal static void ApplyAutoAcceptHostingDeals()
 		{
-			// The game attaches a server item only to a group it finds by name; any other name leaves the item unsupported.
 			var serverGroups = Settings.GetAllServerGroups().Where(group => Settings.GetServerGroup(group.Name) != null).ToList();
 			var strongest = FindStrongestIndex(serverGroups.Select(group => group.PowerSum).ToList());
 			if (strongest < 0)
@@ -203,7 +194,6 @@ namespace Trainer_v5
 
 			foreach (var serverDeal in pending.OfType<ServerDeal>().ToList())
 			{
-				// An invalid offer would only be cancelled again by ActuallyAcceptDeal.
 				if (!serverDeal.StillValid(false))
 				{
 					continue;
@@ -217,7 +207,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Index of the highest power; the first wins a tie, so groups at zero power are still chosen. -1 without groups.
 		internal static int FindStrongestIndex(IList<float> powers)
 		{
 			var strongest = -1;
@@ -232,7 +221,6 @@ namespace Trainer_v5
 			return strongest;
 		}
 
-		// Progress holds one slot per enabled press option (compact), not one per Text/Image/Video bit.
 		internal static void MarkAllProgressComplete(float[] progress)
 		{
 			if (progress == null)
@@ -246,7 +234,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Reads the deal window's own pending list through its list views; null if it cannot be told apart from the others.
 		private static List<Deal> FindPendingDeals(DealWindow dealWindow)
 		{
 			var lists = new List<List<object>>();
@@ -258,7 +245,6 @@ namespace Trainer_v5
 			return PendingDeals.Select(lists, dealWindow.GetActiveDeals());
 		}
 
-		// Hosting timing and the pending-list warning describe one game; the next game starts them fresh.
 		internal static void ResetGameState()
 		{
 			Helpers.DealIsPushed = false;
@@ -277,7 +263,6 @@ namespace Trainer_v5
 			message.Log();
 		}
 
-		// Only press-release campaigns have a finish state to force.
 		private static void CompletePressRelease(MarketingPlan plan)
 		{
 			MarkAllProgressComplete(plan.Progress);

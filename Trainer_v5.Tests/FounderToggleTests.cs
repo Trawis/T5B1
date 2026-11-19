@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Founder toggle offered from the Employees window.
 	public class FounderToggleTests
 	{
 		[Fact]

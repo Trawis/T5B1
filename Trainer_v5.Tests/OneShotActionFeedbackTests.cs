@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// One-shot actions say when they did nothing and refuse invalid targets.
 	public class OneShotActionFeedbackTests
 	{
 		private static string Between(string file, string startMarker, string endMarker)

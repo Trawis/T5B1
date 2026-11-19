@@ -5,8 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Settings go through SettingKeys so a misspelled key fails to compile. LINQ is avoided: the game's global Utilities
-	// extensions can win overload resolution.
 	public class SettingKeyUsageTests
 	{
 		private static readonly Regex ToggleKeyUsage = new Regex(
@@ -55,8 +53,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(2, ToggleKeyUsage.Matches(code).Count);
 		}
 
-		// Main.Serialize/Deserialize iterate the persisted key strings, so they are the only code that may hand a string
-		// key to the settings accessors. Everything else passes a ToggleKey/StoreKey.
 		private static readonly Regex PropertyCall = new Regex(
 			"Helpers\\.(?:Get|Set)Property\\(\\s*[\\w.]+\\s*,\\s*(?<key>[^,)]+)",
 			RegexOptions.Compiled);

@@ -19,7 +19,6 @@ namespace Trainer_v5
 				return;
 			}
 
-			// The game has no transfer method; it adjusts this field directly.
 			Settings.MyCompany.MakeTransaction(amount, Company.TransactionCategory.Deals);
 			Settings.OffshoreAccount = 0.0;
 			Notification.Popup("OffshoreFundsTransferred".LocDef("Trainer: Offshore funds transferred!"));
@@ -77,7 +76,6 @@ namespace Trainer_v5
 			Notification.Popup("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"));
 		}
 
-		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
 		internal static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
 			Cheats.InfiniteSubs = enabled;
@@ -116,10 +114,10 @@ namespace Trainer_v5
 			var simulatedCompanyWorth = simulatedCompany.GetPossibleStockWorth();
 
 			simulatedCompany.BuyOut(
-				new Company[] { Settings.MyCompany }, // companies buying out
-				false,                                // not broke
-				SDateTime.Now(),                      // current time
-				true                                  // can disconnect (default value)
+				new Company[] { Settings.MyCompany },
+				false,
+				SDateTime.Now(),
+				true
 			);
 
 			Settings.MyCompany.MakeTransaction(simulatedCompanyWorth, Company.TransactionCategory.Stocks, (string)null, false);
@@ -144,7 +142,6 @@ namespace Trainer_v5
 
 		internal static void MakeSubsidiary(SimulatedCompany Company)
 		{
-			// The player's own company is in the simulation too; making it a subsidiary of itself is invalid.
 			if (!IsBankruptTarget(Company))
 			{
 				Notification.ShowInfo(string.Format("CompanyAlreadyYours".LocDef("Trainer: {0} already belongs to you."), Company.Name));
@@ -189,7 +186,6 @@ namespace Trainer_v5
 				return;
 			}
 
-			// One-way: the flag is only ever set, never toggled back.
 			Confirmation.Ask("Bankrupt", string.Format("BankruptConfirmPrompt".LocDef("Bankrupt {0}?\nThe game cancels its deals and removes it from the market. This cannot be undone."), company.Name), () => ConfirmForceBankrupt(company));
 		}
 
@@ -235,7 +231,6 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AdjustAIFundsTitle(), "", AddAIFundsAction);
 		}
 
-		// A positive amount adds, a negative one subtracts its size and 0 changes nothing; any int is accepted.
 		internal static void AdjustAIFunds(SimulatedCompany company)
 		{
 			InputHelper.RequestInt(string.Format("AdjustAIFundsPrompt".LocDef("How much money do you want to add to {0}? A negative amount subtracts.\nCurrent funds: {1}"), company.Name, company.Money.Currency()), SharedMessages.AdjustAIFundsTitle(), "100000", amount => AdjustAIFundsBy(company, amount));
@@ -268,7 +263,6 @@ namespace Trainer_v5
 			RequestBusinessStars(company, () => IsAdjustableAICompany(company));
 		}
 
-		// Just above the star boundary: the game's float rounding could otherwise show one star less.
 		internal static float BusinessReputationFor(int stars)
 		{
 			return stars >= Company.BusinessRepStars ? 1f : (stars + 0.001f) / Company.BusinessRepStars;
@@ -309,7 +303,6 @@ namespace Trainer_v5
 			Confirmation.Ask("Unlock and Claim Rewards", string.Format("UnlockRewardsConfirm".LocDef("Mark {0} reward task(s) as completed and claimed in this save?\nThe game has no way to undo this."), count), () => ApplyUnlockAndClaimAllRewards(game, count));
 		}
 
-		// Presets are shared for the whole process, so every halved preset is restored, not only the current one.
 		internal static void RestoreReduceISPCost()
 		{
 			foreach (KeyValuePair<EnvironmentPreset, float> baseline in _ispCostBaselines)
@@ -324,7 +317,6 @@ namespace Trainer_v5
 			AI.MaxBoxCarry = Constants.MAX_CARRY_DEFAULT;
 		}
 
-		// Paid-off loans are already removed when this runs; only outstanding loans' interest is refunded.
 		internal static void ApplyNoLoanInterest()
 		{
 			float totalInterest = Settings.Loans.Sum(loan => loan.MonthlyInterest);
@@ -334,7 +326,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// PayDividends records each payout in NewStock[i].Payout.
 		internal static void ApplyNoFounderDividends()
 		{
 			foreach (NewStock stock in Settings.MyCompany.NewStock)
@@ -363,7 +354,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Refunds the daily insurance bill already charged this tick.
 		internal static void ApplyNoInsuranceCost()
 		{
 			if (!Settings.PassedFireInspection)
@@ -418,7 +408,6 @@ namespace Trainer_v5
 			Settings.Heat = 0f;
 		}
 
-		// The player's own company and its subsidiaries are never bankrupted.
 		private static bool IsBankruptTarget(SimulatedCompany company)
 		{
 			return company != Settings.MyCompany && !company.IsPlayerOwned();
@@ -440,7 +429,6 @@ namespace Trainer_v5
 			return Settings.simulation.Companies.Values.Where(company => IsBankruptTarget(company) && !company.Bankrupt).ToList();
 		}
 
-		// The dialog stays open while the game runs, so game and targets are re-checked first.
 		private static void ApplyAIBankrupt(GameSettings game, List<SimulatedCompany> shown)
 		{
 			if (!ReferenceEquals(game, Settings))
@@ -499,7 +487,6 @@ namespace Trainer_v5
 			Notification.ShowInfo("RewardsUnlockedClaimed".LocDef("Trainer: All rewards are unlocked and claimed."));
 		}
 
-		// The game bankrupts an AI company whose money a transaction would take below zero, so that case is warned about.
 		private static void AdjustAIFundsBy(SimulatedCompany company, int amount)
 		{
 			if (!IsAdjustableAICompany(company))
@@ -528,7 +515,6 @@ namespace Trainer_v5
 				if (!IsAdjustableAICompany(company))
 					return;
 
-				// Its funds may have dropped while the question was open; a bankruptcy needs its own warning.
 				if (!bankrupts && !company.CanMakeTransaction(amount))
 				{
 					Confirmation.ShowScopeChanged();
@@ -568,7 +554,6 @@ namespace Trainer_v5
 			}, 0, Company.BusinessRepStars);
 		}
 
-		// As the game's own reputation cheat; history is recorded only for the player.
 		private static void ApplyBusinessStars(Company company, int stars)
 		{
 			if (IsBusinessReputationAt(company.BusinessReputation, stars))
@@ -594,7 +579,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The dialog stays open while the game runs, so the company is checked again before the flag is set.
 		private static void ConfirmForceBankrupt(SimulatedCompany company)
 		{
 			if (IsLiveAICompany(company) && !company.Bankrupt)
@@ -603,14 +587,12 @@ namespace Trainer_v5
 			}
 		}
 
-		// Still the same object in the current game's simulation and still not the player's.
 		internal static bool IsLiveAICompany(SimulatedCompany company)
 		{
 			SimulatedCompany current;
 			return Settings != null && Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company && IsBankruptTarget(company);
 		}
 
-		// Exactly one company with the name, or null after telling the player that none or several have it.
 		private static SimulatedCompany FindCompanyByName(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values.Where(company => company.Name == input).ToList();

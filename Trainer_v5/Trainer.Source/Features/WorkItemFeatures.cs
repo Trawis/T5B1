@@ -61,7 +61,6 @@ namespace Trainer_v5
 			Confirmation.Ask("Optimize Team Assignments", preview, () => ApplyTeamRecommendations(game, changes, skipped));
 		}
 
-		// Each recommendation is computed again; one that no longer matches is skipped, never redirected.
 		private static void ApplyTeamRecommendations(GameSettings game, List<TeamRecommendation> changes, int skipped)
 		{
 			if (!ReferenceEquals(game, Settings))
@@ -116,7 +115,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The optimizer's rule for one work item: null with a reason to show, or null without one for work it never handles.
 		private static TeamRecommendation Recommend(WorkItem item, out string reason)
 		{
 			reason = null;
@@ -187,7 +185,6 @@ namespace Trainer_v5
 
 			foreach (SoftwarePort port in ports)
 			{
-				// Bounded by OSs.Count so a stuck port is not looped on.
 				for (int i = 0; i < port.OSs.Count; i++)
 				{
 					if (!AdvanceSoftwarePort(port))
@@ -211,7 +208,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The game calendar has a fixed number of days per month and no leap days, so the same day and month is always valid.
 		internal static SDateTime ExtendedByYear(SDateTime deadline)
 		{
 			return new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1);
@@ -249,7 +245,6 @@ namespace Trainer_v5
 				return;
 			}
 
-			// ReEvaluateMaxFollowers recomputes the cap and the setter clamps to it: fill it once, leave the daily change alone.
 			WorkItem.ReEvaluateMaxFollowers();
 			WorkItem.Followers = WorkItem.MaxFollowers;
 		}
@@ -304,7 +299,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Followers can sit above the cap, and writing the cap then lowers them.
 		internal static bool IsBelowFollowerCap(float followers, uint maxFollowers)
 		{
 			return followers < maxFollowers;
@@ -397,7 +391,6 @@ namespace Trainer_v5
 
 		internal static void ApplyAutoEndDesign()
 		{
-			// PromoteAction() blocks without this precondition, so it is checked here first.
 			var designDocuments = Settings.MyCompany.WorkItems
 								.OfType<DesignDocument>()
 								.Where(d => d.HasFinished && (!d.NeedsLead() || d.LeadWork != null))
@@ -409,7 +402,6 @@ namespace Trainer_v5
 			});
 		}
 
-		// Same precondition as ApplyAutoEndDesign, for contract work.
 		internal static void ApplyAutoContractProgression()
 		{
 			var contractDesigns = Settings.MyCompany.WorkItems
@@ -447,7 +439,6 @@ namespace Trainer_v5
 			});
 		}
 
-		// Refreshing the timestamp keeps Simulate() from ever counting a ticket as missed.
 		internal static void ApplyNoMissedSupportTickets()
 		{
 			foreach (SupportWork supportWork in Settings.MyCompany.WorkItems.OfType<SupportWork>())
@@ -491,7 +482,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The RoleBit each type's own GetBoostRole checks; other types are left alone.
 		private const int MaxPreviewLines = 20;
 
 		private sealed class TeamRecommendation
@@ -542,7 +532,6 @@ namespace Trainer_v5
 			return team.GetEmployeesDirect().Count(actor => actor.employee.IsRole(roleBit, false));
 		}
 
-		// Same sequence as ResearchWork.FinishNow, minus the patent confirmation dialog and its achievement counter.
 		private static void CompleteResearchWork(ResearchWork researchWork)
 		{
 			Settings.MyCompany.AddResearch(researchWork.Spec, researchWork.Year);
@@ -551,7 +540,6 @@ namespace Trainer_v5
 			{
 				LegalWork legalWork = new LegalWork(tech);
 				Settings.MyCompany.AddWorkItem(legalWork);
-				// The game's key is the enum name ("PatentTeam"), not its number.
 				Settings.ApplyDefaultTeams(legalWork, legalWork.Type + "Team");
 			}
 			HUD.Instance.researchWindow.UpdateLists();
@@ -573,7 +561,6 @@ namespace Trainer_v5
 			CompleteResearchWork(researchWork);
 		}
 
-		// DoWork cancels research the market has passed; redoing a year the company already has only clears that tech's CanPatent.
 		private static bool IsResearchObsolete(ResearchWork researchWork)
 		{
 			List<TechLevel> techLevels;
@@ -600,7 +587,6 @@ namespace Trainer_v5
 				return PatentOutcome.NotPatentable;
 			}
 
-			// PatentNow charges without a funds check; the game's AI checks this first.
 			if (!Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice))
 			{
 				return PatentOutcome.Unaffordable;
@@ -615,7 +601,6 @@ namespace Trainer_v5
 			return PatentOutcome.Patented;
 		}
 
-		// PatentNow charges even when nothing transfers; expiry goes before PatentOwner, whose getter clears expired patents.
 		private static bool CanPatentNow(LegalWork legalWork)
 		{
 			TechLevel patent = legalWork.Patent;
@@ -629,7 +614,6 @@ namespace Trainer_v5
 				&& patent.PatentOwner == 0;
 		}
 
-		// Mirrors SoftwarePort.DoWork at Progress == Goal.
 		private static bool AdvanceSoftwarePort(SoftwarePort port)
 		{
 			if (port.Current == null || port.Product == null || port.Product.DevCompany != Settings.MyCompany)

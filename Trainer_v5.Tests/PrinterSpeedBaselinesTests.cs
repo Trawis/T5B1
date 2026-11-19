@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Increase Print Speed restores the original per-printer speed from a baseline keyed by instance id.
 	public class PrinterSpeedBaselinesTests
 	{
 		[Fact]

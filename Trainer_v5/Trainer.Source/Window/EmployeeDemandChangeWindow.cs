@@ -103,7 +103,6 @@ namespace Trainer_v5.Window
 			}
 			else if (on || has)
 			{
-				// Repairs half-written state or removes (the game has no removal path): the three bit sets change together.
 				var current = new DemandBits((uint)(int)employee.DemandResults, employee.DemandsMet, employee.DemandsRequested);
 				var next = DemandBits.Apply(current, flag, sibling, choice.ID, on);
 				employee.DemandResults = (LeadDesignDemands.Demand)(int)next.Results;
@@ -111,11 +110,9 @@ namespace Trainer_v5.Window
 				employee.DemandsRequested = next.Requested;
 			}
 
-			// Show what the game now reports, including the paired choice that was switched off.
 			Refresh();
 		}
 
-		// Grants via AcceptDemand so the effect runs; its cost stays charged (a refund would pay twice with the dismissal refund).
 		private static void GrantDemand(Employee employee, LeadDesignDemands.DemandChoice choice, LeadDesignDemands.Demand demand, uint sibling)
 		{
 			employee.DemandResults = (LeadDesignDemands.Demand)((int)employee.DemandResults & ~(int)sibling);

@@ -17,10 +17,8 @@ namespace Trainer_v5
 
 		private FeatureDispatcher _dispatcher;
 
-		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
-		// Settings the game itself only ever sets once (ctor/new-game/save-load).
 		private bool _oneTimeSettingsApplied;
 		private bool _forceLightsApplied;
 		private bool _showRoomCeilingsApplied;
@@ -34,11 +32,9 @@ namespace Trainer_v5
 		{
 			SubscribeToSceneEvents();
 
-			// No sceneLoaded event fires on reactivation inside MainScene, so subscribe directly.
 			if (SceneManager.GetActiveScene().name == "MainScene")
 			{
 				SubscribeToEvents();
-				// A game loaded while the mod was inactive never reached Main.Deserialize.
 				Helpers.TryExecute("EstablishSettings", EstablishSettingsForGame);
 			}
 		}
@@ -70,12 +66,10 @@ namespace Trainer_v5
 				switch (SceneRoutes.For(scene.name))
 				{
 					case SceneRoute.MainScene:
-						// First, so a UI failure below cannot leave the time events unsubscribed.
 						SubscribeToEvents();
 						SettingsSession.BeginGame();
 						ResetPerGameState();
 						Main.CreateUIButtons();
-						// Immediate attempt; GameSettings.GameReady is the reliable trigger.
 						EmployeesWindowTrainer.Install();
 						ProductsWindowTrainer.Install();
 						CompaniesWindowTrainer.Install();
@@ -107,8 +101,6 @@ namespace Trainer_v5
 			UnsubscribeFromEvents();
 		}
 
-		// The first time this game is seen without a full load having given it its settings, they come from its own
-		// ModData or the declared defaults, never from the previous game.
 		private void EstablishSettingsForGame()
 		{
 			GameSettings game = Settings;
@@ -124,7 +116,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
 		private void ResetPerGameState()
 		{
 			SettingsWindow.Reset();
@@ -174,7 +165,6 @@ namespace Trainer_v5
 			_minuteWatcher.OnMinutePassed += OnMinutePassed;
 			_minuteWatcher.Reset();
 
-			// Fires once per load, after HUD.DetailWindow already exists.
 			GameSettings.GameReady += OnGameReady;
 
 			_timeEventsSubscribed = true;
@@ -269,7 +259,6 @@ namespace Trainer_v5
 			return _toggleStates.Observe(settingKey.Key, Helpers.GetProperty(TrainerSettings, settingKey));
 		}
 
-		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
 			if (!Helpers.IsSimulationReady())
@@ -307,10 +296,8 @@ namespace Trainer_v5
 				Main.CloseSettingsWindow();
 			}
 
-			// The game reads MaxFloor while it loads the rooms, before the simulation is ready.
 			Helpers.TryExecute("MaxFloor", ApplyMaxFloorOnce);
 
-			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
 			if (!Helpers.IsSimulationReady())
 			{
 				return;
@@ -325,7 +312,6 @@ namespace Trainer_v5
 				});
 			}
 
-			// Each shared step has its own boundary so a failure cannot skip the Frame run below.
 			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
 
 			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());
@@ -346,7 +332,6 @@ namespace Trainer_v5
 
 		private void ApplyProcessStaticSettings()
 		{
-			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{
 				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));

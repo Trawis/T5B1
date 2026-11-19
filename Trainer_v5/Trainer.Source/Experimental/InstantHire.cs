@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5.Experimental
 {
-	// The same steps as the game's own hire (HireWindow.DoActualHiring): Employ pays the upfront demands, then the actor is spawned.
 	internal static class InstantHire
 	{
 		private const string ActionName = "Hire Employees";
@@ -79,7 +78,6 @@ namespace Trainer_v5.Experimental
 			Confirmation.Ask(ActionName, message, () => Apply(game, hire, candidates, team));
 		}
 
-		// The dialog stays open while the game runs, so the game, the multiplayer state and the team are re-checked first.
 		private static void Apply(GameSettings game, HireWindow hire, Employee[] candidates, string team)
 		{
 			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(hire, HireWindowOrNull()) || GameData.MultiplayerMode || GameSettings.ForcePause)

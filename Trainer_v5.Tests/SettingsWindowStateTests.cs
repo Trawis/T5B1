@@ -14,7 +14,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, SettingsWindowState.ProductNameFieldText(current, hint));
 		}
 
-		// 18 rows is the tallest page (Toggles); 1366x768 leaves about 16, 1920x1080 about 26.
 		[Theory]
 		[InlineData(18, 6, 16, 16)]
 		[InlineData(18, 6, 26, 18)]
@@ -26,7 +25,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, SettingsWindowState.VisibleRows(tallest, other, maxVisible));
 		}
 
-		// Title bar + tab strip + content rows: the page viewports end exactly at the window's bottom edge.
 		[Theory]
 		[InlineData(6, 256)]
 		[InlineData(16, 576)]
@@ -77,7 +75,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void EverySectionWithControlsAddsAHeaderRowAndEmptySectionsAddNothing()
 		{
-			// 9 control rows plus five section headers.
 			Assert.Equal(14, SettingsWindowState.PageRows(new[] { 11, 2, 8, 5, 2 }, SettingsWindowState.Columns));
 			Assert.Equal(2, SettingsWindowState.PageRows(new[] { 0, 4, 0 }, SettingsWindowState.Columns));
 			Assert.Equal(0, SettingsWindowState.PageRows(new int[0], SettingsWindowState.Columns));
@@ -95,7 +92,7 @@ namespace Trainer_v5.Tests
 				}
 			}
 
-			actions[TrainerDomain.Product]++; // the Product Name field is the first cell of that section
+			actions[TrainerDomain.Product]++;
 			var toggles = new Dictionary<TrainerDomain, int>();
 			var toggleRows = SettingToggleRows.Create();
 			toggleRows.AddRange(SettingToggleRows.CreateImmediate());

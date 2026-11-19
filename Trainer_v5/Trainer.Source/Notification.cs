@@ -2,16 +2,12 @@ using System;
 
 namespace Trainer_v5
 {
-	// The one place trainer-owned messages reach the game. A HUD popup starts with "Trainer: " exactly once;
-	// dialogs state their own context and get no prefix, and are not modal. Input dialogs (InputHelper) are separate.
 	public static class Notification
 	{
 		public const string Prefix = "Trainer: ";
 
 		private const string PrefixWithoutSpace = "Trainer:";
 
-		// Cogs icon, no action. The game shows the message only for PopupIDs.None (-1), and NotificationSound 0 is Issue
-		// (an undismissable entry in the Issues panel), so the sound is Neutral.
 		public static void Popup(string msg)
 		{
 			HUD.Instance.AddPopupMessage(WithPrefix(msg), "Cogs", PopupManager.PopUpAction.None, 0, PopupManager.NotificationSound.Neutral, 0f, PopupManager.PopupIDs.None);
@@ -32,7 +28,6 @@ namespace Trainer_v5
 			WindowManager.SpawnDialog(msg, false, DialogWindow.DialogType.Error);
 		}
 
-		// Pure text rule, no game types.
 		internal static string WithPrefix(string message)
 		{
 			if (message == null)

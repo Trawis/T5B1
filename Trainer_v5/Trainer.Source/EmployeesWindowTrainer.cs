@@ -6,7 +6,6 @@ namespace Trainer_v5
 {
 	internal static class EmployeesWindowTrainer
 	{
-		// The Employees window the controls were added to; the game recreates it with the HUD on save reloads.
 		private static EmployeeWindow _installedOn;
 
 		public static void Reset()
@@ -37,7 +36,6 @@ namespace Trainer_v5
 			var placed = false;
 			try
 			{
-				// Above the window's top edge, so no list row, filter, header or scrollbar of the native window is covered.
 				for (var i = 0; i < components.Count; i++)
 				{
 					UIHelper.PlaceInElement(components[i].gameObject, target.Window.gameObject, slots[i]);
@@ -47,8 +45,6 @@ namespace Trainer_v5
 			}
 			finally
 			{
-				// An exception partway drops every control, so a retry starts clean
-				// instead of stacking a second set on top of the buttons that were already added.
 				if (!placed)
 				{
 					for (var i = 0; i < components.Count; i++)
@@ -61,7 +57,6 @@ namespace Trainer_v5
 			if (!placed)
 				return;
 
-			// Marked installed only after every control was placed, so a failure leaves a retry possible.
 			_installedOn = target;
 		}
 

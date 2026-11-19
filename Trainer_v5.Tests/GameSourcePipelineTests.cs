@@ -8,7 +8,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Runs the game's injector and compiler over the real sources: parsing and try placement only.
 	public class GameSourcePipelineTests
 	{
 		private static readonly Lazy<IList<InjectedSource>> Injected = new Lazy<IList<InjectedSource>>(InjectEverySourceFile);
@@ -73,8 +72,6 @@ namespace Trainer_v5.Tests
 
 			Assert.True(misplaced.Count == 0, "The injector wrapped something that is not a method or constructor body:" + Environment.NewLine + string.Join(Environment.NewLine, misplaced));
 
-			// The floor follows the compiled trainer instead of a fixed number: nearly every ordinary method it declares has a
-			// braced body for the injector to wrap. Expression-bodied members have none, hence the margin (about 5% today).
 			var compiled = CompiledMethodBodies();
 			Assert.True(compiled > 0, "The compiled trainer has no methods; the count is broken.");
 			Assert.True(wrapped * 100 >= compiled * 80, "The injector wrapped " + wrapped + " bodies but the compiled trainer declares " + compiled + " ordinary methods; the injector or this check has changed.");

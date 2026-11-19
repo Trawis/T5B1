@@ -2,7 +2,6 @@ using System;
 
 namespace Trainer_v5
 {
-	// TimeOfDay has no minute event; this raises one from its Minute field (int truncation makes the hour wrap a no-op).
 	public sealed class GameMinuteWatcher
 	{
 		private int _lastObservedMinute = -1;
@@ -11,7 +10,6 @@ namespace Trainer_v5
 
 		public void Poll()
 		{
-			// TimeOfDay is absent during scene transitions; that is "not ready", not an error.
 			if (TimeOfDay.Instance == null)
 			{
 				return;
@@ -20,7 +18,6 @@ namespace Trainer_v5
 			Observe((int)TimeOfDay.Instance.Minute);
 		}
 
-		// Forces the next Poll() to fire, for a catch-up run on fresh subscription.
 		public void Reset()
 		{
 			_lastObservedMinute = -1;

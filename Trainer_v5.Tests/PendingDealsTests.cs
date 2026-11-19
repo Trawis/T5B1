@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Telling the pending list from the others, with real deal objects created without their constructors.
 	public class PendingDealsTests
 	{
 		[Fact]
@@ -25,7 +24,6 @@ namespace Trainer_v5.Tests
 			var active = Deal();
 			var rejected = Deal();
 			var stillPending = Deal();
-			// The game removes a rejected offer from its pending list; it only stays in AllDeals.
 			var pending = PendingDeals.Select(Lists(new object[] { active }, new object[] { stillPending }), Deals(active));
 
 			Assert.Equal(new[] { stillPending }, pending.ToArray());

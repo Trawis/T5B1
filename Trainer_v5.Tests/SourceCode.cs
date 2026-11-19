@@ -5,9 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Reads trainer source for the few rules that are about source shape. Line endings are normalised (CI may check out
-	// CRLF), comments are removed, and every run of whitespace becomes one space, so a test states what the code says and
-	// not how it is laid out. A missing marker fails with its name instead of an ArgumentOutOfRangeException.
 	internal static class SourceCode
 	{
 		public static string Read(params string[] pathInSourceDirectory)
@@ -21,8 +18,6 @@ namespace Trainer_v5.Tests
 			return Normalize(System.IO.File.ReadAllText(path));
 		}
 
-		// The text from startMarker up to (not including) endMarker, or to the end of the file when endMarker is null.
-		// Markers are written the way Normalize leaves the code: one space between tokens.
 		public static string Span(string source, string startMarker, string endMarker = null)
 		{
 			var start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -37,8 +32,6 @@ namespace Trainer_v5.Tests
 			return source.Substring(start, end - start);
 		}
 
-		// The member that starts at the marker: its signature and its braced body up to the matching closing brace,
-		// however the surrounding members are ordered or formatted.
 		public static string Body(string source, string signatureMarker)
 		{
 			var start = source.IndexOf(signatureMarker, StringComparison.Ordinal);
@@ -62,8 +55,6 @@ namespace Trainer_v5.Tests
 			throw new Xunit.Sdk.XunitException("The body of \"" + signatureMarker + "\" is not closed.");
 		}
 
-		// Passes when both texts occur and the first occurrence of the first comes before the first occurrence of the second,
-		// so a later repeat of the second cannot hide a wrong order.
 		public static void AssertInOrder(string source, string first, string second, string because)
 		{
 			var firstIndex = source.IndexOf(first, StringComparison.Ordinal);

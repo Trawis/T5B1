@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// scheduled work waits for loading and pre-simulation; GameReady initialization does not.
 	public class SimulationReadinessTests
 	{
 		[Fact]
@@ -51,7 +50,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// The game rebuilds room meshes for floors -1..MaxFloor late in LoadGame; the trainer's raised limit must already be set.
 		[Fact]
 		public void MaxFloorIsSetOnceAndBeforeTheReadinessGate()
 		{

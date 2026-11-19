@@ -42,7 +42,6 @@ namespace Trainer_v5.Tests
 			var declaredStores = new List<string>();
 			foreach (var field in DeclaredKeys())
 			{
-				// Retired keys stay declared but are not live settings.
 				if (field.FieldType == typeof(ToggleKey) && System.Array.IndexOf(RetiredSettingsTests.RetiredKeys, field.Name) >= 0)
 				{
 					continue;

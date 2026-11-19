@@ -92,7 +92,6 @@ namespace Trainer_v5
 			Confirmation.Ask("Make Selected Employees Happy Now", string.Format("MakeSelectedHappyConfirm".LocDef("Make the {0} selected employee(s) happy now?\nTheir negative, lawsuit and quit thoughts are removed and not restored. Positive thoughts stay."), targets.Count), () => ApplyMakeHappy(game, targets, EmployeeTarget.ResolveSelection()));
 		}
 
-		// The dialog stays open while the game runs, so the game and the exact employees are re-checked first.
 		private static void ApplyMakeHappy(GameSettings game, List<EmployeeTarget> shown, List<EmployeeTarget> current)
 		{
 			if (!ReferenceEquals(game, Settings) || !Confirmation.IsSameTargets(shown.Select(x => x.Actor).ToList(), current.Select(x => x.Actor).ToList()) || !shown.All(x => x.IsStillValid()))
@@ -196,8 +195,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The game loses a Forgetful employee's specialization only when the actor leaves the office after ForgetfulETA has
-		// passed (AI.Despawn); keeping the timer ahead of the clock skips the loss, the popup and the re-arm. Unarmed (0) stays.
 		internal static void ApplyNoForgetfulSkillLoss()
 		{
 			if (!ExperimentalOptions.Enabled || TimeOfDay.Instance == null)
@@ -235,14 +232,11 @@ namespace Trainer_v5
 			}
 		}
 
-		// The list belongs to one game (mods change the specializations), so a new game recomputes it. The loaded flag
-		// stays set: it also gates the one-time Discord popup in TrainerBehaviour.Update.
 		internal static void ResetSpecializations()
 		{
 			Helpers.SpecializationsList = null;
 		}
 
-		// Recomputes the list for a later game; the first load of a session still belongs to TrainerBehaviour.Update.
 		internal static void RestoreSpecializationsAfterReset()
 		{
 			if (_specializationsLoaded && Helpers.SpecializationsList == null)
@@ -289,7 +283,6 @@ namespace Trainer_v5
 			Settings.sActorManager.Actors.ForEach(x => x.employee.BirthDate += 1);
 		}
 
-		// Walks backwards so removing an entry never shifts one still to be visited, and copies nothing (Thoughts.Values is the live list).
 		internal static void RemoveUnwantedThoughts(DictionaryList<string, Employee.ThoughtEffect> thoughts)
 		{
 			for (int i = thoughts.Count - 1; i >= 0; i--)

@@ -29,7 +29,6 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// The title follows the Employees window selection; each write captures that selection again.
 		public static void Refresh()
 		{
 			var window = Window;
@@ -44,7 +43,6 @@ namespace Trainer_v5.Window
 				: string.Format("EditSkillsSelectedTitle".LocDef("Edit skills for {0} selected employee(s)"), selection.Count));
 		}
 
-		// The window's toggles are bound to the specialization list of one game, so both go together.
 		public static void Reset()
 		{
 			Window = null;
@@ -122,7 +120,6 @@ namespace Trainer_v5.Window
 				.ToArray();
 		}
 
-		// The employees the next write may touch, captured at the click; null after the error shown for an empty choice.
 		private static List<EmployeeTarget> CaptureTargets()
 		{
 			var targets = EmployeeTarget.ResolveSelection();

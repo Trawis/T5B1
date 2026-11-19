@@ -4,13 +4,11 @@ namespace Trainer_v5
 {
 	internal static class TeamAssignmentResult
 	{
-		// SetDevTeams returns nothing and silently ignores finished work, so the work item itself is the evidence.
 		public static bool Applied(ICollection<string> teamsAfter, string expectedTeam)
 		{
 			return teamsAfter != null && teamsAfter.Count == 1 && teamsAfter.Contains(expectedTeam);
 		}
 
-		// A long preview is cut; omitted says how many lines were left out.
 		public static string PreviewText(IList<string> lines, int maxLines, out int omitted)
 		{
 			omitted = System.Math.Max(0, lines.Count - maxLines);

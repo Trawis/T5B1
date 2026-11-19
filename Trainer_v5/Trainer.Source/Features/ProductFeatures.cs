@@ -23,7 +23,6 @@ namespace Trainer_v5
 				uint copies = product.PhysicalCopies;
 				double proceeds = StockSale.Proceeds(copies, product.Price);
 
-				// ChangeAllPhysicalStock also removes the stock of forced add-ons; its argument is an int.
 				for (uint left = copies; left > 0;)
 				{
 					int chunk = (int)Math.Min(left, (uint)int.MaxValue);
@@ -35,7 +34,6 @@ namespace Trainer_v5
 				total += proceeds;
 			}
 
-			// Reported after selling, so the player is never told about a sale that did not happen.
 			Notification.ShowInfo(Products.Length == 0
 				? "StockSaleNothing".LocDef("Trainer: No product without active users has stock to sell. Nothing was sold.")
 				: string.Format("StockSaleDone".LocDef("Stock of {0} product(s) with no active users was sold at half the price for {1}."), Products.Length, total.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)));
@@ -114,7 +112,6 @@ namespace Trainer_v5
 			Settings.ProductPrinters.ForEach(p => p.PrintPrice = Constants.PRINTER_PRICE_DEFAULT);
 		}
 
-		// PrintSpeed has no game writer and is not saved (ProductPrinter.SerializeMe): the first read is the native value.
 		internal static void ApplyIncreasePrintSpeed()
 		{
 			RetainLivePrinterSpeeds();
@@ -138,7 +135,6 @@ namespace Trainer_v5
 			});
 		}
 
-		// Printer baselines belong to one game; the next game's printers start without any.
 		internal static void ResetGameState()
 		{
 			_printerSpeeds.Clear();
@@ -151,7 +147,6 @@ namespace Trainer_v5
 			_printerSpeeds.Retain(live);
 		}
 
-		// The product is chosen when the action starts, so renaming it while the dialog is open cannot redirect the edit.
 		private static SoftwareProduct RequireNamedProduct()
 		{
 			string error;
@@ -169,7 +164,6 @@ namespace Trainer_v5
 			return Settings != null && Settings.simulation.GetAllProducts(false).Contains(product);
 		}
 
-		// Shared by the price, stock and active-users actions; rejects ambiguous names.
 		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
 		{
 			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)

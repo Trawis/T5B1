@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The game translates stage and status strings, so comparing them to English text breaks other languages.
 	public class LocalizedGameTextTests
 	{
 		private static readonly Regex StageComparison = new Regex(@"\bCurrentStage\(\)\s*[!=]=", RegexOptions.Compiled);

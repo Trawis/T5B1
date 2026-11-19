@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Global opt-in in the mod's own game settings (DLLMod.Settings); read at load, never part of a save.
 	internal static class LoggingOptions
 	{
 		public const string StorageKey = "DebugLogging";

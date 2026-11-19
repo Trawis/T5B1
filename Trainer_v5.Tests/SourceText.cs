@@ -3,7 +3,6 @@ using System.Text;
 
 namespace Trainer_v5.Tests
 {
-	// Dependency-free scanner that drops comments and optionally string text; interpolated-string expressions are always kept.
 	internal static class SourceText
 	{
 		public static string Strip(string source, bool keepStrings)

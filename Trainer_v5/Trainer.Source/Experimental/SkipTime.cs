@@ -2,7 +2,6 @@ using System;
 
 namespace Trainer_v5.Experimental
 {
-	// The game's own skip commands advance hour by hour through TimeOfDay.AddHour, so payroll, deadlines and autosaves run.
 	internal static class SkipTime
 	{
 		private const string ActionName = "Skip Time";
@@ -43,7 +42,6 @@ namespace Trainer_v5.Experimental
 			}, 0, 23);
 		}
 
-		// Hours from the current hour to the next time the clock shows the target hour; 0 when it already does.
 		internal static int HoursUntil(int currentHour, int targetHour)
 		{
 			return ((targetHour - currentHour) % 24 + 24) % 24;

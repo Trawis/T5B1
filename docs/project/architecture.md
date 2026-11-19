@@ -276,3 +276,32 @@ these rules.
   touches live game objects needs in-game testing.
 
 Open technical debt is tracked as GitHub issues labelled `type: tech-debt`.
+
+## Game API facts
+
+Facts from the vendored game assembly that the code relies on:
+
+- `GameSettings.MaxFloor` is read while rooms load, so it is set before the
+  readiness gate.
+- `Company.Bankrupt` is recomputed daily, not monthly.
+- `Thoughts.Values` is the live list; passes that remove thoughts walk it
+  backwards.
+- `Furniture.RepairMe(factor)` repairs in one pass with a large factor.
+- `PatentNow` charges without a funds check, even when nothing transfers, so
+  funds, expiry and ownership are checked first. The patent team key is the
+  enum name (`PatentTeam`), not its number.
+- `ServerDeal.StillValid` rejects products released more than 24 months ago.
+  The game attaches a server item only to a group it finds by name.
+- The game never sets `Request` on a `ServerDeal`; a request with no bidder and
+  the developer as client was made by an old trainer build and is repaired on
+  load.
+- The pending deals have no public list. They are read from the deal window's
+  list view that holds none of the active deals.
+- A Forgetful employee loses a specialization only when leaving the office
+  after `ForgetfulETA` (`AI.Despawn`).
+- Business reputation is written just above a star boundary, because float
+  rounding can show one star less.
+- `ChangeAllPhysicalStock` takes an `int` and also removes the stock of forced
+  add-ons.
+- Number input uses the invariant culture: `.` is the only decimal separator,
+  and grouped or comma forms are rejected.

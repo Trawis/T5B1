@@ -2,7 +2,6 @@ using System;
 
 namespace Trainer_v5.Tests
 {
-	// Reads and clears the CLR "requires 32-bit process" flag, which only the game's mcs.dll carries.
 	internal static class PeImage
 	{
 		private const int ClrDataDirectory = 14;

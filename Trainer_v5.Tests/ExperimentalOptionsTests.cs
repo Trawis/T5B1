@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Experimental opt-in lives in the native mod Options and the mod's own game-managed settings, not in saves.
 	[Collection(SettingsCollection.Name)]
 	public class ExperimentalOptionsTests
 	{

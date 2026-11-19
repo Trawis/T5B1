@@ -1,6 +1,5 @@
 namespace Trainer_v5
 {
-	// None is unset: a table row without a domain fails SettingToggleRowsTests / SettingActionRowsTests.
 	internal enum TrainerDomain
 	{
 		None = 0,
@@ -11,7 +10,6 @@ namespace Trainer_v5
 		Environment = 5
 	}
 
-	// None means no page chosen yet and shows Actions.
 	internal enum SettingsTab
 	{
 		None = 0,

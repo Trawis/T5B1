@@ -6,7 +6,6 @@ namespace Trainer_v5
 {
 	public static class Helpers
 	{
-		// Keys already reported as unregistered, so a typo'd key hit every frame logs once. Shared with Extensions.
 		private static readonly HashSet<string> _loggedUnregisteredKeys;
 
 		private static readonly FeatureGuard _featureGuard;
@@ -47,7 +46,6 @@ namespace Trainer_v5
 
 		public static Dictionary<string, object> StoresSettings { get; private set; }
 
-		// The game's mod loader mis-parses calls in member initializers, so they are assigned here.
 		static Helpers()
 		{
 			Settings = SettingKeys.CreateToggleDefaults();
@@ -110,7 +108,6 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		// Isolates one feature's exceptions; returns whether the action completed without throwing.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
@@ -126,7 +123,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
 		internal static void LogUnregisteredKey(string source, string key)
 		{
 			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
@@ -139,8 +135,6 @@ namespace Trainer_v5
 		internal static bool IsGameReady(bool requireSelector = false) =>
 			IsGameLoaded && (!requireSelector || SelectorController.Instance != null);
 
-		// Scheduled work waits for this. GameReady is raised just before DoneLoading is set (and after pre-simulation for a
-		// new game), so GameReady initialization must not be gated on it.
 		internal static bool IsSimulationReady()
 		{
 			GameSettings game = GameSettings.Instance;
@@ -161,7 +155,6 @@ namespace Trainer_v5
 			return hasGame && hasHud && hasSelector && hasClock && doneLoading && !preSimActive && !preSimFinished;
 		}
 
-		// For user-triggered actions: checks readiness before any game manager is touched and says why nothing happened.
 		internal static bool RequireGameReady(string action, bool requireSelector = false)
 		{
 			if (IsGameReady(requireSelector))

@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// a full game whose save has no trainer entry is never given to Main.Deserialize by the game.
 	[Collection(SettingsCollection.Name)]
 	public class SettingsSessionTests
 	{
@@ -200,8 +199,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// The game's wrapper: Meta.Deserialize runs only for an active mod whose entry exists in the incoming ModData.
-		// The wrapper needs the game's Utilities class, which cannot load on every test host; then its IL is pinned instead.
 		private static int RunWrapper(WriteDictionary modData, bool active)
 		{
 			var mod = (ModController.DLLMod)FormatterServices.GetUninitializedObject(typeof(ModController.DLLMod));
@@ -243,7 +240,6 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		// ldarg0 call get_Active brfalse.s ... ldloc0 brfalse.s ... callvirt ModMeta.Deserialize ret (assembly 1.8.42).
 		private static void AssertWrapperIlSkipsBothCases()
 		{
 			var il = typeof(ModController.DLLMod).GetMethod("Deserialize").GetMethodBody().GetILAsByteArray();
