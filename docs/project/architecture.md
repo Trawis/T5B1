@@ -208,6 +208,7 @@ The other toggles fall into these groups (checked against the vendored
   (`FreeEmployees`), `Employee.BirthDate` (`LockAge`), `Actor.VacationMonth`
   (`NoVacation`), `Actor.ForgetfulETA` (`NoForgetfulSkillLoss`), `Upgradable.Quality` (repairs by `NoMaintenance`), support
   ticket timestamps, work items advanced or started by the `Auto*` toggles,
+  `SoftwareWorkItem` followers (`AutoMaxFollowers`),
   deals added by `MoreHostingDeals`, closed or removed distribution platforms
   (`DigitalDistributionMonopol`), despawned burglars and inspectors,
   `PassedFireInspection`, and money refunded by the cost-refund toggles.
@@ -277,8 +278,10 @@ not in saves and not in `Helpers.Settings`:
   while the option is off. `ExperimentalToggles` lists them: turning the option
   off, and `OnGameReady` while it is off, set them all to false. They are
   `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with
-  no recorded original, never restored), and `AutoInstantPatent`: it files
-  pending patent work through the same checks as the Instant Patent button. The Trainer Settings window has no
+  no recorded original, never restored), `AutoInstantPatent`: it files
+  pending patent work through the same checks as the Instant Patent button, and
+  `AutoMaxFollowers`: it fills the followers of beta work to the cap the game
+  recalculates, as the Max Followers button does. The Trainer Settings window has no
   Experimental toggle or Test button.
 
 Not verified in the game: the Options layout, the toggle round trip and that

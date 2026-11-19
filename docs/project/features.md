@@ -128,8 +128,8 @@ The game's Options screen lists the trainer under its mods and offers *Enable
 Experimental Features*, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
 saved in one. Turning it on shows additional, unfinished controls in Trainer
-Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss* and
-*Auto Instant Patent*, off until you switch them on) and buttons in the Employee section of the Actions page
+Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*,
+*Auto Instant Patent* and *Auto Max Followers*, off until you switch them on) and buttons in the Employee section of the Actions page
 (currently *Amazing Compatibility*); the window shows them the next time it is
 created, that is, in the next loaded game. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
@@ -150,6 +150,16 @@ patentable or part of a multiplayer deal, and any patent you cannot afford, is
 skipped and checked again on the next run. Lawsuits are not affected. With *Auto
 Patent End* also on, finished patent work is filed by *Auto Patent End* first.
 Switching it off stops filing; patents already filed stay filed.
+
+*Auto Max Followers* (experimental, not tested in the game): every game hour,
+and once when switched on, each of your products in beta that is not paused has
+its follower cap recalculated by the game, the same way as the *Max Followers*
+button, and its followers raised to that cap when below it, without a message.
+Products still in alpha, released products, contract work and other companies'
+work are not changed; followers already at or above the cap and the daily
+follower change are left alone. An add-on in beta is included; the game itself
+keeps its followers at or below those of the product it is developed for.
+Switching it off stops filling; followers already added stay.
 
 *Amazing Compatibility* (experimental, not tested in the game): a one-shot
 button, not a toggle. It raises every pair of different personalities in the
@@ -200,6 +210,7 @@ value is not recorded, so the trainer cannot put it back.
 | Full Satisfaction            | Cleared negative thoughts stay cleared; job satisfaction is written by the game again |
 | No Missed Support Tickets    | Ticket ages stay reset |
 | Auto Design End, Auto Contract Progression, Auto Research Start, Auto Research End, Auto Patent End, Auto Instant Patent, Auto Porting, Auto Accept Hosting Deals | Work already promoted, started, finished, patented or accepted stays so |
+| Auto Max Followers           | Followers already added stay and are saved with the product in development |
 | More Hosting Deals           | Deals and rewards already added stay; on loading a game, hosting offers that older builds left without a visible company are corrected (see architecture.md) |
 | Digital Distribution Monopol | Rival platforms already closed or removed stay closed; nothing in the game's code reopens an AI company's platform |
 | Disable Burglars, Disable Fire Inspection | Removed burglars and inspectors stay removed; fire inspection stays marked as passed until the game next writes that flag |

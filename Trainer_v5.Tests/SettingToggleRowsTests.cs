@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
 		// Rows shown only while the Experimental option is on.
-		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss", "AutoInstantPatent" };
+		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss", "AutoInstantPatent", "AutoMaxFollowers" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
 		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
@@ -51,7 +51,7 @@ namespace Trainer_v5.Tests
 			"ReduceISPCost=Company", "NoServerCost=Company", "NoInsuranceCost=Company", "NoLoanInterest=Company", "NoOffshoreHeat=Company", "NoFounderDividends=Company",
 			"UnlimitedSubsidiaries=Company",
 			"FreePrint=Product", "IncreasePrintSpeed=Product", "MoreHostingDeals=Product", "AutoAcceptHostingDeals=Product", "DigitalDistributionMonopol=Product",
-			"NoMissedSupportTickets=Product", "FreeMarketing=Product", "IncreaseCourierCapacity=Product"
+			"NoMissedSupportTickets=Product", "FreeMarketing=Product", "IncreaseCourierCapacity=Product", "AutoMaxFollowers=Product"
 		};
 
 		private static List<SettingToggleRow> AllRows()

@@ -202,6 +202,34 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), "MaxFollowersOldTitle".LocDef("Max Followers (Old)"), "", MaxFollowersOldAction);
 		}
 
+		internal static void ApplyAutoMaxFollowers()
+		{
+			if (!ExperimentalOptions.Enabled)
+			{
+				return;
+			}
+
+			var betaWorks = Settings.MyCompany.WorkItems
+								.OfType<SoftwareAlpha>()
+								.Where(item => item.InBeta && !item.Paused && item.contract == null && item.GetWorkOwner() == Settings.MyCompany)
+								.ToList();
+
+			foreach (SoftwareAlpha workItem in betaWorks)
+			{
+				workItem.ReEvaluateMaxFollowers();
+				if (IsBelowFollowerCap(workItem.Followers, workItem.MaxFollowers))
+				{
+					workItem.Followers = workItem.MaxFollowers;
+				}
+			}
+		}
+
+		// Followers can sit above the cap, and writing the cap then lowers them.
+		internal static bool IsBelowFollowerCap(float followers, uint maxFollowers)
+		{
+			return followers < maxFollowers;
+		}
+
 		internal static void InstantResearch()
 		{
 			var eligibleResearch = Settings.MyCompany.WorkItems

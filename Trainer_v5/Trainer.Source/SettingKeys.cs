@@ -74,6 +74,7 @@ namespace Trainer_v5
 		public static readonly ToggleKey NoFounderDividends = Toggle("NoFounderDividends");
 		public static readonly ToggleKey NoForgetfulSkillLoss = Toggle("NoForgetfulSkillLoss");
 		public static readonly ToggleKey AutoInstantPatent = Toggle("AutoInstantPatent");
+		public static readonly ToggleKey AutoMaxFollowers = Toggle("AutoMaxFollowers");
 
 		public static readonly StoreKey EfficiencyStore = Store("EfficiencyStore");
 		public static readonly StoreKey LeadEfficiencyStore = Store("LeadEfficiencyStore");
