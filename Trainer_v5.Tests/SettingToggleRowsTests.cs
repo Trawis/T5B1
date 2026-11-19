@@ -13,7 +13,7 @@ namespace Trainer_v5.Tests
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
 		// Rows shown only while the Experimental option is on.
-		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss", "AutoInstantPatent", "AutoMaxFollowers" };
+		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss", "AutoInstantPatent", "AutoInstantResearch", "AutoMaxFollowers" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.
 		private static readonly string[] WithoutToggle = { "DisableSkillDecay", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental" };
@@ -46,7 +46,7 @@ namespace Trainer_v5.Tests
 			"DisableFireInspection=Environment", "FullEnvironment=Environment", "FullRoomBrightness=Environment", "TemperatureLock=Environment", "NoMaintenance=Environment",
 			"NoiseReduction=Environment", "CleanRooms=Environment", "DisableFires=Environment", "DisableBurglars=Environment", "DisableFurnitureStealing=Environment",
 			"NoWaterElectricity=Environment", "ForceLights=Environment", "ShowRoomCeilings=Environment",
-			"AutoResearchStart=Work", "AutoEndDesign=Work", "AutoContractProgression=Work", "AutoEndResearch=Work", "AutoEndPatent=Work", "AutoInstantPatent=Work", "AutoPorting=Work",
+			"AutoResearchStart=Work", "AutoEndDesign=Work", "AutoContractProgression=Work", "AutoEndResearch=Work", "AutoEndPatent=Work", "AutoInstantPatent=Work", "AutoInstantResearch=Work", "AutoPorting=Work",
 			"DisableForcePause=Work", "DisableForceFreeze=Work",
 			"ReduceISPCost=Company", "NoServerCost=Company", "NoInsuranceCost=Company", "NoLoanInterest=Company", "NoOffshoreHeat=Company", "NoFounderDividends=Company",
 			"UnlimitedSubsidiaries=Company",

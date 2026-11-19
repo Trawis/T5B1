@@ -279,9 +279,11 @@ not in saves and not in `Helpers.Settings`:
   off, and `OnGameReady` while it is off, set them all to false. They are
   `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with
   no recorded original, never restored), `AutoInstantPatent`: it files
-  pending patent work through the same checks as the Instant Patent button, and
-  `AutoMaxFollowers`: it fills the followers of beta work to the cap the game
-  recalculates, as the Max Followers button does. The Trainer Settings window has no
+  pending patent work through the same checks as the Instant Patent button,
+  `AutoInstantResearch`: it completes unfinished research through the Instant
+  Research button's completion path, and `AutoMaxFollowers`: it fills the
+  followers of beta work to the cap the game recalculates, as the Max Followers
+  button does. The Trainer Settings window has no
   Experimental toggle or Test button.
 
 Not verified in the game: the Options layout, the toggle round trip and that
