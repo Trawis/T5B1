@@ -132,8 +132,10 @@ mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
 saved in one. Turning it on shows additional, unfinished controls in Trainer
 Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*,
 *Auto Instant Patent*, *Auto Instant Research* and *Auto Max Followers*, off
-until you switch them on) and buttons in the Employee section of the Actions
-page (currently *Amazing Compatibility* and *Hire Employees*). An existing Trainer Settings window
+until you switch them on) and buttons on the Actions page (currently *Amazing
+Compatibility* in the Employee section and *Skip 1 Hour*, *Skip 1 Day* and
+*Skip To Hour* in the Company section, and *Hire Employees* in the Employee
+section). An existing Trainer Settings window
 shows or hides them as soon as the option changes, keeping its page, position,
 entered product name and other settings. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
@@ -189,6 +191,18 @@ shown compatibility still includes friendship, so no exact percentage is
 promised. With no pair left below 2 it only says so; it is not available in
 multiplayer. It overwrites lower compatibility values that other personality
 mods put into this save.
+
+*Skip 1 Hour*, *Skip 1 Day* and *Skip To Hour* (experimental, not tested in
+the game) run the game's own skip commands, which advance the clock one hour at
+a time through the game's hourly and daily updates, so salaries, bills,
+deadlines, events and autosaves happen as usual. Employees in the office do no
+work during the skipped hours and stay where they are. *Skip To Hour* asks for
+an hour from 0 to 23 and skips forward to the next time the clock shows it;
+the current hour changes nothing. *Skip 1 Day* and *Skip To Hour* first ask a
+Yes/No question with the number of hours. A skip works while the game is
+paused and leaves it paused; it is refused in multiplayer and while the game
+holds time for a dialog or event, and stops early if the game does. The
+result shows the reached time.
 
 *Hire Employees* (experimental, not tested in the game) asks for a role (Lead,
 Programmer, Designer, Artist or Service) and a count from 1 to 10, lets the
