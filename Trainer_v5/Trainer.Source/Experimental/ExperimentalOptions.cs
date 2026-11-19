@@ -18,7 +18,6 @@ namespace Trainer_v5.Experimental
 			_enabled = modSettings != null && modSettings.TryGetValue(StorageKey, out stored) && Parse(stored);
 		}
 
-		// Anything that is not the word True (missing, empty, damaged) stays off.
 		public static bool Parse(string stored)
 		{
 			bool value;

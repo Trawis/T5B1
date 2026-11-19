@@ -10,7 +10,6 @@ namespace Trainer_v5
 		None = 0,
 		One = 1,
 		Several = 2,
-		// The list shows add-ons or frameworks, or the selected row is not a software product.
 		Unsupported = 3
 	}
 
@@ -182,7 +181,6 @@ namespace Trainer_v5
 			Notification.Popup(string.Format("ProductAwarenessMaxed".LocDef("Trainer: Awareness of {0} is now at its maximum. It fades over time as usual."), product.Name));
 		}
 
-		// The one product selected in the player's Products list when a button is pressed; null after telling the player why.
 		private static SoftwareProduct RequireOneProduct()
 		{
 			var window = HUD.Instance != null ? HUD.Instance.PlayerProductWindow : null;

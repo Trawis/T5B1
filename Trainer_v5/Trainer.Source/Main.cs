@@ -44,7 +44,6 @@ namespace Trainer_v5
 
 			TrainerButton = UIFactory.Button(Helpers.TrainerVersion, () => SettingsWindow.Toggle(), "TrainerButton");
 
-			// A button whose parent element is missing is dropped rather than left loose in the scene.
 			if (!TrainerButton.gameObject.AddToElement("MainPanel/Holder/FanPanel", new Rect(164, 0, 100, 32)))
 			{
 				DestroyButton(TrainerButton);

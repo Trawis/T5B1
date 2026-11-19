@@ -144,7 +144,6 @@ namespace Trainer_v5
 			Window.LockWindowSize();
 		}
 
-		// Everything is built in Build, so a tab switch creates nothing and adds no listeners.
 		private static void SetActiveTab(SettingsTab tab)
 		{
 			_activeTab = SettingsWindowState.ClampTab(tab);
@@ -380,7 +379,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Returns the first row after the placed sections.
 		private static int PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order, int row)
 		{
 			foreach (var domain in order)
@@ -432,7 +430,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// A page taller than the window scrolls on its own; one that fits gets no scroll area.
 		private static TabPage CreateTabPage(string name, int rows, int visibleRows)
 		{
 			var viewport = WindowManager.SpawnPanel();

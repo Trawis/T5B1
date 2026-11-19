@@ -20,7 +20,6 @@ namespace Trainer_v5.Tests
 
 		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
-		// Buttons and toggles of the Settings window tables, then labels, dialogs (information, confirmations, prompts), errors and HUD popups.
 		private static readonly string[] EnglishSections = { "#Input fields", "#Actions", "#Toggles", "#Labels", "#Dialogs", "#Errors", "#Notifications" };
 
 		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization");

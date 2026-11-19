@@ -4,14 +4,11 @@ namespace Trainer_v5
 {
 	internal enum FeatureTrigger
 	{
-		// Every frame while the feature's setting is on.
 		Frame = 0,
-		// Game-time cadences while the setting is on.
 		Minute = 1,
 		Hour = 2,
 		Day = 3,
 		Month = 4,
-		// Once, on the frame a toggle goes from off to on or from on to off.
 		Enabled = 5,
 		Disabled = 6
 	}

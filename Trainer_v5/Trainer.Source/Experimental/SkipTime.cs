@@ -43,7 +43,6 @@ namespace Trainer_v5.Experimental
 			}, 0, 23);
 		}
 
-		// Hours from the current hour to the next time the clock shows the target hour; 0 when it already does.
 		internal static int HoursUntil(int currentHour, int targetHour)
 		{
 			return ((targetHour - currentHour) % 24 + 24) % 24;

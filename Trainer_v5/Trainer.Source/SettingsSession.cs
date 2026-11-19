@@ -8,13 +8,11 @@ namespace Trainer_v5
 		private static int _gameId;
 		private static bool _fullLoadApplied;
 
-		// A full load handed the current game its saved values.
 		public static void FullLoadApplied()
 		{
 			_fullLoadApplied = true;
 		}
 
-		// A new scene starts a new game; anything remembered about the last one no longer applies.
 		public static void BeginGame()
 		{
 			_fullLoadApplied = false;

@@ -6,13 +6,10 @@ namespace Trainer_v5
 	internal enum TargetSource
 	{
 		None = 0,
-		// Exactly one employee is selected in the shown Employees window.
 		Selection = 1,
-		// Several are selected there: there is no single intended employee.
 		Ambiguous = 2
 	}
 
-	// The employee an editor acts on: resolved once, checked again before every write.
 	internal sealed class EmployeeTarget
 	{
 		public readonly Actor Actor;
@@ -42,7 +39,6 @@ namespace Trainer_v5
 			return source == TargetSource.Selection ? new EmployeeTarget(selected[0]) : null;
 		}
 
-		// For an action on exactly one employee: tells the player why nothing happens without a single selection.
 		public static EmployeeTarget RequireOne()
 		{
 			TargetSource source;
@@ -55,7 +51,6 @@ namespace Trainer_v5
 			return target;
 		}
 
-		// For an editor that also edits several employees on request: a launch needs at least one live selected employee.
 		public static bool RequireAny()
 		{
 			if (ResolveSelection().Count == 0)
@@ -93,7 +88,6 @@ namespace Trainer_v5
 			return targets;
 		}
 
-		// Every live employee of the active game, for an action on all of them.
 		public static List<EmployeeTarget> ResolveAll()
 		{
 			var targets = new List<EmployeeTarget>();
@@ -135,7 +129,6 @@ namespace Trainer_v5
 			return IsLive(Actor) && Actor.employee == Employee && IsInActiveGame(Actor);
 		}
 
-		// What the Employees window's list shows as selected right now; nothing while that window is closed or missing.
 		private static List<Actor> LiveSelectedActors()
 		{
 			var selected = new List<Actor>();

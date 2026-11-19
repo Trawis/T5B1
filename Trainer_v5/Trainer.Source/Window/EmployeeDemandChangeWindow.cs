@@ -111,7 +111,6 @@ namespace Trainer_v5.Window
 				employee.DemandsRequested = next.Requested;
 			}
 
-			// Show what the game now reports, including the paired choice that was switched off.
 			Refresh();
 		}
 

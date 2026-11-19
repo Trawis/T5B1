@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Per-game UI and runtime caches are reset at game boundaries and the named employee actions check readiness first.
 	public class PerGameStateResetTests
 	{
 		private static string Read(params string[] parts)

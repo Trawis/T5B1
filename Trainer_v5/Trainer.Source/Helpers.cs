@@ -110,7 +110,6 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		// Isolates one feature's exceptions; returns whether the action completed without throwing.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)
@@ -161,7 +160,6 @@ namespace Trainer_v5
 			return hasGame && hasHud && hasSelector && hasClock && doneLoading && !preSimActive && !preSimFinished;
 		}
 
-		// For user-triggered actions: checks readiness before any game manager is touched and says why nothing happened.
 		internal static bool RequireGameReady(string action, bool requireSelector = false)
 		{
 			if (IsGameReady(requireSelector))

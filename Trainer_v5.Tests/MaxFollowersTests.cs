@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Max Followers fills the game's own cap once; it adds no arbitrary amounts.
 	public class MaxFollowersTests
 	{
 		[Fact]

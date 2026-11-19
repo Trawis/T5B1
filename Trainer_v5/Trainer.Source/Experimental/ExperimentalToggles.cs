@@ -2,8 +2,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5.Experimental
 {
-	// Trainer Settings toggles that exist only while the Experimental option is on. Turning the option off
-	// switches them off; a save that still has one on is cleared when its game is ready.
 	internal static class ExperimentalToggles
 	{
 		public static ToggleKey[] Keys()

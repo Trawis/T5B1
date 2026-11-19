@@ -30,7 +30,6 @@ namespace Trainer_v5
 			return pending ?? new List<Deal>();
 		}
 
-		// Null unless the list is non-empty and holds only deals.
 		private static List<Deal> AsDeals(List<object> items)
 		{
 			if (items.Count == 0)

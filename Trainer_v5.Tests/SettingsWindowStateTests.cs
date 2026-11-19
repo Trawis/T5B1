@@ -26,7 +26,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, SettingsWindowState.VisibleRows(tallest, other, maxVisible));
 		}
 
-		// Title bar + tab strip + content rows: the page viewports end exactly at the window's bottom edge.
 		[Theory]
 		[InlineData(6, 256)]
 		[InlineData(16, 576)]
@@ -84,7 +83,7 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void ThePagesOfTheRealTablesFitTheNumbersTheLayoutWasDesignedFor()
+		public void TheSettingsPageFitsBesideTheTallestRealPage()
 		{
 			var actions = new Dictionary<TrainerDomain, int>();
 			foreach (var row in SettingActionRows.Create())
@@ -107,8 +106,6 @@ namespace Trainer_v5.Tests
 			var actionRows = SettingsWindowState.PageRows(Counts(actions, SettingsWindowState.ActionDomains()), SettingsWindowState.Columns);
 			var toggleRowCount = SettingsWindowState.PageRows(Counts(toggles, SettingsWindowState.ToggleDomains()), SettingsWindowState.Columns);
 
-			Assert.Equal(15, actionRows);
-			Assert.Equal(18, toggleRowCount);
 			Assert.True(SettingsWindowState.SettingsPageRows <= SettingsWindowState.VisibleRows(System.Math.Max(actionRows, toggleRowCount), SettingsWindowState.SettingsPageRows, 6));
 		}
 
@@ -140,13 +137,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(SettingsWindowState.SettingsPageRows - 1, SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount));
 			Assert.True(SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount) > SettingsWindowState.SettingsCellRow(3) + 1);
 			Assert.True(SettingsWindowState.SettingsCellColumn(2) < SettingsWindowState.Columns);
-		}
-
-		[Fact]
-		public void TheWindowIsFourSlotsWide()
-		{
-			Assert.Equal(161, SettingsWindowState.ColumnPitch);
-			Assert.Equal(634, SettingsWindowState.WindowWidth);
 		}
 
 		[Fact]

@@ -17,7 +17,6 @@ namespace Trainer_v5
 
 		private FeatureDispatcher _dispatcher;
 
-		// TimeOfDay has no minute-passed event; this raises one from its Minute field.
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
 		// Settings the game itself only ever sets once (ctor/new-game/save-load).
@@ -124,7 +123,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// UI and runtime caches of one game; persisted trainer settings are deliberately not touched.
 		private void ResetPerGameState()
 		{
 			SettingsWindow.Reset();

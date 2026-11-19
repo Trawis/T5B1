@@ -5,8 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// One message convention: every trainer HUD popup starts with "Trainer: " exactly once, dialogs and input
-	// prompts get no automatic prefix, and Notification is the only code that talks to the game's popup and dialog APIs.
 	public class NotificationTests
 	{
 		[Theory]

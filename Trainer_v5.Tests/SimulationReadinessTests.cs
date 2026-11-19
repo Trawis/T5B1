@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// scheduled work waits for loading and pre-simulation; GameReady initialization does not.
 	public class SimulationReadinessTests
 	{
 		[Fact]

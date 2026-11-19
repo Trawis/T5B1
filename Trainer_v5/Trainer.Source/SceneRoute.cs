@@ -4,9 +4,7 @@ namespace Trainer_v5
 	{
 		// The main menu and every scene the trainer does not know: UI and event subscriptions are torn down.
 		LeaveGame = 0,
-		// The game proper: trainer buttons, detail window and time events are installed.
 		MainScene = 1,
-		// The new-game screen: only its year and loan choices are extended.
 		Customization = 2
 	}
 

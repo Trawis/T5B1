@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order.
 	internal static class FeatureRegistry
 	{
 		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
@@ -21,7 +20,6 @@ namespace Trainer_v5
 		public static List<FeatureEntry> Create()
 		{
 			var entries = new List<FeatureEntry>();
-			// Hour
 			Add(entries, FeatureTrigger.Hour, "MoreHostingDeals", SettingKeys.MoreHostingDeals, MarketFeatures.ApplyHostingDealTiming);
 			Add(entries, FeatureTrigger.Hour, "FreeStaff", SettingKeys.FreeStaff, CompanyFeatures.ApplyFreeStaff);
 			Add(entries, FeatureTrigger.Hour, "NoServerCost", SettingKeys.NoServerCost, CompanyFeatures.ApplyNoServerCost);
@@ -32,7 +30,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Hour, "IncreasePrintSpeed", SettingKeys.IncreasePrintSpeed, ProductFeatures.ApplyIncreasePrintSpeed);
 			Add(entries, FeatureTrigger.Hour, "AutoMaxFollowers", SettingKeys.AutoMaxFollowers, WorkItemFeatures.ApplyAutoMaxFollowers);
 
-			// Minute
 			Add(entries, FeatureTrigger.Minute, "AutoEndDesign", SettingKeys.AutoEndDesign, WorkItemFeatures.ApplyAutoEndDesign);
 			Add(entries, FeatureTrigger.Minute, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);
 			Add(entries, FeatureTrigger.Minute, "AutoEndResearch", SettingKeys.AutoEndResearch, WorkItemFeatures.ApplyAutoEndResearch);
@@ -51,12 +48,10 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Minute, "IncreaseCourierCapacity", SettingKeys.IncreaseCourierCapacity, CompanyFeatures.ApplyIncreaseCourierCapacity);
 			Add(entries, FeatureTrigger.Minute, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 
-			// Day
 			Add(entries, FeatureTrigger.Day, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
 			Add(entries, FeatureTrigger.Day, "NoInsuranceCost", SettingKeys.NoInsuranceCost, CompanyFeatures.ApplyNoInsuranceCost);
 			Add(entries, FeatureTrigger.Day, "FreeMarketing", SettingKeys.FreeMarketing, MarketFeatures.ApplyFreeMarketing);
 
-			// Month
 			Add(entries, FeatureTrigger.Month, "FreeEmployees", SettingKeys.FreeEmployees, EmployeeFeatures.ApplyFreeEmployees);
 			Add(entries, FeatureTrigger.Month, "DisableBurglars", SettingKeys.DisableBurglars, EnvironmentFeatures.ApplyDisableBurglars);
 			Add(entries, FeatureTrigger.Month, "DisableFireInspection", SettingKeys.DisableFireInspection, EnvironmentFeatures.ApplyDisableFireInspection);

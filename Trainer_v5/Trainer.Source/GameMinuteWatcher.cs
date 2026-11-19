@@ -20,7 +20,6 @@ namespace Trainer_v5
 			Observe((int)TimeOfDay.Instance.Minute);
 		}
 
-		// Forces the next Poll() to fire, for a catch-up run on fresh subscription.
 		public void Reset()
 		{
 			_lastObservedMinute = -1;

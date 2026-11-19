@@ -70,7 +70,6 @@ namespace Trainer_v5
 			return comboBox;
 		}
 
-		// False when the game has no element at the path, which the game's own lookup reports as null.
 		public static bool AddToElement(this GameObject gameObject, string elementPath, Rect location)
 		{
 			var parent = WindowManager.FindElementPath(elementPath);
@@ -94,7 +93,6 @@ namespace Trainer_v5
 			WindowManager.AddElementToElement(element, container, location, new Rect(0, 0, 0, 0));
 		}
 
-		// Makes a viewport scroll vertically over its content, one step per mouse-wheel notch.
 		public static void MakeVerticallyScrollable(GameObject viewport, RectTransform content, float step)
 		{
 			viewport.AddComponent<RectMask2D>();
@@ -140,7 +138,6 @@ namespace Trainer_v5
 			window.MinSize.y = height;
 		}
 
-		/// <summary>Estimates how many rows of rowHeight fit on screen after window chrome and reservedRows.</summary>
 		public static int GetMaxVisibleRows(int rowHeight, int reservedRows, int gap = 0)
 		{
 			float canvasHeight = FALLBACK_CANVAS_HEIGHT;
@@ -163,7 +160,6 @@ namespace Trainer_v5
 			return System.Math.Max(1, System.Math.Max(System.Math.Min(MIN_VISIBLE_ROWS, fittingRows), availableRows));
 		}
 
-		/// <summary>Lays out a header, scrolling rows (up to maxVisibleRows) and a footer; returns the column height.</summary>
 		public static int CreateScrollableColumn(GUIWindow window, Rect origin, GameObject[] header, GameObject[] scrollableItems, GameObject[] footer, int itemHeight, int gap, int maxVisibleRows)
 		{
 			float x = origin.x;

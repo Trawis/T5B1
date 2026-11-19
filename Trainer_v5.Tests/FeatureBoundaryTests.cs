@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Scheduling lives in TrainerBehaviour; the Features/ classes only mutate game state and don't depend on each other.
 	public class FeatureBoundaryTests
 	{
 		private static string[] FeatureFiles()

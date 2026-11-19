@@ -4,8 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// an experimental toggle, shown only while the Experimental option is on. It only postpones Actor.ForgetfulETA
-	// ahead of the game's own check in AI.Despawn; it never touches the specialization, the trait or the popup itself.
+	// It only postpones Actor.ForgetfulETA ahead of the game's own check in AI.Despawn; it never touches the specialization, the trait or the popup itself.
 	public class NoForgetfulSkillLossTests
 	{
 		private static string Action()

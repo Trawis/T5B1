@@ -10,7 +10,6 @@ namespace Trainer_v5.Tests
 		private const string TypeText = @"(?:ToString\(\)|GetType\(\)\s*\.\s*(?:Name|FullName|ToString\(\)))";
 		private const string DealLiteral = "@?\"[^\"]*Deal[^\"]*\"";
 
-		// Any "...Deal..." literal compared with the text of a type or value, in either operand order.
 		private static readonly Regex DealSelectedByText = new Regex(
 			TypeText + @"\s*(?:==|!=|\.\s*Equals\s*\(|\.\s*Contains\s*\()\s*" + DealLiteral +
 			"|" + DealLiteral + @"\s*(?:==|!=)\s*[\w.\s()]*?" + TypeText +

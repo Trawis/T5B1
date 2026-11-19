@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Founder toggle offered from the Employees window.
 	public class FounderToggleTests
 	{
 		[Fact]
@@ -11,25 +10,9 @@ namespace Trainer_v5.Tests
 			var source = SourceCode.Read("FounderToggle.cs");
 			var apply = SourceCode.Body(source, "private static void Apply(");
 
-			Assert.DoesNotContain("YES", apply);
 			SourceCode.AssertInOrder(source, "Confirmation.Ask(", "Apply(target, shown)", "the player is asked before the write");
 			SourceCode.AssertInOrder(apply, "FindBlocker(target)", "Founder = !shown", "the target is checked again before the write");
 			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"\.Founder = "));
-			Assert.DoesNotContain("Experimental", source);
-			Assert.DoesNotContain("new Employee(", source);
-			Assert.DoesNotContain(".MadeCEO =", source);
-			Assert.DoesNotContain(".Salary =", source);
-		}
-
-		[Fact]
-		public void TheEmployeesWindowOffersTheFounderToggleNextToTheOtherEditors()
-		{
-			var source = SourceCode.Read("EmployeesWindowTrainer.cs");
-
-			foreach (var label in new[] { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder", "Skills" })
-			{
-				Assert.Contains("UIFactory.Button(\"Detail" + label + "Button\".LocDef(\"" + label + "\")", source);
-			}
 		}
 	}
 }

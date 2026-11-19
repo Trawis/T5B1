@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// a full game whose save has no trainer entry is never given to Main.Deserialize by the game.
+	// A full game whose save has no trainer entry is never given to Main.Deserialize by the game.
 	[Collection(SettingsCollection.Name)]
 	public class SettingsSessionTests
 	{

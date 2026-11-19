@@ -79,7 +79,6 @@ namespace Trainer_v5
 		}
 
 		// Older builds set Request after construction, leaving the bidder unset; the stored client is the developer.
-		// Returns how many deals were corrected.
 		internal static int RepairLegacyHostingRequests()
 		{
 			var dealWindow = HUD.Instance.dealWindow;
@@ -246,7 +245,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Reads the deal window's own pending list through its list views; null if it cannot be told apart from the others.
 		private static List<Deal> FindPendingDeals(DealWindow dealWindow)
 		{
 			var lists = new List<List<object>>();
@@ -258,7 +256,6 @@ namespace Trainer_v5
 			return PendingDeals.Select(lists, dealWindow.GetActiveDeals());
 		}
 
-		// Hosting timing and the pending-list warning describe one game; the next game starts them fresh.
 		internal static void ResetGameState()
 		{
 			Helpers.DealIsPushed = false;

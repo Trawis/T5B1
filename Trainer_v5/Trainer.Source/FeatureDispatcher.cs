@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Runs a trigger's features in registration order; the settings lookup and guard are injected to stay Unity-free.
+	// The settings lookup and guard are injected so the dispatcher runs without Unity.
 	internal sealed class FeatureDispatcher
 	{
 		// RunTransitions calls (frames) that retry every call before a failing transition backs off to every 60th call.
@@ -43,7 +43,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Runs every entry of a cadence whose setting is currently on.
 		public void Run(FeatureTrigger cadence)
 		{
 			List<FeatureEntry> entries = _byTrigger[(int)cadence];
@@ -115,7 +114,6 @@ namespace Trainer_v5
 				return;
 			}
 
-			// A permanently failing action backs off after the first minute of frames instead of failing every frame.
 			pending.Visits++;
 			if (pending.Visits > FastRetryVisits && pending.Visits % FastRetryVisits != 0)
 			{
@@ -137,7 +135,6 @@ namespace Trainer_v5
 				_pending.Remove(key.Key);
 			}
 
-			// Only the first failure and the end of the retries are traced, never every retry.
 			if (LoggingOptions.DebugEnabled)
 			{
 				if (failed.Count > 0 && pending.Visits == 1)
@@ -156,7 +153,6 @@ namespace Trainer_v5
 			return entry.Toggle != null ? _isToggleOn(entry.Toggle) : _isStoreSet(entry.Store);
 		}
 
-		// The entries of one toggle's latest transition that have not succeeded yet.
 		private sealed class PendingTransition
 		{
 			public List<FeatureEntry> Entries = new List<FeatureEntry>();
