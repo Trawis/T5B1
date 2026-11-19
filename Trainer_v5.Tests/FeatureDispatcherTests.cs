@@ -317,7 +317,6 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheRegistryUsesEachFeatureIdWithOneSettingOnly()
 		{
-			// The registry the trainer actually runs, not its source text: delegates are created, nothing is invoked.
 			var entries = FeatureRegistry.Create();
 			var keyById = new Dictionary<string, string>();
 			var conflicts = new List<string>();

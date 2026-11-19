@@ -39,7 +39,6 @@ namespace Trainer_v5
 			return "Trainer [debug]: " + FormatValue(message);
 		}
 
-		// Exception.ToString() carries the type, message, stack trace and the inner exception chain.
 		internal static string FormatException(Exception exception, string featureId)
 		{
 			var details = exception == null ? "null exception" : exception.ToString();

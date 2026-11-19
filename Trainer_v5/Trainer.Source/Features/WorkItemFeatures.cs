@@ -409,7 +409,6 @@ namespace Trainer_v5
 			});
 		}
 
-		// Same precondition as ApplyAutoEndDesign, for contract work.
 		internal static void ApplyAutoContractProgression()
 		{
 			var contractDesigns = Settings.MyCompany.WorkItems

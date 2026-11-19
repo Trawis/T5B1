@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The skill editor opened from the Employees window: its rules and the order of its checks.
 	public class SkillEditTests
 	{
 		private static string EditorSource()

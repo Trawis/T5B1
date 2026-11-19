@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The skill editor window has two columns; the second one must end inside the window width.
 	public class SkillChangeWindowLayoutTests
 	{
 		[Fact]

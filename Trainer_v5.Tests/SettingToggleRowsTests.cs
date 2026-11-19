@@ -7,12 +7,10 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Trainer Settings toggles are data; these keep the table consistent with the settings and strings.
 	public class SettingToggleRowsTests
 	{
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };
 
-		// Rows shown only while the Experimental option is on.
 		private static readonly string[] ExperimentalKeys = { "NoForgetfulSkillLoss", "AutoInstantPatent", "AutoInstantResearch", "AutoMaxFollowers" };
 
 		// Persisted but with no Settings window toggle today; a gap to close, not a rule.

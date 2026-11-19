@@ -1,6 +1,5 @@
 namespace Trainer_v5
 {
-	// Pure decisions behind the Trainer Settings window, kept apart from the Unity types so tests can reach them.
 	internal static class SettingsWindowState
 	{
 		// Window width: the last column's right edge plus the 1 px margin the first column has on the left.
@@ -24,7 +23,6 @@ namespace Trainer_v5
 			return cellIndex < EfficiencyCellCount ? 1 + cellIndex % 2 : SettingsPageRows - 1;
 		}
 
-		// Title bar, tab strip and the content rows; the size the window is locked to.
 		public static int WindowHeight(int visibleRows)
 		{
 			return (visibleRows + 2) * Constants.ELEMENT_HEIGHT;
@@ -45,7 +43,6 @@ namespace Trainer_v5
 			return cellCount <= 0 ? 0 : (cellCount + columns - 1) / columns;
 		}
 
-		// Experimental sections follow the regular ones under one more header, only when there are any.
 		public static int PageRowsWithExperimental(int regularRows, int experimentalRows)
 		{
 			return experimentalRows > 0 ? regularRows + 1 + experimentalRows : regularRows;
@@ -67,7 +64,6 @@ namespace Trainer_v5
 			return new[] { TrainerDomain.Company, TrainerDomain.Employee, TrainerDomain.Product, TrainerDomain.Work, TrainerDomain.Environment };
 		}
 
-		// Sections of the Toggles page, largest first.
 		public static TrainerDomain[] ToggleDomains()
 		{
 			return new[] { TrainerDomain.Employee, TrainerDomain.Environment, TrainerDomain.Work, TrainerDomain.Company, TrainerDomain.Product };

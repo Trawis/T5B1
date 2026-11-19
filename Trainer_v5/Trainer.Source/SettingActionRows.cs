@@ -65,7 +65,6 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Shown only while the Experimental option is on.
 		public static List<SettingActionRow> CreateExperimental()
 		{
 			var rows = new List<SettingActionRow>();

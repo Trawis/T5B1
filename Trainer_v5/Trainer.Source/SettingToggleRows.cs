@@ -83,7 +83,6 @@ namespace Trainer_v5
 			return rows;
 		}
 
-		// Shown only while the Experimental option is on; see ExperimentalToggles.
 		public static List<SettingToggleRow> CreateExperimental()
 		{
 			var rows = new List<SettingToggleRow>();

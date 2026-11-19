@@ -3,7 +3,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Retired toggles keep their declared names but must stay unavailable, inert and unpersisted.
 	[Collection(SettingsCollection.Name)]
 	public class RetiredSettingsTests
 	{
@@ -81,7 +80,6 @@ namespace Trainer_v5.Tests
 				Assert.All(RetiredKeys, key => Assert.False(rewritten.Contains(key), key));
 				Assert.True(rewritten.Get<bool>("FreePrint", false));
 
-				// Partial loads of the same data behave the same.
 				new Main().Deserialize(oldSave, GameReader.LoadMode.Building);
 				new Main().Deserialize(oldSave, GameReader.LoadMode.Company);
 				Assert.All(RetiredKeys, key => Assert.DoesNotContain(key, Helpers.Settings.Keys));

@@ -10,7 +10,6 @@ namespace Trainer_v5
 			return teamsAfter != null && teamsAfter.Count == 1 && teamsAfter.Contains(expectedTeam);
 		}
 
-		// A long preview is cut; omitted says how many lines were left out.
 		public static string PreviewText(IList<string> lines, int maxLines, out int omitted)
 		{
 			omitted = System.Math.Max(0, lines.Count - maxLines);

@@ -235,7 +235,6 @@ namespace Trainer_v5
 			WindowManager.SpawnInputDialog("AICompanyNamePrompt".LocDef("Type AI company name:"), SharedMessages.AdjustAIFundsTitle(), "", AddAIFundsAction);
 		}
 
-		// A positive amount adds, a negative one subtracts its size and 0 changes nothing; any int is accepted.
 		internal static void AdjustAIFunds(SimulatedCompany company)
 		{
 			InputHelper.RequestInt(string.Format("AdjustAIFundsPrompt".LocDef("How much money do you want to add to {0}? A negative amount subtracts.\nCurrent funds: {1}"), company.Name, company.Money.Currency()), SharedMessages.AdjustAIFundsTitle(), "100000", amount => AdjustAIFundsBy(company, amount));
@@ -363,7 +362,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// Refunds the daily insurance bill already charged this tick.
 		internal static void ApplyNoInsuranceCost()
 		{
 			if (!Settings.PassedFireInspection)
@@ -603,14 +601,12 @@ namespace Trainer_v5
 			}
 		}
 
-		// Still the same object in the current game's simulation and still not the player's.
 		internal static bool IsLiveAICompany(SimulatedCompany company)
 		{
 			SimulatedCompany current;
 			return Settings != null && Settings.simulation.Companies.TryGetValue(company.ID, out current) && current == company && IsBankruptTarget(company);
 		}
 
-		// Exactly one company with the name, or null after telling the player that none or several have it.
 		private static SimulatedCompany FindCompanyByName(string input)
 		{
 			List<SimulatedCompany> matches = Settings.simulation.Companies.Values.Where(company => company.Name == input).ToList();

@@ -29,7 +29,6 @@ namespace Trainer_v5.Window
 			Refresh();
 		}
 
-		// The title follows the Employees window selection; each write captures that selection again.
 		public static void Refresh()
 		{
 			var window = Window;
@@ -122,7 +121,6 @@ namespace Trainer_v5.Window
 				.ToArray();
 		}
 
-		// The employees the next write may touch, captured at the click; null after the error shown for an empty choice.
 		private static List<EmployeeTarget> CaptureTargets()
 		{
 			var targets = EmployeeTarget.ResolveSelection();

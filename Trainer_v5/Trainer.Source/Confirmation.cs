@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// The one place a trainer action asks Yes/No, through the game's own dialog; prompts have no "Trainer: " prefix.
 	internal static class Confirmation
 	{
 		// No questionID: with one the game offers "Don't ask again" and then skips the dialog.

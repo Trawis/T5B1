@@ -138,7 +138,6 @@ namespace Trainer_v5
 			});
 		}
 
-		// Printer baselines belong to one game; the next game's printers start without any.
 		internal static void ResetGameState()
 		{
 			_printerSpeeds.Clear();
@@ -169,7 +168,6 @@ namespace Trainer_v5
 			return Settings != null && Settings.simulation.GetAllProducts(false).Contains(product);
 		}
 
-		// Shared by the price, stock and active-users actions; rejects ambiguous names.
 		private static SoftwareProduct ResolveProductByName(string name, out string errorMessage)
 		{
 			List<SoftwareProduct> matches = Settings.simulation.GetAllProducts(false)

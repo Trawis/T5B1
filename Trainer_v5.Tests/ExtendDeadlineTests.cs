@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Extend Deadline moves a contract deadline forward by exactly one year.
 	// SDateTime cannot be constructed here (its constructor reads GameSettings), so the argument order is checked against the game assembly's metadata.
 	public class ExtendDeadlineTests
 	{

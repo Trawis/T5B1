@@ -2,13 +2,11 @@ namespace Trainer_v5
 {
 	internal enum SkillOutcome
 	{
-		// No target was still valid at the write.
 		None = 0,
 		Partial = 1,
 		All = 2
 	}
 
-	// Rules of the skill editor that need no game objects.
 	internal static class SkillEdit
 	{
 		public const int MinStars = -3;

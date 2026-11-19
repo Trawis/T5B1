@@ -2,7 +2,6 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Which scenes install the trainer and which tear it down; the Unity calls stay in TrainerBehaviour.
 	public class SceneRoutesTests
 	{
 		[Theory]
