@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Missing object-store values fall back predictably instead of mapping to a wrong option (#267).
+	// Missing object-store values fall back predictably instead of mapping to a wrong option.
 	[Collection(SettingsCollection.Name)]
 	public class StoreLookupTests
 	{

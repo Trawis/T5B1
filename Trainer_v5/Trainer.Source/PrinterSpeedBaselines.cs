@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Trainer_v5
 {
 	// Original ProductPrinter.PrintSpeed per printer, keyed by the printer's Unity instance id so that no
-	// game object is held across games. An id that is no longer in the live printer list is dropped (#339).
+	// game object is held across games. An id that is no longer in the live printer list is dropped.
 	internal sealed class PrinterSpeedBaselines
 	{
 		private readonly Dictionary<int, float> _speeds = new Dictionary<int, float>();

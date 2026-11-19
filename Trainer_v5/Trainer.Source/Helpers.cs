@@ -110,7 +110,7 @@ namespace Trainer_v5
 			properties[key] = value;
 		}
 
-		// Isolates one feature's exceptions (#123); returns whether the action completed without throwing.
+		// Isolates one feature's exceptions; returns whether the action completed without throwing.
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
 		public static void ShowDiscordInvite(bool displayAsPopup = false)

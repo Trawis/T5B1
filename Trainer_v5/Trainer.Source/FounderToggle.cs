@@ -1,6 +1,6 @@
 namespace Trainer_v5
 {
-	// Flips Employee.Founder on the one selected employee (#190). A founder is unpaid and cannot be fired.
+	// Flips Employee.Founder on the one selected employee. A founder is unpaid and cannot be fired.
 	internal static class FounderToggle
 	{
 		public static string BuildPrompt(string name, bool founder)

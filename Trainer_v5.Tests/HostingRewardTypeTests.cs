@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Deal types are selected by type, never by the text of ToString() (#246).
+	// Deal types are selected by type, never by the text of ToString().
 	public class HostingRewardTypeTests
 	{
 		private const string TypeText = @"(?:ToString\(\)|GetType\(\)\s*\.\s*(?:Name|FullName|ToString\(\)))";

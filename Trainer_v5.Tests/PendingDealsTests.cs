@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Telling the pending list from the others, with real deal objects created without their constructors (#198).
+	// Telling the pending list from the others, with real deal objects created without their constructors.
 	public class PendingDealsTests
 	{
 		[Fact]

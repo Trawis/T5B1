@@ -12,7 +12,7 @@ namespace Trainer_v5
 		Ambiguous = 2
 	}
 
-	// The employee an editor acts on: resolved once, checked again before every write (#235).
+	// The employee an editor acts on: resolved once, checked again before every write.
 	internal sealed class EmployeeTarget
 	{
 		public readonly Actor Actor;

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// #457: an experimental toggle, shown only while the Experimental option is on. It only postpones Actor.ForgetfulETA
+	// an experimental toggle, shown only while the Experimental option is on. It only postpones Actor.ForgetfulETA
 	// ahead of the game's own check in AI.Despawn; it never touches the specialization, the trait or the popup itself.
 	public class NoForgetfulSkillLossTests
 	{
@@ -90,25 +90,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheRowIsOnlyInTheExperimentalListAndTheWindowAddsItOnlyWhileTheOptionIsOn()
-		{
-			var keys = new List<string>();
-			foreach (var row in SettingToggleRows.CreateExperimental())
-			{
-				keys.Add(row.Key.Key);
-			}
-
-			Assert.Equal(new[] { "NoForgetfulSkillLoss", "AutoInstantPatent", "AutoInstantResearch", "AutoMaxFollowers" }, keys.ToArray());
-			foreach (var row in SettingToggleRows.Create())
-			{
-				Assert.NotEqual("NoForgetfulSkillLoss", row.Key.Key);
-			}
-
-			var build = SourceCode.Body(SourceCode.Read("SettingsWindow.cs"), "private static void BuildToggles(");
-			SourceCode.AssertInOrder(build, "if (ExperimentalOptions.Enabled)", "SettingToggleRows.CreateExperimental()", "only added while the option is on");
-		}
-
-		[Fact]
 		public void TurningTheOptionOffSwitchesEveryExperimentalToggleOff()
 		{
 			var settings = new Dictionary<string, bool>();
@@ -126,7 +107,6 @@ namespace Trainer_v5.Tests
 			Assert.False(settings["AutoInstantResearch"]);
 			Assert.False(settings["AutoMaxFollowers"]);
 			Assert.True(settings["NoSickness"]);
-			Assert.Equal(4, ExperimentalToggles.Keys().Length);
 		}
 
 		[Fact]

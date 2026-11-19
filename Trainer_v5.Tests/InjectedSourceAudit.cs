@@ -28,7 +28,7 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Return = new Regex(@"\breturn\b", RegexOptions.Compiled);
 		private static readonly Regex Throw = new Regex(@"^throw\b", RegexOptions.Compiled);
 
-		// Every injected try must follow the opening brace of a method or constructor (#222).
+		// Every injected try must follow the opening brace of a method or constructor.
 		public static AuditResult Audit(InjectedSource source)
 		{
 			var misplaced = new List<string>();

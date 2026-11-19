@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Runs the game's injector and compiler over the real sources (#222, #225): parsing and try placement only.
+	// Runs the game's injector and compiler over the real sources: parsing and try placement only.
 	public class GameSourcePipelineTests
 	{
 		private static readonly Lazy<IList<InjectedSource>> Injected = new Lazy<IList<InjectedSource>>(InjectEverySourceFile);

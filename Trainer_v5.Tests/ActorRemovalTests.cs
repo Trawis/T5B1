@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Disable Burglars / Disable Fire Inspection remove the actors with the game's own destroy call instead of only setting the employee-only Despawned flag (#362).
+	// Disable Burglars / Disable Fire Inspection remove the actors with the game's own destroy call instead of only setting the employee-only Despawned flag.
 	public class ActorRemovalTests
 	{
 		private static string Source()

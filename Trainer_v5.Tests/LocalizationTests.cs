@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// English is the reference locale: every key must exist there once; other languages may be incomplete (#264).
+	// English is the reference locale: every key must exist there once; other languages may be incomplete.
 	public class LocalizationTests
 	{
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);

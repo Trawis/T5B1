@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Retired toggles keep their declared names but must stay unavailable, inert and unpersisted (#270, #439).
+	// Retired toggles keep their declared names but must stay unavailable, inert and unpersisted.
 	[Collection(SettingsCollection.Name)]
 	public class RetiredSettingsTests
 	{

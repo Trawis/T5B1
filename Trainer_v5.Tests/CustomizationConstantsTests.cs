@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The new-game screen's extended start years and loan amounts live in Constants (#279); their values must not drift.
+	// The new-game screen's extended start years and loan amounts live in Constants; their values must not drift.
 	public class CustomizationConstantsTests
 	{
 		[Fact]

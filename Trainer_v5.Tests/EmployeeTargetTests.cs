@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Which employee an editor acts on (#235, #478). Liveness checks need game objects and are covered in-game.
+	// Which employee an editor acts on. Liveness checks need game objects and are covered in-game.
 	public class EmployeeTargetTests
 	{
 		[Theory]

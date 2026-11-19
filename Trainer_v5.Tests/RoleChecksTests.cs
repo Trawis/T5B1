@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Employee.RoleString is display text built from translated role names, so it must not drive logic (#269).
+	// Employee.RoleString is display text built from translated role names, so it must not drive logic.
 	public class RoleChecksTests
 	{
 		[Fact]
