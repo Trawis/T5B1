@@ -136,7 +136,7 @@ namespace Trainer_v5.Tests
 			}
 
 			found.Sort(StringComparer.Ordinal);
-			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:6, EmployeeFeatures.cs:2, FounderToggle.cs:1", string.Join(", ", found));
+			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:6, EmployeeFeatures.cs:2, FounderToggle.cs:1, WorkItemFeatures.cs:1", string.Join(", ", found));
 
 			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards", "AskForceBankrupt", "MaxReputation" })
 			{

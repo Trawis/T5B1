@@ -10,73 +10,94 @@ namespace Trainer_v5
 
 		internal static void OptimizeTeamAssignments()
 		{
-			int changed = 0;
+			var changes = new List<TeamRecommendation>();
+			var skippedLines = new List<string>();
 			int skipped = 0;
-			int failed = 0;
 
 			foreach (WorkItem item in Settings.MyCompany.WorkItems.ToList())
 			{
-				if (item.AutoDev || item.DevTeams.Count != 1)
+				string reason;
+				TeamRecommendation recommendation = Recommend(item, out reason);
+				if (recommendation != null)
+				{
+					changes.Add(recommendation);
+					continue;
+				}
+
+				skipped++;
+				if (reason != null)
+				{
+					skippedLines.Add(string.Format("{0}: {1}", item.Name, reason));
+				}
+			}
+
+			if (changes.Count == 0)
+			{
+				Notification.ShowInfo(SharedMessages.TeamAssignmentsNoChange(skipped));
+				return;
+			}
+
+			var lines = new List<string>();
+			foreach (TeamRecommendation change in changes)
+			{
+				lines.Add(string.Format("{0}: {1} ({2}) -> {3} ({4})", change.Item.Name, change.Current.Name, change.CurrentScore, change.Proposed.Name, change.ProposedScore));
+			}
+
+			if (skippedLines.Count > 0)
+			{
+				lines.Add("TeamAssignmentsSkippedHeader".LocDef("Not changed:"));
+				lines.AddRange(skippedLines);
+			}
+
+			int omitted;
+			string list = TeamAssignmentResult.PreviewText(lines, MaxPreviewLines, out omitted);
+			if (omitted > 0)
+			{
+				list += "\n" + string.Format("TeamAssignmentsMore".LocDef("... and {0} more"), omitted);
+			}
+
+			string preview = string.Format("TeamAssignmentsPreview".LocDef("Apply {0} team change(s)? Scores are the team members with the work's role.\n{1}"), changes.Count, list);
+			GameSettings game = Settings;
+			Confirmation.Ask("Optimize Team Assignments", preview, () => ApplyTeamRecommendations(game, changes, skipped));
+		}
+
+		// Each recommendation is computed again; one that no longer matches is skipped, never redirected.
+		private static void ApplyTeamRecommendations(GameSettings game, List<TeamRecommendation> changes, int skipped)
+		{
+			if (!ReferenceEquals(game, Settings))
+			{
+				Confirmation.ShowScopeChanged();
+				return;
+			}
+
+			int changed = 0;
+			int failed = 0;
+			foreach (TeamRecommendation change in changes)
+			{
+				WorkItem item = change.Item;
+				string reason;
+				TeamRecommendation current = Settings.MyCompany.WorkItems.Contains(item) && !item.Done ? Recommend(item, out reason) : null;
+				if (current == null || !current.SameAs(change))
 				{
 					skipped++;
 					continue;
 				}
 
-				Employee.RoleBit? roleBit = GetOptimizerRoleBit(item);
-				if (roleBit == null)
+				Team bestTeam = change.Proposed;
+				item.SetDevTeams(new List<string> { bestTeam.Name });
+				if (TeamAssignmentResult.Applied(item.DevTeams, bestTeam.Name))
 				{
-					skipped++;
-					continue;
-				}
-
-				DesignDocument designDocument = item as DesignDocument;
-				if (designDocument != null && designDocument.NeedsLead() && designDocument.LeadWork != null)
-				{
-					skipped++;
-					continue;
-				}
-
-				Team currentTeam = GameSettings.GetTeam(item.DevTeams.First());
-				if (currentTeam == null)
-				{
-					skipped++;
-					continue;
-				}
-
-				Team bestTeam = currentTeam;
-				int bestScore = ScoreTeamForRole(currentTeam, roleBit.Value);
-
-				foreach (Team team in Settings.sActorManager.Teams.Values)
-				{
-					int score = ScoreTeamForRole(team, roleBit.Value);
-					if (score > bestScore)
-					{
-						bestScore = score;
-						bestTeam = team;
-					}
-				}
-
-				if (bestTeam != currentTeam)
-				{
-					item.SetDevTeams(new List<string> { bestTeam.Name });
-					if (TeamAssignmentResult.Applied(item.DevTeams, bestTeam.Name))
-					{
-						changed++;
-					}
-					else
-					{
-						failed++;
-					}
+					changed++;
 				}
 				else
 				{
-					skipped++;
+					failed++;
 				}
 			}
 
 			if (TeamAssignmentResult.ChangedNothing(changed, failed))
 			{
-				Notification.ShowInfo(string.Format("TeamAssignmentsNoChange".LocDef("Trainer: No team assignment was changed. {0} skipped."), skipped));
+				Notification.ShowInfo(SharedMessages.TeamAssignmentsNoChange(skipped));
 				return;
 			}
 
@@ -93,6 +114,65 @@ namespace Trainer_v5
 			{
 				Notification.ShowError(summary);
 			}
+		}
+
+		// The optimizer's rule for one work item: null with a reason to show, or null without one for work it never handles.
+		private static TeamRecommendation Recommend(WorkItem item, out string reason)
+		{
+			reason = null;
+			Employee.RoleBit? roleBit = GetOptimizerRoleBit(item);
+			if (roleBit == null)
+			{
+				return null;
+			}
+
+			if (item.AutoDev)
+			{
+				reason = "TeamSkipAutoDev".LocDef("automated development");
+				return null;
+			}
+
+			if (item.DevTeams.Count != 1)
+			{
+				reason = "TeamSkipTeamCount".LocDef("not exactly one team assigned");
+				return null;
+			}
+
+			DesignDocument designDocument = item as DesignDocument;
+			if (designDocument != null && designDocument.NeedsLead() && designDocument.LeadWork != null)
+			{
+				reason = "TeamSkipLeadDesign".LocDef("lead design work in progress");
+				return null;
+			}
+
+			Team currentTeam = GameSettings.GetTeam(item.DevTeams.First());
+			if (currentTeam == null)
+			{
+				reason = "TeamSkipMissingTeam".LocDef("its team no longer exists");
+				return null;
+			}
+
+			Team bestTeam = currentTeam;
+			int currentScore = ScoreTeamForRole(currentTeam, roleBit.Value);
+			int bestScore = currentScore;
+
+			foreach (Team team in Settings.sActorManager.Teams.Values)
+			{
+				int score = ScoreTeamForRole(team, roleBit.Value);
+				if (score > bestScore)
+				{
+					bestScore = score;
+					bestTeam = team;
+				}
+			}
+
+			if (bestTeam == currentTeam)
+			{
+				reason = string.Format("TeamSkipAlreadyBest".LocDef("{0} ({1}) is already the best team"), currentTeam.Name, currentScore);
+				return null;
+			}
+
+			return new TeamRecommendation(item, currentTeam, currentScore, bestTeam, bestScore);
 		}
 
 		internal static void InstantPorting()
@@ -412,6 +492,31 @@ namespace Trainer_v5
 		}
 
 		// The RoleBit each type's own GetBoostRole checks; other types are left alone.
+		private const int MaxPreviewLines = 20;
+
+		private sealed class TeamRecommendation
+		{
+			public readonly WorkItem Item;
+			public readonly Team Current;
+			public readonly int CurrentScore;
+			public readonly Team Proposed;
+			public readonly int ProposedScore;
+
+			public TeamRecommendation(WorkItem item, Team current, int currentScore, Team proposed, int proposedScore)
+			{
+				Item = item;
+				Current = current;
+				CurrentScore = currentScore;
+				Proposed = proposed;
+				ProposedScore = proposedScore;
+			}
+
+			public bool SameAs(TeamRecommendation other)
+			{
+				return Item == other.Item && Current == other.Current && CurrentScore == other.CurrentScore && Proposed == other.Proposed && ProposedScore == other.ProposedScore;
+			}
+		}
+
 		private static Employee.RoleBit? GetOptimizerRoleBit(WorkItem item)
 		{
 			if (item is DesignDocument)

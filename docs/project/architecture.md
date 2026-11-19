@@ -511,14 +511,15 @@ window instance with the same rollback and reset as the Employees buttons.
 - Confirmation policy (#242): value-entry and routine one-shot actions
   (takeover, subsidiary, max market recognition, max skill, reset age, sell
   stock, unlock furniture/space, clean office, instant buttons, extend
-  deadline, offshore transfer, team optimization, editors) never ask; the
+  deadline, offshore transfer, editors) never ask; the
   typed dialog is itself the approval for value entry. Only the audited
   high-impact set asks, always
   through `Confirmation.Ask`: AI Bankrupt All, Clear all loans, Unlock and Claim
   Rewards, targeted Bankrupt (typed name or Companies list), Adjust AI Funds
   with a negative amount, Max Reputation, Founder, Make All Employees Happy
-  Now, Make Happy (selected employees) and the experimental Amazing
-  Compatibility. `Ask` is the game's own
+  Now, Make Happy (selected employees), Optimize Team Assignments (a preview of
+  each change with its role-count scores and each skipped item's reason) and
+  the experimental Amazing Compatibility. `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
   never run the action). Prompts name the action and scope, carry no `Trainer: `
@@ -530,7 +531,9 @@ window instance with the same rollback and reset as the Employees buttons.
   employees shown (`IsSameTargets` on the actors plus `EmployeeTarget.IsStillValid`),
   rewards the same count (`Confirmation.IsScopeUnchanged`), Bankrupt and Adjust
   AI Funds the same live AI company that is not bankrupt (a reduction confirmed
-  without the bankruptcy warning must still not bankrupt it), and Amazing
+  without the bankruptcy warning must still not bankrupt it), Optimize Team
+  Assignments the same game with each change recomputed to the same item, teams
+  and scores (a changed one is skipped, never redirected), and Amazing
   Compatibility the same game and personality graph, still outside
   multiplayer, with pairs still below the maximum; if it changed nothing is
   applied and the player is told. Adding a confirmation means updating this
