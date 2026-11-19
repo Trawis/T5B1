@@ -204,10 +204,7 @@ namespace Trainer_v5
 
 		internal static void InstantResearch()
 		{
-			var eligibleResearch = Settings.MyCompany.WorkItems
-								.OfType<ResearchWork>()
-								.Where(rw => !rw.Finished)
-								.ToList();
+			var eligibleResearch = UnfinishedResearchWorks();
 
 			if (eligibleResearch.Count == 0)
 			{
@@ -215,14 +212,25 @@ namespace Trainer_v5
 				return;
 			}
 
-			eligibleResearch.ForEach(researchWork =>
-			{
-				researchWork.Progress = researchWork.Max;
-				researchWork.Finished = true;
-				CompleteResearchWork(researchWork);
-			});
+			eligibleResearch.ForEach(FinishResearchNow);
 
 			Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
+		}
+
+		internal static void ApplyAutoInstantResearch()
+		{
+			if (!ExperimentalOptions.Enabled)
+			{
+				return;
+			}
+
+			foreach (ResearchWork researchWork in UnfinishedResearchWorks())
+			{
+				if (!IsResearchObsolete(researchWork))
+				{
+					FinishResearchNow(researchWork);
+				}
+			}
 		}
 
 		internal static void InstantPatent()
@@ -415,6 +423,33 @@ namespace Trainer_v5
 			}
 			HUD.Instance.researchWindow.UpdateLists();
 			researchWork.Kill(false);
+		}
+
+		private static List<ResearchWork> UnfinishedResearchWorks()
+		{
+			return Settings.MyCompany.WorkItems
+					.OfType<ResearchWork>()
+					.Where(rw => !rw.Finished)
+					.ToList();
+		}
+
+		private static void FinishResearchNow(ResearchWork researchWork)
+		{
+			researchWork.Progress = researchWork.Max;
+			researchWork.Finished = true;
+			CompleteResearchWork(researchWork);
+		}
+
+		// DoWork cancels research the market has passed; redoing a year the company already has only clears that tech's CanPatent.
+		private static bool IsResearchObsolete(ResearchWork researchWork)
+		{
+			List<TechLevel> techLevels;
+			if (!MarketSimulation.Active.TechLevels.TryGetValue(researchWork.Spec, out techLevels) || techLevels.Count == 0)
+			{
+				return true;
+			}
+
+			return techLevels[techLevels.Count - 1].Year > researchWork.Year || Settings.MyCompany.GetLatestResearch(researchWork.Spec, -1) >= researchWork.Year;
 		}
 
 		private static List<LegalWork> PendingPatentWorks()
