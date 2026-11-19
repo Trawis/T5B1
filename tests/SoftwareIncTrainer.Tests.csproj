@@ -15,26 +15,26 @@
 
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\Assembly-CSharp.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\Assembly-CSharp.dll</HintPath>
 		</Reference>
 		<Reference Include="Assembly-CSharp-firstpass">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\Assembly-CSharp-firstpass.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\UnityEngine.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\UnityEngine.CoreModule.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.CoreModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.TextRenderingModule.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
-			<HintPath>..\Trainer_v5\Trainer.Libraries\UnityEngine.UI.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.UI.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Trainer_v5\Trainer_v5.csproj" />
+		<ProjectReference Include="..\src\SoftwareIncTrainer.csproj" />
 	</ItemGroup>
 </Project>

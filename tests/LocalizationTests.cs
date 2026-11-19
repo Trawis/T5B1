@@ -22,7 +22,7 @@ namespace Trainer_v5.Tests
 
 		private static readonly string[] EnglishSections = { "#Input fields", "#Actions", "#Toggles", "#Labels", "#Dialogs", "#Errors", "#Notifications" };
 
-		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization");
+		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "assets", "Localization");
 
 		[Fact]
 		public void TheScanReadsEntriesAndIgnoresComments()

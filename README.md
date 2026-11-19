@@ -37,7 +37,7 @@ Every control is described in
 - Many toggles do not undo their changes when switched off. See
   [Switching toggles off](docs/project/features.md#switching-toggles-off).
 - The build uses the vendored game assemblies in
-  `Trainer_v5/Trainer.Libraries/`. A game update can break it until they are
+  `lib/SoftwareInc/`. A game update can break it until they are
   refreshed.
 - The Workshop build is compiled by the game's own C# 6 compiler and must
   follow the
@@ -53,9 +53,9 @@ You need a .NET SDK that builds `net46` projects (CI uses .NET 8).
 ```bash
 git clone https://github.com/Trawis/T5B1.git
 cd T5B1
-dotnet build "Trainer v5 - Beta 1.sln" -c Release
-dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
-dotnet test "Trainer v5 - Beta 1.sln" -c Release
+dotnet build SoftwareIncTrainer.sln -c Release
+dotnet format SoftwareIncTrainer.sln --verify-no-changes
+dotnet test SoftwareIncTrainer.sln -c Release
 ```
 
 The tests also run the game's source injector and compiler on the trainer
@@ -64,7 +64,7 @@ source.
 ## Releases and branches
 
 - The release version is `Helpers.Version` in
-  `Trainer_v5/Trainer.Source/Helpers.cs`.
+  `src/Trainer.Source/Helpers.cs`.
 - A release to `main` needs a higher version and one matching
   `## [<version>] - YYYY-MM-DD` section in [`CHANGELOG.md`](CHANGELOG.md).
 - Nightly prereleases are built from `develop` and never change the version.
@@ -81,6 +81,6 @@ source.
   [Discord](https://discord.com/invite/J584aG).
 
 Maintained by Trawis with community contributors (see
-[`credits.txt`](Trainer_v5/Trainer.Localization/credits.txt)).
+[`credits.txt`](assets/Localization/credits.txt)).
 
 No license file is present in the repository.

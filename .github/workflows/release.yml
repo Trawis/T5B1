@@ -33,7 +33,7 @@ jobs:
         id: version
         shell: pwsh
         run: |
-          $content = Get-Content -Raw "Trainer_v5/Trainer.Source/Helpers.cs"
+          $content = Get-Content -Raw "src/Trainer.Source/Helpers.cs"
           $match = [regex]::Match(
             $content,
             'public\s+static\s+string\s+Version\s*=>\s*"(?<version>\d+\.\d+\.\d+)";'
@@ -98,20 +98,20 @@ jobs:
           [System.IO.File]::WriteAllText("release-notes.md", $body, [System.Text.UTF8Encoding]::new($false))
 
       - name: Build (Release)
-        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental --property:Version=${{ steps.version.outputs.version }}
+        run: dotnet build SoftwareIncTrainer.sln --configuration Release --no-incremental --property:Version=${{ steps.version.outputs.version }}
 
       - name: Format
-        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+        run: dotnet format SoftwareIncTrainer.sln --verify-no-changes
 
       - name: Test
-        run: dotnet test "Trainer v5 - Beta 1.sln" --configuration Release --no-build
+        run: dotnet test SoftwareIncTrainer.sln --configuration Release --no-build
 
       - name: Stage release files
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path release | Out-Null
-          Copy-Item Trainer_v5/bin/Release/net46/Trainer_v5.dll release/
-          Copy-Item -Recurse Trainer_v5/Trainer.Localization release/Trainer.Localization
+          Copy-Item src/bin/Release/net46/Trainer_v5.dll release/
+          Copy-Item -Recurse assets/Localization release/Trainer.Localization
 
       - name: Package
         shell: pwsh

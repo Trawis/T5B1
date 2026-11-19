@@ -4,11 +4,12 @@
 
 T5B1 is a C# .NET game trainer mod for Software Inc. (Beta 1).
 
-- Solution: `Trainer v5 - Beta 1.sln`
-- Source project: `Trainer_v5/Trainer_v5.csproj`
-- Source code: `Trainer_v5/Trainer.Source/`
-- Libraries: `Trainer_v5/Trainer.Libraries/`
-- Localization: `Trainer_v5/Trainer.Localization/`
+- Solution: `SoftwareIncTrainer.sln`
+- Source project: `src/SoftwareIncTrainer.csproj` (assembly `Trainer_v5`)
+- Source code: `src/Trainer.Source/`
+- Tests: `tests/SoftwareIncTrainer.Tests.csproj` (assembly `Trainer_v5.Tests`)
+- Libraries: `lib/SoftwareInc/` (vendored game assemblies and `mcs.dll`; never edit them)
+- Localization: `assets/Localization/` (shipped as `Trainer.Localization/`)
 
 Preserve the existing architecture, public APIs, project boundaries, naming, tabs in C# files, and user-facing text style.
 
@@ -18,15 +19,15 @@ Run the narrowest relevant checks before finishing:
 
 ```bash
 dotnet format --verify-no-changes
-dotnet build "Trainer v5 - Beta 1.sln"
-dotnet test "Trainer v5 - Beta 1.sln"
+dotnet build SoftwareIncTrainer.sln
+dotnet test SoftwareIncTrainer.sln
 ```
 
 Verify that test projects exist before treating a successful `dotnet test` command as test coverage. Report environment-blocked checks separately from code failures.
 
 ## Workshop Source Compile
 
-The Steam Workshop item is compiled from `Trainer.Source` by the game's own compiler, which lists the files with
+The Steam Workshop item is compiled from `Trainer.Source` (`src/Trainer.Source/`) by the game's own compiler, which lists the files with
 `Directory.GetFiles(AllDirectories)` and does not sort them (see `docs/project/architecture.md`, Workshop Source Build).
 
 - A type that has a field of an enum type needs that enum to be declared before it in compile order: put the enum in a file

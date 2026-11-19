@@ -22,7 +22,7 @@ jobs:
       - name: Check Helpers.Version against existing tags
         shell: bash
         run: |
-          version=$(sed -nE 's/.*public[[:space:]]+static[[:space:]]+string[[:space:]]+Version[[:space:]]*=>[[:space:]]*"([0-9]+\.[0-9]+\.[0-9]+)";.*/\1/p' Trainer_v5/Trainer.Source/Helpers.cs | head -n 1)
+          version=$(sed -nE 's/.*public[[:space:]]+static[[:space:]]+string[[:space:]]+Version[[:space:]]*=>[[:space:]]*"([0-9]+\.[0-9]+\.[0-9]+)";.*/\1/p' src/Trainer.Source/Helpers.cs | head -n 1)
 
           if [ -z "$version" ]; then
             echo "::error::Could not read a semantic version from Helpers.Version."
@@ -32,7 +32,7 @@ jobs:
           tag="v$version"
 
           if [ -n "$(git tag --list "$tag")" ]; then
-            echo "::error::Tag $tag already exists, so merging this pull request would fail the Release workflow. Increase Helpers.Version in Trainer_v5/Trainer.Source/Helpers.cs before merging to main."
+            echo "::error::Tag $tag already exists, so merging this pull request would fail the Release workflow. Increase Helpers.Version in src/Trainer.Source/Helpers.cs before merging to main."
             exit 1
           fi
 

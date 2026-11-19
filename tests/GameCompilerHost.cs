@@ -54,7 +54,7 @@ namespace Trainer_v5.Tests
 		public IEnumerable<CompilerDiagnostic> Errors => Enumerable.Where(Diagnostics, d => d.IsError);
 	}
 
-	// Test-only host for the game's bundled C# compiler (Trainer.Libraries/mcs.dll).
+	// Test-only host for the game's bundled C# compiler (lib/SoftwareInc/mcs.dll).
 	internal static class GameCompiler
 	{
 		private static readonly object Gate = new object();
@@ -62,7 +62,7 @@ namespace Trainer_v5.Tests
 		private static readonly Regex Unlocated = new Regex(@"^(?<kind>error|warning) (?<code>CS\d+): (?<message>.*)$", RegexOptions.Compiled);
 		private static MethodInfo _entryPoint;
 
-		public static string AssemblyPath => Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Libraries", "mcs.dll");
+		public static string AssemblyPath => Path.Combine(RepositoryFiles.Root, "lib", "SoftwareInc", "mcs.dll");
 
 		public static void VerifyAvailable()
 		{
@@ -156,7 +156,7 @@ namespace Trainer_v5.Tests
 
 			if (!File.Exists(AssemblyPath))
 			{
-				throw new FileNotFoundException("The game's C# compiler is missing. Copy mcs.dll from the game's Managed folder to Trainer_v5/Trainer.Libraries/mcs.dll.", AssemblyPath);
+				throw new FileNotFoundException("The game's C# compiler is missing. Copy mcs.dll from the game's Managed folder to lib/SoftwareInc/mcs.dll.", AssemblyPath);
 			}
 
 			var type = Assembly.LoadFrom(LoadableCopy()).GetType("Mono.CSharp.CompilerCallableEntryPoint", false);
