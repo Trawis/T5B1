@@ -58,7 +58,7 @@ namespace Trainer_v5
 		}
 
 		// Observes each transition toggle once, in registration order, and runs its Enabled or Disabled entries.
-		// A failing entry is retried on later calls instead of being consumed (#336); only failed entries repeat, and the
+		// A failing entry is retried on later calls instead of being consumed; only failed entries repeat, and the
 		// toggle's next transition replaces whatever is pending. Enabled/Disabled actions must be idempotent "set the
 		// state" writes or state-driven catch-ups so a repeat after a partial run is safe; no one-off side effects.
 		public void RunTransitions()

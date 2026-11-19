@@ -325,7 +325,7 @@ namespace Trainer_v5
 				});
 			}
 
-			// Each shared step has its own boundary so a failure cannot skip the Frame run below (#356).
+			// Each shared step has its own boundary so a failure cannot skip the Frame run below.
 			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
 
 			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());

@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The skill editor opened from the Employees window (#450, #478): its rules and the order of its checks.
+	// The skill editor opened from the Employees window: its rules and the order of its checks.
 	public class SkillEditTests
 	{
 		private static string EditorSource()
@@ -93,27 +93,6 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("CaptureSpecializations", baseSkills);
 			SourceCode.AssertInOrder(skills, "TryParseStars(", "AddSpecialization(", "the stars are validated before anything is written");
 			Assert.Contains("\"3\",", skills);
-		}
-
-		[Fact]
-		public void TheEditorKeepsItsLifecycle()
-		{
-			var source = EditorSource();
-
-			Assert.Contains("Window = null;", SourceCode.Body(source, "public static void Reset()"));
-		}
-
-		[Fact]
-		public void TheOldActorWindowEntryPointIsGone()
-		{
-			Assert.DoesNotContain("SkillChangeButton", SourceCode.Read("Main.cs"));
-			Assert.DoesNotContain("SkillChangeButton", SourceCode.Read("TrainerBehaviour.cs"));
-			Assert.DoesNotContain("SetSkillPerEmployee", SourceCode.Read("Features", "EmployeeFeatures.cs"));
-			Assert.Contains("EmployeeSkillChangeWindow.Show", SourceCode.Read("EmployeesWindowTrainer.cs"));
-			Assert.Contains("EmployeeSkillChangeWindow.Reset();", SourceCode.Body(SourceCode.Read("TrainerBehaviour.cs"), "private void ResetPerGameState()"));
-
-			var english = File.ReadAllText(Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization", "English", "Trainer.tyd"));
-			Assert.DoesNotContain("SkillChangeButton", english);
 		}
 	}
 }

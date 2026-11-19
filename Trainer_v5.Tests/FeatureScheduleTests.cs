@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// A persistent toggle needs a cadence and a decision about what happens the moment it is switched on (#273).
+	// A persistent toggle needs a cadence and a decision about what happens the moment it is switched on.
 	public class FeatureScheduleTests
 	{
 		private static readonly string[] Periodic = { "Minute", "Hour", "Day", "Month" };

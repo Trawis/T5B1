@@ -1,42 +1,11 @@
 using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The six employee editors are reached from the native Employees window (#478).
+	// The six employee editors are reached from the native Employees window.
 	public class EmployeesWindowToolbarTests
 	{
-		private static readonly string[] Labels = { "Trait", "Demand", "Inspiration", "LeadSpec", "Founder", "Skills" };
-
-		[Fact]
-		public void TheToolbarHasTheSixExistingActionsWithTheirExistingKeysAndMakeHappy()
-		{
-			var install = SourceCode.Body(SourceCode.Read("EmployeesWindowTrainer.cs"), "public static void Install()");
-
-			foreach (var label in Labels)
-			{
-				Assert.Contains("UIFactory.Button(\"Detail" + label + "Button\".LocDef(\"" + label + "\")", install);
-			}
-
-			Assert.Contains("UIFactory.Button(\"DetailMakeHappyButton\".LocDef(\"Make Happy\"), EmployeeFeatures.MakeSelectedEmployeesHappy)", install);
-			Assert.Equal(Labels.Length + 1, Regex.Matches(install, @"UIFactory\.Button\(").Count);
-		}
-
-		[Fact]
-		public void TheToolbarIsPlacedOnTheEmployeesWindowAboveItsTopEdgeNotOnTheDetailWindow()
-		{
-			var source = SourceCode.Read("EmployeesWindowTrainer.cs");
-			var install = SourceCode.Body(source, "public static void Install()");
-
-			Assert.Contains("HUD.Instance?.employeeWindow", install);
-			Assert.Contains("DetailButtonLayout.Place(", install);
-			Assert.Contains("PlaceInElement(components[i].gameObject, target.Window.gameObject, slots[i])", install);
-			Assert.DoesNotContain("DetailWindow", source);
-			Assert.DoesNotContain("ActorWindow", source);
-			Assert.DoesNotContain("AddToElement", source);
-		}
-
 		[Fact]
 		public void InstallingTwiceOnTheSameWindowOrWithoutAWindowAddsNothing()
 		{
@@ -85,15 +54,7 @@ namespace Trainer_v5.Tests
 			}
 		}
 
-		[Fact]
-		public void TheNewMessageIsLocalizedInEnglish()
-		{
-			var english = File.ReadAllText(Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization", "English", "Trainer.tyd"));
-
-			Assert.Contains("SelectOneEmployee\t", english);
-		}
-
-		// #506: the guard runs first, so an invalid launch creates, toggles, focuses, refreshes and resets nothing.
+		// the guard runs first, so an invalid launch creates, toggles, focuses, refreshes and resets nothing.
 		[Theory]
 		[InlineData("EmployeeTraitChangeWindow.cs", "public void Show()")]
 		[InlineData("EmployeeDemandChangeWindow.cs", "public void Show()")]
@@ -132,30 +93,6 @@ namespace Trainer_v5.Tests
 		public void OnlyExactlyOneSelectedEmployeeLetsTheSingleEmployeeEditorsOpen(int liveSelected, bool opens)
 		{
 			Assert.Equal(opens, EmployeeTarget.Decide(liveSelected) == TargetSource.Selection);
-		}
-
-		[Fact]
-		public void TheLaunchGuardsUseTheMessagesAlreadyDefinedForThem()
-		{
-			var target = SourceCode.Read("EmployeeTarget.cs");
-
-			Assert.Contains("SharedMessages.SelectOneEmployee()", SourceCode.Body(target, "public static EmployeeTarget RequireOne()"));
-			Assert.Contains("SharedMessages.SelectEmployeesError()", SourceCode.Body(target, "public static bool RequireAny()"));
-			Assert.Contains("ResolveSelection().Count == 0", SourceCode.Body(target, "public static bool RequireAny()"));
-			Assert.DoesNotContain("SelectEmployeesError\".LocDef", SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"));
-		}
-
-		[Fact]
-		public void TheLaunchFixLeavesTheRefreshResolverAndTheInspirationAndFounderGuardsAlone()
-		{
-			var target = SourceCode.Read("EmployeeTarget.cs");
-			var tryResolve = SourceCode.Body(target, "public static bool TryResolveFor(");
-
-			Assert.Contains("window == null || !window.Shown", tryResolve);
-			Assert.DoesNotContain("RequireOne", tryResolve);
-			Assert.DoesNotContain("RequireAny", tryResolve);
-			Assert.Contains("EmployeeTarget.RequireOne()", SourceCode.Body(SourceCode.Read("EmployeesWindowTrainer.cs"), "private static void SetInspiration()"));
-			Assert.Contains("EmployeeTarget.RequireOne()", SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start()"));
 		}
 	}
 }

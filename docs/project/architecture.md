@@ -509,7 +509,8 @@ window instance with the same rollback and reset as the Employees buttons.
   invalid input) is an error, a completed action or a nothing-to-do notice is
   information. Input dialogs (`SpawnInputDialog`, `InputHelper`) are separate:
   their title and prompt are never prefixed. Logging stays in `Logger`.
-  `NotificationTests` enforces this.
+  `NotificationTests` checks the prefix rule and that only `Notification`
+  calls the game's popup and dialog APIs.
 - Confirmation policy (#242): value-entry and routine one-shot actions
   (takeover, subsidiary, max market recognition, max skill, reset age, sell
   stock, unlock furniture/space, clean office, instant buttons, extend

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Update() runs every frame, so a held key must not retrigger a hotkey action (#265).
+	// Update() runs every frame, so a held key must not retrigger a hotkey action.
 	public class HotkeyInputTests
 	{
 		private static readonly Regex HeldKey = new Regex(@"\bInput\.GetKey\(", RegexOptions.Compiled);

@@ -9,7 +9,7 @@ namespace Trainer_v5.Tests
 	// Known Workshop failures as fixtures; they also fail when a game update changes the injector or compiler.
 	public class GameCompilerHazardTests
 	{
-		// Helpers.cs in v5.3.2: a call in a property initializer (#222).
+		// Helpers.cs in v5.3.2: a call in a property initializer.
 		private const string CallInPropertyInitializer =
 			"using System.Collections.Generic;\n" +
 			"\n" +

@@ -56,7 +56,7 @@ namespace Trainer_v5.Tests
 			Assert.Equal(2, count);
 		}
 
-		// TimeOfDay cannot be touched in the test host, so the readiness check is verified on the source (#356).
+		// TimeOfDay cannot be touched in the test host, so the readiness check is verified on the source.
 		[Fact]
 		public void PollTreatsAMissingTimeOfDayAsNotReadyBeforeReadingIt()
 		{
@@ -70,7 +70,7 @@ namespace Trainer_v5.Tests
 			Assert.True(poll.IndexOf("return;", StringComparison.Ordinal) < poll.IndexOf("Observe(", StringComparison.Ordinal));
 		}
 
-		// TrainerBehaviour needs Unity, so the frame boundaries are checked on the source (#356).
+		// TrainerBehaviour needs Unity, so the frame boundaries are checked on the source.
 		[Fact]
 		public void TheSharedFrameStepsAreEachGuardedAndPrecedeTheFrameRun()
 		{

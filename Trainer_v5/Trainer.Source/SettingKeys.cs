@@ -31,12 +31,12 @@ namespace Trainer_v5
 		public static readonly ToggleKey NoMaintenance = Toggle("NoMaintenance");
 		public static readonly ToggleKey NoSickness = Toggle("NoSickness");
 		public static readonly ToggleKey FullSatisfaction = Toggle("FullSatisfaction");
-		// Retired (#342): never had behavior or a UI in this repository, and Beta 1 has no skill decay to disable.
+		// Retired: never had behavior or a UI in this repository, and Beta 1 has no skill decay to disable.
 		public static readonly ToggleKey DisableSkillDecay = Retired("DisableSkillDecay");
 		public static readonly ToggleKey DisableBurglars = Toggle("DisableBurglars");
 		public static readonly ToggleKey DisableFires = Toggle("DisableFires");
 		public static readonly ToggleKey NoServerCost = Toggle("NoServerCost");
-		// Retired (#354): same as ReduceBoxPrice (#439: not persisted); the only write was GameSettings.ExpansionCost, which the game never reads.
+		// Retired: same as ReduceBoxPrice (not persisted); the only write was GameSettings.ExpansionCost, which the game never reads.
 		public static readonly ToggleKey ReduceExpansionCost = Retired("ReduceExpansionCost");
 		public static readonly ToggleKey NoEducationCost = Toggle("NoEducationCost");
 		public static readonly ToggleKey IncreaseWalkSpeed = Toggle("IncreaseWalkSpeed");
@@ -44,12 +44,12 @@ namespace Trainer_v5
 		public static readonly ToggleKey AutoContractProgression = Toggle("AutoContractProgression");
 		public static readonly ToggleKey AutoEndResearch = Toggle("AutoEndResearch");
 		public static readonly ToggleKey AutoEndPatent = Toggle("AutoEndPatent");
-		// Retired: no UI and no scheduled behavior (#270). #439: the name stays reserved but is no longer persisted or loaded, so
+		// Retired: no UI and no scheduled behavior. The name stays reserved but is no longer persisted or loaded, so
 		// new saves omit it and a true stored in an old save is ignored.
 		public static readonly ToggleKey ReduceBoxPrice = Retired("ReduceBoxPrice");
 		public static readonly ToggleKey DisableFurnitureStealing = Toggle("DisableFurnitureStealing");
 		public static readonly ToggleKey MoreInspiration = Toggle("MoreInspiration");
-		// Retired (#374): same as ReduceBoxPrice.
+		// Retired: same as ReduceBoxPrice.
 		public static readonly ToggleKey MoreCreativity = Retired("MoreCreativity");
 		public static readonly ToggleKey AutoResearchStart = Toggle("AutoResearchStart");
 		public static readonly ToggleKey DigitalDistributionMonopol = Toggle("DigitalDistributionMonopol");
@@ -57,9 +57,9 @@ namespace Trainer_v5
 		public static readonly ToggleKey DisableForcePause = Toggle("DisableForcePause");
 		public static readonly ToggleKey DisableForceFreeze = Toggle("DisableForceFreeze");
 		public static readonly ToggleKey AutoAcceptHostingDeals = Toggle("AutoAcceptHostingDeals");
-		// Retired (see #150): same as ReduceBoxPrice.
+		// Retired: same as ReduceBoxPrice.
 		public static readonly ToggleKey AutoMaxMarketShare = Retired("AutoMaxMarketShare");
-		// Retired (#245): the Experimental opt-in moved to the mod Options (ExperimentalOptions). The key stays declared so old
+		// Retired: the Experimental opt-in moved to the mod Options (ExperimentalOptions). The key stays declared so old
 		// saves load, but nothing reads it, so a saved true cannot enable experiments.
 		public static readonly ToggleKey Experimental = Retired("Experimental");
 		public static readonly ToggleKey ForceLights = Toggle("ForceLights");

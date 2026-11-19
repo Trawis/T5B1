@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Trainer Settings toggles are data (#274); these keep the table consistent with the settings and strings.
+	// The Trainer Settings toggles are data; these keep the table consistent with the settings and strings.
 	public class SettingToggleRowsTests
 	{
 		private static readonly string[] Explicit = { "UnlimitedSubsidiaries", "ForceLights", "ShowRoomCeilings" };

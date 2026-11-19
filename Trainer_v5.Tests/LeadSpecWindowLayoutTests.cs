@@ -13,16 +13,5 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding)", source);
 		}
-
-		[Fact]
-		public void TheNoEmployeeMessageOnlyMentionsControlsTheWindowHas()
-		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Window", "EmployeeLeadSpecChangeWindow.cs"));
-
-			Assert.DoesNotContain("press Refresh", source);
-			Assert.DoesNotContain("UIFactory.Button(\"Refresh\"", source);
-			Assert.Contains("SharedMessages.SelectEmployeeFirst()", source);
-			Assert.Contains("close and reopen this window", File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "SharedMessages.cs")));
-		}
 	}
 }

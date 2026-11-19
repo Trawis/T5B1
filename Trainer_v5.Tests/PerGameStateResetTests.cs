@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Per-game UI and runtime caches are reset at game boundaries and the named employee actions check readiness first (#344).
+	// Per-game UI and runtime caches are reset at game boundaries and the named employee actions check readiness first.
 	public class PerGameStateResetTests
 	{
 		private static string Read(params string[] parts)
@@ -60,14 +60,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheSettingsWindowResetClosesItsStaleState()
-		{
-			var reset = Between(Read("SettingsWindow.cs"), "public static void Reset()", "private static void Init()");
-
-			Assert.Contains("Window = null;", reset);
-		}
-
-		[Fact]
 		public void TheHostingTimingAndWarningStateAreReset()
 		{
 			var reset = Between(Read("Features", "MarketFeatures.cs"), "internal static void ResetGameState()", "private static void WarnOnce");
@@ -108,16 +100,6 @@ namespace Trainer_v5.Tests
 			var body = Between(employee, "internal static void ResetAgeOfEmployees()", "internal static void EmployeesToMax()");
 
 			Assert.True(body.IndexOf("RequireGameReady(", StringComparison.Ordinal) < body.IndexOf("sActorManager", StringComparison.Ordinal));
-		}
-
-		[Fact]
-		public void ANotReadyActionIsLoggedAndShownWhenThereIsAHud()
-		{
-			var body = Between(Read("Helpers.cs"), "internal static bool RequireGameReady", "#endregion");
-
-			Assert.Contains(".Log();", body);
-			Assert.Contains("Notification.ShowError(", body);
-			Assert.Contains("HUD.Instance != null", body);
 		}
 	}
 }

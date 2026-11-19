@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Trainer_v5
 {
-	// Lays the trainer buttons above the Employees window in one row, wrapping upward when the window is narrower (#182).
+	// Lays the trainer buttons above the Employees window in one row, wrapping upward when the window is narrower.
 	internal static class DetailButtonLayout
 	{
 		public static Rect[] Place(int count, float availableWidth, int width, int height, int spacing)

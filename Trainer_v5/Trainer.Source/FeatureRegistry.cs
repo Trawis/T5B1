@@ -3,8 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order. Not registered: the retired
-	// AutoMaxMarketShare, MoreCreativity, ReduceBoxPrice and ReduceExpansionCost, and the Cheats.* flags TrainerBehaviour pushes once per load.
+	// Every scheduled feature (trigger, FeatureGuard id, action) in execution order.
 	internal static class FeatureRegistry
 	{
 		// Periodic features with no Enabled row; every other one must catch up when enabled (FeatureScheduleTests).
@@ -113,8 +112,8 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.ApplyReduceISPCost);
 			Add(entries, FeatureTrigger.Disabled, "ReduceISPCost", SettingKeys.ReduceISPCost, CompanyFeatures.RestoreReduceISPCost);
 
-			// Frame: values the game recomputes or overwrites faster than the Minute cadence (#88, #157), so a slower
-			// trigger would let them degrade between runs; none was moved without in-game verification (#361).
+			// Frame: values the game recomputes or overwrites faster than the Minute cadence, so a slower
+			// trigger would let them degrade between runs; none was moved without in-game verification.
 			// Passes must stay allocation-free: index loops, no LINQ, ToList or per-frame delegates.
 			Add(entries, FeatureTrigger.Frame, "NoiseReduction", SettingKeys.NoiseReduction, EnvironmentFeatures.ApplyNoiseReduction);
 			Add(entries, FeatureTrigger.Frame, "DisableFires", SettingKeys.DisableFires, EnvironmentFeatures.ApplyDisableActiveFires);

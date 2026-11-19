@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// The deals still waiting for the player's answer (#198). The game mirrors its private pending list into one list
+	// The deals still waiting for the player's answer. The game mirrors its private pending list into one list
 	// view of the deal window and keeps it current (DealWindow.UpdateNewDeals), minus the deals hidden by the player's
 	// filter. That list is found by content: it is the one list of deals that holds none of the active deals.
 	internal static class PendingDeals

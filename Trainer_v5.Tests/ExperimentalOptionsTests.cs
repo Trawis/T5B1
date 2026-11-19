@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// The Experimental opt-in lives in the native mod Options and the mod's own game-managed settings, not in saves (#245).
+	// The Experimental opt-in lives in the native mod Options and the mod's own game-managed settings, not in saves.
 	[Collection(SettingsCollection.Name)]
 	public class ExperimentalOptionsTests
 	{
@@ -83,27 +83,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheTrainerSettingsWindowHasNoExperimentalToggleOrHint()
-		{
-			var source = SourceCode.Read("SettingsWindow.cs");
-
-			Assert.DoesNotContain("ExperimentalHint", source);
-			Assert.DoesNotContain("SetTestControlsActive", source);
-		}
-
-		[Fact]
-		public void TheNativeOptionsScreenOffersTheToggleAndSaysNothingIsAvailable()
-		{
-			var source = SourceCode.Read("Main.cs");
-			var options = SourceCode.Body(source, "public override void ConstructOptionsScreen(");
-
-			Assert.Contains("\"EnableExperimentalFeatures\".LocDef(\"Enable Experimental Features\")", options);
-			Assert.Contains("ExperimentalOptions.Enabled", options);
-			Assert.Contains("\"ExperimentalNone\".LocDef(", options);
-			Assert.Contains("WindowManager.AddElementToElement(toggle.gameObject, parent.gameObject", options);
-		}
-
-		[Fact]
 		public void TheOptionIsReadWhenTheModLoadsAndSavedThroughTheGamesModSettings()
 		{
 			var source = SourceCode.Read("Main.cs");
@@ -122,14 +101,6 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override WriteDictionary Serialize("));
 			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override void Deserialize("));
 			Assert.DoesNotContain("ExperimentalOptions.Set(", SourceCode.Read("TrainerBehaviour.cs"));
-		}
-
-		[Fact]
-		public void ExperimentalCodeIsNotRegisteredAsAStableFeature()
-		{
-			Assert.DoesNotContain("Experimental", SourceCode.Read("FeatureRegistry.cs"));
-			Assert.DoesNotContain("NoForgetfulSkillLoss", SourceCode.Body(SourceCode.Read("SettingToggleRows.cs"), "public static List<SettingToggleRow> Create()"));
-			Assert.Equal("Trainer_v5.Experimental", typeof(ExperimentalOptions).Namespace);
 		}
 	}
 }

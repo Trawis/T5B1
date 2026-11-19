@@ -3,11 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5.Experimental
 {
-	// The one opt-in for unfinished trainer work (#245). Code in this folder and namespace is experimental: it is not
-	// registered in FeatureRegistry or SettingToggleRows, has no Trainer Settings control, and runs only when Enabled.
-	// The value lives in the mod's own game-managed settings (ModController.DLLMod.Settings, saved by the game to
-	// DLLMods/<mod>Setting.txt), which is global: it is read once when the mod loads, before any game, and is never part
-	// of a save. The legacy SettingKeys.Experimental save key is ignored on purpose, so an old save cannot switch it on.
+	// Stored in the mod's game-managed settings (DLLMods/<mod>Setting.txt), read once at mod load and never saved in a game.
 	internal static class ExperimentalOptions
 	{
 		public const string StorageKey = "EnableExperimentalFeatures";

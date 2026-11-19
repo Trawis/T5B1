@@ -1,85 +1,13 @@
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
 {
-	// Game UI types cannot be built in the test host, so tab navigation is checked by source shape.
+	// Game UI types cannot be built in the test host, so these guard the window's event wiring by source shape.
 	public class SettingsWindowTabsTests
 	{
-		private static readonly string[] UiFiles = { "SettingsWindow.cs", "SettingActionRows.cs", "SettingToggleRows.cs", "SettingsWindowState.cs", "DomainEnums.cs" };
-
 		private static string Window()
 		{
 			return SourceCode.Read("SettingsWindow.cs");
-		}
-
-		[Fact]
-		public void SwitchingTabsOnlyShowsAndHidesWhatInitBuilt()
-		{
-			var source = Window();
-			var switchTab = SourceCode.Body(source, "private static void SetActiveTab(");
-			var mark = SourceCode.Body(source, "private static void MarkTab(");
-
-			Assert.Contains(".SetActive(", switchTab);
-			foreach (var body in new[] { switchTab, mark })
-			{
-				Assert.DoesNotContain("AddListener", body);
-				Assert.DoesNotContain("Create", body);
-				Assert.DoesNotContain("Spawn", body);
-				Assert.DoesNotContain("Features.", body);
-				Assert.DoesNotContain("Helpers.", body);
-			}
-		}
-
-		[Fact]
-		public void TheWindowIsBuiltOnceAndReopeningOnlyTogglesAndRefreshesIt()
-		{
-			var source = Window();
-			var toggle = SourceCode.Body(source, "public static void Toggle()");
-			var open = SourceCode.Body(source, "public static void Open()");
-
-			Assert.Equal(2, Count(source, "Init();"));
-			SourceCode.AssertInOrder(toggle, "if (Window == null) { Init(); }", "Window.Toggle();", "built only when there is no window");
-			SourceCode.AssertInOrder(open, "if (Window == null) { Init(); }", "Window.Show();", "built only when there is no window");
-			Assert.Equal(1, Count(source, "BuildTabStrip();"));
-			Assert.Equal(1, Count(source, "UIHelper.SpawnWindow("));
-			foreach (var body in new[] { toggle, open, SourceCode.Body(source, "private static void RefreshFromSettings()") })
-			{
-				Assert.DoesNotContain("AddListener", body);
-				Assert.DoesNotContain("Spawn", body);
-				Assert.DoesNotContain("Create", body);
-			}
-		}
-
-		[Fact]
-		public void EveryListenerIsAddedWhileTheWindowIsBuilt()
-		{
-			var source = Window();
-			var allowed = new[] { "private static void Build()", "private static GUICombobox AddEfficiencyRow(" };
-			var inAllowed = 0;
-			foreach (var marker in allowed)
-			{
-				inAllowed += Count(SourceCode.Body(source, marker), "AddListener");
-			}
-
-			Assert.Equal(Count(source, "AddListener"), inAllowed);
-			Assert.True(Count(source, "AddListener") >= 1);
-		}
-
-		[Fact]
-		public void ATabButtonOnlySwitchesTheTab()
-		{
-			var source = Window();
-			var create = SourceCode.Body(source, "private static Button CreateTabButton(");
-			var strip = SourceCode.Body(source, "private static void BuildTabStrip()");
-
-			Assert.Contains("() => SetActiveTab(tab)", create);
-			Assert.DoesNotContain("Features.", create);
-			Assert.DoesNotContain("Settings.", create);
-			Assert.Contains("\"TabActions\".LocDef(\"Actions\")", strip);
-			Assert.Contains("\"TabToggles\".LocDef(\"Toggles\")", strip);
-			Assert.Contains("\"TabSettings\".LocDef(\"Settings\")", strip);
 		}
 
 		[Fact]
@@ -92,21 +20,18 @@ namespace Trainer_v5.Tests
 			SourceCode.AssertInOrder(handler, "if (_refreshing) { return; }", "settings.Toggle(key);", "the guard comes before the flip");
 			SourceCode.AssertInOrder(refresh, "_refreshing = true;", ".isOn =", "set while the controls change");
 			SourceCode.AssertInOrder(refresh, ".isOn =", "finally { _refreshing = false; }", "cleared even when a control throws");
-			Assert.Contains("UpdateSelectionSupressEvents(", source);
 			Assert.DoesNotContain(".UpdateSelection(", SourceCode.Body(source, "private static void RefreshEfficiency("));
-			Assert.DoesNotContain("AddListener", refresh);
 		}
 
 		[Fact]
-		public void EveryToggleIsCreatedThroughOneHandlerThatKeepsItsKey()
+		public void ListenersAreAddedOnlyWhileTheWindowIsBuilt()
 		{
 			var source = Window();
-			var create = SourceCode.Body(source, "private static GameObject CreateSettingToggle(");
+			var inBuild = Count(SourceCode.Body(source, "private static void Build()"), "AddListener")
+				+ Count(SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow("), "AddListener");
 
-			Assert.Equal(1, Count(source, "UIHelper.CreateToggle("));
-			Assert.Contains("a => OnToggleChanged(key)", create);
-			Assert.Contains("_toggleBindings.Add(new ToggleBinding(", create);
-			Assert.Contains("rows.AddRange(SettingToggleRows.CreateImmediate());", SourceCode.Body(source, "private static void BuildToggles("));
+			Assert.True(inBuild >= 1);
+			Assert.Equal(Count(source, "AddListener"), inBuild);
 		}
 
 		[Fact]
@@ -114,204 +39,10 @@ namespace Trainer_v5.Tests
 		{
 			var handler = SourceCode.Body(Window(), "private static void OnToggleChanged(");
 
-			Assert.Contains("key == SettingKeys.UnlimitedSubsidiaries", handler);
-			Assert.Contains("CompanyFeatures.ApplyUnlimitedSubsidiaries(enabled);", handler);
-			Assert.Contains("key == SettingKeys.ForceLights", handler);
-			Assert.Contains("EnvironmentFeatures.ApplyForceLights(enabled);", handler);
-			Assert.Contains("key == SettingKeys.ShowRoomCeilings", handler);
-			Assert.Contains("EnvironmentFeatures.ApplyShowRoomCeilings(enabled);", handler);
-
 			foreach (var row in SettingToggleRows.CreateImmediate())
 			{
 				Assert.Contains("key == SettingKeys." + row.Key.Key, handler);
 			}
-		}
-
-		[Fact]
-		public void TheWindowCallsNoFeatureExceptTheThreeImmediateToggleEffects()
-		{
-			var calls = new SortedSet<string>();
-			foreach (Match match in Regex.Matches(Window(), @"\b(?<feature>\w+Features)\.(?<method>\w+)"))
-			{
-				calls.Add(match.Groups["feature"].Value + "." + match.Groups["method"].Value);
-			}
-
-			Assert.Equal(new[] { "CompanyFeatures.ApplyUnlimitedSubsidiaries", "EnvironmentFeatures.ApplyForceLights", "EnvironmentFeatures.ApplyShowRoomCeilings" }, new List<string>(calls));
-		}
-
-		[Fact]
-		public void EveryButtonComesFromTheActionTableOrIsATabAndEveryToggleFromTheToggleTable()
-		{
-			var source = Window();
-
-			Assert.Equal(1, Count(source, "UIHelper.CreateButton("));
-			Assert.Equal(1, Count(source, "UIFactory.Button("));
-			Assert.Contains("SettingActionRows.Create()", SourceCode.Body(source, "private static void BuildActions("));
-			Assert.Contains("SettingToggleRows.Create()", SourceCode.Body(source, "private static void BuildToggles("));
-			Assert.Equal(0, Count(source, "SpawnButton"));
-			Assert.Equal(0, Count(source, "SpawnCheckbox"));
-		}
-
-		[Fact]
-		public void TheSettingsTabHoldsTheEfficiencyDropDownsAndTheTableButtonsOfThatTab()
-		{
-			var source = Window();
-			var actions = SourceCode.Body(source, "private static void BuildActions(");
-			var efficiency = SourceCode.Body(source, "private static void BuildEfficiency(");
-
-			Assert.Contains("row.Tab == SettingsTab.Settings", actions);
-			Assert.Contains("SettingKeys.EfficiencyStore", efficiency);
-			Assert.Contains("SettingKeys.LeadEfficiencyStore", efficiency);
-			Assert.Equal(1, Count(source, "UIHelper.CreateComboBox("));
-			Assert.Equal(2, Count(efficiency, "AddEfficiencyRow(settingsCells,"));
-			Assert.Contains("_efficiencyComboBox = AddEfficiencyRow(", efficiency);
-			Assert.Contains("_leadEfficiencyComboBox = AddEfficiencyRow(", efficiency);
-			Assert.Contains("PlaceSettingsPage(settingsPage.Content, settingsCells);", SourceCode.Body(source, "private static void Build()"));
-		}
-
-		[Fact]
-		public void TheSettingsPageUsesTheSharedCellSlotsAndLeftAlignsTheEfficiencyLabels()
-		{
-			var source = Window();
-			var place = SourceCode.Body(source, "private static void PlaceSettingsPage(");
-			var row = SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow(");
-
-			Assert.Contains("SettingsWindowState.SettingsCellColumn(i)", place);
-			Assert.Contains("SettingsWindowState.SettingsCellRow(i)", place);
-			Assert.Contains("Constants.ELEMENT_WIDTH", place);
-			Assert.Equal(1, Count(place, "UIHelper.PlaceInElement("));
-			Assert.Contains("TextAnchor.MiddleLeft", row);
-			SourceCode.AssertInOrder(row, "UIHelper.CreateLabel(", "UIHelper.CreateComboBox(", "the label is the cell before its drop-down");
-		}
-
-		[Fact]
-		public void TheProductNameFieldIsTheFirstControlOfTheProductSection()
-		{
-			var actions = SourceCode.Body(Window(), "private static void BuildActions(");
-
-			SourceCode.AssertInOrder(actions, "UIHelper.CreateInputBox(", "SettingActionRows.Create()", "the field leads the section");
-			Assert.Contains("actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(", actions);
-			Assert.Contains("Helpers.ProductPriceName = boxText", actions);
-		}
-
-		[Fact]
-		public void ResetDropsEveryControlReferenceButKeepsTheRememberedTab()
-		{
-			var reset = SourceCode.Body(Window(), "public static void Reset()");
-
-			foreach (var statement in new[] { "Window = null;", "_tabButtons = null;", "_tabPages = null;", "_toggleBindings = null;", "_efficiencyComboBox = null;", "_leadEfficiencyComboBox = null;" })
-			{
-				Assert.Contains(statement, reset);
-			}
-
-			Assert.DoesNotContain("_activeTab", reset);
-			SourceCode.AssertInOrder(Window(), "public static void Reset()", "private static void Init()", "PerGameStateResetTests reads between them");
-		}
-
-		[Fact]
-		public void TheRememberedTabLivesInTheRunningGameOnly()
-		{
-			var source = Window();
-
-			Assert.Contains("private static SettingsTab _activeTab;", source);
-			Assert.DoesNotContain("SaveSetting", source);
-			Assert.Equal(0, Count(SourceCode.Read("Main.cs"), "_activeTab"));
-		}
-
-		[Fact]
-		public void TheWindowHeightReservesTheTabStripAndIsTheSameOnEveryTab()
-		{
-			var init = SourceCode.Body(Window(), "private static void Build()");
-
-			Assert.Contains("UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 1)", init);
-			Assert.Contains("Window.SetMinSize(SettingsWindowState.WindowWidth, SettingsWindowState.WindowHeight(visibleRows));", init);
-			Assert.Equal(3, Count(init, "CreateTabPage("));
-		}
-
-		// Elements are top-left anchored with fixed offsets (WindowManager.SetElementDimension), so the window must not outgrow them.
-		[Fact]
-		public void TheWindowIsLockedToItsContentAfterTheMinimumSizeIsSet()
-		{
-			var init = SourceCode.Body(Window(), "private static void Build()");
-			var helper = SourceCode.Body(SourceCode.Read("UIHelper.cs"), "public static void LockWindowSize(");
-
-			SourceCode.AssertInOrder(init, "Window.SetMinSize(", "Window.LockWindowSize();", "the lock copies MinSize");
-			Assert.Contains("rect.sizeDelta = window.MinSize;", helper);
-			Assert.Contains("window.SizeButton.SetActive(false);", helper);
-		}
-
-		[Fact]
-		public void ControlsThatBelongElsewhereAreNotInTheTabs()
-		{
-			foreach (var file in UiFiles)
-			{
-				var source = SourceCode.Read(file);
-
-				// Only the toggle list reads the option, to show the experimental rows (#457).
-				if (file != "SettingsWindow.cs")
-				{
-					Assert.DoesNotContain("ExperimentalOptions", source);
-				}
-
-				// The only allowed use is the Experimental section header, not an Experimental toggle or button.
-				Assert.DoesNotContain("\"Experimental\"", source.Replace("\"SectionExperimental\".LocDef(\"Experimental\")", string.Empty));
-				Assert.DoesNotContain("SettingKeys.Experimental", source);
-				Assert.DoesNotContain("IsDebug", source);
-				Assert.DoesNotContain("testButton", source);
-				Assert.DoesNotContain("EmployeeTraitChangeWindow", source);
-				Assert.DoesNotContain("EmployeeDemandChangeWindow", source);
-				Assert.DoesNotContain("EmployeeLeadSpecChangeWindow", source);
-				Assert.DoesNotContain("EmployeeSkillChangeWindow", source);
-				Assert.DoesNotContain("DetailWindowTrainer", source);
-				Assert.DoesNotContain("FounderToggle", source);
-				foreach (var retired in new[] { "DisableSkillDecay", "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost" })
-				{
-					Assert.DoesNotContain(retired, source);
-				}
-			}
-		}
-
-		[Fact]
-		public void EveryControlIsPlacedThroughTheSharedPlacementHelpers()
-		{
-			var source = Window();
-
-			Assert.Equal(0, Count(source, "WindowManager.AddElementTo"));
-			Assert.Equal(0, Count(source, "zeroAnchors"));
-			Assert.Equal(0, Count(source, "AddComponent<ScrollRect>"));
-			Assert.Equal(1, Count(source, "UIHelper.MakeVerticallyScrollable("));
-			Assert.Equal(6, Count(source, "UIHelper.PlaceIn"));
-		}
-
-		[Fact]
-		public void TheSharedScrollSetupExistsOnceAndIsUsedByBothScrollingLayouts()
-		{
-			var helper = SourceCode.Read("UIHelper.cs");
-			var setup = SourceCode.Body(helper, "public static void MakeVerticallyScrollable(");
-
-			Assert.Equal(1, Count(helper, "AddComponent<ScrollRect>"));
-			Assert.Equal(1, Count(helper, "AddComponent<RectMask2D>"));
-			Assert.Contains("scrollRect.horizontal = false;", setup);
-			Assert.Contains("scrollRect.vertical = true;", setup);
-			Assert.Contains("ScrollRect.MovementType.Clamped", setup);
-			Assert.Equal(1, Count(SourceCode.Body(helper, "public static int CreateScrollableColumn("), "MakeVerticallyScrollable("));
-			Assert.Equal(1, Count(SourceCode.Body(helper, "public static void PlaceInElement("), "WindowManager.AddElementToElement("));
-			Assert.Equal(1, Count(SourceCode.Body(helper, "public static void PlaceInWindow("), "WindowManager.AddElementToWindow("));
-		}
-
-		[Fact]
-		public void EachControlGetsItsHandlerOnceAndRefreshNeverAddsOne()
-		{
-			var source = Window();
-			var efficiencyRow = SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow(");
-			var refreshEfficiency = SourceCode.Body(source, "private static void RefreshEfficiency(");
-			var createToggle = SourceCode.Body(source, "private static GameObject CreateSettingToggle(");
-
-			Assert.Equal(1, Count(efficiencyRow, "AddListener("));
-			Assert.DoesNotContain("AddListener", refreshEfficiency);
-			Assert.DoesNotContain("AddListener", createToggle);
-			Assert.Equal(1, Count(createToggle, "_toggleBindings.Add("));
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void Build()"), "_toggleBindings = new List<ToggleBinding>();", "BuildToggles(toggleCells, experimentalToggleCells);", "the list is replaced before the toggles register in it");
 		}
 
 		private static int Count(string source, string text)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Trainer_v5
 {
-	// Isolates one trainer feature so its exceptions don't stop others (#123); the clock and report sink are injected.
+	// Isolates one trainer feature so its exceptions don't stop others; the clock and report sink are injected.
 	public sealed class FeatureGuard
 	{
 		private const float FailureLogIntervalSeconds = 60f;
