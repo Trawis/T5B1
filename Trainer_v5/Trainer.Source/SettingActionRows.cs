@@ -70,6 +70,7 @@ namespace Trainer_v5
 		{
 			var rows = new List<SettingActionRow>();
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "AmazingCompatibility", "Amazing Compatibility", AmazingCompatibility.Run));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "HireEmployees", "Hire Employees", InstantHire.Run));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "SkipOneHour", "Skip 1 Hour", SkipTime.SkipHour));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "SkipOneDay", "Skip 1 Day", SkipTime.SkipDay));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "SkipToHour", "Skip To Hour", SkipTime.SkipToHour));

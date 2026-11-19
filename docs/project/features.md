@@ -134,7 +134,8 @@ Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*,
 *Auto Instant Patent*, *Auto Instant Research* and *Auto Max Followers*, off
 until you switch them on) and buttons on the Actions page (currently *Amazing
 Compatibility* in the Employee section and *Skip 1 Hour*, *Skip 1 Day* and
-*Skip To Hour* in the Company section). An existing Trainer Settings window
+*Skip To Hour* in the Company section, and *Hire Employees* in the Employee
+section). An existing Trainer Settings window
 shows or hides them as soon as the option changes, keeping its page, position,
 entered product name and other settings. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
@@ -202,6 +203,18 @@ Yes/No question with the number of hours. A skip works while the game is
 paused and leaves it paused; it is refused in multiplayer and while the game
 holds time for a dialog or event, and stops early if the game does. The
 result shows the reached time.
+
+*Hire Employees* (experimental, not tested in the game) asks for a role (Lead,
+Programmer, Designer, Artist or Service) and a count from 1 to 10, lets the
+game generate that many medium-wage candidates and asks a Yes/No question with
+their total upfront demands, monthly salaries and team (the team last chosen
+in the game's hire window, if it still exists; otherwise none). On Yes each
+candidate is hired with the game's own steps: employed (which pays the upfront
+demands), counted in the hire statistics, added to the office and put in the
+team. Candidates the business reputation cannot attract (unless the game
+ignores it) or the company cannot pay are skipped, and the result shows how
+many were hired and skipped. It skips the recruitment search; it is not
+available in multiplayer.
 
 The same Options screen offers *Debug Logging*, off by default and independent
 of the experimental switch. When on, extra `Trainer [debug]:` trace lines (toggle

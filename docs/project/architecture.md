@@ -521,8 +521,8 @@ window instance with the same rollback and reset as the Employees buttons.
   with a negative amount, Max Reputation, Founder, Make All Employees Happy
   Now, Make Happy (selected employees), Optimize Team Assignments (a preview of
   each change with its role-count scores and each skipped item's reason) and
-  the experimental Amazing Compatibility, Skip 1 Day and Skip To Hour. `Ask`
-  is the game's own
+  the experimental Amazing Compatibility, Skip 1 Day, Skip To Hour and Hire
+  Employees. `Ask` is the game's own
   `WindowManager.ShowMessageBox` Yes/No (no question id, so no "Don't ask again";
   no pausing; Enter is Yes and Esc is No in the game's dialog; No, Esc and closing
   never run the action). Prompts name the action and scope, carry no `Trainer: `
