@@ -129,9 +129,10 @@ Experimental Features*, off by default. The choice is stored by the game in the
 mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
 saved in one. Turning it on shows additional, unfinished controls in Trainer
 Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*,
-*Auto Instant Patent*, *Auto Instant Research* and *Auto Max Followers*, off until you switch them on) and buttons in the Employee section of the Actions page
-(currently *Amazing Compatibility*); the window shows them the next time it is
-created, that is, in the next loaded game. Turning the option off switches the
+*Auto Instant Patent*, *Auto Instant Research* and *Auto Max Followers*, off
+until you switch them on) and buttons in the Employee section of the Actions
+page (currently *Amazing Compatibility*); the window shows them the next time it
+is created, that is, in the next loaded game. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
 game is ready. The Trainer
 Settings window has no Experimental toggle and no Test button.
