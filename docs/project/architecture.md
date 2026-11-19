@@ -1,275 +1,234 @@
 # Architecture
 
-T5B1 is a client-side trainer for *Software Inc.* Beta 1: one net46 / C# 6
-assembly (`Trainer_v5.dll`) that runs inside the game process. It has no entry
-point of its own; the game drives it through mod callbacks, Unity scene events
-and time events. It uses only the game's public types from the vendored
-assemblies in `Trainer_v5/Trainer.Libraries/` (no reflection, patches or
-compatibility layer). User-visible behaviour is in [`features.md`](features.md).
+The trainer is one net46, C# 6 assembly (`Trainer_v5.dll`) that runs inside
+the game. It has no entry point of its own: the game calls it through mod
+callbacks, Unity scene events and time events. It uses only public game types
+from the vendored assemblies in `Trainer_v5/Trainer.Libraries/`, with no
+reflection or patches. Controls are described in [`features.md`](features.md).
 
-Versions: `Helpers.Version` is the release version. `GameVersionCheck`
-holds the targeted game build (Beta 1.8.42); a different running version is
-shown in the window title and logged, never blocked. When refreshing
-`Trainer.Libraries/` (including `mcs.dll`), update those constants;
-`GameVersionCheckTests` fails until they match.
+`Helpers.Version` is the release version. `GameVersionCheck` holds the target
+game build (Beta 1.8.42). A different running version is logged, never
+blocked. After refreshing `Trainer.Libraries/` (including `mcs.dll`), update
+those constants; `GameVersionCheckTests` fails until they match.
 
 ## Components
 
-- `Main`: mod entry point, Options screen, toolbar button, save
-  serialization.
-- `TrainerBehaviour`: scene and time events, toggle transitions and the
-  `Cheats.*` flags; it raises triggers and owns no feature logic.
-- `FeatureRegistry`, `FeatureDispatcher`, `FeatureGuard`,
-  `ToggleStateTracker`: the schedule, its runner, the error boundary and toggle
-  change detection.
-- `Features/*Features`: the game-state changes and one-shot actions, per
-  domain (Company, Employee, Product, Market, WorkItem, Environment).
-- `SettingKeys`: every persisted setting with its save key and default.
-- UI: `SettingsWindow` with `SettingActionRows`/`SettingToggleRows`, the
-  toolbars `EmployeesWindowTrainer`, `ProductsWindowTrainer` and
-  `CompaniesWindowTrainer`, the editors in `Window/`, and `UIFactory`,
-  `UIHelper`, `InputHelper`, `Confirmation` and `Notification`.
-- `Experimental/`: code that runs only while the Experimental option is on.
+| Part | Role |
+|---|---|
+| `Main` | Mod entry, Options screen, Trainer button, save data |
+| `TrainerBehaviour` | Scene and time events, toggle transitions, `Cheats.*` flags. Raises triggers; owns no feature logic |
+| `FeatureRegistry`, `FeatureDispatcher`, `FeatureGuard`, `ToggleStateTracker` | Schedule, runner, error boundary, toggle-change detection |
+| `Features/*Features` | Game-state changes and one-shot actions, per domain |
+| `SettingKeys` | Every saved setting, its save key and default |
+| `SettingsWindow`, `*WindowTrainer`, `Window/` | Trainer window, native-window toolbars, editors |
+| `Confirmation`, `Notification`, `InputHelper` | Dialogs, messages and input |
+| `Experimental/` | Code that runs only while the Experimental option is on |
 
-## Runtime lifecycle
+## Lifecycle
 
-- `SceneRoute` maps Unity scene loads: entering `MainScene` subscribes to the
-  game's time events (before any UI is installed), then installs the trainer
-  UI; the menu tears both down.
-- Entering the main scene and leaving a game reset per-game state
-  (`TrainerBehaviour.ResetPerGameState`: window references, specialization
-  list, hosting flags, printer baselines). Persisted settings are not touched.
-- `GameSettings.GameReady` runs per-game initialization (toolbars,
-  specializations, hosting-deal repair, clearing experimental toggles when the
-  option is off). It is not gated on readiness: the game raises it just before
+- Entering `MainScene` subscribes to the game's time events first, then
+  installs the UI. A UI failure therefore cannot leave events unsubscribed.
+  The menu tears both down.
+- Entering and leaving a game reset per-game state (window references,
+  specialization list, hosting flags, printer baselines). Saved settings are
+  not reset.
+- `GameSettings.GameReady` runs per-game setup: toolbars, specializations, the
+  hosting-deal repair, and clearing experimental toggles when the option is
+  off. It is not gated, because the game raises it just before
   `SelectorController.DoneLoading` is set.
-- All scheduled work waits for `Helpers.IsSimulationReady()` (singletons
-  present, `DoneLoading` set, pre-simulation neither running nor finishing).
-  Earlier events are dropped, not replayed. User actions check
-  `Helpers.RequireGameReady` and say why nothing happened.
+- Scheduled work waits for `Helpers.IsSimulationReady()`: game singletons
+  exist, loading is done and pre-simulation has finished. Earlier events are
+  dropped, not replayed.
+- `GameSettings.MaxFloor` is set before that gate, because the game reads it
+  while rooms load.
+- Buttons call `Helpers.RequireGameReady` and tell the player when nothing
+  happened.
 
-## Scheduling and error isolation
+## Scheduling and errors
 
-Scheduled features are `FeatureRegistry` rows: an id, the toggle that gates
-it, a trigger and an action. Triggers are Frame, Minute, Hour, Day and Month
-(while on) and Enabled/Disabled (once, when the toggle changes). The game has
-no minute event, so `GameMinuteWatcher` synthesizes one. Frame rows are only
-for values the game overwrites faster than once a minute and must be
-allocation-free (index loops, no LINQ; `HashList`'s `foreach` boxes).
+Each `FeatureRegistry` row has an id, a toggle, a trigger and an action.
+Triggers are Frame, Minute, Hour, Day and Month while the toggle is on, and
+Enabled/Disabled once when it changes.
 
-A periodic row also has an Enabled row so it acts as soon as it is switched
-on, unless its id is in `FeatureRegistry.NoCatchUp`. A Disabled (restore) row
-needs an Enabled row. `Cheats.*` flags (Force Lights, Show Room Ceilings,
-Unlimited Subsidiaries) have no save backing and are pushed on the first frame
-and on every transition.
+- The game has no minute event; `GameMinuteWatcher` creates one.
+- Frame rows are only for values the game overwrites faster than once a
+  minute. They must not allocate: use index loops, no LINQ. `HashList`'s
+  `foreach` boxes an enumerator.
+- A periodic row also has an Enabled row, so it acts as soon as it is switched
+  on, unless it is listed in `FeatureRegistry.NoCatchUp`.
+- A Disabled (restore) row needs an Enabled row.
+- `Cheats.*` flags have no save backing, so they are pushed on the first frame
+  and on every transition.
 
-`FeatureDispatcher` runs each row through `Helpers.TryExecute(featureId,
-action)`: one feature is one error boundary, failures are rate-limited in the
-log, and a failing feature does not stop the others. Domain classes do not
-catch, log or schedule themselves. A failed Enabled/Disabled entry is retried
-(every frame for 60 frames, then every 60th) until the toggle's next
-transition, and survives the per-game reset; therefore these actions must be
-idempotent writes or catch-up scans.
+`FeatureDispatcher` runs every row through `Helpers.TryExecute`. One feature is
+one error boundary: a failure does not stop other features and is
+rate-limited in the log. Feature classes do not catch or schedule themselves.
+A failed Enabled/Disabled entry is retried until the toggle's next transition,
+even across a game change. These actions must therefore be idempotent writes
+or catch-up scans.
 
-In the **Workshop build** this isolation is weaker: the game's injected
-handler wraps every named method body and, on an exception, shows its error
-window and unloads the mod before `FeatureGuard` sees it. Only a failure
-written directly in an inline lambda reaches the guard
-(`WorkshopExceptionBoundaryTests` simulate this). Not verified in the game.
+In the **Workshop build**, the game wraps every method body in its own
+handler. An exception there shows the game's error window and unloads the mod
+before `FeatureGuard` sees it. Only a failure written directly in an inline
+lambda reaches the guard (`WorkshopExceptionBoundaryTests`). This is not
+verified in the game.
 
 ## Toggle transitions
 
-Toggle states are observed per game, so every save load is a cold start: an
-enabled toggle runs its Enabled row, and a toggle that was on before leaving
-the game and is off in the next one still runs its restore. This matters for
-state the game keeps across loads (`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
+Every save load is a cold start. An enabled toggle runs its Enabled row. A
+toggle that was on before leaving the game and is off in the next one still
+runs its restore. This matters for state the game keeps across loads
+(`AI.MaxBoxes`, `EdCost`, `Cheats.*`).
 
-A toggle restores only when the normal value can be recovered safely: a
-verified constant (`ProductPrinter.PrintPrice` 0.1), a baseline captured before
-the first write (per-printer `PrintSpeed`, keyed by Unity instance id) or the
-game's own recalculation. Other toggles have no Disabled row and leave their
-changes; [`features.md`](features.md#switching-toggles-off) lists the result.
-In short, they write furniture fields that are not saved and have no game
-writer (lost on reload), saved state without a recorded original (salaries,
-birth dates, vacations, `ForgetfulETA`, finished work, refunds), or values the
-game rewrites itself at an undetermined time.
+A toggle restores only when the normal value is known safely:
 
-## Persistence
+- a verified constant (`ProductPrinter.PrintPrice` is 0.1);
+- a baseline captured before the first write (per-printer `PrintSpeed`, keyed
+  by Unity instance id so no game object is kept);
+- the game's own recalculation.
 
-Settings are saved in the save game through `Main.Serialize`/`Deserialize`
-(`WriteDictionary`). Every setting is declared once in `SettingKeys` as a
-`ToggleKey` or `StoreKey` (not generic: the game's compiler emits invalid IL
-for fields of user-defined generic types); `Helpers.Settings` and
-`Helpers.StoresSettings` are built from it, and code refers to
-`SettingKeys.X`, never a string. **The key string is the save key and must
-never change or be reused.**
+Other toggles have no Disabled row and leave their changes; see
+[Switching toggles off](features.md#switching-toggles-off). They write
+furniture fields that are not saved (lost on reload), saved state with no
+recorded original, or values the game rewrites at an unknown time.
 
-- A full load gives every key the save lacks its declared default, so values
-  never carry over from the previous save; building and company loads keep the
-  values in use.
-- The game calls `Deserialize` only when the save has a trainer entry, so
-  `SettingsSession` detects a new game by its `GameSettings` instance id and
-  applies its `ModData` entry or the defaults.
-- Retired settings (`ReduceBoxPrice`, `AutoMaxMarketShare`, `MoreCreativity`,
-  `ReduceExpansionCost`, `DisableSkillDecay`, the old per-save `Experimental`)
-  are declared with `SettingKeys.Retired(...)`: the name stays reserved, but
-  they are not written or loaded, so a stored `true` is ignored.
+## Settings and saves
 
-### Mod options
+Settings are stored in the save game by `Main.Serialize` and `Deserialize`.
 
-*Enable Experimental Features* and *Debug Logging* are stored by the game in
-`DLLMods/<mod>Setting.txt` (`DLLMod.Settings`, rewritten by
-`DLLMod.SaveSetting`), not in saves. `Main.Initialize` reads them when the mod
-loads; `Main.ConstructOptionsScreen` builds the switches. Only a stored `True`
-enables either option.
+- Each setting is declared once in `SettingKeys`. Code uses `SettingKeys.X`,
+  never a string, so a typo fails to compile.
+- **The key string is the save key. Never rename or reuse it.** Changing it
+  resets that setting for every player.
+- `ToggleKey` and `StoreKey` are not generic, because the game's compiler emits
+  invalid IL for fields of generic types.
+- A full load gives every missing key its default, so values never carry over
+  from the previous save. Building and company loads keep the current values.
+- The game calls `Deserialize` only when the save has a trainer entry.
+  `SettingsSession` detects other games by their `GameSettings` instance and
+  applies their `ModData` entry or the defaults.
+- Retired settings use `SettingKeys.Retired(...)`. The name stays reserved, it
+  is no longer saved or loaded, and a `true` in an old save is ignored.
 
-Experimental code lives in `Trainer.Source/Experimental/` and checks
-`ExperimentalOptions.Enabled`. Experimental toggles are normal persisted
-toggles whose rows are in `SettingToggleRows.CreateExperimental()` and are
-listed in `ExperimentalToggles`; turning the option off, or loading a game
-while it is off, switches them off. Experimental actions are rows in
-`SettingActionRows.CreateExperimental()`. The settings window rebuilds its
-content in place when the option changes.
+**Mod options.** *Enable Experimental Features* and *Debug Logging* are
+stored by the game in `DLLMods/<mod>Setting.txt` (`DLLMod.Settings`), not in
+saves. `Main.Initialize` reads them when the mod loads. Only a stored `True`
+turns an option on. Experimental toggles are listed in `ExperimentalToggles`
+and switch off when the option is off, including on game load.
 
-### Logging
+**Logging.** `Logger.LogDebug` writes only to the dev console, and every call
+is inside `if (LoggingOptions.DebugEnabled)`. Traces must not use
+`UnityEngine.Debug.Log*`: the game caps `Player.log` and counts logged errors
+toward a limit that can pause the game.
 
-Normal logging (`Logger.Log`, feature failures through `TryExecute`) is always
-on. `Logger.LogDebug` writes `Trainer [debug]:` lines to the dev console only,
-and every call is wrapped in `if (LoggingOptions.DebugEnabled)`. Trace output
-must not use `UnityEngine.Debug.Log*`: the game caps `Player.log` and counts
-logged errors toward a limit that can pause the game. Logging code must stay
-exception-free because the Workshop handler wraps it too.
+## Adding a toggle
 
-## Adding a persistent toggle
+1. Declare it in `SettingKeys` and add it to
+   `SettingsTests.PersistedToggleKeys`.
+2. Add a `SettingToggleRows` row and its key to the golden list in
+   `SettingToggleRowsTests`.
+3. Add its text to `Trainer.Localization/English/Trainer.tyd`.
+4. Add `FeatureRegistry` rows: the cadence row, an Enabled row and, if it
+   restores, a Disabled row. Put the action in a `Features/*Features` class.
+5. Record what switching off leaves in `features.md`.
+6. To retire it, declare it with `Retired(...)` and remove its UI and rows.
+   Never rename the key.
 
-1. Declare `public static readonly ToggleKey X = Toggle("X");` in
-   `SettingKeys` and add it to `SettingsTests.PersistedToggleKeys`.
-2. Add a `SettingToggleRows` row (domain, localization key, English text, key)
-   and the key to the golden list in `SettingToggleRowsTests`. A toggle with an
-   immediate side effect goes in `CreateImmediate` and
-   `SettingsWindow.OnToggleChanged`.
-3. Add the localization key to `Trainer.Localization/English/Trainer.tyd`
-   (see Localization).
-4. Add `FeatureRegistry` rows: the cadence row, an Enabled row (or a
-   `NoCatchUp` entry) and, if it restores, a Disabled row. The action lives in a
-   `Features/*Features` class.
-5. Document what switching off leaves in `features.md`.
-6. To retire a toggle, change its declaration to `Retired(...)`, remove its UI
-   and rows, add it to `RetiredSettingsTests` and never rename the key.
-
-`SettingKeysTests`, `SettingsTests`, `SerializationTests`,
-`SettingToggleRowsTests`, `LocalizationTests`, `FeatureScheduleTests`,
-`FeatureDispatcherTests` and `RetiredSettingsTests` fail when a step is
-missed.
+The settings, serialization, row, localization and schedule tests fail when a
+step is missed.
 
 ## Workshop source build
 
-The Steam Workshop item is the trainer's **source**. When the game loads it,
-`ModController.InjectTryBlocks` adds three `SWINC*` `#define` lines, strips
-comments and wraps every method and constructor body in `try`/`catch`; then
-the game's bundled C# 6 compiler (`mcs`) compiles it. The SDK build cannot
-predict whether that works, so the source must follow these rules:
+The Workshop item is the trainer's source. When the game loads it,
+`ModController.InjectTryBlocks` adds `#define` lines, strips comments and
+wraps every method body in `try`/`catch`. The game's C# 6 compiler (`mcs`)
+then builds it. The SDK build cannot predict this, so the source must follow
+these rules:
 
-- **C# 6 only**; `mcs` rejects C# 7 syntax (CS1644).
-- No call in a property or field initializer followed by a property with
-  accessors: the injector treats a member-level `(` as a method and rewrites
-  the wrong brace. Assign in a static constructor instead.
+- C# 6 only; `mcs` rejects newer syntax.
+- No call in a field or property initializer followed by a property with
+  accessors. The injector mistakes the `(` for a method and rewrites the wrong
+  brace. Assign in a static constructor instead.
 - No `'{'` or `'}'` char literals, and no apostrophe in a string before a
-  comment containing a brace on the same line.
-- No parameter or local named `ex` in a method with a block body (collides
-  with the injected catch variable, CS0136).
-- No fields in user-defined generic classes or structs (invalid IL at
-  runtime).
-- No method or constructor that ends in a `throw` without any `return`: the
-  injected `try` leaves the compiler emitting a branch past the end of the
-  method.
-- The game lists the source files with `Directory.GetFiles` (all
-  directories) and does not sort them. An enum used as a field type must be
-  compiled before the type that uses it: declare it in a file of the same
-  folder that sorts before the user (for example `DomainEnums.cs`) or above
-  that type in the same file. Otherwise
-  the game fails to load the mod ("Field '...' is an enum type with a bad
-  underlying type"). The tests cannot catch this.
+  comment that contains a brace on the same line.
+- No parameter or local named `ex` in a block-bodied method; it collides with
+  the injected catch variable.
+- No fields in generic classes or structs (invalid IL at runtime).
+- No method that ends in a `throw` without any `return`; the injected `try`
+  makes the compiler emit a branch past the end of the method.
+- The game compiles the files unsorted. An enum used as a field type must be
+  compiled before the type using it: declare it in a file of the same folder
+  that sorts earlier (for example `DomainEnums.cs`) or above that type.
+  Otherwise the mod fails to load.
 
 `GameSourcePipelineTests`, `GameCompilerCompatibilityTests` and
-`GameCompilerHazardTests` run the game's own injector and `mcs` over
-`Trainer.Source` and report errors against the repository file and line. The
-tests call the injector's private methods by reflection (tests only), and
-`GameSourceInjector.VerifyMirror` fails when the game's `InjectTryBlocks`
-changes. `Trainer.Libraries/mcs.dll` comes from the game's `Managed` folder
-and is used only by the tests (loaded from a copy with the 32-bit flag
-cleared).
+`GameCompilerHazardTests` run the game's injector and `mcs` on the source and
+report errors by repository file and line. They check parsing only. The SDK
+build checks type resolution. Runtime IL problems, compile order and the
+game's error handler need the game.
 
-The tests do not prove type resolution (the SDK build does), runtime IL
-validity in Unity, or the game's error handler at runtime; those need the
-game.
+## UI and safety
 
-## UI
+- All UI uses the game's `WindowManager` widgets.
+- `SettingsWindow` is built once per game; tabs only show and hide panels, so
+  switching keeps entered values.
+- Refreshing controls sets a `_refreshing` guard, because the game's toggles
+  always raise change events.
+- Each toolbar adds its buttons once per native window and removes a partial
+  set on failure. Toolbars are never behind the Experimental option.
 
-All UI is built from the game's `WindowManager` widgets. `SettingsWindow` is
-built once per game; its three tabs are panels switched with `SetActive`, so
-switching creates nothing and keeps entered values. Showing it again sets the
-controls from the stored settings under a `_refreshing` guard, because the
-game's toggles have no set-without-notify.
+**Targeting.** Toolbar actions use only the rows selected in the native list.
+The target is captured on click and checked again before any delayed write.
+Names are never used to find it.
 
-The toolbars above the Employees (`HUD.employeeWindow`), Products
-(`HUD.PlayerProductWindow`) and Companies (`HUD.companyWindow`) windows are
-one class each: `Install` adds the buttons once per live window and removes a
-partial set on failure; `Reset` forgets the window when the game is left.
-Toolbars are never gated behind the Experimental option.
+- Employees: `EmployeeTarget`; single-employee editors need exactly one.
+- Products: one live software product owned by the player.
+- Companies: one live AI company, not the player's, not a subsidiary, not
+  going bankrupt.
 
-**Targeting.** Toolbar actions act only on rows selected in the native list,
-captured at the click and checked again before any deferred write:
+**Confirmations.** Only high-impact actions ask, through `Confirmation.Ask`.
+On Yes, the game and the exact targets are checked again. If anything changed,
+nothing is applied. `ConfirmationTests` pins this set; update it with this
+list:
 
-- Employees: `EmployeeTarget` (exactly one selected for the single-employee
-  editors; Skills and Make Happy take every selected employee).
-- Products: one live `SoftwareProduct` owned by the player in the list's
-  software mode.
-- Companies: one `SimulatedCompany` that is a live AI company
-  (`CompanyFeatures.IsLiveAICompany`), not a subsidiary and not bankrupt.
+- AI Bankrupt All, Bankrupt and a negative Adjust AI Funds
+- Clear all loans, Unlock and Claim Rewards, Max Reputation
+- Founder, Make All Employees Happy Now and Make Happy
+- Optimize Team Assignments
+- Experimental: Amazing Compatibility, Skip 1 Day, Skip To Hour and Hire
+  Employees
 
-**Game API notes.** `Company.MakeTransaction` with a negative amount that the
-AI company cannot cover bankrupts and buys it out at once, so Adjust AI Funds
-confirms negative amounts. Product price is written directly because
-`SoftwareProduct.ChangePrice` refuses prices below 1. Demands are granted
-through `AcceptDemand` and removed by changing `DemandResults`, `DemandsMet` and
-`DemandsRequested` together, because the detail window shows demands only while
-`DemandsMet` is set.
+**Messages.** Only `Notification` calls the game's popup and dialog APIs.
+Popups start with `Trainer: ` once and use `PopupIDs.None`, the only id the
+game shows.
 
-**Messages.** `Notification` is the only code that calls the game's popup and
-dialog APIs. Popups start with `Trainer: ` exactly once and use
-`PopupIDs.None` (other ids are not shown) with a non-Issue sound; dialogs and
-input prompts have no prefix.
+**Game API limits.**
 
-**Confirmations.** Routine and value-entry actions do not ask. The
-high-impact set asks through `Confirmation.Ask` (the game's Yes/No message box
-without a "Don't ask again" id): AI Bankrupt All, Clear all loans, Unlock and
-Claim Rewards, Bankrupt (typed or toolbar), negative Adjust AI Funds, Max
-Reputation, Founder, Make All Employees Happy Now, Make Happy, Optimize Team
-Assignments, and the experimental Amazing Compatibility, Skip 1 Day, Skip To
-Hour and Hire Employees. On Yes the game and the exact targets are checked
-again (`Confirmation.IsSameTargets`, `IsScopeUnchanged`); if anything changed,
-nothing is applied. `ConfirmationTests` pins this set; update it and this list
-together.
+- A negative `Company.MakeTransaction` that an AI company cannot cover
+  bankrupts and buys it out at once.
+- `SoftwareProduct.ChangePrice` refuses prices below 1, so the price is
+  written directly.
+- Demands are granted with `AcceptDemand`, so their effect and cost apply.
+  Removal changes `DemandResults`, `DemandsMet` and `DemandsRequested`
+  together, because the detail window shows demands only while `DemandsMet` is
+  set.
+- `PatentNow` charges without checking funds, so funds, expiry and ownership
+  are checked first.
 
 ## Localization
 
-User-visible text uses `"Key".LocDef("English default")`, with the key in
-`Trainer.Localization/English/Trainer.tyd` under the section matching its use
-(`#Input fields`, `#Actions`, `#Toggles`, `#Labels`, `#Dialogs`, `#Errors`,
-`#Notifications`). Other languages may omit keys; the English default is shown.
-A text used from more than one place is a method in `SharedMessages`.
-Placeholders are filled with `string.Format` at the `LocDef` call. `LocDef`
-cannot run in the test host (the game's `Localization` type fails to
-initialize), so pure helpers return values and the text is built where it is
-shown. Log lines and internal names stay English. `LocalizationTests` enforces
-these rules.
+- Text uses `"Key".LocDef("English text")`. The key goes in
+  `English/Trainer.tyd` under the section matching its use.
+- Other languages may omit keys; English is shown instead.
+- A text used in more than one place is a method in `SharedMessages`.
+- Placeholders are filled with `string.Format` at the `LocDef` call.
+- `LocDef` cannot run in the test host, so pure helpers return values and the
+  text is built where it is shown.
+- `LocalizationTests` enforces these rules.
 
 ## Validation
 
-- CI builds and tests `Release` only; `dotnet format` and `dotnet build` are
-  the local static checks. A few project-owned warnings are errors in
-  `Trainer_v5.csproj`; they do not affect the game's Workshop compile.
+- CI builds and tests `Release` only.
 - `Trainer_v5.Tests` (xUnit, `net462`) runs trainer code against the vendored
   assemblies outside Unity: settings and saves, input validation, scheduling,
   transitions, localization and the Workshop source pipeline. Code that
