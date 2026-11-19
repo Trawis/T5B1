@@ -38,6 +38,7 @@ namespace Trainer_v5
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "ClearAllLoans", "Clear all loans", CompanyFeatures.ClearLoans));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "TransferOffshoreFunds", "Transfer Offshore Funds", CompanyFeatures.TransferOffshoreFunds));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "MaxReputation", "Max Reputation", CompanyFeatures.MaxReputation));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "SetBusinessReputation", "Set Business Reputation", CompanyFeatures.SetBusinessReputation));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "DaysPerMonth", "Days per month", CompanyFeatures.MonthDays));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Company, "UnlockAndClaimRewards", "Unlock and Claim Rewards", CompanyFeatures.UnlockAndClaimAllRewards));
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "MaxSkill", "Max skill of employees", EmployeeFeatures.EmployeesToMax));

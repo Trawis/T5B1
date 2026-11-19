@@ -44,6 +44,7 @@ the Settings tab.
 | Set Active Users       | Product Name, Amount   | Sets the active users of the exact-matching product (player or AI company) |
 | Sell products stock    | None                   | Stock of products with no active users is sold at half price|
 | Max Reputation         | None (confirmation)    | Maxes business reputation across all categories after a Yes/No confirmation |
+| Set Business Reputation | Stars (0 to 6)        | Sets your company's business reputation to exactly that many whole stars (one value for the company, recorded under the game's Cheat history label); a reputation already at that value is left unchanged. No confirmation; not restored when the trainer is turned off |
 | Max market recognition | None                   | Maxes market recognition for all software types/categories  |
 | Max Skill of employees | None                   | Maxes skills, specializations, and lead specializations     |
 | Reset age of employees | None                   | Resets every employee to the youngest age                   |
@@ -210,6 +211,7 @@ time a dialog is answered is not changed.
 | Force Bankrupt  | Same as Bankrupt, for the selected company                         |
 | Take Over       | Same as Takeover Company, for the selected company                 |
 | Make Subsidiary | Same as Subsidiary Company, for the selected company               |
+| Set Reputation  | Same as Set Business Reputation, for the selected company          |
 
 ## Employee editing
 
