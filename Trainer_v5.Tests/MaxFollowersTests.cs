@@ -66,5 +66,16 @@ namespace Trainer_v5.Tests
 			Assert.Contains("WindowManager.SpawnInputDialog(SharedMessages.ProductNamePrompt(), \"MaxFollowersTitle\".LocDef(\"Max Followers\"), \"\", MaxFollowersAction);", source);
 			Assert.NotEqual(SourceCode.Body(source, "internal static void MaxFollowersAction"), SourceCode.Body(source, "internal static void MaxFollowersOldAction"));
 		}
+
+		[Theory]
+		[InlineData(0f, 0u, false)]
+		[InlineData(0f, 500u, true)]
+		[InlineData(499.5f, 500u, true)]
+		[InlineData(500f, 500u, false)]
+		[InlineData(800f, 500u, false)]
+		public void AutoMaxFollowersFillsOnlyBelowTheCap(float followers, uint maxFollowers, bool expected)
+		{
+			Assert.Equal(expected, WorkItemFeatures.IsBelowFollowerCap(followers, maxFollowers));
+		}
 	}
 }
