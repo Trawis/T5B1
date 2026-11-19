@@ -115,24 +115,26 @@ namespace Trainer_v5
 		{
 			_toggleBindings = new List<ToggleBinding>();
 			var actionCells = CreateSectionLists();
+			var experimentalActionCells = CreateSectionLists();
 			var toggleCells = CreateSectionLists();
+			var experimentalToggleCells = CreateSectionLists();
 			var settingsCells = new List<GameObject>();
 
 			BuildEfficiency(settingsCells);
-			BuildActions(actionCells, settingsCells);
-			BuildToggles(toggleCells);
+			BuildActions(actionCells, experimentalActionCells, settingsCells);
+			BuildToggles(toggleCells, experimentalToggleCells);
 
 			var actionDomains = SettingsWindowState.ActionDomains();
 			var toggleDomains = SettingsWindowState.ToggleDomains();
-			int actionRows = SettingsWindowState.PageRows(CountCells(actionCells, actionDomains), SettingsWindowState.Columns);
-			int toggleRows = SettingsWindowState.PageRows(CountCells(toggleCells, toggleDomains), SettingsWindowState.Columns);
+			int actionRows = PageRows(actionCells, experimentalActionCells, actionDomains);
+			int toggleRows = PageRows(toggleCells, experimentalToggleCells, toggleDomains);
 			int maxVisibleRows = UIHelper.GetMaxVisibleRows(Constants.ELEMENT_HEIGHT, 1);
 			int visibleRows = SettingsWindowState.VisibleRows(System.Math.Max(actionRows, toggleRows), SettingsWindowState.SettingsPageRows, maxVisibleRows);
 
 			var actionsPage = CreateTabPage("ActionsPage", actionRows, visibleRows);
-			PlaceSections(actionsPage.Content, actionCells, actionDomains);
+			PlaceSections(actionsPage.Content, actionCells, experimentalActionCells, actionDomains);
 			var togglesPage = CreateTabPage("TogglesPage", toggleRows, visibleRows);
-			PlaceSections(togglesPage.Content, toggleCells, toggleDomains);
+			PlaceSections(togglesPage.Content, toggleCells, experimentalToggleCells, toggleDomains);
 			var settingsPage = CreateTabPage("SettingsPage", SettingsWindowState.SettingsPageRows, visibleRows);
 			PlaceSettingsPage(settingsPage.Content, settingsCells);
 
@@ -223,21 +225,27 @@ namespace Trainer_v5
 			return button;
 		}
 
-		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject> settingsCells)
+		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject>[] experimentalCells, List<GameObject> settingsCells)
 		{
 			// Helpers.ProductPriceName is static so the field text survives a rebuild.
 			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
 
 			var rows = SettingActionRows.Create();
+			int regularCount = rows.Count;
 			if (ExperimentalOptions.Enabled)
 			{
 				rows.AddRange(SettingActionRows.CreateExperimental());
 			}
 
-			foreach (var row in rows)
+			for (int i = 0; i < rows.Count; i++)
 			{
+				var row = rows[i];
 				var button = UIHelper.CreateButton(row.LocKey.LocDef(row.DefaultText), row.Action);
-				if (row.Tab == SettingsTab.Settings)
+				if (i >= regularCount)
+				{
+					experimentalCells[(int)row.Domain].Add(button);
+				}
+				else if (row.Tab == SettingsTab.Settings)
 				{
 					settingsCells.Add(button);
 				}
@@ -248,18 +256,19 @@ namespace Trainer_v5
 			}
 		}
 
-		private static void BuildToggles(List<GameObject>[] toggleCells)
+		private static void BuildToggles(List<GameObject>[] toggleCells, List<GameObject>[] experimentalCells)
 		{
 			var rows = SettingToggleRows.Create();
 			rows.AddRange(SettingToggleRows.CreateImmediate());
+			int regularCount = rows.Count;
 			if (ExperimentalOptions.Enabled)
 			{
 				rows.AddRange(SettingToggleRows.CreateExperimental());
 			}
 
-			foreach (var row in rows)
+			for (int i = 0; i < rows.Count; i++)
 			{
-				toggleCells[(int)row.Domain].Add(CreateSettingToggle(row));
+				(i >= regularCount ? experimentalCells : toggleCells)[(int)rows[i].Domain].Add(CreateSettingToggle(rows[i]));
 			}
 		}
 
@@ -322,6 +331,7 @@ namespace Trainer_v5
 		// The drop-downs open from a fixed place because this page never scrolls.
 		private static void PlaceSettingsPage(GameObject container, List<GameObject> settingsCells)
 		{
+			PlaceHeader(container, DomainLabel(TrainerDomain.Employee), TrainerDomain.Employee + "_Header", 0);
 			for (int i = 0; i < settingsCells.Count; i++)
 			{
 				var slot = new Rect(
@@ -355,10 +365,26 @@ namespace Trainer_v5
 			return counts;
 		}
 
-		private static void PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order)
+		private static int PageRows(List<GameObject>[] sections, List<GameObject>[] experimentalSections, TrainerDomain[] order)
 		{
-			int headerWidth = UIHelper.GetGridColumnX(SettingsWindowState.Columns - 1) + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
-			int row = 0;
+			return SettingsWindowState.PageRowsWithExperimental(
+				SettingsWindowState.PageRows(CountCells(sections, order), SettingsWindowState.Columns),
+				SettingsWindowState.PageRows(CountCells(experimentalSections, order), SettingsWindowState.Columns));
+		}
+
+		private static void PlaceSections(GameObject container, List<GameObject>[] sections, List<GameObject>[] experimentalSections, TrainerDomain[] order)
+		{
+			int row = PlaceSections(container, sections, order, 0);
+			if (SettingsWindowState.PageRows(CountCells(experimentalSections, order), SettingsWindowState.Columns) > 0)
+			{
+				PlaceHeader(container, "SectionExperimental".LocDef("Experimental"), "Experimental_Header", row);
+				PlaceSections(container, experimentalSections, order, row + 1);
+			}
+		}
+
+		// Returns the first row after the placed sections.
+		private static int PlaceSections(GameObject container, List<GameObject>[] sections, TrainerDomain[] order, int row)
+		{
 			foreach (var domain in order)
 			{
 				var cells = sections[(int)domain];
@@ -367,9 +393,7 @@ namespace Trainer_v5
 					continue;
 				}
 
-				var header = UIFactory.Label(DomainLabel(domain), new TextStyle { Alignment = TextAnchor.MiddleCenter, FontStyle = FontStyle.Bold });
-				header.name = domain + "_Header";
-				UIHelper.PlaceInElement(header.gameObject, container, new Rect(Constants.FIRST_COLUMN, row * Constants.ELEMENT_HEIGHT, headerWidth, Constants.ELEMENT_HEIGHT));
+				PlaceHeader(container, DomainLabel(domain), domain + "_Header", row);
 				row++;
 
 				for (int i = 0; i < cells.Count; i++)
@@ -379,6 +403,16 @@ namespace Trainer_v5
 
 				row += SettingsWindowState.SectionRows(cells.Count, SettingsWindowState.Columns);
 			}
+
+			return row;
+		}
+
+		private static void PlaceHeader(GameObject container, string text, string name, int row)
+		{
+			int headerWidth = UIHelper.GetGridColumnX(SettingsWindowState.Columns - 1) + Constants.ELEMENT_WIDTH - Constants.FIRST_COLUMN;
+			var header = UIFactory.Label(text, new TextStyle { Alignment = TextAnchor.MiddleCenter, FontStyle = FontStyle.Bold });
+			header.name = name;
+			UIHelper.PlaceInElement(header.gameObject, container, new Rect(Constants.FIRST_COLUMN, row * Constants.ELEMENT_HEIGHT, headerWidth, Constants.ELEMENT_HEIGHT));
 		}
 
 		private static string DomainLabel(TrainerDomain domain)

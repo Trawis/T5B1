@@ -8,8 +8,8 @@ namespace Trainer_v5
 		public const int ColumnPitch = Constants.THIRD_COLUMN - Constants.SECOND_COLUMN;
 		public const int WindowWidth = Constants.FOURTH_COLUMN + Constants.ELEMENT_WIDTH + Constants.FIRST_COLUMN;
 
-		// Two label + drop-down groups side by side (2 rows), a gap row and the Discord button.
-		public const int SettingsPageRows = 4;
+		// The Employee header, two label + drop-down groups side by side (2 rows), a gap row and the Discord button.
+		public const int SettingsPageRows = 5;
 
 		// Settings cells arrive as label, drop-down, label, drop-down, then the Discord button.
 		public const int EfficiencyCellCount = 4;
@@ -21,7 +21,7 @@ namespace Trainer_v5
 
 		public static int SettingsCellRow(int cellIndex)
 		{
-			return cellIndex < EfficiencyCellCount ? cellIndex % 2 : SettingsPageRows - 1;
+			return cellIndex < EfficiencyCellCount ? 1 + cellIndex % 2 : SettingsPageRows - 1;
 		}
 
 		// Title bar, tab strip and the content rows; the size the window is locked to.
@@ -43,6 +43,12 @@ namespace Trainer_v5
 		public static int SectionRows(int cellCount, int columns)
 		{
 			return cellCount <= 0 ? 0 : (cellCount + columns - 1) / columns;
+		}
+
+		// Experimental sections follow the regular ones under one more header, only when there are any.
+		public static int PageRowsWithExperimental(int regularRows, int experimentalRows)
+		{
+			return experimentalRows > 0 ? regularRows + 1 + experimentalRows : regularRows;
 		}
 
 		public static int PageRows(int[] sectionCellCounts, int columns)
