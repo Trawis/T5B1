@@ -275,9 +275,10 @@ not in saves and not in `Helpers.Settings`:
   `FeatureRegistry` rows) whose row is in `SettingToggleRows.CreateExperimental()`,
   which `SettingsWindow` adds only while the option is on; its action returns
   while the option is off. `ExperimentalToggles` lists them: turning the option
-  off, and `OnGameReady` while it is off, set them all to false. The only one is
+  off, and `OnGameReady` while it is off, set them all to false. They are
   `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with
-  no recorded original, never restored). The Trainer Settings window has no
+  no recorded original, never restored), and `AutoInstantPatent`: it files
+  pending patent work through the same checks as the Instant Patent button. The Trainer Settings window has no
   Experimental toggle or Test button.
 
 Not verified in the game: the Options layout, the toggle round trip and that

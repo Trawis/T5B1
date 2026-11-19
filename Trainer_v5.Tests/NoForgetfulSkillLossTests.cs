@@ -98,7 +98,7 @@ namespace Trainer_v5.Tests
 				keys.Add(row.Key.Key);
 			}
 
-			Assert.Equal(new[] { "NoForgetfulSkillLoss" }, keys.ToArray());
+			Assert.Equal(new[] { "NoForgetfulSkillLoss", "AutoInstantPatent" }, keys.ToArray());
 			foreach (var row in SettingToggleRows.Create())
 			{
 				Assert.NotEqual("NoForgetfulSkillLoss", row.Key.Key);
@@ -113,14 +113,16 @@ namespace Trainer_v5.Tests
 		{
 			var settings = new Dictionary<string, bool>();
 			settings["NoForgetfulSkillLoss"] = true;
+			settings["AutoInstantPatent"] = true;
 			settings["NoSickness"] = true;
 
 			ExperimentalToggles.TurnOffAll(settings);
 			ExperimentalToggles.TurnOffAll(null);
 
 			Assert.False(settings["NoForgetfulSkillLoss"]);
+			Assert.False(settings["AutoInstantPatent"]);
 			Assert.True(settings["NoSickness"]);
-			Assert.Single(ExperimentalToggles.Keys());
+			Assert.Equal(2, ExperimentalToggles.Keys().Length);
 		}
 
 		[Fact]

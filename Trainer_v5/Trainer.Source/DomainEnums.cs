@@ -19,4 +19,12 @@ namespace Trainer_v5
 		Toggles = 2,
 		Settings = 3
 	}
+
+	internal enum PatentOutcome
+	{
+		None = 0,
+		Patented = 1,
+		Unaffordable = 2,
+		NotPatentable = 3
+	}
 }

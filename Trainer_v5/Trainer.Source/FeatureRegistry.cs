@@ -37,6 +37,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Minute, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);
 			Add(entries, FeatureTrigger.Minute, "AutoEndResearch", SettingKeys.AutoEndResearch, WorkItemFeatures.ApplyAutoEndResearch);
 			Add(entries, FeatureTrigger.Minute, "AutoEndPatent", SettingKeys.AutoEndPatent, WorkItemFeatures.ApplyAutoEndPatent);
+			Add(entries, FeatureTrigger.Minute, "AutoInstantPatent", SettingKeys.AutoInstantPatent, WorkItemFeatures.ApplyAutoInstantPatent);
 			Add(entries, FeatureTrigger.Minute, "AutoResearchStart", SettingKeys.AutoResearchStart, WorkItemFeatures.ApplyAutoResearchStart);
 			Add(entries, FeatureTrigger.Minute, "AutoAcceptHostingDeals", SettingKeys.AutoAcceptHostingDeals, MarketFeatures.ApplyAutoAcceptHostingDeals);
 			Add(entries, FeatureTrigger.Minute, "AutoPorting", SettingKeys.AutoPorting, WorkItemFeatures.ApplyAutoPorting);
@@ -74,6 +75,7 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "AutoContractProgression", SettingKeys.AutoContractProgression, WorkItemFeatures.ApplyAutoContractProgression);
 			Add(entries, FeatureTrigger.Enabled, "AutoEndResearch", SettingKeys.AutoEndResearch, WorkItemFeatures.ApplyAutoEndResearch);
 			Add(entries, FeatureTrigger.Enabled, "AutoEndPatent", SettingKeys.AutoEndPatent, WorkItemFeatures.ApplyAutoEndPatent);
+			Add(entries, FeatureTrigger.Enabled, "AutoInstantPatent", SettingKeys.AutoInstantPatent, WorkItemFeatures.ApplyAutoInstantPatent);
 			Add(entries, FeatureTrigger.Enabled, "FreeStaff", SettingKeys.FreeStaff, CompanyFeatures.ApplyFreeStaff);
 			Add(entries, FeatureTrigger.Enabled, "NoServerCost", SettingKeys.NoServerCost, CompanyFeatures.ApplyNoServerCost);
 			Add(entries, FeatureTrigger.Enabled, "NoWaterElectricity", SettingKeys.NoWaterElectricity, () =>
