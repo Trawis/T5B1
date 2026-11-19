@@ -4,6 +4,11 @@ namespace Trainer_v5
 	// together as one literal pair so the localization scans see them. Single-use texts stay inline at their call site.
 	internal static class SharedMessages
 	{
+		public static string TeamAssignmentsNoChange(int skipped)
+		{
+			return string.Format("TeamAssignmentsNoChange".LocDef("Trainer: No team assignment was changed. {0} skipped."), skipped);
+		}
+
 		public static string CompanyNotFound(string name)
 		{
 			return string.Format("CompanyNotFound".LocDef("Trainer: Company {0} not found!"), name);

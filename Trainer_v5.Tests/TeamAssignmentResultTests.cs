@@ -26,9 +26,21 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
+		public void ALongPreviewIsCutAndSaysHowManyLinesWereLeftOut()
+		{
+			var lines = new[] { "a", "b", "c" };
+			int omitted;
+
+			Assert.Equal("a\nb\nc", TeamAssignmentResult.PreviewText(lines, 3, out omitted));
+			Assert.Equal(0, omitted);
+			Assert.Equal("a\nb", TeamAssignmentResult.PreviewText(lines, 2, out omitted));
+			Assert.Equal(1, omitted);
+		}
+
+		[Fact]
 		public void OptimizerCountsFromTheItemStateAndNeverReportsPlainSuccessAfterAFailure()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void OptimizeTeamAssignments");
+			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "private static void ApplyTeamRecommendations");
 
 			Assert.Contains("TeamAssignmentResult.Applied(item.DevTeams, bestTeam.Name)", body);
 			SourceCode.AssertInOrder(body, "item.SetDevTeams(", "TeamAssignmentResult.Applied(", "state is read after the change");
