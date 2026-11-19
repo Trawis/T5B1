@@ -76,7 +76,43 @@ namespace Trainer_v5
 		private static void Init()
 		{
 			Window = UIHelper.SpawnWindow(_title, "TrainerSettings", "TrainerSettingsPanel");
+			Build();
+		}
 
+		// Replaces the content of the existing window, so its position, shown and collapsed state stay native.
+		public static void Rebuild()
+		{
+			if (Window == null || _tabButtons == null || _tabPages == null)
+			{
+				return;
+			}
+
+			foreach (var button in _tabButtons)
+			{
+				Destroy(button.gameObject);
+			}
+
+			foreach (var page in _tabPages)
+			{
+				Destroy(page);
+			}
+
+			// Locking the size of a collapsed window would expand it; collapse restores the size it had before.
+			bool collapsed = Window.IsCollapsed;
+			if (collapsed)
+			{
+				Window.ToggleCollapse();
+			}
+
+			Build();
+			if (collapsed)
+			{
+				Window.ToggleCollapse();
+			}
+		}
+
+		private static void Build()
+		{
 			_toggleBindings = new List<ToggleBinding>();
 			var actionCells = CreateSectionLists();
 			var toggleCells = CreateSectionLists();
@@ -108,7 +144,7 @@ namespace Trainer_v5
 			Window.LockWindowSize();
 		}
 
-		// Everything is built once in Init, so a tab switch creates nothing and adds no listeners.
+		// Everything is built in Build, so a tab switch creates nothing and adds no listeners.
 		private static void SetActiveTab(SettingsTab tab)
 		{
 			_activeTab = SettingsWindowState.ClampTab(tab);

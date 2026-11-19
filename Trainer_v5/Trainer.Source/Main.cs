@@ -151,6 +151,8 @@ namespace Trainer_v5
 			{
 				ExperimentalToggles.TurnOffAll(Helpers.Settings);
 			}
+
+			Helpers.TryExecute("RebuildSettingsWindow", SettingsWindow.Rebuild);
 		}
 
 		private void SetDebugLoggingEnabled(bool enabled)

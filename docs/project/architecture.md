@@ -273,7 +273,8 @@ not in saves and not in `Helpers.Settings`:
   `Trainer_v5.Experimental`) and is checked against `ExperimentalOptions.Enabled`.
   An experimental toggle is an ordinary persisted toggle (`SettingKeys`,
   `FeatureRegistry` rows) whose row is in `SettingToggleRows.CreateExperimental()`,
-  which `SettingsWindow` adds only while the option is on; its action returns
+  which `SettingsWindow` adds only while the option is on (changing the option
+  rebuilds the content of an existing window in place); its action returns
   while the option is off. `ExperimentalToggles` lists them: turning the option
   off, and `OnGameReady` while it is off, set them all to false. They are
   `NoForgetfulSkillLoss` (#457): it writes `Actor.ForgetfulETA` (saved state with

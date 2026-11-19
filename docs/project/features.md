@@ -130,8 +130,9 @@ mod's own `DLLMods/<mod>Setting.txt`, applies to every save game and is not
 saved in one. Turning it on shows additional, unfinished controls in Trainer
 Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss* and
 *Auto Instant Patent*, off until you switch them on) and buttons in the Employee section of the Actions page
-(currently *Amazing Compatibility*); the window shows them the next time it is
-created, that is, in the next loaded game. Turning the option off switches the
+(currently *Amazing Compatibility*). An existing Trainer Settings window shows
+or hides them as soon as the option changes, keeping its page, position, entered
+product name and other settings. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
 game is ready. The Trainer
 Settings window has no Experimental toggle and no Test button.
