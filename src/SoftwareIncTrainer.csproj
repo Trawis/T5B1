@@ -28,48 +28,48 @@
 
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
-			<HintPath>Trainer.Libraries\Assembly-CSharp.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\Assembly-CSharp.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Assembly-CSharp-firstpass">
-			<HintPath>Trainer.Libraries\Assembly-CSharp-firstpass.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\Assembly-CSharp-firstpass.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine">
-			<HintPath>Trainer.Libraries\UnityEngine.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>Trainer.Libraries\UnityEngine.CoreModule.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.CoreModule.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.TextRenderingModule">
-			<HintPath>Trainer.Libraries\UnityEngine.TextRenderingModule.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.TextRenderingModule.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
-			<HintPath>Trainer.Libraries\UnityEngine.UI.dll</HintPath>
+			<HintPath>..\lib\SoftwareInc\UnityEngine.UI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Trainer.Libraries\Assembly-CSharp-firstpass.dll" />
-		<Content Include="Trainer.Libraries\Assembly-CSharp.dll" />
-		<Content Include="Trainer.Libraries\UnityEngine.CoreModule.dll" />
-		<Content Include="Trainer.Libraries\UnityEngine.dll" />
-		<Content Include="Trainer.Libraries\UnityEngine.UI.dll" />
-		<Content Include="Trainer.Libraries\UnityEngine.TextRenderingModule.dll" />
-		<Content Include="Trainer.Localization\credits.txt" />
+		<Content Include="..\lib\SoftwareInc\Assembly-CSharp-firstpass.dll" />
+		<Content Include="..\lib\SoftwareInc\Assembly-CSharp.dll" />
+		<Content Include="..\lib\SoftwareInc\UnityEngine.CoreModule.dll" />
+		<Content Include="..\lib\SoftwareInc\UnityEngine.dll" />
+		<Content Include="..\lib\SoftwareInc\UnityEngine.UI.dll" />
+		<Content Include="..\lib\SoftwareInc\UnityEngine.TextRenderingModule.dll" />
+		<Content Include="..\assets\Localization\credits.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Trainer.Localization\Chinese %28Simplified%29\Trainer.tyd" />
-		<None Include="Trainer.Localization\Chinese\Trainer.tyd" />
-		<None Include="Trainer.Localization\Croatian\Trainer.tyd" />
-		<None Include="Trainer.Localization\English\Trainer.tyd" />
-		<None Include="Trainer.Localization\German\Trainer.tyd" />
-		<None Include="Trainer.Localization\Korean\Trainer.tyd" />
-		<None Include="Trainer.Localization\Spanish\Trainer.tyd" />
+		<None Include="..\assets\Localization\Chinese %28Simplified%29\Trainer.tyd" />
+		<None Include="..\assets\Localization\Chinese\Trainer.tyd" />
+		<None Include="..\assets\Localization\Croatian\Trainer.tyd" />
+		<None Include="..\assets\Localization\English\Trainer.tyd" />
+		<None Include="..\assets\Localization\German\Trainer.tyd" />
+		<None Include="..\assets\Localization\Korean\Trainer.tyd" />
+		<None Include="..\assets\Localization\Spanish\Trainer.tyd" />
 	</ItemGroup>
 </Project>

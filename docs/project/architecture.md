@@ -3,12 +3,12 @@
 The trainer is one net46, C# 6 assembly (`Trainer_v5.dll`) that runs inside
 the game. It has no entry point of its own: the game calls it through mod
 callbacks, Unity scene events and time events. It uses only public game types
-from the vendored assemblies in `Trainer_v5/Trainer.Libraries/`, with no
+from the vendored assemblies in `lib/SoftwareInc/`, with no
 reflection or patches. Controls are described in [`features.md`](features.md).
 
 `Helpers.Version` is the release version. `GameVersionCheck` holds the target
 game build (Beta 1.8.42). A different running version is logged, never
-blocked. After refreshing `Trainer.Libraries/` (including `mcs.dll`), update
+blocked. After refreshing `lib/SoftwareInc/` (including `mcs.dll`), update
 those constants; `GameVersionCheckTests` fails until they match.
 
 ## Components
@@ -127,7 +127,7 @@ toward a limit that can pause the game.
    `SettingsTests.PersistedToggleKeys`.
 2. Add a `SettingToggleRows` row and its key to the golden list in
    `SettingToggleRowsTests`.
-3. Add its text to `Trainer.Localization/English/Trainer.tyd`.
+3. Add its text to `assets/Localization/English/Trainer.tyd`.
 4. Add `FeatureRegistry` rows: the cadence row, an Enabled row and, if it
    restores, a Disabled row. Put the action in a `Features/*Features` class.
 5. Record what switching off leaves in `features.md`.
@@ -138,6 +138,11 @@ The settings, serialization, row, localization and schedule tests fail when a
 step is missed.
 
 ## Workshop source build
+
+The distributed layout does not follow the repository folders. The Workshop
+item holds `Trainer.Source/` (from `src/Trainer.Source/`) and
+`Trainer.Localization/` (from `assets/Localization/`). The DLL zip holds
+`Trainer_v5.dll` and `Trainer.Localization/`.
 
 The Workshop item is the trainer's source. When the game loads it,
 `ModController.InjectTryBlocks` adds `#define` lines, strips comments and

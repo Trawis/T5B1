@@ -78,7 +78,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void EveryRowDefaultTextMatchesTheEnglishFile()
 		{
-			var path = Path.Combine(RepositoryFiles.Root, "Trainer_v5", "Trainer.Localization", "English", "Trainer.tyd");
+			var path = Path.Combine(RepositoryFiles.Root, "assets", "Localization", "English", "Trainer.tyd");
 			var english = new Dictionary<string, string>();
 			foreach (Match match in Regex.Matches(File.ReadAllText(path), @"^(?<key>\w+)\s+""(?<text>[^""]*)""", RegexOptions.Multiline))
 			{

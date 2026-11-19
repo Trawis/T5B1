@@ -27,10 +27,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build
-        run: dotnet build "Trainer v5 - Beta 1.sln" --configuration Release --no-incremental
+        run: dotnet build SoftwareIncTrainer.sln --configuration Release --no-incremental
 
       - name: Format
-        run: dotnet format "Trainer v5 - Beta 1.sln" --verify-no-changes
+        run: dotnet format SoftwareIncTrainer.sln --verify-no-changes
 
       - name: Test
-        run: dotnet test "Trainer v5 - Beta 1.sln" --configuration Release --no-build
+        run: dotnet test SoftwareIncTrainer.sln --configuration Release --no-build
