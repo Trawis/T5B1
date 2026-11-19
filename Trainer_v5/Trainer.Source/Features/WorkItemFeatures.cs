@@ -245,7 +245,7 @@ namespace Trainer_v5
 
 			if (WorkItem == null)
 			{
-				Notification.ShowError("No active (not paused) alpha named \"" + input + "\".");
+				Notification.ShowError(string.Format("NoActiveAlphaNamed".LocDef("No active (not paused) alpha named {0}."), input));
 				return;
 			}
 

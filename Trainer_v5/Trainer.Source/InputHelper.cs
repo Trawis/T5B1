@@ -121,7 +121,7 @@ namespace Trainer_v5
 			return uint.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
 		}
 
-		internal static string Validate<T>(
+		internal static InputError Validate<T>(
 			string str,
 			TryParse<T> tryParse,
 			out T val
@@ -130,7 +130,7 @@ namespace Trainer_v5
 			if (str.Length == 0 || !tryParse(str, out val))
 			{
 				val = default(T);
-				return "Invalid input!";
+				return InputError.Invalid;
 			}
 
 			if (typeof(T) == typeof(float))
@@ -138,14 +138,14 @@ namespace Trainer_v5
 				var f = (float)(object)val;
 				if (float.IsNaN(f) || float.IsInfinity(f))
 				{
-					return "Invalid input!";
+					return InputError.Invalid;
 				}
 			}
 
-			return null;
+			return InputError.None;
 		}
 
-		internal static string Validate<T>(
+		internal static InputError Validate<T>(
 			string str,
 			TryParse<T> tryParse,
 			T min,
@@ -153,23 +153,34 @@ namespace Trainer_v5
 			out T val
 			) where T : struct, IComparable<T>
 		{
-			string error = Validate(str, tryParse, out val);
-			if (error != null)
+			InputError error = Validate(str, tryParse, out val);
+			if (error != InputError.None)
 			{
 				return error;
 			}
 
 			if (val.CompareTo(min) < 0)
 			{
-				return "Invalid input!\nmin value is " + min;
+				return InputError.BelowMin;
 			}
 
 			if (val.CompareTo(max) > 0)
 			{
-				return "Invalid input!\nmax value is " + max;
+				return InputError.AboveMax;
 			}
 
-			return null;
+			return InputError.None;
+		}
+
+		private static string ErrorText(InputError error, object min, object max)
+		{
+			if (error == InputError.BelowMin)
+				return string.Format("InvalidInputMin".LocDef("Invalid input!\nmin value is {0}"), min);
+
+			if (error == InputError.AboveMax)
+				return string.Format("InvalidInputMax".LocDef("Invalid input!\nmax value is {0}"), max);
+
+			return "InvalidInput".LocDef("Invalid input!");
 		}
 
 		private static T? TryParseAndValidate<T>(
@@ -178,10 +189,9 @@ namespace Trainer_v5
 			) where T : struct, IComparable<T>
 		{
 			T val;
-			string error = Validate(str, tryParse, out val);
-			if (error != null)
+			if (Validate(str, tryParse, out val) != InputError.None)
 			{
-				Notification.ShowError(error);
+				Notification.ShowError(ErrorText(InputError.Invalid, null, null));
 				return null;
 			}
 
@@ -196,10 +206,10 @@ namespace Trainer_v5
 			) where T : struct, IComparable<T>
 		{
 			T val;
-			string error = Validate(str, tryParse, min, max, out val);
-			if (error != null)
+			InputError error = Validate(str, tryParse, min, max, out val);
+			if (error != InputError.None)
 			{
-				Notification.ShowError(error);
+				Notification.ShowError(ErrorText(error, min, max));
 				return null;
 			}
 

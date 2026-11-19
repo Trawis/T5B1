@@ -156,6 +156,9 @@ LeadSpecLabel			"Lead Spec"
 EmployeeSeveralSelected			"one employee (several are selected)"
 EmployeeNobody			"Nobody"
 UnknownOwner			"Unknown"
+SettingsWindowTitle			"Trainer Settings, by Trawis (v{0}) | GAME VERSION: {1}"
+FounderOn			"on"
+FounderOff			"off"
 
 #Dialogs
 NoPressReleaseCampaigns			"Trainer: No active press release campaigns to complete!"
@@ -241,6 +244,7 @@ HireConfirm			"Hire {0} new {1} employee(s) at medium wage?\nUpfront demands: {2
 TeamNone			"none"
 SkipToHourPrompt			"Skip to which hour of the day? (0-23)"
 SkipTimeConfirm			"Skip {0} hour(s) of game time?\nSalaries, bills, deadlines, events and autosaves happen as usual, but employees in the office do no work during the skipped hours and stay where they are.\nThis cannot be undone."
+FounderPrompt			"{0}: Founder {1} -> {2}"
 
 #Errors
 SelectEmployeesError			"Select one or more employees."
@@ -275,6 +279,11 @@ HireRoleInvalid			"Unknown role. Enter Lead, Programmer, Designer, Artist or Ser
 HireUnavailable			"The game's hiring is not available right now. Nothing was changed."
 SkipTimeForcePaused			"The game is holding time (a dialog or event is waiting). Nothing was changed."
 SkipTimeNotAdvanced			"The game did not advance time. Nothing was changed."
+InvalidInput			"Invalid input!"
+InvalidInputMin			"Invalid input!\nmin value is {0}"
+InvalidInputMax			"Invalid input!\nmax value is {0}"
+NoActiveAlphaNamed			"No active (not paused) alpha named {0}."
+GameNotReady			"{0}: the game is not ready yet, nothing was changed."
 
 #Notifications
 PressReleaseCampaignsCompleted			"Trainer: Press release campaigns have been completed!"
@@ -307,3 +316,6 @@ BusinessRepSet			"Trainer: Business reputation of {0} is set to {1} star(s)!"
 HireResult			"Trainer: hired {0} of {1} employee(s). Skipped: {2} for business reputation, {3} for money."
 SkipToHourAlready			"It is already that hour. Nothing was changed."
 SkipTimeDone			"Trainer: time advanced to {0}."
+StockSaleNothing			"Trainer: No product without active users has stock to sell. Nothing was sold."
+StockSaleDone			"Stock of {0} product(s) with no active users was sold at half the price for {1}."
+FounderChanged			"{0}: Founder is now {1}. Select the employee again to refresh the Fire button."

@@ -22,7 +22,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Null(InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
 			Assert.Equal(expected, value);
 		}
 
@@ -37,7 +37,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
 		}
 
 		[Theory]
@@ -48,7 +48,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Null(InputHelper.Validate<float>(input, InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<float>(input, InputHelper.ParseFloat, 0f, 1f, out value));
 		}
 
 		[Fact]
@@ -56,7 +56,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Equal("Invalid input!\nmin value is 0", InputHelper.Validate<float>("-0.1", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.BelowMin, InputHelper.Validate<float>("-0.1", InputHelper.ParseFloat, 0f, 1f, out value));
 		}
 
 		[Fact]
@@ -64,7 +64,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Equal("Invalid input!\nmax value is 1", InputHelper.Validate<float>("1.1", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.AboveMax, InputHelper.Validate<float>("1.1", InputHelper.ParseFloat, 0f, 1f, out value));
 		}
 
 		[Fact]
@@ -72,7 +72,7 @@ namespace Trainer_v5.Tests
 		{
 			float value;
 
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>("NaN", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>("NaN", InputHelper.ParseFloat, 0f, 1f, out value));
 		}
 
 		[Theory]
@@ -83,22 +83,29 @@ namespace Trainer_v5.Tests
 		{
 			int value;
 
-			Assert.Null(InputHelper.Validate<int>(input, InputHelper.ParseInt, 1, 31, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<int>(input, InputHelper.ParseInt, 1, 31, out value));
 			Assert.Equal(expected, value);
 		}
 
 		[Theory]
-		[InlineData("0", "Invalid input!\nmin value is 1")]
-		[InlineData("32", "Invalid input!\nmax value is 31")]
-		[InlineData("1.5", "Invalid input!")]
-		[InlineData("x", "Invalid input!")]
-		[InlineData("", "Invalid input!")]
-		[InlineData("99999999999", "Invalid input!")]
-		public void IntInRange_RejectsOutOfRangeAndMalformedInput(string input, string expectedError)
+		[InlineData("1.5")]
+		[InlineData("x")]
+		[InlineData("")]
+		[InlineData("99999999999")]
+		public void IntInRange_RejectsMalformedInput(string input)
 		{
 			int value;
 
-			Assert.Equal(expectedError, InputHelper.Validate<int>(input, InputHelper.ParseInt, 1, 31, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<int>(input, InputHelper.ParseInt, 1, 31, out value));
+		}
+
+		[Fact]
+		public void IntInRange_ReportsWhichBoundWasCrossed()
+		{
+			int value;
+
+			Assert.Equal(InputError.BelowMin, InputHelper.Validate<int>("0", InputHelper.ParseInt, 1, 31, out value));
+			Assert.Equal(InputError.AboveMax, InputHelper.Validate<int>("32", InputHelper.ParseInt, 1, 31, out value));
 		}
 
 		[Theory]
@@ -109,7 +116,7 @@ namespace Trainer_v5.Tests
 		{
 			uint value;
 
-			Assert.Equal("Invalid input!", InputHelper.Validate<uint>(input, InputHelper.ParseUInt, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<uint>(input, InputHelper.ParseUInt, out value));
 		}
 
 		[Fact]
@@ -117,8 +124,8 @@ namespace Trainer_v5.Tests
 		{
 			uint value;
 
-			Assert.Equal("Invalid input!\nmax value is 100", InputHelper.Validate<uint>("101", InputHelper.ParseUInt, 0u, 100u, out value));
-			Assert.Null(InputHelper.Validate<uint>("100", InputHelper.ParseUInt, 0u, 100u, out value));
+			Assert.Equal(InputError.AboveMax, InputHelper.Validate<uint>("101", InputHelper.ParseUInt, 0u, 100u, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<uint>("100", InputHelper.ParseUInt, 0u, 100u, out value));
 			Assert.Equal(100u, value);
 		}
 
@@ -132,11 +139,11 @@ namespace Trainer_v5.Tests
 			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
 			float value;
 
-			Assert.Null(InputHelper.Validate<float>("0.5", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<float>("0.5", InputHelper.ParseFloat, 0f, 1f, out value));
 			Assert.Equal(0.5f, value);
-			Assert.Null(InputHelper.Validate<float>("1.5", InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<float>("1.5", InputHelper.ParseFloat, out value));
 			Assert.Equal(1.5f, value);
-			Assert.Null(InputHelper.Validate<float>("-0.25", InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.None, InputHelper.Validate<float>("-0.25", InputHelper.ParseFloat, out value));
 			Assert.Equal(-0.25f, value);
 		}
 
@@ -155,8 +162,8 @@ namespace Trainer_v5.Tests
 			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
 			float value;
 
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>(input, InputHelper.ParseFloat, 0f, 5000f, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>(input, InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>(input, InputHelper.ParseFloat, 0f, 5000f, out value));
 		}
 
 		[Theory]
@@ -167,10 +174,10 @@ namespace Trainer_v5.Tests
 			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
 			float value;
 
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>("NaN", InputHelper.ParseFloat, 0f, 1f, out value));
-			Assert.Equal("Invalid input!", InputHelper.Validate<float>("Infinity", InputHelper.ParseFloat, out value));
-			Assert.Equal("Invalid input!\nmax value is 1", InputHelper.Validate<float>("1.1", InputHelper.ParseFloat, 0f, 1f, out value));
-			Assert.Equal("Invalid input!\nmin value is 0", InputHelper.Validate<float>("-0.1", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>("NaN", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.Invalid, InputHelper.Validate<float>("Infinity", InputHelper.ParseFloat, out value));
+			Assert.Equal(InputError.AboveMax, InputHelper.Validate<float>("1.1", InputHelper.ParseFloat, 0f, 1f, out value));
+			Assert.Equal(InputError.BelowMin, InputHelper.Validate<float>("-0.1", InputHelper.ParseFloat, 0f, 1f, out value));
 		}
 
 		[Theory]
@@ -182,17 +189,17 @@ namespace Trainer_v5.Tests
 			int intValue;
 			uint uintValue;
 
-			Assert.Null(InputHelper.Validate<int>("100000", InputHelper.ParseInt, out intValue));
+			Assert.Equal(InputError.None, InputHelper.Validate<int>("100000", InputHelper.ParseInt, out intValue));
 			Assert.Equal(100000, intValue);
-			Assert.Null(InputHelper.Validate<int>("-3", InputHelper.ParseInt, out intValue));
+			Assert.Equal(InputError.None, InputHelper.Validate<int>("-3", InputHelper.ParseInt, out intValue));
 			Assert.Equal(-3, intValue);
-			Assert.Null(InputHelper.Validate<uint>("100000", InputHelper.ParseUInt, out uintValue));
+			Assert.Equal(InputError.None, InputHelper.Validate<uint>("100000", InputHelper.ParseUInt, out uintValue));
 			Assert.Equal(100000u, uintValue);
 
 			foreach (var input in new[] { "1,234", "1.234", "1,5", "1.5" })
 			{
-				Assert.Equal("Invalid input!", InputHelper.Validate<int>(input, InputHelper.ParseInt, out intValue));
-				Assert.Equal("Invalid input!", InputHelper.Validate<uint>(input, InputHelper.ParseUInt, out uintValue));
+				Assert.Equal(InputError.Invalid, InputHelper.Validate<int>(input, InputHelper.ParseInt, out intValue));
+				Assert.Equal(InputError.Invalid, InputHelper.Validate<uint>(input, InputHelper.ParseUInt, out uintValue));
 			}
 		}
 	}

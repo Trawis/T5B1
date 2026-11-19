@@ -7,8 +7,6 @@ namespace Trainer_v5
 {
 	public class SettingsWindow : MonoBehaviour
 	{
-		private static readonly string _title = $"Trainer Settings, by Trawis (v{Helpers.Version}) | GAME VERSION: {Helpers.GetGameVersion()}";
-
 		// The page last shown, kept for the running game only (not a save key).
 		private static SettingsTab _activeTab;
 		private static bool _refreshing;
@@ -75,7 +73,7 @@ namespace Trainer_v5
 
 		private static void Init()
 		{
-			Window = UIHelper.SpawnWindow(_title, "TrainerSettings", "TrainerSettingsPanel");
+			Window = UIHelper.SpawnWindow(string.Format("SettingsWindowTitle".LocDef("Trainer Settings, by Trawis (v{0}) | GAME VERSION: {1}"), Helpers.Version, Helpers.GetGameVersion()), "TrainerSettings", "TrainerSettingsPanel");
 			Build();
 		}
 

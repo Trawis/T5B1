@@ -36,7 +36,9 @@ namespace Trainer_v5
 			}
 
 			// Reported after selling, so the player is never told about a sale that did not happen.
-			Notification.ShowInfo(StockSale.Summary(Products.Length, total));
+			Notification.ShowInfo(Products.Length == 0
+				? "StockSaleNothing".LocDef("Trainer: No product without active users has stock to sell. Nothing was sold.")
+				: string.Format("StockSaleDone".LocDef("Stock of {0} product(s) with no active users was sold at half the price for {1}."), Products.Length, total.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)));
 		}
 
 		internal static void SetProductPriceAction(SoftwareProduct product, float price)

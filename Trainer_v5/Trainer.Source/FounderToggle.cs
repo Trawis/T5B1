@@ -3,11 +3,6 @@ namespace Trainer_v5
 	// Flips Employee.Founder on the one selected employee (#190). A founder is unpaid and cannot be fired.
 	internal static class FounderToggle
 	{
-		public static string BuildPrompt(string name, bool founder)
-		{
-			return $"{name}: Founder {Label(!founder)} -> {Label(founder)}";
-		}
-
 		public static void Start()
 		{
 			var target = EmployeeTarget.RequireOne();
@@ -23,7 +18,7 @@ namespace Trainer_v5
 
 			var employee = target.Employee;
 			var shown = employee.Founder;
-			Confirmation.Ask("Founder", BuildPrompt(employee.Name, !shown), () => Apply(target, shown));
+			Confirmation.Ask("Founder", string.Format("FounderPrompt".LocDef("{0}: Founder {1} -> {2}"), employee.Name, Label(shown), Label(!shown)), () => Apply(target, shown));
 		}
 
 		// The dialog stays open while the game runs, so the target is checked again before writing.
@@ -43,7 +38,7 @@ namespace Trainer_v5
 			}
 
 			target.Employee.Founder = !shown;
-			Notification.ShowInfo($"{target.Employee.Name}: Founder is now {Label(!shown)}. Select the employee again to refresh the Fire button.");
+			Notification.ShowInfo(string.Format("FounderChanged".LocDef("{0}: Founder is now {1}. Select the employee again to refresh the Fire button."), target.Employee.Name, Label(!shown)));
 		}
 
 		private static string FindBlocker(EmployeeTarget target)
@@ -63,7 +58,7 @@ namespace Trainer_v5
 
 		private static string Label(bool founder)
 		{
-			return founder ? "on" : "off";
+			return founder ? "FounderOn".LocDef("on") : "FounderOff".LocDef("off");
 		}
 	}
 }
