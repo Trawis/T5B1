@@ -70,6 +70,7 @@ namespace Trainer_v5
 		{
 			var rows = new List<SettingActionRow>();
 			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "AmazingCompatibility", "Amazing Compatibility", AmazingCompatibility.Run));
+			rows.Add(new SettingActionRow(SettingsTab.Actions, TrainerDomain.Employee, "HireEmployees", "Hire Employees", InstantHire.Run));
 			return rows;
 		}
 	}

@@ -19,7 +19,7 @@ namespace Trainer_v5.Tests
 			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPatent=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
 			"UnlockAllFurniture=Actions/Environment", "UnlockAllSpace=Actions/Environment", "CleanOfficeNow=Actions/Environment",
 			"Discord=Settings/None",
-			"AmazingCompatibility=Actions/Employee"
+			"AmazingCompatibility=Actions/Employee", "HireEmployees=Actions/Employee"
 		};
 
 		private static List<SettingActionRow> AllRows()

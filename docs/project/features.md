@@ -133,7 +133,7 @@ saved in one. Turning it on shows additional, unfinished controls in Trainer
 Settings: toggles on the Toggles page (currently *No Forgetful Skill Loss*,
 *Auto Instant Patent*, *Auto Instant Research* and *Auto Max Followers*, off
 until you switch them on) and buttons in the Employee section of the Actions
-page (currently *Amazing Compatibility*). An existing Trainer Settings window
+page (currently *Amazing Compatibility* and *Hire Employees*). An existing Trainer Settings window
 shows or hides them as soon as the option changes, keeping its page, position,
 entered product name and other settings. Turning the option off switches the
 experimental toggles off, and a save that still has one on is cleared when its
@@ -189,6 +189,18 @@ shown compatibility still includes friendship, so no exact percentage is
 promised. With no pair left below 2 it only says so; it is not available in
 multiplayer. It overwrites lower compatibility values that other personality
 mods put into this save.
+
+*Hire Employees* (experimental, not tested in the game) asks for a role (Lead,
+Programmer, Designer, Artist or Service) and a count from 1 to 10, lets the
+game generate that many medium-wage candidates and asks a Yes/No question with
+their total upfront demands, monthly salaries and team (the team last chosen
+in the game's hire window, if it still exists; otherwise none). On Yes each
+candidate is hired with the game's own steps: employed (which pays the upfront
+demands), counted in the hire statistics, added to the office and put in the
+team. Candidates the business reputation cannot attract (unless the game
+ignores it) or the company cannot pay are skipped, and the result shows how
+many were hired and skipped. It skips the recruitment search; it is not
+available in multiplayer.
 
 The same Options screen offers *Debug Logging*, off by default and independent
 of the experimental switch. When on, extra `Trainer [debug]:` trace lines (toggle
