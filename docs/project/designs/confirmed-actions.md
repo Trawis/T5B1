@@ -2,7 +2,7 @@
 
 - **Change**: One implementation of confirm, re-check, apply and report
   for every confirmed action (#558)
-- **Status**: Proposed
+- **Status**: Implemented
 - **Owner**: Trawis
 - **Last Updated**: 2026-11-21
 
@@ -80,8 +80,8 @@ Recommended: **option (a), one sequence helper with an injectable dialog**.
 
 | Component | Change |
 |---|---|
-| `Confirmation` | Add `AskAndApply(actionName, question, isUnchanged, apply)`. Keep `Ask` private to it |
-| `Confirmation` | Add pure `Run(isReady, isUnchanged, apply, showResult, showChanged)`, the testable sequence |
+| `Confirmation` | Add `AskAndApply(actionName, question, findChange, apply)`. It replaces `Ask` |
+| `Confirmation` | Add pure `Run(isReady, findChange, apply, showChange, showResult)`, the testable sequence |
 | `Confirmation` | Keep `IsSameTargets`. Retire `IsScopeUnchanged` (see below) |
 | Feature classes | Each action resolves targets and builds the question, then calls `AskAndApply` |
 | `ConfirmationTests` | Behavioural tests of `Run`, plus a source rule that only `Confirmation.cs` calls `ShowMessageBox` and that the pinned actions call `AskAndApply` |
@@ -89,28 +89,33 @@ Recommended: **option (a), one sequence helper with an injectable dialog**.
 Signatures, all non-generic, delegates only:
 
 ```csharp
-// isUnchanged re-resolves and compares; apply returns the result message,
-// or null when its own popup or partial result was already shown.
+// findChange re-resolves and returns why nothing may be applied, or null;
+// apply returns the result message, or null when it showed its own.
 internal static void AskAndApply(string actionName, string question,
-	Func<bool> isUnchanged, Func<string> apply)
+	Func<string> findChange, Func<string> apply)
 
-internal static void Run(Func<bool> isReady, Func<bool> isUnchanged,
-	Func<string> apply, Action<string> showResult, Action showChanged)
+internal static void Run(Func<bool> isReady, Func<string> findChange,
+	Func<string> apply, Action<string> showChange, Action<string> showResult)
 ```
+
+`findChange` returns a message rather than a bool, so single-target actions
+keep their specific reason (for example "already bankrupt").
+`ChangedUnless(bool)` turns a comparison into the generic "situation changed"
+text.
 
 On Yes, `AskAndApply` passes `Run`:
 
 - `isReady` = `RequireGameReady(actionName)`;
-- the save check plus the caller's `isUnchanged`;
-- `Notification.Popup`;
-- `ShowScopeChanged`.
+- the save check plus the caller's `findChange`;
+- `Notification.ShowError`;
+- `Notification.Popup`.
 
 The save check is built in: `AskAndApply` captures `GameSettings.Instance` when
 it asks and compares it on Yes. Callers no longer write
 `ReferenceEquals(game, Settings)`.
 
 `Run` order: if not ready, stop (the readiness message is shown). If
-unchanged is false, show the changed message and stop. Otherwise apply and
+`findChange` returns a message, show it and stop. Otherwise apply and
 show its result when it is not null.
 
 **Target rule.** An action passes a predicate that resolves its targets
@@ -129,7 +134,8 @@ Example, AI Bankrupt All:
 ```csharp
 var shown = FindAllBankruptTargets();
 Confirmation.AskAndApply("AI Bankrupt All", question,
-	() => Confirmation.IsSameTargets(shown, FindAllBankruptTargets()),
+	() => Confirmation.ChangedUnless(
+		Confirmation.IsSameTargets(shown, FindAllBankruptTargets())),
 	() => ApplyAIBankrupt(shown));
 ```
 
@@ -217,9 +223,11 @@ AI Bankrupt All result message.
   check and the exact-target rule. Keep the action list.
 - Set this design's status to Implemented.
 
-## Open Questions
+## Decisions
 
-- Should actions that report partial results (Hire Employees, Optimize Team
-  Assignments) return their summary, or keep choosing between popup and
-  warning themselves? Proposed: `apply` returns null and shows its own
-  warning when the result is partial.
+- Actions with partial results keep choosing between popup, warning and
+  error themselves, and `apply` returns null:
+  - Hire Employees;
+  - Optimize Team Assignments;
+  - Amazing Compatibility when nothing is left;
+  - the skips.

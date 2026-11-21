@@ -8,10 +8,11 @@ namespace Trainer_v5.Tests
 		public void TheToggleChecksAgainAfterTheConfirmationAndOnlyFlipsTheFlagOnTheExistingEmployee()
 		{
 			var source = SourceCode.Read("FounderToggle.cs");
-			var apply = SourceCode.Body(source, "private static void Apply(");
 
-			SourceCode.AssertInOrder(source, "Confirmation.Ask(", "Apply(target, shown)", "the player is asked before the write");
-			SourceCode.AssertInOrder(apply, "FindBlocker(target)", "Founder = !shown", "the target is checked again before the write");
+			Assert.Contains("Confirmation.AskAndApply(\"Founder\", string.Format(", source);
+			Assert.Contains("() => FindChange(target, shown), () => Apply(target, shown));", source);
+			Assert.Contains("FindBlocker(target)", SourceCode.Body(source, "private static string FindChange("));
+			Assert.Contains("Founder = !shown", SourceCode.Body(source, "private static string Apply("));
 			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"\.Founder = "));
 		}
 	}

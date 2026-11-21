@@ -22,25 +22,17 @@ namespace Trainer_v5.Experimental
 				return;
 			}
 
-			Confirmation.Ask(ActionName, string.Format("QuietFireConfirm".LocDef("Fire {0} without upsetting their teammates?\nThis is a real firing: severance and the usual hiring reputation effect apply, and the employee leaves for good. Only the mood penalty that teammates get for a fired coworker is skipped.\nThis cannot be undone."), target.Employee.Name), () => Apply(target));
+			Confirmation.AskAndApply(ActionName, string.Format("QuietFireConfirm".LocDef("Fire {0} without upsetting their teammates?\nThis is a real firing: severance and the usual hiring reputation effect apply, and the employee leaves for good. Only the mood penalty that teammates get for a fired coworker is skipped.\nThis cannot be undone."), target.Employee.Name), () => FindBlocker(target), () => Apply(target));
 		}
 
-		// The dialog stays open while the game runs, so the same employee is checked again before firing.
-		private static void Apply(EmployeeTarget target)
+		private static string Apply(EmployeeTarget target)
 		{
-			var blocked = FindBlocker(target);
-			if (blocked != null)
-			{
-				Notification.ShowError(blocked);
-				return;
-			}
-
 			GameSettings game = GameSettings.Instance;
 			game.ApplicantScore.NoteFiring(target.Employee);
 			target.Actor.QuitAmicably = true;
 			target.Actor.Fire(false, false);
 			game.RegisterStat("Fired", 1f);
-			Notification.ShowInfo(string.Format("QuietFireDone".LocDef("{0} was fired. Their teammates were not upset."), target.Employee.Name));
+			return string.Format("QuietFireDone".LocDef("{0} was fired. Their teammates were not upset."), target.Employee.Name);
 		}
 
 		// Mirrors the game's Negligence lawsuit condition, which needs more than 12 months employed and a complaint level above 1.

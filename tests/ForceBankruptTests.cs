@@ -20,7 +20,7 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("Bankrupt = true", body);
 			Assert.DoesNotContain("YES", body);
 			Assert.Contains("AskForceBankrupt(matches[0])", body);
-			SourceCode.AssertInOrder(Member("internal static void AskForceBankrupt"), "Confirmation.Ask(", "ConfirmForceBankrupt", "the player is asked before the flag is set");
+			Assert.Contains("() => AICompanyChange(company), () => ConfirmForceBankrupt(company));", Member("internal static void AskForceBankrupt"));
 		}
 
 		[Fact]
@@ -30,8 +30,7 @@ namespace Trainer_v5.Tests
 
 			Assert.Contains("IsBankruptTarget(company)", body);
 			Assert.Contains("!company.Bankrupt", body);
-			Assert.Contains("FindAllBankruptTargets()", Member("private static void ApplyAIBankrupt"));
-			Assert.Contains("FindAllBankruptTargets()", Member("internal static void AIBankrupt"));
+			Assert.Contains("IsSameTargets(companies, FindAllBankruptTargets())", Member("internal static void AIBankrupt"));
 		}
 
 		[Fact]
@@ -46,15 +45,14 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheConfirmationChecksTheCompanyAgainBeforeSettingTheFlag()
 		{
-			var body = Member("private static void ConfirmForceBankrupt(");
+			var change = Member("private static string AICompanyChange(");
 			var live = Member("internal static bool IsLiveAICompany(");
 
-			Assert.Contains("IsLiveAICompany(company)", body);
+			Assert.Contains("IsLiveAICompany(company)", change);
+			Assert.Contains("company.Bankrupt ?", change);
 			Assert.Contains("Companies.TryGetValue(company.ID", live);
 			Assert.Contains("IsBankruptTarget(company)", live);
-			Assert.Contains("!company.Bankrupt", body);
-			Assert.DoesNotContain("= !", body);
-			Assert.DoesNotContain("answer", body);
+			Assert.DoesNotContain("= !", Member("private static string ConfirmForceBankrupt("));
 		}
 	}
 }
