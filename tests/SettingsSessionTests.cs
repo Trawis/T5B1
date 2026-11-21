@@ -115,6 +115,7 @@ namespace Trainer_v5.Tests
 				building["FreePrint"] = true;
 
 				new Main().Deserialize(building, GameReader.LoadMode.Building);
+				new Main().Deserialize(new WriteDictionary(), GameReader.LoadMode.Company);
 
 				Assert.True(Helpers.Settings["FreePrint"]);
 				Assert.True(Helpers.Settings["FreeEmployees"]);

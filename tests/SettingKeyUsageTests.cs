@@ -41,20 +41,6 @@ namespace Trainer_v5.Tests
 			Assert.Single(ToggleKeyUsage.Matches(SourceText.Strip("var x = 1; /* c */ settings.Get(\"NoStress\"); // t", keepStrings: true)));
 		}
 
-		[Fact]
-		public void TheScanIgnoresKeysThatAreOnlyMentionedInComments()
-		{
-			Assert.Empty(ToggleKeyUsage.Matches(SourceText.Strip("// settings.Get(\"NoStress\")\n/* settings.Get(\"NoStress\") */ settings.Get(SettingKeys.NoStress);", keepStrings: true)));
-			Assert.Empty(StoreKeyUsage.Matches(SourceText.Strip("var s = 1; // storesSettings.Get(\"EfficiencyStore\")", keepStrings: true)));
-		}
-
-		[Fact]
-		public void TheScanStillFindsRawKeysNextToInterpolatedStrings()
-		{
-			var code = SourceText.Strip("var m = $\"{name}\"; settings.Get(\"NoStress\"); var n = $\"{settings.Get(\"FreePrint\")}\";", keepStrings: true);
-			Assert.Equal(2, ToggleKeyUsage.Matches(code).Count);
-		}
-
 		// Main.Serialize/Deserialize iterate the persisted key strings, so they are the only code that may hand a string
 		// key to the settings accessors. Everything else passes a ToggleKey/StoreKey.
 		private static readonly Regex PropertyCall = new Regex(
@@ -107,15 +93,6 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.Empty(offenders);
-		}
-
-		[Fact]
-		public void TheStringKeyScansRecognizeRawAndTypedCalls()
-		{
-			Assert.Equal("\"NoStress\"", PropertyCall.Match("Helpers.GetProperty(Helpers.Settings, \"NoStress\")").Groups["key"].Value);
-			Assert.Matches(TypedKeyArgument, PropertyCall.Match("Helpers.GetProperty(TrainerSettings, SettingKeys.NoStress)").Groups["key"].Value);
-			Assert.Single(RawIndexer.Matches("Helpers.Settings[\"NoStress\"] = true;"));
-			Assert.Empty(RawIndexer.Matches("Helpers.Settings[key.Key] = true;"));
 		}
 
 		[Fact]

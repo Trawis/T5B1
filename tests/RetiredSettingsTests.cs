@@ -9,7 +9,7 @@ namespace Trainer_v5.Tests
 		internal static readonly string[] RetiredKeys = { "ReduceBoxPrice", "AutoMaxMarketShare", "MoreCreativity", "ReduceExpansionCost", "Experimental", "DisableSkillDecay" };
 
 		[Fact]
-		public void RetiredKeysAreStillDeclaredWithTheirOriginalNamesAndDefaultOffButAreNotLiveSettings()
+		public void RetiredKeysAreStillDeclaredWithTheirOriginalNamesButAreNotLiveAnywhere()
 		{
 			Assert.Equal("ReduceBoxPrice", SettingKeys.ReduceBoxPrice.Key);
 			Assert.Equal("AutoMaxMarketShare", SettingKeys.AutoMaxMarketShare.Key);
@@ -22,14 +22,17 @@ namespace Trainer_v5.Tests
 				Assert.False(((ToggleKey)typeof(SettingKeys).GetField(key).GetValue(null)).DefaultValue, key);
 				Assert.False(Helpers.Settings.ContainsKey(key), key);
 			}
-		}
 
-		[Fact]
-		public void RetiredKeysAreNotInTheToggleDefaults()
-		{
 			var defaults = SettingKeys.CreateToggleDefaults();
-
-			Assert.All(RetiredKeys, key => Assert.DoesNotContain(key, defaults.Keys));
+			// Enumerable is named explicitly: the game assembly's own Where/Select extensions need Unity.
+			var scheduled = Enumerable.ToList(Enumerable.Select(Enumerable.Where(FeatureRegistry.Create(), entry => entry.Toggle != null), entry => entry.Toggle.Key));
+			var shown = Enumerable.ToList(Enumerable.Select(SettingToggleRows.Create(), row => row.Key.Key));
+			foreach (var key in RetiredKeys)
+			{
+				Assert.DoesNotContain(key, defaults.Keys);
+				Assert.DoesNotContain(key, scheduled);
+				Assert.DoesNotContain(key, shown);
+			}
 		}
 
 		[Fact]
@@ -85,22 +88,6 @@ namespace Trainer_v5.Tests
 				Assert.All(RetiredKeys, key => Assert.DoesNotContain(key, Helpers.Settings.Keys));
 				Assert.True(Helpers.Settings["FreePrint"]);
 			}
-		}
-
-		[Fact]
-		public void RetiredKeysHaveNoScheduledBehavior()
-		{
-			var scheduled = Enumerable.ToList(Enumerable.Select(Enumerable.Where(FeatureRegistry.Create(), entry => entry.Toggle != null), entry => entry.Toggle.Key));
-
-			Assert.DoesNotContain(scheduled, key => System.Array.IndexOf(RetiredKeys, key) >= 0);
-		}
-
-		[Fact]
-		public void RetiredKeysHaveNoSettingsWindowToggle()
-		{
-			var shown = Enumerable.ToList(Enumerable.Select(SettingToggleRows.Create(), row => row.Key.Key));
-
-			Assert.DoesNotContain(shown, key => System.Array.IndexOf(RetiredKeys, key) >= 0);
 		}
 	}
 }

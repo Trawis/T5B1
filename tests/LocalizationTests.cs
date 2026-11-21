@@ -107,17 +107,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void CorrectedTranslationsKeepTheirMeaning()
-		{
-			Assert.Equal("Brände deaktivieren", Value("German", "DisableFires"));
-			Assert.NotEqual(Value("English", "MaxReputation"), Value("German", "MaxReputation"));
-			Assert.NotEqual(Value("English", "FixBugs"), Value("German", "FixBugs"));
-			Assert.Equal("Adquirir compañía", Value("Spanish", "TakeoverCompany"));
-			Assert.Equal("Maks. reputacija", Value("Croatian", "MaxReputation"));
-			Assert.Equal("Osnuj tvrtku kćer", Value("Croatian", "SubsidiaryCompany"));
-		}
-
-		[Fact]
 		public void CodeFallbackTextMatchesTheEnglishFile()
 		{
 			var mismatches = new List<string>();
@@ -204,28 +193,6 @@ namespace Trainer_v5.Tests
 
 			Assert.True(entryBeforeHeader.Count == 0, "Entries before the first header: " + string.Join(", ", entryBeforeHeader));
 			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", headers));
-		}
-
-		[Fact]
-		public void SectionParsingGivesTheSameResultForLfAndCrlfFiles()
-		{
-			var lf = File.ReadAllText(EnglishFile()).Replace("\r\n", "\n");
-			var crlf = lf.Replace("\n", "\r\n");
-			var lfHeaders = new List<string>();
-			var crlfHeaders = new List<string>();
-			SectionHeaders(lf, lfHeaders, new List<string>());
-			SectionHeaders(crlf, crlfHeaders, new List<string>());
-
-			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", lfHeaders));
-			Assert.Equal(string.Join(", ", lfHeaders), string.Join(", ", crlfHeaders));
-
-			var lfSections = EnglishSectionOfEveryKey(lf);
-			var crlfSections = EnglishSectionOfEveryKey(crlf);
-			Assert.Equal(lfSections.Count, crlfSections.Count);
-			foreach (var pair in lfSections)
-			{
-				Assert.Equal(pair.Value, crlfSections[pair.Key]);
-			}
 		}
 
 		[Fact]

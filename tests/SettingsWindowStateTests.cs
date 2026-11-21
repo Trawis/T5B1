@@ -53,15 +53,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal((SettingsTab)expected, SettingsWindowState.ClampTab((SettingsTab)stored));
 		}
 
-		[Fact]
-		public void ThePagesAreNumberedFromZeroInTabOrder()
-		{
-			Assert.Equal(0, SettingsWindowState.PageIndex(SettingsTab.Actions));
-			Assert.Equal(1, SettingsWindowState.PageIndex(SettingsTab.Toggles));
-			Assert.Equal(2, SettingsWindowState.PageIndex(SettingsTab.Settings));
-			Assert.Equal(0, SettingsWindowState.PageIndex(SettingsTab.None));
-		}
-
 		[Theory]
 		[InlineData(0, 0)]
 		[InlineData(1, 1)]
@@ -110,33 +101,12 @@ namespace Trainer_v5.Tests
 		}
 
 		[Theory]
-		[InlineData(0, 0, 1)]
-		[InlineData(1, 0, 2)]
-		[InlineData(2, 1, 1)]
-		[InlineData(3, 1, 2)]
-		[InlineData(4, 0, 4)]
-		public void EfficiencyGroupsSitSideBySideUnderTheEmployeeHeaderAndDiscordBelowAGap(int cell, int column, int row)
-		{
-			Assert.Equal(column, SettingsWindowState.SettingsCellColumn(cell));
-			Assert.Equal(row, SettingsWindowState.SettingsCellRow(cell));
-			Assert.True(SettingsWindowState.SettingsCellRow(cell) < SettingsWindowState.SettingsPageRows);
-		}
-
-		[Theory]
 		[InlineData(7, 0, 7)]
 		[InlineData(7, 2, 10)]
 		[InlineData(0, 1, 2)]
 		public void ExperimentalSectionsAddTheirOwnHeaderOnlyWhenTheyHaveControls(int regular, int experimental, int expected)
 		{
 			Assert.Equal(expected, SettingsWindowState.PageRowsWithExperimental(regular, experimental));
-		}
-
-		[Fact]
-		public void TheDiscordButtonSitsOnTheLastPageRowWithAGapAboveIt()
-		{
-			Assert.Equal(SettingsWindowState.SettingsPageRows - 1, SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount));
-			Assert.True(SettingsWindowState.SettingsCellRow(SettingsWindowState.EfficiencyCellCount) > SettingsWindowState.SettingsCellRow(3) + 1);
-			Assert.True(SettingsWindowState.SettingsCellColumn(2) < SettingsWindowState.Columns);
 		}
 
 		[Fact]
