@@ -312,17 +312,31 @@ namespace Trainer_v5
 
 		internal static void InstantResearch()
 		{
-			var eligibleResearch = UnfinishedResearchWorks();
+			var researchWorks = UnfinishedResearchWorks();
 
-			if (eligibleResearch.Count == 0)
+			if (researchWorks.Count == 0)
 			{
 				Notification.ShowInfo("NoActiveResearch".LocDef("Trainer: No active research to complete!"));
 				return;
 			}
 
-			eligibleResearch.ForEach(FinishResearchNow);
+			int completed = 0;
+			foreach (ResearchWork researchWork in researchWorks)
+			{
+				if (TryFinishResearchNow(researchWork))
+				{
+					completed++;
+				}
+			}
 
-			Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
+			if (completed == researchWorks.Count)
+			{
+				Notification.Popup("ResearchCompleted".LocDef("Trainer: Research completed instantly!"));
+			}
+			else
+			{
+				Notification.ShowWarning(string.Format("ResearchSummary".LocDef("Trainer: Research: {0} completed, {1} skipped as outdated."), completed, researchWorks.Count - completed));
+			}
 		}
 
 		internal static void ApplyAutoInstantResearch()
@@ -334,10 +348,7 @@ namespace Trainer_v5
 
 			foreach (ResearchWork researchWork in UnfinishedResearchWorks())
 			{
-				if (!IsResearchObsolete(researchWork))
-				{
-					FinishResearchNow(researchWork);
-				}
+				TryFinishResearchNow(researchWork);
 			}
 		}
 
@@ -434,16 +445,13 @@ namespace Trainer_v5
 
 		internal static void ApplyAutoEndPatent()
 		{
-			var legalWorks = Settings.MyCompany.WorkItems
-							   .OfType<LegalWork>()
-							   .Where(lw => lw.Type == LegalWork.WorkType.Patent &&
-									lw.Progress >= 1f)
-							   .ToList();
-
-			legalWorks.ForEach(legalWork =>
+			foreach (LegalWork legalWork in PendingPatentWorks())
 			{
-				legalWork.PatentNow();
-			});
+				if (legalWork.Progress >= 1f)
+				{
+					TryPatentNow(legalWork);
+				}
+			}
 		}
 
 		// Refreshing the timestamp keeps Simulate() from ever counting a ticket as missed.
@@ -565,14 +573,20 @@ namespace Trainer_v5
 					.ToList();
 		}
 
-		private static void FinishResearchNow(ResearchWork researchWork)
+		// The only early research completion. Only DoWork cancels obsolete research, so research nobody works on can still be obsolete.
+		private static bool TryFinishResearchNow(ResearchWork researchWork)
 		{
+			if (IsResearchObsolete(researchWork))
+			{
+				return false;
+			}
+
 			researchWork.Progress = researchWork.Max;
 			researchWork.Finished = true;
 			CompleteResearchWork(researchWork);
+			return true;
 		}
 
-		// DoWork cancels research the market has passed; redoing a year the company already has only clears that tech's CanPatent.
 		private static bool IsResearchObsolete(ResearchWork researchWork)
 		{
 			List<TechLevel> techLevels;
@@ -581,7 +595,13 @@ namespace Trainer_v5
 				return true;
 			}
 
-			return techLevels[techLevels.Count - 1].Year > researchWork.Year || Settings.MyCompany.GetLatestResearch(researchWork.Spec, -1) >= researchWork.Year;
+			return IsResearchObsolete(techLevels[techLevels.Count - 1].Year, Settings.MyCompany.GetLatestResearch(researchWork.Spec, -1), researchWork.Year);
+		}
+
+		// DoWork cancels research the market has passed; redoing a year the company already has only clears that tech's CanPatent.
+		internal static bool IsResearchObsolete(int latestMarketYear, int latestCompanyYear, int researchYear)
+		{
+			return latestMarketYear > researchYear || latestCompanyYear >= researchYear;
 		}
 
 		private static List<LegalWork> PendingPatentWorks()
@@ -592,17 +612,15 @@ namespace Trainer_v5
 					.ToList();
 		}
 
+		// The only call to PatentNow.
 		private static PatentOutcome TryPatentNow(LegalWork legalWork)
 		{
-			if (!CanPatentNow(legalWork))
-			{
-				return PatentOutcome.NotPatentable;
-			}
-
+			bool patentable = CanPatentNow(legalWork);
 			// PatentNow charges without a funds check; the game's AI checks this first.
-			if (!Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice))
+			PatentOutcome outcome = DecidePatent(patentable, patentable && Settings.MyCompany.CanMakeTransaction(-TechLevel.PatentPrice));
+			if (outcome != PatentOutcome.Patented)
 			{
-				return PatentOutcome.Unaffordable;
+				return outcome;
 			}
 
 			if (legalWork.Progress < 1f)
@@ -624,8 +642,23 @@ namespace Trainer_v5
 				&& legalWork.GetNetworkDealState() == WorkItem.NetworkDealState.None
 				&& patent != null
 				&& patent.CanPatent
-				&& TimeOfDay.Instance.Year - patent.Year <= TechLevel.PatentExpiration
+				&& !IsPatentExpired(TimeOfDay.Instance.Year, patent.Year, TechLevel.PatentExpiration)
 				&& patent.PatentOwner == 0;
+		}
+
+		internal static PatentOutcome DecidePatent(bool patentable, bool affordable)
+		{
+			if (!patentable)
+			{
+				return PatentOutcome.NotPatentable;
+			}
+
+			return affordable ? PatentOutcome.Patented : PatentOutcome.Unaffordable;
+		}
+
+		internal static bool IsPatentExpired(int year, int patentYear, int expiration)
+		{
+			return year - patentYear > expiration;
 		}
 
 		// Mirrors SoftwarePort.DoWork at Progress == Goal.
