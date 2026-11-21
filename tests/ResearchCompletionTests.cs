@@ -5,28 +5,19 @@ namespace Trainer_v5.Tests
 	// Instant Research and Auto Research End must finish research the way ResearchWork.FinishNow does.
 	public class ResearchCompletionTests
 	{
-		private static string CompletionBody()
-		{
-			return SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "private static void CompleteResearchWork");
-		}
-
+		// The enum name ("PatentTeam"), not its number: ToString on the enum, then "Team".
 		[Fact]
 		public void ThePatentTeamKeyIsTheEnumNameNotItsNumber()
 		{
-			var body = CompletionBody();
-
-			Assert.DoesNotContain("(int)legalWork.Type", body);
-			Assert.Contains("legalWork.Type + \"Team\"", body);
+			CompiledCalls.Adjacent(typeof(WorkItemFeatures), "CompleteResearchWork", "call Object.ToString", "ldstr Team", "call String.Concat", "call GameSettings.ApplyDefaultTeams");
+			CompiledCalls.NeverCalls(typeof(WorkItemFeatures), "CompleteResearchWork", "call Int32.ToString");
 		}
 
 		[Fact]
 		public void PatentWorkIsRegisteredThroughTheCompanyAndTheResearchListRefreshed()
 		{
-			var body = CompletionBody();
-
-			Assert.Contains("MyCompany.AddWorkItem(legalWork)", body);
-			Assert.DoesNotContain("WorkItems.Add(", body);
-			Assert.Contains("researchWindow.UpdateLists()", body);
+			CompiledCalls.InOrder(typeof(WorkItemFeatures), "CompleteResearchWork", "call LegalWork..ctor", "call Company.AddWorkItem", "call ResearchWindow.UpdateLists");
+			CompiledCalls.NeverCalls(typeof(WorkItemFeatures), "CompleteResearchWork", "call List`1.Add");
 		}
 	}
 }
