@@ -6,6 +6,13 @@ documented in this file.
 Newest entries first. Dates use `YYYY-MM-DD`. Versions use the semantic version
 from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
 
+## [Unreleased]
+
+- The trainer no longer changes multiplayer games. Its buttons, the Trainer
+  window and F1 show "Not available in multiplayer". Toggles and settings act
+  as off, so toggles that undo their changes do so when a multiplayer game
+  loads.
+
 ## [5.6.1] - 2026-10-29
 
 - Fixed Trainer success messages being added to the Issues panel, where they

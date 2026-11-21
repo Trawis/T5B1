@@ -48,11 +48,6 @@ namespace Trainer_v5
 				return SharedMessages.EmployeeChangedNothingEdited();
 			}
 
-			if (GameData.MultiplayerMode)
-			{
-				return SharedMessages.NotAvailableInMultiplayer();
-			}
-
 			return null;
 		}
 

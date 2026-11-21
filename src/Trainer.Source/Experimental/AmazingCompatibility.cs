@@ -15,12 +15,6 @@ namespace Trainer_v5.Experimental
 			if (!ExperimentalOptions.Enabled || !Helpers.RequireGameReady(ActionName))
 				return;
 
-			if (GameData.MultiplayerMode)
-			{
-				Notification.ShowError(SharedMessages.NotAvailableInMultiplayer());
-				return;
-			}
-
 			GameSettings game = GameSettings.Instance;
 			PersonalityGraph graph = game.Personalities;
 			if (graph == null)
@@ -42,7 +36,7 @@ namespace Trainer_v5.Experimental
 		// The dialog stays open while the game runs, so the game, the graph and the remaining pairs are re-checked first.
 		private static void Apply(GameSettings game, PersonalityGraph graph)
 		{
-			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(graph, game.Personalities) || GameData.MultiplayerMode)
+			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(graph, game.Personalities))
 			{
 				Confirmation.ShowScopeChanged();
 				return;

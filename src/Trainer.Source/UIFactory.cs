@@ -31,7 +31,13 @@ namespace Trainer_v5
 		{
 			var button = WindowManager.SpawnButton();
 			button.GetComponentInChildren<Text>().text = text;
-			button.onClick.AddListener(action);
+			button.onClick.AddListener(() =>
+			{
+				if (!MultiplayerRule.Refuse())
+				{
+					action();
+				}
+			});
 			if (name != null)
 			{
 				button.name = name;

@@ -26,8 +26,6 @@ namespace Trainer_v5
 		private bool _unlimitedSubsidiariesApplied;
 
 		private static GameSettings Settings => GameSettings.Instance;
-		private static Dictionary<string, bool> TrainerSettings => Helpers.Settings;
-		private static Dictionary<string, object> StoresSettings => Helpers.StoresSettings;
 
 		public override void OnActivate()
 		{
@@ -214,6 +212,11 @@ namespace Trainer_v5
 			Helpers.TryExecute("LoadSpecializations", EmployeeFeatures.RestoreSpecializationsAfterReset);
 			Helpers.TryExecute("RepairLegacyHostingRequests", () =>
 			{
+				if (MultiplayerRule.Active)
+				{
+					return;
+				}
+
 				var repaired = MarketFeatures.RepairLegacyHostingRequests();
 				if (LoggingOptions.DebugEnabled)
 				{
@@ -249,8 +252,8 @@ namespace Trainer_v5
 				List<FeatureEntry> entries = FeatureRegistry.Create();
 				_dispatcher = new FeatureDispatcher(
 					entries,
-					key => Helpers.GetProperty(TrainerSettings, key),
-					key => Helpers.GetProperty(StoresSettings, key) != null,
+					MultiplayerRule.IsToggleOn,
+					MultiplayerRule.IsStoreSet,
 					_toggleStates,
 					Helpers.TryExecute);
 
@@ -264,7 +267,7 @@ namespace Trainer_v5
 
 		private ToggleTransitionEnum GetToggleTransition(ToggleKey settingKey)
 		{
-			return _toggleStates.Observe(settingKey.Key, Helpers.GetProperty(TrainerSettings, settingKey));
+			return _toggleStates.Observe(settingKey.Key, MultiplayerRule.IsToggleOn(settingKey));
 		}
 
 		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
@@ -335,7 +338,7 @@ namespace Trainer_v5
 
 		private void ApplyMaxFloorOnce()
 		{
-			if (!_oneTimeSettingsApplied)
+			if (!_oneTimeSettingsApplied && !MultiplayerRule.Active)
 			{
 				GameSettings.MaxFloor = Constants.MAX_FLOOR;
 				_oneTimeSettingsApplied = true;
@@ -347,7 +350,7 @@ namespace Trainer_v5
 			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
 			if (!_forceLightsApplied)
 			{
-				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(MultiplayerRule.IsToggleOn(SettingKeys.ForceLights)));
 
 				if (LoggingOptions.DebugEnabled && _forceLightsApplied)
 				{
@@ -357,7 +360,7 @@ namespace Trainer_v5
 
 			if (!_showRoomCeilingsApplied)
 			{
-				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(MultiplayerRule.IsToggleOn(SettingKeys.ShowRoomCeilings)));
 
 				if (LoggingOptions.DebugEnabled && _showRoomCeilingsApplied)
 				{
@@ -367,7 +370,7 @@ namespace Trainer_v5
 
 			if (!_unlimitedSubsidiariesApplied)
 			{
-				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(MultiplayerRule.IsToggleOn(SettingKeys.UnlimitedSubsidiaries)));
 
 				if (LoggingOptions.DebugEnabled && _unlimitedSubsidiariesApplied)
 				{
@@ -377,17 +380,17 @@ namespace Trainer_v5
 
 			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(Helpers.GetProperty(TrainerSettings, SettingKeys.ForceLights)));
+				Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(MultiplayerRule.IsToggleOn(SettingKeys.ForceLights)));
 			}
 
 			if (GetToggleTransition(SettingKeys.ShowRoomCeilings) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(Helpers.GetProperty(TrainerSettings, SettingKeys.ShowRoomCeilings)));
+				Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(MultiplayerRule.IsToggleOn(SettingKeys.ShowRoomCeilings)));
 			}
 
 			if (GetToggleTransition(SettingKeys.UnlimitedSubsidiaries) != ToggleTransitionEnum.Unchanged)
 			{
-				Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(Helpers.GetProperty(TrainerSettings, SettingKeys.UnlimitedSubsidiaries)));
+				Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(MultiplayerRule.IsToggleOn(SettingKeys.UnlimitedSubsidiaries)));
 			}
 		}
 	}
