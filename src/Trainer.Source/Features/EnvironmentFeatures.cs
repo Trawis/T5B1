@@ -150,7 +150,7 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(Helpers.Settings, SettingKeys.FullRoomBrightness))
+				if (MultiplayerRule.IsToggleOn(SettingKeys.FullRoomBrightness))
 				{
 					ApplyFullRoomBrightnessToRoom(room);
 				}
@@ -163,7 +163,7 @@ namespace Trainer_v5
 			{
 				Room room = Settings.sRoomManager.Rooms[i];
 				room.RecalculateStateVariables(false);
-				if (Helpers.GetProperty(Helpers.Settings, SettingKeys.FullEnvironment))
+				if (MultiplayerRule.IsToggleOn(SettingKeys.FullEnvironment))
 				{
 					ApplyFullEnvironmentToRoom(room);
 				}

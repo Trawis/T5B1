@@ -54,9 +54,6 @@ namespace Trainer_v5.Experimental
 			if (!ExperimentalOptions.Enabled || !target.IsStillValid())
 				return SharedMessages.EmployeeChangedNothingEdited();
 
-			if (GameData.MultiplayerMode)
-				return SharedMessages.NotAvailableInMultiplayer();
-
 			var employee = target.Employee;
 			if (target.Actor.AItype != AI.AIType.Employee || employee.Dismissed || employee.MyEmployer != GameSettings.Instance.MyCompany)
 				return "QuietFireNotEmployee".LocDef("Only your own current employees can be fired. Nothing was changed.");

@@ -34,6 +34,7 @@ Every control is described in
 
 ## Limitations
 
+- The trainer changes nothing in multiplayer games.
 - Many toggles do not undo their changes when switched off. See
   [Switching toggles off](docs/project/features.md#switching-toggles-off).
 - The build uses the vendored game assemblies in
