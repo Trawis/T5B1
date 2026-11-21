@@ -234,8 +234,13 @@ game shows.
   Negligence lawsuit check when `QuitAmicably` is set. Fire Quietly calls
   `NoteFiring` itself and runs only when that lawsuit is impossible
   (employed 12 months or less, or `ComplaintLevel` at most 1).
-- `PatentNow` charges without checking funds, so funds, expiry and ownership
-  are checked first.
+- `PatentNow` charges without checking funds, even when the patent does not
+  transfer. Only `TryPatentNow` calls it, after checking funds, expiry and
+  ownership.
+- Research the market has passed is cancelled only while someone works on
+  it, and finishing a year the company already has clears that tech's
+  `CanPatent`. Only `TryFinishResearchNow` finishes research early, and it
+  skips both.
 
 ## Localization
 
