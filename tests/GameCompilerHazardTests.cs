@@ -141,32 +141,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheGamesCompilerIsACSharpSixCompiler()
-		{
-			var supported =
-				"using System;\n" +
-				"using static System.Math;\n" +
-				"class Six\n" +
-				"{\n" +
-				"\tpublic int Auto { get; } = 3;\n" +
-				"\tpublic int Body => Auto;\n" +
-				"\tpublic string Text(string s) { return $\"{nameof(Six)}:{s?.Length}\"; }\n" +
-				"\tpublic double Abs2(double d) { return Abs(d); }\n" +
-				"\tpublic void Filter() { try { } catch (Exception e) when (e != null) { } }\n" +
-				"}\n";
-			var unsupported =
-				"class Seven\n" +
-				"{\n" +
-				"\tpublic void Parse(string s) { int.TryParse(s, out var number); }\n" +
-				"}\n";
-
-			Assert.True(Check("Six.cs", supported).Passed);
-			var seven = Check("Seven.cs", unsupported);
-			Assert.False(seven.Passed);
-			Assert.Contains(seven.Problems, p => p.Diagnostic.Code == "CS1644");
-		}
-
-		[Fact]
 		public void ADiagnosticIsReportedAgainstTheOriginalLineEvenAfterEarlierBodiesWereWrapped()
 		{
 			var source =

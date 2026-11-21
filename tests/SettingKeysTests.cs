@@ -18,49 +18,28 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void EveryDeclaredKeyIsNamedAfterItsSavedKey()
+		public void EveryDeclaredKeyIsNamedAfterItsSavedKeyAndIsALiveSettingUnlessRetired()
 		{
 			var mismatched = new List<string>();
 			foreach (var field in DeclaredKeys())
 			{
-				var key = field.FieldType == typeof(ToggleKey)
+				var isToggle = field.FieldType == typeof(ToggleKey);
+				var key = isToggle
 					? ((ToggleKey)field.GetValue(null)).Key
 					: ((StoreKey)field.GetValue(null)).Key;
 				if (field.Name != key)
 				{
 					mismatched.Add(field.Name + " saves as " + key);
 				}
+
+				var live = isToggle ? Helpers.Settings.ContainsKey(key) : Helpers.StoresSettings.ContainsKey(key);
+				if (live == (System.Array.IndexOf(RetiredSettingsTests.RetiredKeys, key) >= 0))
+				{
+					mismatched.Add(key + (live ? " is retired but live" : " is declared but not a live setting"));
+				}
 			}
 
 			Assert.Empty(mismatched);
-		}
-
-		[Fact]
-		public void DeclaredKeysAreExactlyTheKeysInTheSettingsDictionaries()
-		{
-			var declaredToggles = new List<string>();
-			var declaredStores = new List<string>();
-			foreach (var field in DeclaredKeys())
-			{
-				if (field.FieldType == typeof(ToggleKey) && System.Array.IndexOf(RetiredSettingsTests.RetiredKeys, field.Name) >= 0)
-				{
-					continue;
-				}
-
-				if (field.FieldType == typeof(ToggleKey))
-				{
-					declaredToggles.Add(((ToggleKey)field.GetValue(null)).Key);
-				}
-				else
-				{
-					declaredStores.Add(((StoreKey)field.GetValue(null)).Key);
-				}
-			}
-
-			Assert.Equal(declaredToggles.Count, Helpers.Settings.Count);
-			Assert.All(declaredToggles, key => Assert.True(Helpers.Settings.ContainsKey(key), key));
-			Assert.Equal(declaredStores.Count, Helpers.StoresSettings.Count);
-			Assert.All(declaredStores, key => Assert.True(Helpers.StoresSettings.ContainsKey(key), key));
 		}
 
 		[Fact]

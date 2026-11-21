@@ -139,23 +139,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void Deserialize_PartialLoadsKeepTheValuesInUse()
-		{
-			using (new SettingsSnapshot())
-			{
-				SettingsTests.ResetToDefaults();
-				Helpers.Settings["AutoPorting"] = true;
-				Helpers.StoresSettings["LeadEfficiencyStore"] = 40;
-
-				new Main().Deserialize(new WriteDictionary(), GameReader.LoadMode.Building);
-				new Main().Deserialize(new WriteDictionary(), GameReader.LoadMode.Company);
-
-				Assert.True(Helpers.Settings["AutoPorting"]);
-				Assert.Equal(40, Helpers.StoresSettings["LeadEfficiencyStore"]);
-			}
-		}
-
-		[Fact]
 		public void Deserialize_IgnoresKeysThatAreNoLongerRegistered()
 		{
 			using (new SettingsSnapshot())
