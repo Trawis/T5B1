@@ -24,58 +24,50 @@ namespace Trainer_v5.Tests
 			Assert.False(Helpers.SimulationReady(game, hud, selector, done, preSim, preSimFinished, clock));
 		}
 
-		[Fact]
-		public void EveryScheduledEntryPointChecksReadinessBeforeItDispatches()
+		[Theory]
+		[InlineData("OnHourPassed", (int)FeatureTrigger.Hour)]
+		[InlineData("OnMinutePassed", (int)FeatureTrigger.Minute)]
+		[InlineData("OnDayPassed", (int)FeatureTrigger.Day)]
+		[InlineData("OnMonthPassed", (int)FeatureTrigger.Month)]
+		public void EveryScheduledEntryPointChecksReadinessBeforeItDispatches(string handler, int trigger)
 		{
-			var source = SourceCode.Read("TrainerBehaviour.cs");
-
-			foreach (var pair in new[] { new[] { "private void OnHourPassed(", "FeatureTrigger.Hour" }, new[] { "private void OnMinutePassed(", "FeatureTrigger.Minute" },
-				new[] { "private void OnDayPassed(", "FeatureTrigger.Day" }, new[] { "private void OnMonthPassed(", "FeatureTrigger.Month" } })
-			{
-				var body = SourceCode.Body(source, pair[0]);
-				SourceCode.AssertInOrder(body, "if (!Helpers.IsSimulationReady())", "GetDispatcher().Run(" + pair[1] + ");", pair[0]);
-			}
+			CompiledCalls.InOrder(typeof(TrainerBehaviour), handler, "call Helpers.IsSimulationReady", "ldc " + trigger, "call FeatureDispatcher.Run");
 		}
 
 		[Fact]
 		public void UpdateKeepsTheHotkeysButGatesEverythingThatMutatesTheGame()
 		{
-			var body = SourceCode.Body(SourceCode.Read("TrainerBehaviour.cs"), "private void Update(");
+			var type = typeof(TrainerBehaviour);
 
-			SourceCode.AssertInOrder(body, "KeyCode.F1", "if (!Helpers.IsSimulationReady())", "hotkeys stay available while loading");
-			SourceCode.AssertInOrder(body, "KeyCode.F2", "if (!Helpers.IsSimulationReady())", "hotkeys stay available while loading");
-			foreach (var gated in new[] { "\"LoadSpecializations\"", "\"ProcessStaticSettings\"", "RunTransitions()", "_minuteWatcher.Poll()", "GetDispatcher().Run(FeatureTrigger.Frame);" })
+			CompiledCalls.InOrder(type, "Update", "call Main.OpenSettingsWindow", "call Main.CloseSettingsWindow", "call Helpers.IsSimulationReady");
+			foreach (var gated in new[] { "ldstr LoadSpecializations", "ldstr ProcessStaticSettings", "call FeatureDispatcher.RunTransitions", "call GameMinuteWatcher.Poll", "call FeatureDispatcher.Run" })
 			{
-				SourceCode.AssertInOrder(body, "if (!Helpers.IsSimulationReady())", gated, "gated: " + gated);
+				CompiledCalls.InOrder(type, "Update", "call Helpers.IsSimulationReady", gated);
 			}
+
+			CompiledCalls.Adjacent(type, "Update", "ldc " + (int)FeatureTrigger.Frame, "call FeatureDispatcher.Run");
 		}
 
 		// The game rebuilds room meshes for floors -1..MaxFloor late in LoadGame; the trainer's raised limit must already be set.
 		[Fact]
 		public void MaxFloorIsSetOnceAndBeforeTheReadinessGate()
 		{
-			var source = SourceCode.Read("TrainerBehaviour.cs");
-			var update = SourceCode.Body(source, "private void Update(");
+			var type = typeof(TrainerBehaviour);
 
-			SourceCode.AssertInOrder(update, "!Helpers.IsGameLoaded", "Helpers.TryExecute(\"MaxFloor\", ApplyMaxFloorOnce);", "only once a game exists");
-			SourceCode.AssertInOrder(update, "Helpers.TryExecute(\"MaxFloor\", ApplyMaxFloorOnce);", "if (!Helpers.IsSimulationReady())", "before the gate");
-
-			var once = SourceCode.Body(source, "private void ApplyMaxFloorOnce(");
-			SourceCode.AssertInOrder(once, "if (!_oneTimeSettingsApplied && !MultiplayerRule.Active)", "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "guarded by the one-time flag and skipped in multiplayer");
-			SourceCode.AssertInOrder(once, "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "_oneTimeSettingsApplied = true;", "flag set after the push");
-			Assert.DoesNotContain("MaxFloor", SourceCode.Body(source, "private void ApplyProcessStaticSettings("));
+			CompiledCalls.InOrder(type, "Update", "call Helpers.get_IsGameLoaded", "ldstr MaxFloor", "ldftn TrainerBehaviour.ApplyMaxFloorOnce", "call Helpers.TryExecute", "call Helpers.IsSimulationReady");
+			CompiledCalls.InOrder(type, "ApplyMaxFloorOnce", "ldfld TrainerBehaviour._oneTimeSettingsApplied", "call MultiplayerRule.get_Active", "stsfld GameSettings.MaxFloor", "stfld TrainerBehaviour._oneTimeSettingsApplied");
+			CompiledCalls.NeverCalls(type, "ApplyProcessStaticSettings", "stsfld GameSettings.MaxFloor");
 		}
 
 		[Fact]
 		public void GameReadyInitializationIsNotGatedOnTheSimulationBeingReady()
 		{
-			var source = SourceCode.Read("TrainerBehaviour.cs");
-			var ready = SourceCode.Body(source, "private void OnGameReady(");
+			var type = typeof(TrainerBehaviour);
 
-			Assert.DoesNotContain("IsSimulationReady", ready);
-			Assert.DoesNotContain("DoneLoading", ready);
-			Assert.Contains("EmployeesWindowTrainer.Install();", ready);
-			Assert.Contains("\"LoadSpecializations\"", ready);
+			CompiledCalls.NeverCalls(type, "OnGameReady", "call Helpers.IsSimulationReady");
+			CompiledCalls.NeverCalls(type, "OnGameReady", "ldsfld SelectorController.DoneLoading");
+			CompiledCalls.Calls(type, "OnGameReady", "call EmployeesWindowTrainer.Install");
+			CompiledCalls.Calls(type, "OnGameReady", "ldstr LoadSpecializations");
 		}
 	}
 }
