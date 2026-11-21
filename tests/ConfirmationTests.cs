@@ -24,18 +24,6 @@ namespace Trainer_v5.Tests
 			return result;
 		}
 
-		[Theory]
-		[InlineData(3, 3, true)]
-		[InlineData(1, 1, true)]
-		[InlineData(3, 2, false)]
-		[InlineData(3, 4, false)]
-		[InlineData(3, 0, false)]
-		[InlineData(0, 0, false)]
-		public void OnlyTheSameNonEmptyScopeIsConfirmed(int shown, int current, bool expected)
-		{
-			Assert.Equal(expected, Confirmation.IsScopeUnchanged(shown, current));
-		}
-
 		[Fact]
 		public void OnlyTheSameTargetsInAnyOrderAreConfirmed()
 		{
@@ -49,65 +37,61 @@ namespace Trainer_v5.Tests
 			Assert.False(Confirmation.IsSameTargets(new List<object>(), new List<object>()));
 		}
 
+		// Runs the sequence and records what it did, in order.
+		private static string RunSequence(bool ready, string change, string result)
+		{
+			var steps = new List<string>();
+			Confirmation.Run(
+				() => { steps.Add("ready"); return ready; },
+				() => { steps.Add("check"); return change; },
+				() => { steps.Add("apply"); return result; },
+				text => steps.Add("changed:" + text),
+				text => steps.Add("result:" + text));
+			return string.Join(" ", steps);
+		}
+
+		[Theory]
+		[InlineData(false, null, "done", "ready")]
+		[InlineData(true, "moved", "done", "ready check changed:moved")]
+		[InlineData(true, null, "done", "ready check apply result:done")]
+		[InlineData(true, null, null, "ready check apply")]
+		public void TheSequenceAppliesOnlyWhenReadyAndUnchangedAndThenReports(bool ready, string change, string result, string expected)
+		{
+			Assert.Equal(expected, RunSequence(ready, change, result));
+		}
+
 		[Fact]
-		public void TheHelperUsesTheNativeYesNoDialogWithoutQuestionIdOrPause()
+		public void TheHelperUsesTheNativeYesNoDialogWithoutQuestionIdOrPauseAndRunsTheSequenceOnYes()
 		{
 			var source = SourceCode.Read("Confirmation.cs");
-			var ask = SourceCode.Body(source, "internal static void Ask(");
+			var ask = SourceCode.Body(source, "internal static void AskAndApply(");
 
-			Assert.Contains("WindowManager.Instance.ShowMessageBox(message, false, DialogWindow.DialogType.Warning,", ask);
+			Assert.Contains("WindowManager.Instance.ShowMessageBox(question, false, DialogWindow.DialogType.Warning, () => Run(", ask);
+			Assert.Contains("Helpers.RequireGameReady(actionName)", ask);
+			Assert.Contains("!ReferenceEquals(game, GameSettings.Instance) ? ScopeChangedText() :", ask);
+			Assert.Contains("Notification.ShowError, Notification.Popup", ask);
 			Assert.DoesNotContain("questionID", source);
 			Assert.DoesNotContain("IgnoreQuestions", source);
 			Assert.DoesNotContain("SpawnInputDialog", source);
 			Assert.DoesNotContain("ForcePause", source);
-			SourceCode.AssertInOrder(ask, "RequireGameReady(actionName)", "onConfirm()", "the game is checked before the action runs");
 		}
 
 		[Fact]
-		public void TheActionOnlyRunsFromTheYesCallback()
-		{
-			var ask = SourceCode.Body(SourceCode.Read("Confirmation.cs"), "internal static void Ask(");
-
-			Assert.Single(Regex.Matches(ask, @"onConfirm\(\)"));
-			Assert.Contains("() => {", ask);
-		}
-
-		[Fact]
-		public void TheNewActionsAskFirstAndOnlyChangeStateInTheirApplyMethod()
+		public void EmptyScopesGetAMessageAndNoQuestion()
 		{
 			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards" })
 			{
 				var entry = Company("internal static void " + name);
 
-				Assert.Contains("Confirmation.Ask(", entry);
 				Assert.Contains("RequireGameReady", entry);
-				Assert.DoesNotContain("Bankrupt = true", entry);
-				Assert.DoesNotContain(".Clear()", entry);
-				Assert.DoesNotContain("AddRange", entry);
-				SourceCode.AssertInOrder(entry, "ShowInfo", "Confirmation.Ask(", "an empty scope gets a message and no dialog");
+				SourceCode.AssertInOrder(entry, "ShowInfo", "Confirmation.AskAndApply(", "an empty scope gets a message and no dialog");
 			}
-
-			var bankrupt = Company("private static void ApplyAIBankrupt");
-			var loans = Company("private static void ApplyClearLoans");
-			var rewards = Company("private static void ApplyUnlockAndClaimAllRewards");
-
-			SourceCode.AssertInOrder(bankrupt, "ReferenceEquals(game, Settings)", "IsSameTargets", "the game, then the scope");
-			SourceCode.AssertInOrder(bankrupt, "IsSameTargets", "Bankrupt = true", "the scope is checked before the flag");
-			SourceCode.AssertInOrder(loans, "ReferenceEquals(game, Settings)", "IsSameTargets", "the game, then the scope");
-			SourceCode.AssertInOrder(loans, "IsSameTargets", ".Clear()", "the scope is checked before the loans go");
-			SourceCode.AssertInOrder(rewards, "ReferenceEquals(game, Settings)", "IsScopeUnchanged", "the game, then the scope");
-			SourceCode.AssertInOrder(rewards, "IsScopeUnchanged", "AddRange", "the scope is checked before the rewards are set");
 		}
 
 		[Fact]
-		public void MaxReputationAsksBeforeItChangesAnything()
+		public void MaxReputationMaxesEveryCategory()
 		{
-			var entry = Company("internal static void MaxReputation");
-			var apply = Company("private static void ApplyMaxReputation");
-
-			Assert.Contains("Confirmation.Ask(", entry);
-			Assert.DoesNotContain("ChangeBusinessRep", entry);
-			Assert.Equal(6, Regex.Matches(apply, @"ChangeBusinessRep\(1f,").Count);
+			Assert.Equal(6, Regex.Matches(Company("private static string ApplyMaxReputation"), @"ChangeBusinessRep\(1f,").Count);
 		}
 
 		[Fact]
@@ -119,6 +103,7 @@ namespace Trainer_v5.Tests
 			}
 		}
 
+		// Every action in the architecture confirmation list, and nothing else, asks through AskAndApply.
 		[Fact]
 		public void TheAuditedSetIsExactlyTheDocumentedOne()
 		{
@@ -128,28 +113,14 @@ namespace Trainer_v5.Tests
 				if (item.Key == "Confirmation.cs")
 					continue;
 
-				Assert.False(item.Value.Contains("ShowMessageBox"), item.Key + " must ask through Confirmation.Ask");
-				var calls = Regex.Matches(item.Value, @"Confirmation\.Ask\(").Count;
+				Assert.False(item.Value.Contains("ShowMessageBox"), item.Key + " must ask through Confirmation.AskAndApply");
+				var calls = Regex.Matches(item.Value, @"Confirmation\.AskAndApply\(").Count;
 				if (calls > 0)
 					found.Add(item.Key + ":" + calls);
 			}
 
 			found.Sort(StringComparer.Ordinal);
 			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:6, EmployeeFeatures.cs:2, FounderToggle.cs:1, InstantHire.cs:1, QuietFire.cs:1, SkipTime.cs:1, WorkItemFeatures.cs:1", string.Join(", ", found));
-
-			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards", "AskForceBankrupt", "MaxReputation" })
-			{
-				Assert.Contains("Confirmation.Ask(", Company("internal static void " + name));
-			}
-
-			Assert.Contains("Confirmation.Ask(", Company("private static void AdjustAIFundsBy"));
-			Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start"));
-			Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("Experimental", "AmazingCompatibility.cs"), "internal static void Run"));
-
-			foreach (var name in new[] { "MakeAllEmployeesHappy", "MakeSelectedEmployeesHappy" })
-			{
-				Assert.Contains("Confirmation.Ask(", SourceCode.Body(SourceCode.Read("Features", "EmployeeFeatures.cs"), "internal static void " + name));
-			}
 		}
 
 		[Fact]

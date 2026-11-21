@@ -76,18 +76,12 @@ namespace Trainer_v5.Experimental
 			}
 
 			string message = string.Format("HireConfirm".LocDef("Hire {0} new {1} employee(s) at medium wage?\nUpfront demands: {2}. Monthly salaries: {3}.\nTeam: {4}.\nEach one is paid, employed and added to the office the game's own way. Anyone your business reputation cannot attract, or you cannot pay, is skipped.\nThis cannot be undone."), candidates.Length, role, upfront.Currency(), salaries.Currency(), team ?? "TeamNone".LocDef("none"));
-			Confirmation.Ask(ActionName, message, () => Apply(game, hire, candidates, team));
+			Confirmation.AskAndApply(ActionName, message, () => Confirmation.ChangedUnless(ReferenceEquals(hire, HireWindowOrNull()) && !GameSettings.ForcePause), () => Apply(game, candidates, team));
 		}
 
-		// The dialog stays open while the game runs, so the game and the team are re-checked first.
-		private static void Apply(GameSettings game, HireWindow hire, Employee[] candidates, string team)
+		// Shows its own result, which can be partial.
+		private static string Apply(GameSettings game, Employee[] candidates, string team)
 		{
-			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(hire, HireWindowOrNull()) || GameSettings.ForcePause)
-			{
-				Confirmation.ShowScopeChanged();
-				return;
-			}
-
 			team = TeamOrNull(game, team);
 			Company company = game.MyCompany;
 			int hired = 0, lowReputation = 0, noMoney = 0;
@@ -124,6 +118,8 @@ namespace Trainer_v5.Experimental
 				Notification.Popup(result);
 			else
 				Notification.ShowError(result);
+
+			return null;
 		}
 
 		private static bool CanHire()

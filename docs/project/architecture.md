@@ -191,10 +191,20 @@ Names are never used to find it.
 - Companies: one live AI company, not the player's, not a subsidiary, not
   going bankrupt.
 
-**Confirmations.** Only high-impact actions ask, through `Confirmation.Ask`.
-On Yes, the game and the exact targets are checked again. If anything changed,
-nothing is applied. `ConfirmationTests` pins this set; update it with this
-list:
+**Confirmations.** Only high-impact actions ask, through
+`Confirmation.AskAndApply(action, question, findChange, apply)`. On Yes,
+`Confirmation.Run`:
+
+1. checks that the game is ready and is still the same save;
+2. calls `findChange`, which resolves the targets again and returns why
+   nothing may be applied (`ChangedUnless(IsSameTargets(...))` for lists,
+   the target's own check for one target);
+3. applies, and pops up the message `apply` returns.
+
+When something changed, the reason is shown as an error and nothing is
+applied. Actions with partial results (Hire Employees, Optimize Team
+Assignments, the skips) show their own result. `ConfirmationTests` tests
+`Run` and pins this set; update it with this list:
 
 - AI Bankrupt All, Bankrupt and a negative Adjust AI Funds
 - Clear all loans, Unlock and Claim Rewards, Max Reputation

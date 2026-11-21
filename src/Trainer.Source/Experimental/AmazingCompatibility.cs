@@ -30,30 +30,24 @@ namespace Trainer_v5.Experimental
 				return;
 			}
 
-			Confirmation.Ask(ActionName, string.Format("AmazingCompatibilityConfirm".LocDef("Raise {0} personality pair(s) to the game's maximum compatibility?\nThis permanently changes the personality compatibility of this save, including its autosaves and every later save of it. There is no undo: disabling or removing the trainer does not restore it.\nIt affects current and future employees and makes HR personality matching for new hires neutral.\nBack up your save first."), count), () => Apply(game, graph));
+			Confirmation.AskAndApply(ActionName, string.Format("AmazingCompatibilityConfirm".LocDef("Raise {0} personality pair(s) to the game's maximum compatibility?\nThis permanently changes the personality compatibility of this save, including its autosaves and every later save of it. There is no undo: disabling or removing the trainer does not restore it.\nIt affects current and future employees and makes HR personality matching for new hires neutral.\nBack up your save first."), count), () => Confirmation.ChangedUnless(ReferenceEquals(graph, game.Personalities)), () => Apply(game, graph));
 		}
 
-		// The dialog stays open while the game runs, so the game, the graph and the remaining pairs are re-checked first.
-		private static void Apply(GameSettings game, PersonalityGraph graph)
+		// The remaining pairs are computed again, so pairs raised while the question was open are not counted.
+		private static string Apply(GameSettings game, PersonalityGraph graph)
 		{
-			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(graph, game.Personalities))
-			{
-				Confirmation.ShowScopeChanged();
-				return;
-			}
-
 			List<KeyValuePair<string, string>> pairs = PairsToRaise(graph);
 			if (pairs.Count == 0)
 			{
 				Notification.ShowInfo(AlreadyApplied());
-				return;
+				return null;
 			}
 
 			PersonalityGraph source = BuildSource(graph, pairs);
 			if (source == null)
 			{
 				Notification.ShowError(Failed());
-				return;
+				return null;
 			}
 
 			graph.MergeWith(source);
@@ -62,7 +56,7 @@ namespace Trainer_v5.Experimental
 				team.CalculateCompatibility();
 			}
 
-			Notification.Popup(string.Format("AmazingCompatibilityApplied".LocDef("Trainer: {0} personality pair(s) raised to maximum compatibility."), pairs.Count));
+			return string.Format("AmazingCompatibilityApplied".LocDef("Trainer: {0} personality pair(s) raised to maximum compatibility."), pairs.Count);
 		}
 
 		// Each pair of different personalities once, only where the graph is below the maximum, so nothing is lowered.

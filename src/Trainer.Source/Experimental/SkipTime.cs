@@ -16,7 +16,7 @@ namespace Trainer_v5.Experimental
 		internal static void SkipDay()
 		{
 			if (CanSkip())
-				Confirm(24, () => Example.SkipDay(1));
+				Confirm(24, null, () => Example.SkipDay(1));
 		}
 
 		internal static void SkipToHour()
@@ -33,13 +33,7 @@ namespace Trainer_v5.Experimental
 					return;
 				}
 
-				Confirm(hours, () =>
-				{
-					if (TimeOfDay.Instance.Hour == target)
-						Confirmation.ShowScopeChanged();
-					else
-						Example.SkipTo(target);
-				});
+				Confirm(hours, () => Confirmation.ChangedUnless(TimeOfDay.Instance.Hour != target), () => Example.SkipTo(target));
 			}, 0, 23);
 		}
 
@@ -53,24 +47,35 @@ namespace Trainer_v5.Experimental
 			if (!ExperimentalOptions.Enabled || !Helpers.RequireGameReady(ActionName))
 				return false;
 
-			if (GameSettings.ForcePause)
+			string blocked = FindBlocker();
+			if (blocked != null)
 			{
-				Notification.ShowError("SkipTimeForcePaused".LocDef("The game is holding time (a dialog or event is waiting). Nothing was changed."));
+				Notification.ShowError(blocked);
 				return false;
 			}
 
 			return true;
 		}
 
-		private static void Confirm(int hours, Action skip)
+		private static string FindBlocker()
 		{
-			Confirmation.Ask(ActionName, string.Format("SkipTimeConfirm".LocDef("Skip {0} hour(s) of game time?\nSalaries, bills, deadlines, events and autosaves happen as usual, but employees in the office do no work during the skipped hours and stay where they are.\nThis cannot be undone."), hours), () =>
+			if (!ExperimentalOptions.Enabled)
+				return Confirmation.ScopeChangedText();
+
+			return GameSettings.ForcePause ? "SkipTimeForcePaused".LocDef("The game is holding time (a dialog or event is waiting). Nothing was changed.") : null;
+		}
+
+		// findChange is null when only the game itself has to be checked again.
+		private static void Confirm(int hours, Func<string> findChange, Action skip)
+		{
+			Confirmation.AskAndApply(ActionName, string.Format("SkipTimeConfirm".LocDef("Skip {0} hour(s) of game time?\nSalaries, bills, deadlines, events and autosaves happen as usual, but employees in the office do no work during the skipped hours and stay where they are.\nThis cannot be undone."), hours), () => FindBlocker() ?? (findChange != null ? findChange() : null), () =>
 			{
-				if (CanSkip())
-					Skip(skip);
+				Skip(skip);
+				return null;
 			});
 		}
 
+		// Shows its own result, an error when the game did not advance.
 		private static void Skip(Action skip)
 		{
 			SDateTime before = SDateTime.Now();
