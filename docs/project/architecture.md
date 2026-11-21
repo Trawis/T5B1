@@ -203,6 +203,19 @@ list:
 - Experimental: Amazing Compatibility, Skip 1 Day, Skip To Hour, Hire
   Employees and Fire Quietly
 
+**Multiplayer.** In a multiplayer game the trainer changes nothing.
+`MultiplayerRule` enforces this in two places:
+
+- `UIFactory.Button` refuses every click, and `Main.OpenSettingsWindow`
+  refuses F1, with `SharedMessages.NotAvailableInMultiplayer()`.
+- Toggle and setting reads go through `MultiplayerRule.IsToggleOn` and
+  `IsStoreSet`, which return false. Toggles that were on run their Disabled
+  rows. `MaxFloor` and the hosting-deal repair are skipped.
+
+The game sets `GameData.MultiplayerMode` only when a lobby starts or is joined.
+`MultiplayerRuleTests` fails if another file reads it, spawns a button or
+reads a toggle directly.
+
 **Messages.** Only `Notification` calls the game's popup and dialog APIs.
 Popups start with `Trainer: ` once and use `PopupIDs.None`, the only id the
 game shows.

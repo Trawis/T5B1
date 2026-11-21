@@ -79,10 +79,10 @@ namespace Trainer_v5.Experimental
 			Confirmation.Ask(ActionName, message, () => Apply(game, hire, candidates, team));
 		}
 
-		// The dialog stays open while the game runs, so the game, the multiplayer state and the team are re-checked first.
+		// The dialog stays open while the game runs, so the game and the team are re-checked first.
 		private static void Apply(GameSettings game, HireWindow hire, Employee[] candidates, string team)
 		{
-			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(hire, HireWindowOrNull()) || GameData.MultiplayerMode || GameSettings.ForcePause)
+			if (!ReferenceEquals(game, GameSettings.Instance) || !ReferenceEquals(hire, HireWindowOrNull()) || GameSettings.ForcePause)
 			{
 				Confirmation.ShowScopeChanged();
 				return;
@@ -130,12 +130,6 @@ namespace Trainer_v5.Experimental
 		{
 			if (!ExperimentalOptions.Enabled || !Helpers.RequireGameReady(ActionName))
 				return false;
-
-			if (GameData.MultiplayerMode)
-			{
-				Notification.ShowError(SharedMessages.NotAvailableInMultiplayer());
-				return false;
-			}
 
 			return true;
 		}

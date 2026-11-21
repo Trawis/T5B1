@@ -28,6 +28,11 @@ namespace Trainer_v5
 
 		public static void OpenSettingsWindow()
 		{
+			if (MultiplayerRule.Refuse())
+			{
+				return;
+			}
+
 			SettingsWindow.Open();
 		}
 

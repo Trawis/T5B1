@@ -53,12 +53,6 @@ namespace Trainer_v5.Experimental
 			if (!ExperimentalOptions.Enabled || !Helpers.RequireGameReady(ActionName))
 				return false;
 
-			if (GameData.MultiplayerMode)
-			{
-				Notification.ShowError(SharedMessages.NotAvailableInMultiplayer());
-				return false;
-			}
-
 			if (GameSettings.ForcePause)
 			{
 				Notification.ShowError("SkipTimeForcePaused".LocDef("The game is holding time (a dialog or event is waiting). Nothing was changed."));

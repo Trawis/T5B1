@@ -61,7 +61,7 @@ namespace Trainer_v5.Tests
 			SourceCode.AssertInOrder(update, "Helpers.TryExecute(\"MaxFloor\", ApplyMaxFloorOnce);", "if (!Helpers.IsSimulationReady())", "before the gate");
 
 			var once = SourceCode.Body(source, "private void ApplyMaxFloorOnce(");
-			SourceCode.AssertInOrder(once, "if (!_oneTimeSettingsApplied)", "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "guarded by the one-time flag");
+			SourceCode.AssertInOrder(once, "if (!_oneTimeSettingsApplied && !MultiplayerRule.Active)", "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "guarded by the one-time flag and skipped in multiplayer");
 			SourceCode.AssertInOrder(once, "GameSettings.MaxFloor = Constants.MAX_FLOOR;", "_oneTimeSettingsApplied = true;", "flag set after the push");
 			Assert.DoesNotContain("MaxFloor", SourceCode.Body(source, "private void ApplyProcessStaticSettings("));
 		}
