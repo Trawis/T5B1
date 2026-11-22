@@ -47,7 +47,7 @@ settings act as off; toggles that undo their changes do so.
 | Instant Marketing | – | Completes your active press releases |
 | Sell products stock | – | Sells the stock of products with no active users at half price |
 | Fix Bugs | Product | Fixes all bugs of your product in beta |
-| Instant Research | – | Completes your active research |
+| Instant Research | – | Completes your active research. Skips outdated research: a later year is on the market or already yours |
 | Instant Patent | – | Files your patent work and pays the game's price. Skips expired, owned, unpatentable, multiplayer-deal or unaffordable work |
 | Instant Porting | – | Completes your active porting work |
 | Optimize Team Assignments ⚠ | – | Moves single-team design, marketing and porting work to your best team. The question previews every change and skip |
@@ -75,7 +75,7 @@ settings act as off; toggles that undo their changes do so.
 | Auto Design End | Promotes finished design documents |
 | Auto Contract Progression | Promotes contract work after design and development; QA and release stay manual |
 | Auto Research End | Finishes research and files patents |
-| Auto Patent End | Completes finished patents |
+| Auto Patent End | Files finished patent work like Instant Patent; skipped work is retried every minute |
 | Auto Porting | Advances your active porting work |
 | Disable Force Pause / Disable Force Freeze | The game does not force-pause / force-freeze |
 | Digital Distribution Monopol | Shuts down rival distribution platforms |
