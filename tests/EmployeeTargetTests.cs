@@ -16,10 +16,8 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void OnlyExactlyOneSelectedEmployeeBecomesATarget()
 		{
-			var resolve = SourceCode.Body(SourceCode.Read("EmployeeTarget.cs"), "public static EmployeeTarget Resolve(");
-
-			Assert.Contains("source == TargetSource.Selection ? new EmployeeTarget(selected[0]) : null", resolve);
-			Assert.DoesNotContain("selected[1]", resolve);
+			CompiledCalls.InOrder(typeof(EmployeeTarget), "Resolve", "call EmployeeTarget.Decide", "ldc 0", "call List`1.get_Item", "call EmployeeTarget..ctor");
+			CompiledCalls.Count(typeof(EmployeeTarget), "Resolve", "call List`1.get_Item", 1);
 		}
 	}
 }

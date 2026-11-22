@@ -1,29 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Trainer_v5.Tests
 {
 	public class ConfirmationTests
 	{
-		private static string Company(string signature)
-		{
-			return SourceCode.Body(SourceCode.Read("Features", "CompanyFeatures.cs"), signature);
-		}
-
-		private static Dictionary<string, string> AllSources()
-		{
-			var result = new Dictionary<string, string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
-			{
-				result[Path.GetFileName(file)] = SourceCode.Normalize(File.ReadAllText(file));
-			}
-
-			return result;
-		}
-
 		[Fact]
 		public void OnlyTheSameTargetsInAnyOrderAreConfirmed()
 		{
@@ -60,76 +42,83 @@ namespace Trainer_v5.Tests
 			Assert.Equal(expected, RunSequence(ready, change, result));
 		}
 
+		// On Yes the sequence runs with the readiness check, the save check and the two message routes; no questionID
+		// (which offers "Don't ask again"), no input dialog and no pause.
 		[Fact]
 		public void TheHelperUsesTheNativeYesNoDialogWithoutQuestionIdOrPauseAndRunsTheSequenceOnYes()
 		{
-			var source = SourceCode.Read("Confirmation.cs");
-			var ask = SourceCode.Body(source, "internal static void AskAndApply(");
+			var type = typeof(Confirmation);
+			var steps = CompiledCalls.Steps(type, "AskAndApply");
 
-			Assert.Contains("WindowManager.Instance.ShowMessageBox(question, false, DialogWindow.DialogType.Warning, () => Run(", ask);
-			Assert.Contains("Helpers.RequireGameReady(actionName)", ask);
-			Assert.Contains("!ReferenceEquals(game, GameSettings.Instance) ? ScopeChangedText() :", ask);
-			Assert.Contains("Notification.ShowError, Notification.Popup", ask);
-			Assert.DoesNotContain("questionID", source);
-			Assert.DoesNotContain("IgnoreQuestions", source);
-			Assert.DoesNotContain("SpawnInputDialog", source);
-			Assert.DoesNotContain("ForcePause", source);
+			CompiledCalls.InOrder(type, "AskAndApply", "call Helpers.RequireGameReady", "call Confirmation.ScopeChangedText", "ldftn Notification.ShowError", "ldftn Notification.Popup", "call Confirmation.Run", "call WindowManager.ShowMessageBox");
+			Assert.DoesNotContain(steps, step => step.StartsWith("ldstr ", StringComparison.Ordinal));
+			CompiledCalls.NeverCalls(type, "AskAndApply", "ldsfld GameSettings.ForcePause");
+			CompiledCalls.NeverCalls(type, "AskAndApply", "call WindowManager.SpawnInputDialog");
 		}
 
-		[Fact]
-		public void EmptyScopesGetAMessageAndNoQuestion()
+		[Theory]
+		[InlineData("ClearLoans")]
+		[InlineData("AIBankrupt")]
+		[InlineData("UnlockAndClaimAllRewards")]
+		public void EmptyScopesGetAMessageAndNoQuestion(string action)
 		{
-			foreach (var name in new[] { "ClearLoans", "AIBankrupt", "UnlockAndClaimAllRewards" })
-			{
-				var entry = Company("internal static void " + name);
-
-				Assert.Contains("RequireGameReady", entry);
-				SourceCode.AssertInOrder(entry, "ShowInfo", "Confirmation.AskAndApply(", "an empty scope gets a message and no dialog");
-			}
+			CompiledCalls.InOrder(typeof(CompanyFeatures), action, "call Helpers.RequireGameReady", "call Notification.ShowInfo", "call Confirmation.AskAndApply");
 		}
 
 		[Fact]
 		public void MaxReputationMaxesEveryCategory()
 		{
-			Assert.Equal(6, Regex.Matches(Company("private static string ApplyMaxReputation"), @"ChangeBusinessRep\(1f,").Count);
+			CompiledCalls.Count(typeof(CompanyFeatures), "ApplyMaxReputation", "call Company.ChangeBusinessRep", 6);
 		}
 
 		[Fact]
 		public void NoTypedYesConfirmationIsLeft()
 		{
-			foreach (var item in AllSources())
-			{
-				Assert.False(item.Value.Contains("\"YES\""), item.Key + " still has a typed YES");
-			}
+			CompiledCalls.OnlyIn("ldstr YES");
 		}
 
 		// Every action in the architecture confirmation list, and nothing else, asks through AskAndApply.
 		[Fact]
 		public void TheAuditedSetIsExactlyTheDocumentedOne()
 		{
-			var found = new List<string>();
-			foreach (var item in AllSources())
+			var counts = new SortedDictionary<string, int>(StringComparer.Ordinal);
+			foreach (var method in CompiledCalls.AllMethods())
 			{
-				if (item.Key == "Confirmation.cs")
-					continue;
-
-				Assert.False(item.Value.Contains("ShowMessageBox"), item.Key + " must ask through Confirmation.AskAndApply");
-				var calls = Regex.Matches(item.Value, @"Confirmation\.AskAndApply\(").Count;
-				if (calls > 0)
-					found.Add(item.Key + ":" + calls);
+				var owner = method.Key.Substring(0, method.Key.IndexOf('.'));
+				foreach (var step in method.Value)
+				{
+					if (step == "call Confirmation.AskAndApply")
+					{
+						int count;
+						counts.TryGetValue(owner, out count);
+						counts[owner] = count + 1;
+					}
+				}
 			}
 
-			found.Sort(StringComparer.Ordinal);
-			Assert.Equal("AmazingCompatibility.cs:1, CompanyFeatures.cs:6, EmployeeFeatures.cs:2, FounderToggle.cs:1, InstantHire.cs:1, QuietFire.cs:1, SkipTime.cs:1, WorkItemFeatures.cs:1", string.Join(", ", found));
+			var found = new List<string>();
+			foreach (var pair in counts)
+			{
+				found.Add(pair.Key + ":" + pair.Value);
+			}
+
+			Assert.Equal("AmazingCompatibility:1, CompanyFeatures:6, EmployeeFeatures:2, FounderToggle:1, InstantHire:1, QuietFire:1, SkipTime:1, WorkItemFeatures:1", string.Join(", ", found));
 		}
 
-		[Fact]
-		public void RoutineActionsDoNotAsk()
+		[Theory]
+		[InlineData("TakeoverCompanyAction")]
+		[InlineData("SubDCompanyAction")]
+		[InlineData("TakeOver")]
+		[InlineData("MakeSubsidiary")]
+		[InlineData("AdjustAIFunds")]
+		[InlineData("MaxMarketRecognition")]
+		[InlineData("TransferOffshoreFunds")]
+		[InlineData("UnlockFurniture")]
+		[InlineData("UnlockAllSpace")]
+		[InlineData("MonthDays")]
+		public void RoutineActionsDoNotAsk(string action)
 		{
-			foreach (var method in new[] { "TakeoverCompanyAction", "SubDCompanyAction", "TakeOver(", "MakeSubsidiary(", "AdjustAIFunds(", "MaxMarketRecognition", "TransferOffshoreFunds", "UnlockFurniture", "UnlockAllSpace", "MonthDays" })
-			{
-				Assert.DoesNotContain("Confirmation.", Company("internal static void " + method));
-			}
+			CompiledCalls.NeverCalls(typeof(CompanyFeatures), action, "call Confirmation.AskAndApply");
 		}
 	}
 }

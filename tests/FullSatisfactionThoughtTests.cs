@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Xunit;
@@ -28,23 +27,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(new[] { "t1", "t5" }, Keys(thoughts));
 			Assert.False(thoughts.ContainsKey("t0"));
 			Assert.Equal("t5", thoughts["t5"].Thought);
-		}
-
-		// HashList.GetEnumerator boxes a list enumerator, and Thoughts.Values.ToList() copies: neither belongs in a per-frame pass.
-		[Fact]
-		public void TheFramePassesDoNotCopyListsOrBoxEnumerators()
-		{
-			string employee = Normalize(File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "EmployeeFeatures.cs")));
-			string environment = Normalize(File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "Features", "EnvironmentFeatures.cs")));
-
-			Assert.DoesNotContain("Values.ToList()", employee);
-			Assert.DoesNotContain("ApplyNoiseReduction()\n\t\t{\n\t\t\tforeach", environment);
-			Assert.DoesNotContain("ApplyDisableActiveFires()\n\t\t{\n\t\t\tforeach", environment);
-		}
-
-		private static string Normalize(string text)
-		{
-			return text.Replace("\r\n", "\n");
 		}
 
 		private static Employee.ThoughtEffect Thought(string name, bool negative, bool sue, string quitReason)

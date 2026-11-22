@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -35,18 +34,10 @@ namespace Trainer_v5.Tests
 			Assert.Equal(3, CountEvents(new GameMinuteWatcher(), 58, 59, 0));
 		}
 
-		// TimeOfDay cannot be touched in the test host, so the readiness check is verified on the source.
 		[Fact]
 		public void PollTreatsAMissingTimeOfDayAsNotReadyBeforeReadingIt()
 		{
-			var source = File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "GameMinuteWatcher.cs"));
-			var poll = source.Substring(source.IndexOf("public void Poll()", StringComparison.Ordinal));
-			poll = poll.Substring(0, poll.IndexOf("public void Reset()", StringComparison.Ordinal));
-
-			var check = poll.IndexOf("TimeOfDay.Instance == null", StringComparison.Ordinal);
-			Assert.True(check >= 0);
-			Assert.True(check < poll.IndexOf("TimeOfDay.Instance.Minute", StringComparison.Ordinal));
-			Assert.True(poll.IndexOf("return;", StringComparison.Ordinal) < poll.IndexOf("Observe(", StringComparison.Ordinal));
+			CompiledCalls.InOrder(typeof(GameMinuteWatcher), "Poll", "ldsfld TimeOfDay.Instance", "call Object.op_Equality", "ldfld TimeOfDay.Minute", "call GameMinuteWatcher.Observe");
 		}
 	}
 }

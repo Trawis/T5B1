@@ -5,17 +5,13 @@ namespace Trainer_v5.Tests
 {
 	public class EmployeesWindowToolbarTests
 	{
+		// The input callback is a lambda; its body is read where it is created, before RequestFloat.
 		[Fact]
 		public void SingleEmployeeActionsNeedExactlyOneSelectedEmployeeAndCheckAgainAfterTheirDialog()
 		{
-			var inspiration = SourceCode.Body(SourceCode.Read("EmployeesWindowTrainer.cs"), "private static void SetInspiration()");
-			var founder = SourceCode.Body(SourceCode.Read("FounderToggle.cs"), "public static void Start()");
-
-			Assert.Contains("EmployeeTarget.RequireOne()", inspiration);
-			SourceCode.AssertInOrder(inspiration, "RequestFloat(", "target.IsStillValid()", "the target is checked again in the callback");
-			SourceCode.AssertInOrder(inspiration, "target.IsStillValid()", "Inspiration = val", "the target is checked before the write");
-			Assert.Contains("EmployeeTarget.RequireOne()", founder);
-			Assert.DoesNotContain("EmployeeTarget.Resolve(", founder);
+			CompiledCalls.InOrder(typeof(EmployeesWindowTrainer), "SetInspiration", "call EmployeeTarget.RequireOne", "call EmployeeTarget.IsStillValid", "stfld Employee.Inspiration", "call InputHelper.RequestFloat");
+			CompiledCalls.Calls(typeof(FounderToggle), "Start", "call EmployeeTarget.RequireOne");
+			CompiledCalls.NeverCalls(typeof(FounderToggle), "Start", "call EmployeeTarget.Resolve");
 		}
 
 		[Theory]

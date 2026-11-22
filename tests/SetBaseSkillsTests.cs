@@ -6,11 +6,6 @@ namespace Trainer_v5.Tests
 {
 	public class SetBaseSkillsTests
 	{
-		private static string SetBaseSkillsBody()
-		{
-			return SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "private static void SetBaseSkills()");
-		}
-
 		[Theory]
 		[InlineData("1", true)]
 		[InlineData("1.01", false)]

@@ -8,14 +8,11 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void OnlyValidPendingDealsAreAcceptedAndRegistrationFollowsSuccess()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "MarketFeatures.cs"), "internal static void ApplyAutoAcceptHostingDeals");
+			var type = typeof(MarketFeatures);
 
-			Assert.DoesNotContain("AllDeals", body);
-			Assert.Contains("FindPendingDeals(dealWindow)", body);
-			Assert.Contains("StillValid(false)", body);
-			SourceCode.AssertInOrder(body, "pending == null", "ActuallyAcceptDeal", "an unidentified list must stop before anything is accepted");
-			var afterAccept = SourceCode.Span(body, "ActuallyAcceptDeal");
-			SourceCode.AssertInOrder(afterAccept, "serverDeal.Active", "RegisterWithServer", "RegisterWithServer must come after the accept result is checked");
+			CompiledCalls.NeverCalls(type, "ApplyAutoAcceptHostingDeals", "ldfld DealWindow.AllDeals");
+			CompiledCalls.InOrder(type, "ApplyAutoAcceptHostingDeals", "call MarketFeatures.FindPendingDeals", "call MarketFeatures.WarnOnce", "call Deal.StillValid", "call DealWindow.ActuallyAcceptDeal", "ldfld Deal.Active", "call GameSettings.RegisterWithServer");
+			CompiledCalls.Adjacent(type, "ApplyAutoAcceptHostingDeals", "ldc 0", "call Deal.StillValid");
 		}
 
 		[Fact]

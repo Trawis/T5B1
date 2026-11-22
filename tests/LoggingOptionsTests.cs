@@ -112,13 +112,9 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheTraceDoesNotUseTheUnityLogBecauseOfThePlayerLogLimits()
 		{
-			foreach (var file in SourceFiles())
-			{
-				var source = SourceCode.Normalize(File.ReadAllText(file));
-				Assert.DoesNotContain("Debug.Log(", source);
-				Assert.DoesNotContain("Debug.LogWarning(", source);
-				Assert.DoesNotContain("Debug.LogError(", source);
-			}
+			CompiledCalls.OnlyIn("call Debug.Log");
+			CompiledCalls.OnlyIn("call Debug.LogWarning");
+			CompiledCalls.OnlyIn("call Debug.LogError");
 		}
 	}
 }

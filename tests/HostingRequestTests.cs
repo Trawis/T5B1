@@ -4,11 +4,6 @@ namespace Trainer_v5.Tests
 {
 	public class HostingRequestTests
 	{
-		private static string PushDealBody()
-		{
-			return SourceCode.Body(SourceCode.Read("Features", "MarketFeatures.cs"), "internal static void PushDeal");
-		}
-
 		[Fact]
 		public void OnlyARequestWithNoBidderAndTheDeveloperAsClientIsLegacy()
 		{
@@ -26,12 +21,10 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheRepairOnlyClearsTheRequestFlagOfDealsTheDetectionAccepts()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "MarketFeatures.cs"), "internal static int RepairLegacyHostingRequests");
+			var steps = CompiledCalls.Steps(typeof(MarketFeatures), "RepairLegacyHostingRequests");
 
-			Assert.Contains("IsLegacyRequestDeal(", body);
-			Assert.Contains("deal.Request = false", body);
-			Assert.DoesNotContain("PerPower", body);
-			Assert.DoesNotContain("Accepted", body);
+			CompiledCalls.InOrder(typeof(MarketFeatures), "RepairLegacyHostingRequests", "call MarketFeatures.IsLegacyRequestDeal", "ldc 0", "stfld Deal.Request");
+			Assert.DoesNotContain(steps, step => step.Contains("PerPower") || step.Contains("Accepted"));
 		}
 	}
 }

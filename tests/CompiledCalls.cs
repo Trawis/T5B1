@@ -87,10 +87,48 @@ namespace Trainer_v5.Tests
 			throw new XunitException(type.Name + "." + methodName + " has no consecutive steps \"" + string.Join("\", \"", run) + "\".");
 		}
 
-		// Every trainer method containing the step, by its top-level type; a lambda body counts for the type that owns it.
-		public static void OnlyIn(string step, params string[] allowedTypes)
+		public static void Count(Type type, string methodName, string step, int expected)
+		{
+			var found = 0;
+			foreach (var item in Steps(type, methodName))
+			{
+				if (item == step)
+				{
+					found++;
+				}
+			}
+
+			Assert.True(found == expected, type.Name + "." + methodName + " has \"" + step + "\" " + found + " time(s), expected " + expected + ".");
+		}
+
+		// Allowed places are "Type" or "Type.Method"; a lambda body counts for the method and top-level type that own it.
+		public static void OnlyIn(string step, params string[] allowed)
+		{
+			var offenders = Where(steps => steps.Contains(step), allowed);
+			Assert.True(offenders.Count == 0, "\"" + step + "\" is only allowed in " + (allowed.Length == 0 ? "no method" : string.Join(", ", allowed)) + "; found in " + string.Join(", ", offenders) + ".");
+		}
+
+		// Every trainer method, as "Type.Method", whose own steps (lambda bodies counted separately) match.
+		public static SortedSet<string> Where(Func<List<string>, bool> matches, params string[] allowed)
 		{
 			var offenders = new SortedSet<string>(StringComparer.Ordinal);
+			foreach (var method in AllMethods())
+			{
+				var owner = method.Key.Substring(0, method.Key.IndexOf('.'));
+				if (matches(method.Value) && Array.IndexOf(allowed, owner) < 0 && Array.IndexOf(allowed, method.Key) < 0)
+				{
+					offenders.Add(method.Key);
+				}
+			}
+
+			return offenders;
+		}
+
+		// Each trainer method body as "TopLevelType.Method" and its own steps; lambda bodies are separate entries named
+		// after the method that owns them.
+		public static List<KeyValuePair<string, List<string>>> AllMethods()
+		{
+			var methods = new List<KeyValuePair<string, List<string>>>();
 			foreach (var handle in Reader.MethodDefinitions)
 			{
 				var method = Reader.GetMethodDefinition(handle);
@@ -101,14 +139,46 @@ namespace Trainer_v5.Tests
 
 				var steps = new List<string>();
 				Collect(handle, steps, new HashSet<MethodDefinitionHandle>(), followLambdas: false);
-				var owner = Outermost(method.GetDeclaringType());
-				if (steps.Contains(step) && Array.IndexOf(allowedTypes, owner) < 0)
+				var place = Outermost(method.GetDeclaringType()) + "." + OwningMethod(Reader.GetString(method.Name));
+				methods.Add(new KeyValuePair<string, List<string>>(place, steps));
+			}
+
+			return methods;
+		}
+
+		// True when the steps hold this run of consecutive steps; a null entry matches any step.
+		public static bool HasRun(List<string> steps, params Func<string, bool>[] run)
+		{
+			for (var i = 0; i + run.Length <= steps.Count; i++)
+			{
+				var matches = true;
+				for (var j = 0; j < run.Length && matches; j++)
 				{
-					offenders.Add(owner + "." + Reader.GetString(method.Name));
+					matches = run[j] == null || run[j](steps[i + j]);
+				}
+
+				if (matches)
+				{
+					return true;
 				}
 			}
 
-			Assert.True(offenders.Count == 0, "\"" + step + "\" is only allowed in " + string.Join(", ", allowedTypes) + "; found in " + string.Join(", ", offenders) + ".");
+			return false;
+		}
+
+		// "<Update>b__29_0" is a lambda of Update.
+		private static string OwningMethod(string name)
+		{
+			if (name.StartsWith("<", StringComparison.Ordinal))
+			{
+				var end = name.IndexOf('>');
+				if (end > 1)
+				{
+					return name.Substring(1, end - 1);
+				}
+			}
+
+			return name;
 		}
 
 		private static bool Matches(TypeDefinitionHandle handle, Type type)

@@ -8,10 +8,10 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void GrantingCallsAcceptDemandWithoutTheRefreshFlagAndNeverRefundsTheCost()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Window", "EmployeeDemandChangeWindow.cs"), "private static void GrantDemand");
+			var type = typeof(Trainer_v5.Window.EmployeeDemandChangeWindow);
 
-			Assert.Contains("employee.AcceptDemand(choice, index, false)", body);
-			Assert.DoesNotContain("MakeTransaction", body);
+			CompiledCalls.Adjacent(type, "GrantDemand", "ldc 0", "call Employee.AcceptDemand");
+			CompiledCalls.NeverCalls(type, "GrantDemand", "call Company.MakeTransaction");
 		}
 	}
 }

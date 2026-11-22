@@ -7,13 +7,9 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheToggleChecksAgainAfterTheConfirmationAndOnlyFlipsTheFlagOnTheExistingEmployee()
 		{
-			var source = SourceCode.Read("FounderToggle.cs");
-
-			Assert.Contains("Confirmation.AskAndApply(\"Founder\", string.Format(", source);
-			Assert.Contains("() => FindChange(target, shown), () => Apply(target, shown));", source);
-			Assert.Contains("FindBlocker(target)", SourceCode.Body(source, "private static string FindChange("));
-			Assert.Contains("Founder = !shown", SourceCode.Body(source, "private static string Apply("));
-			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"\.Founder = "));
+			CompiledCalls.InOrder(typeof(FounderToggle), "Start", "call FounderToggle.FindChange", "call FounderToggle.Apply", "call Confirmation.AskAndApply");
+			CompiledCalls.Calls(typeof(FounderToggle), "FindChange", "call FounderToggle.FindBlocker");
+			CompiledCalls.OnlyIn("stfld Employee.Founder", "FounderToggle.Apply");
 		}
 	}
 }

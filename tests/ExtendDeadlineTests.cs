@@ -30,10 +30,7 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheHelperKeepsEveryPartInTheConstructorOrderAndAddsOnlyOneYear()
 		{
-			var source = SourceCode.Read("Features", "WorkItemFeatures.cs");
-
-			Assert.Contains("new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1)", source);
-			Assert.DoesNotContain("new SDateTime(deadline.Year", source);
+			CompiledCalls.Adjacent(typeof(WorkItemFeatures), "ExtendedByYear", "ldfld SDateTime.Minute", "ldfld SDateTime.Hour", "ldfld SDateTime.Day", "ldfld SDateTime.Month", "ldfld SDateTime.Year", "ldc 1", "call SDateTime..ctor");
 		}
 	}
 }

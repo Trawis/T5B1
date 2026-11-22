@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,15 +11,8 @@ namespace Trainer_v5.Tests
 	public class LocalizationTests
 	{
 		private static readonly Regex Entry = new Regex(@"^(?<key>\w+)\s+""", RegexOptions.Compiled | RegexOptions.Multiline);
-		private static readonly Regex UsedKey = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(|CreateSettingToggle\(\s*\w+,\s*""(?<key>\w+)""", RegexOptions.Compiled);
-
-		private static readonly Regex BareText = new Regex(@"(?:SpawnDialog|AddPopupMessage|Notification\.Popup|Notification\.ShowInfo|Notification\.ShowWarning|ShowError|CreateLabel|SpawnInputDialog|SpawnWindow|RequestInt|RequestUInt|RequestFloat|UIFactory\.Label|UIFactory\.Button)\(\s*""(?<text>(?:[^""\\]|\\.)+)""\s*[,)]", RegexOptions.Compiled);
-
-		private static readonly Regex Formatted = new Regex(@"string\.Format\(\s*""(?<key>\w+)""\s*\.LocDef\(", RegexOptions.Compiled);
 
 		private static readonly Regex Placeholder = new Regex(@"\{(?<index>\d+)\}", RegexOptions.Compiled);
-
-		private static readonly Regex Fallback = new Regex(@"""(?<key>\w+)""\s*\.LocDef\(\s*""(?<text>[^""]*)""\s*\)", RegexOptions.Compiled);
 
 		private static readonly string[] EnglishSections = { "#Input fields", "#Actions", "#Toggles", "#Labels", "#Dialogs", "#Errors", "#Notifications" };
 
@@ -66,14 +60,11 @@ namespace Trainer_v5.Tests
 		{
 			var english = new HashSet<string>(Keys(File.ReadAllText(EnglishFile())));
 			var missing = new SortedSet<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			foreach (var pair in LocDefPairs())
 			{
-				foreach (Match match in UsedKey.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				if (!english.Contains(pair.Key))
 				{
-					if (!english.Contains(match.Groups["key"].Value))
-					{
-						missing.Add(match.Groups["key"].Value);
-					}
+					missing.Add(pair.Key);
 				}
 			}
 
@@ -84,30 +75,45 @@ namespace Trainer_v5.Tests
 		public void CodeFallbackTextMatchesTheEnglishFile()
 		{
 			var mismatches = new List<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			foreach (var pair in LocDefPairs())
 			{
-				foreach (Match match in Fallback.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				var expected = Value("English", pair.Key);
+				var text = Escaped(pair.Value);
+				if (expected != null && expected != text)
 				{
-					var expected = Value("English", match.Groups["key"].Value);
-					if (expected != null && expected != match.Groups["text"].Value)
-					{
-						mismatches.Add(match.Groups["key"].Value + ": '" + match.Groups["text"].Value + "' vs '" + expected + "'");
-					}
+					mismatches.Add(pair.Key + ": '" + text + "' vs '" + expected + "'");
 				}
 			}
 
 			Assert.True(mismatches.Count == 0, "Code fallback differs from English file: " + string.Join("; ", mismatches));
 		}
 
+		// A literal whose next call shows text to the player must be looked up through LocDef instead. A literal that is a
+		// single identifier ("Cogs", "TrainerButton") is an icon or object name, not text the player reads.
 		[Fact]
 		public void ActiveMessagesAndLabelsGoThroughLocDef()
 		{
 			var bare = new SortedSet<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			foreach (var method in CompiledCalls.AllMethods())
 			{
-				foreach (Match match in BareText.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				var steps = method.Value;
+				for (var i = 0; i < steps.Count; i++)
 				{
-					bare.Add(Path.GetFileName(file) + ": " + match.Groups["text"].Value);
+					if (!steps[i].StartsWith("ldstr ", StringComparison.Ordinal) || !Regex.IsMatch(steps[i].Substring(6), @"\W") || steps[i].Substring(6).Trim().Length == 0)
+					{
+						continue;
+					}
+
+					var next = i + 1;
+					while (next < steps.Count && !steps[next].StartsWith("call ", StringComparison.Ordinal))
+					{
+						next++;
+					}
+
+					if (next < steps.Count && Array.IndexOf(DisplayCalls, steps[next]) >= 0)
+					{
+						bare.Add(method.Key + ": " + steps[i].Substring(6));
+					}
 				}
 			}
 
@@ -117,13 +123,18 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void MessagesWithPlaceholdersAreFormattedByTheCode()
 		{
-			// A numbered placeholder in the English text is only filled in when the code passes the looked-up text to string.Format.
+			// A numbered placeholder in the English text is only filled in when the code passes the looked-up text to
+			// string.Format: a key counts as formatted when string.Format follows its lookup in the same method.
 			var formatted = new SortedSet<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
+			foreach (var method in CompiledCalls.AllMethods())
 			{
-				foreach (Match match in Formatted.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
+				var steps = method.Value;
+				for (var i = 0; i + 2 < steps.Count; i++)
 				{
-					formatted.Add(match.Groups["key"].Value);
+					if (IsLocDefAt(steps, i) && Placeholder.IsMatch(steps[i + 1]) && steps.IndexOf("call String.Format", i + 3) > 0)
+					{
+						formatted.Add(steps[i].Substring(6));
+					}
 				}
 			}
 
@@ -167,6 +178,43 @@ namespace Trainer_v5.Tests
 
 			Assert.True(entryBeforeHeader.Count == 0, "Entries before the first header: " + string.Join(", ", entryBeforeHeader));
 			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", headers));
+		}
+
+		private static readonly string[] DisplayCalls =
+		{
+			"call Notification.Popup", "call Notification.ShowInfo", "call Notification.ShowWarning", "call Notification.ShowError",
+			"call WindowManager.SpawnDialog", "call HUD.AddPopupMessage", "call WindowManager.SpawnInputDialog", "call WindowManager.SpawnWindow",
+			"call InputHelper.RequestInt", "call InputHelper.RequestUInt", "call InputHelper.RequestFloat", "call UIFactory.Label", "call UIFactory.Button", "call UIHelper.CreateLabel",
+		};
+
+		private static bool IsLocDefAt(List<string> steps, int i)
+		{
+			return steps[i].StartsWith("ldstr ", StringComparison.Ordinal) && steps[i + 1].StartsWith("ldstr ", StringComparison.Ordinal) && steps[i + 2] == "call Localization.LocDef";
+		}
+
+		// Every "Key".LocDef("text") in the compiled trainer: two string constants followed by the LocDef call.
+		private static List<KeyValuePair<string, string>> LocDefPairs()
+		{
+			var pairs = new List<KeyValuePair<string, string>>();
+			foreach (var method in CompiledCalls.AllMethods())
+			{
+				for (var i = 0; i + 2 < method.Value.Count; i++)
+				{
+					if (IsLocDefAt(method.Value, i))
+					{
+						pairs.Add(new KeyValuePair<string, string>(method.Value[i].Substring(6), method.Value[i + 1].Substring(6)));
+					}
+				}
+			}
+
+			Assert.True(pairs.Count > 100, "The LocDef lookups were not found in the compiled trainer: " + pairs.Count);
+			return pairs;
+		}
+
+		// The English file keeps escapes as written; the compiled text has the characters.
+		private static string Escaped(string text)
+		{
+			return text.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"");
 		}
 
 		private static string[] Lines(string text)

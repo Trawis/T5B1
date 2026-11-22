@@ -4,33 +4,25 @@ namespace Trainer_v5.Tests
 {
 	public class ForceBankruptTests
 	{
-		private static string Member(string signature)
-		{
-			return SourceCode.Body(SourceCode.Read("Features", "CompanyFeatures.cs"), signature);
-		}
 
 		[Fact]
 		public void TheForceActionNeverTogglesTheFlagAndAsksBeforeSettingIt()
 		{
-			var body = Member("internal static void ForceBankruptAction");
+			var type = typeof(CompanyFeatures);
 
-			Assert.DoesNotContain("= !", body);
-			Assert.Contains("matches.Count > 1", body);
-			Assert.Contains("IsBankruptTarget(simCompany)", body);
-			Assert.DoesNotContain("Bankrupt = true", body);
-			Assert.DoesNotContain("YES", body);
-			Assert.Contains("AskForceBankrupt(matches[0])", body);
-			Assert.Contains("() => AICompanyChange(company), () => ConfirmForceBankrupt(company));", Member("internal static void AskForceBankrupt"));
+			CompiledCalls.Calls(type, "ForceBankruptAction", "call CompanyFeatures.IsBankruptTarget");
+			CompiledCalls.InOrder(type, "ForceBankruptAction", "call SharedMessages.CompanyNameAmbiguous", "call CompanyFeatures.AskForceBankrupt");
+			CompiledCalls.NeverCalls(type, "ForceBankruptAction", "stfld Company.Bankrupt");
+			CompiledCalls.InOrder(type, "AskForceBankrupt", "call CompanyFeatures.AICompanyChange", "call CompanyFeatures.ConfirmForceBankrupt", "call Confirmation.AskAndApply");
 		}
 
 		[Fact]
 		public void BankruptAllLeavesThePlayersCompanyAlone()
 		{
-			var body = Member("private static List<SimulatedCompany> FindAllBankruptTargets");
+			var type = typeof(CompanyFeatures);
 
-			Assert.Contains("IsBankruptTarget(company)", body);
-			Assert.Contains("!company.Bankrupt", body);
-			Assert.Contains("IsSameTargets(companies, FindAllBankruptTargets())", Member("internal static void AIBankrupt"));
+			CompiledCalls.InOrder(type, "FindAllBankruptTargets", "call CompanyFeatures.IsBankruptTarget", "ldfld Company.Bankrupt");
+			CompiledCalls.InOrder(type, "AIBankrupt", "call CompanyFeatures.FindAllBankruptTargets", "call CompanyFeatures.FindAllBankruptTargets", "call Confirmation.IsSameTargets");
 		}
 
 		[Theory]
@@ -46,14 +38,11 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void TheConfirmationChecksTheCompanyAgainBeforeSettingTheFlag()
 		{
-			var change = Member("private static string AICompanyChange(");
-			var live = Member("internal static bool IsLiveAICompany(");
+			var type = typeof(CompanyFeatures);
 
-			Assert.Contains("IsLiveAICompany(company)", change);
-			Assert.Contains("company.Bankrupt ?", change);
-			Assert.Contains("Companies.TryGetValue(company.ID", live);
-			Assert.Contains("IsBankruptTarget(company)", live);
-			Assert.DoesNotContain("= !", Member("private static string ConfirmForceBankrupt("));
+			CompiledCalls.InOrder(type, "AICompanyChange", "call CompanyFeatures.IsLiveAICompany", "ldfld Company.Bankrupt");
+			CompiledCalls.InOrder(type, "IsLiveAICompany", "ldfld Company.ID", "call Dictionary`2.TryGetValue", "call CompanyFeatures.IsBankruptTarget");
+			CompiledCalls.Adjacent(type, "ConfirmForceBankrupt", "ldc 1", "stfld Company.Bankrupt");
 		}
 	}
 }

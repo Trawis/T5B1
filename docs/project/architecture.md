@@ -269,8 +269,12 @@ game shows.
   assemblies outside Unity: settings and saves, input validation, scheduling,
   transitions, localization and the Workshop source pipeline. Code that
   touches live game objects needs in-game testing.
-- Tests of which method calls what read the compiled `Trainer_v5.dll`
-  through `CompiledCalls` (calls, strings, constants and fields in IL order,
-  with lambda bodies inlined), not the source text.
+- Decisions are pure functions tested by calling them. Wiring (which method
+  calls what, and in which order) is read from the compiled `Trainer_v5.dll`
+  through `CompiledCalls`: calls, strings, constants and fields in IL order,
+  with lambda bodies inlined.
+- Source is read as text only for rules about the source itself: the Workshop
+  injector and compiler checks and the `LogDebug` guard.
+  `SourceTextAllowListTests` lists these files and fails for any other.
 
 Open technical debt is tracked as GitHub issues labelled `type: tech-debt`.

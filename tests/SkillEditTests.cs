@@ -6,11 +6,6 @@ namespace Trainer_v5.Tests
 {
 	public class SkillEditTests
 	{
-		private static string EditorSource()
-		{
-			return SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs");
-		}
-
 		[Theory]
 		[InlineData(-3, true)]
 		[InlineData(0, false)]
@@ -45,14 +40,12 @@ namespace Trainer_v5.Tests
 		[Fact]
 		public void EveryWriteChecksTheEmployeeAgainAndHasOneCallSite()
 		{
-			var source = EditorSource();
+			var type = typeof(Trainer_v5.Window.EmployeeSkillChangeWindow);
 
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void SetSkills()"), "target.IsStillValid()", "AddSpecialization(", "the target is checked again before the write");
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void SetBaseSkills()"), "target.IsStillValid()", "SkillCeiling = 1f", "the target is checked again before the write");
-			SourceCode.AssertInOrder(SourceCode.Body(source, "private static void SetBaseSkills()"), "SkillCeiling = 1f", "ChangeSkillDirect(", "the ceiling is raised first");
-			Assert.Single(Regex.Matches(source, @"\.AddSpecialization\("));
-			Assert.Single(Regex.Matches(source, @"SkillCeiling = 1f"));
-			Assert.Single(Regex.Matches(source, @"\.ChangeSkillDirect\("));
+			CompiledCalls.InOrder(type, "SetSkills", "call EmployeeTarget.IsStillValid", "call Employee.AddSpecialization");
+			CompiledCalls.InOrder(type, "SetBaseSkills", "call EmployeeTarget.IsStillValid", "stfld Employee.SkillCeiling", "call Employee.ChangeSkillDirect");
+			CompiledCalls.OnlyIn("stfld Employee.SkillCeiling", "EmployeeSkillChangeWindow.SetBaseSkills");
+			CompiledCalls.OnlyIn("call Employee.AddSpecialization", "EmployeeSkillChangeWindow.SetSkills", "EmployeeFeatures.EmployeesToMax");
 		}
 	}
 }
