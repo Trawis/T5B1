@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using Xunit;
 
 namespace Trainer_v5.Tests
@@ -37,40 +35,22 @@ namespace Trainer_v5.Tests
 			Assert.False(once.StartsWith("Trainer: Trainer:", System.StringComparison.Ordinal));
 		}
 
+		// Input dialogs (SpawnInputDialog, via InputHelper) are a separate surface: they never get the popup prefix.
 		[Fact]
 		public void OnlyNotificationCallsTheGamePopupAndDialogApis()
 		{
-			// Allow-list: Notification.cs. Input dialogs (SpawnInputDialog, via InputHelper) are a separate surface and are
-			// not listed here because they never get the popup prefix.
-			var offenders = new List<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
-			{
-				var name = Path.GetFileName(file);
-				if (name == "Notification.cs")
-					continue;
-
-				var source = SourceCode.Normalize(File.ReadAllText(file));
-				if (source.Contains("AddPopupMessage("))
-					offenders.Add(name + ": AddPopupMessage");
-				if (source.Contains("WindowManager.SpawnDialog("))
-					offenders.Add(name + ": SpawnDialog");
-				if (name != "Confirmation.cs" && source.Contains("ShowMessageBox("))
-					offenders.Add(name + ": ShowMessageBox");
-				if (source.Contains("PopupManager.AddPopup("))
-					offenders.Add(name + ": PopupManager.AddPopup");
-			}
-
-			Assert.True(offenders.Count == 0, "Use Notification.Popup / ShowInfo / ShowWarning / ShowError: " + string.Join("; ", offenders));
+			CompiledCalls.OnlyIn("call HUD.AddPopupMessage", "Notification");
+			CompiledCalls.OnlyIn("call WindowManager.SpawnDialog", "Notification");
+			CompiledCalls.OnlyIn("call PopupManager.AddPopup", "Notification");
+			CompiledCalls.OnlyIn("call WindowManager.ShowMessageBox", "Confirmation");
 		}
 
 		// HUD.AddPopupMessage ignores every id except PopupIDs.None (-1); sound 0 (Issue) would file the popup under Issues.
 		[Fact]
 		public void ThePopupUsesTheNoneIdAndANonIssueSound()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Notification.cs"), "public static void Popup(");
-
-			Assert.Contains(", PopupManager.PopupIDs.None);", body);
-			Assert.Contains("PopupManager.NotificationSound.Neutral", body);
+			CompiledCalls.Adjacent(typeof(Notification), "Popup", "ldc " + (int)PopupManager.NotificationSound.Neutral, "ldc.r4 0", "ldc " + (int)PopupManager.PopupIDs.None);
+			CompiledCalls.InOrder(typeof(Notification), "Popup", "call Notification.WithPrefix", "ldc " + (int)PopupManager.PopupIDs.None, "call HUD.AddPopupMessage");
 		}
 
 		[Fact]

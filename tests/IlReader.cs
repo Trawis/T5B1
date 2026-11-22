@@ -66,9 +66,9 @@ namespace Trainer_v5.Tests
 			return called;
 		}
 
-		private delegate void Visitor(int offset, OpCode code, int operandOffset);
+		internal delegate void Visitor(int offset, OpCode code, int operandOffset);
 
-		private static void Walk(byte[] il, Visitor visit)
+		internal static void Walk(byte[] il, Visitor visit)
 		{
 			var position = 0;
 			while (position < il.Length)
