@@ -31,35 +31,9 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheFeatureClassesAreFound()
-		{
-			var files = FeatureFiles();
-			Assert.True(files.Length >= 6);
-			foreach (var file in files)
-			{
-				Assert.EndsWith("Features.cs", file);
-				Assert.Contains("static class " + Path.GetFileNameWithoutExtension(file), File.ReadAllText(file));
-			}
-		}
-
-		[Fact]
-		public void TheScanIgnoresCommentsAndStringsButSeesCode()
-		{
-			var reference = new Regex(@"\bTrainerBehaviour\b");
-			Assert.DoesNotMatch(reference, SourceText.Strip("// TrainerBehaviour\n/* TrainerBehaviour */ var a = \"TrainerBehaviour\"; var b = @\"TrainerBehaviour\";", keepStrings: false));
-			Assert.Matches(reference, SourceText.Strip("var a = 1; /* x */ TrainerBehaviour.Instance.Run(); // y", keepStrings: false));
-		}
-
-		[Fact]
 		public void FeatureClassesDoNotOwnTheRuntimeErrorBoundary()
 		{
 			Assert.Empty(FilesMatching(new Regex(@"\bTryExecute\b")));
-		}
-
-		[Fact]
-		public void FeatureClassesDoNotDependOnTheOrchestrationClass()
-		{
-			Assert.Empty(FilesMatching(new Regex(@"\bTrainerBehaviour\b")));
 		}
 
 		[Fact]

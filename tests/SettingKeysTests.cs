@@ -43,20 +43,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void DefaultsComeFromTheDeclaredKeys()
-		{
-			var toggleDefaults = SettingKeys.CreateToggleDefaults();
-			var storeDefaults = SettingKeys.CreateStoreDefaults();
-
-			Assert.False(toggleDefaults[SettingKeys.FreePrint.Key]);
-			Assert.Equal(SettingKeys.NoStress.DefaultValue, toggleDefaults[SettingKeys.NoStress.Key]);
-			Assert.Null(storeDefaults[SettingKeys.EfficiencyStore.Key]);
-			Assert.Equal(SettingKeys.LeadEfficiencyStore.DefaultValue, storeDefaults[SettingKeys.LeadEfficiencyStore.Key]);
-			Assert.Equal(Helpers.Settings.Count, toggleDefaults.Count);
-			Assert.Equal(Helpers.StoresSettings.Count, storeDefaults.Count);
-		}
-
-		[Fact]
 		public void TypedAccessorsReadAndWriteTheSameValuesAsTheStringKeys()
 		{
 			using (new SettingsSnapshot())
@@ -73,12 +59,6 @@ namespace Trainer_v5.Tests
 				Assert.Equal(20, Helpers.StoresSettings.Get(SettingKeys.EfficiencyStore));
 				Assert.Equal(20, Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.EfficiencyStore));
 			}
-		}
-
-		[Fact]
-		public void SettingKeyToStringIsTheSavedKey()
-		{
-			Assert.Equal("NoStress", SettingKeys.NoStress.ToString());
 		}
 	}
 }

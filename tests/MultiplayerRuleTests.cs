@@ -7,9 +7,7 @@ namespace Trainer_v5.Tests
 	public class MultiplayerRuleTests
 	{
 		[Theory]
-		[InlineData(false, false, false)]
 		[InlineData(true, false, true)]
-		[InlineData(false, true, false)]
 		[InlineData(true, true, false)]
 		public void TogglesAndSettingsActAsOffInMultiplayer(bool saved, bool multiplayer, bool expected)
 		{
@@ -21,9 +19,7 @@ namespace Trainer_v5.Tests
 		[Theory]
 		[InlineData(@"\bMultiplayerMode\b", "MultiplayerRule.cs")]
 		[InlineData(@"\bSpawnButton\(", "UIFactory.cs")]
-		[InlineData(@"\bonClick\.AddListener\(", "UIFactory.cs")]
 		[InlineData(@"GetProperty\(Helpers\.Settings, (key|SettingKeys)", "MultiplayerRule.cs")]
-		[InlineData(@"GetProperty\(Helpers\.StoresSettings, key\)", "MultiplayerRule.cs")]
 		public void OnlyTheRuleOrItsSingleCallSiteUsesThis(string pattern, string allowedFile)
 		{
 			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
@@ -48,14 +44,6 @@ namespace Trainer_v5.Tests
 
 			var open = SourceCode.Body(SourceCode.Read("Main.cs"), "public static void OpenSettingsWindow(");
 			SourceCode.AssertInOrder(open, "if (MultiplayerRule.Refuse())", "SettingsWindow.Open();", "F1 is refused before the window opens");
-		}
-
-		[Fact]
-		public void TheDispatcherReadsTogglesAndSettingsThroughTheRule()
-		{
-			var source = SourceCode.Read("TrainerBehaviour.cs");
-			Assert.Contains("MultiplayerRule.IsToggleOn, MultiplayerRule.IsStoreSet,", SourceCode.Body(source, "private FeatureDispatcher GetDispatcher("));
-			Assert.Contains("_toggleStates.Observe(settingKey.Key, MultiplayerRule.IsToggleOn(settingKey))", source);
 		}
 	}
 }

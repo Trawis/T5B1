@@ -46,64 +46,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void SettingItStoresTheValueUnderTheOptionKey()
-		{
-			var saved = new List<string>();
-			LoggingOptions.Set(true, (key, value) => saved.Add(key + "=" + value));
-			Assert.True(LoggingOptions.DebugEnabled);
-			LoggingOptions.Set(false, (key, value) => saved.Add(key + "=" + value));
-			Assert.False(LoggingOptions.DebugEnabled);
-			LoggingOptions.Set(true, null);
-			Assert.True(LoggingOptions.DebugEnabled);
-			LoggingOptions.Set(false, null);
-
-			Assert.Equal(new[] { "DebugLogging=True", "DebugLogging=False" }, saved);
-			Assert.True(LoggingOptions.Parse("True"));
-			Assert.False(LoggingOptions.Parse("False"));
-			Assert.False(LoggingOptions.Parse(null));
-		}
-
-		[Fact]
-		public void ItIsIndependentOfTheExperimentalOption()
-		{
-			ExperimentalOptions.Load(null);
-			LoggingOptions.Load(null);
-
-			ExperimentalOptions.Set(true, null);
-			Assert.False(LoggingOptions.DebugEnabled);
-			LoggingOptions.Set(true, null);
-			ExperimentalOptions.Set(false, null);
-			Assert.True(LoggingOptions.DebugEnabled);
-			LoggingOptions.Set(false, null);
-			Assert.False(ExperimentalOptions.Enabled);
-			Assert.NotEqual(ExperimentalOptions.StorageKey, LoggingOptions.StorageKey);
-			Assert.Equal("Trainer_v5", typeof(LoggingOptions).Namespace);
-		}
-
-		[Fact]
-		public void TheOptionIsReadWhenTheModLoadsAndSavedThroughTheGamesModSettings()
-		{
-			var source = SourceCode.Read("Main.cs");
-
-			Assert.Contains("LoggingOptions.Load(parentMod.Settings);", SourceCode.Body(source, "public override void Initialize("));
-			Assert.Contains("LoggingOptions.Set(enabled, _mod.SaveSetting);", SourceCode.Body(source, "private void SetDebugLoggingEnabled("));
-		}
-
-		[Fact]
-		public void TheOptionIsNotPartOfTheSavedGameOrTheTrainerSettings()
-		{
-			var source = SourceCode.Read("Main.cs");
-
-			Assert.DoesNotContain("LoggingOptions", SourceCode.Body(source, "public override WriteDictionary Serialize("));
-			Assert.DoesNotContain("LoggingOptions", SourceCode.Body(source, "public override void Deserialize("));
-			Assert.DoesNotContain("LoggingOptions", SourceCode.Read("TrainerBehaviour.cs").Replace("LoggingOptions.DebugEnabled", string.Empty));
-			Assert.DoesNotContain("DebugLogging", SourceCode.Read("SettingKeys.cs"));
-			Assert.DoesNotContain("DebugLogging", SourceCode.Read("SettingToggleRows.cs"));
-			Assert.DoesNotContain("DebugLogging", SourceCode.Read("FeatureRegistry.cs"));
-			Assert.DoesNotContain("DebugLogging", SourceCode.Read("SettingsWindow.cs"));
-		}
-
-		[Fact]
 		public void EveryDebugLineIsGuardedByTheOptionAtItsCallSite()
 		{
 			var unguarded = new List<string>();

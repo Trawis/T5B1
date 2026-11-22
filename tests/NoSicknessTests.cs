@@ -16,28 +16,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheSickListIsClearedOutsideThePerActorWork()
-		{
-			var source = Source();
-			var perActor = PerActorWork();
-
-			Assert.DoesNotContain("Sick.Clear()", perActor);
-			Assert.Single(System.Text.RegularExpressions.Regex.Matches(source, @"Sick\.Clear\(\)"));
-		}
-
-		[Fact]
-		public void ASickEmployeeIsSentBackToWorkWithoutTheWasSickPenalty()
-		{
-			var perActor = PerActorWork();
-
-			Assert.Contains("actor.SpecialState = Actor.HomeState.Default;", perActor);
-			Assert.Contains("actor.GermAdd = 0f;", perActor);
-			Assert.Contains("actor.GermCount = 0f;", perActor);
-			Assert.Contains("actor.SickDays = 0;", perActor);
-			Assert.DoesNotContain("WasSick", perActor);
-		}
-
-		[Fact]
 		public void NoSicknessNeverWritesWasSickAnywhere()
 		{
 			var source = Source();

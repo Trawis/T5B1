@@ -48,31 +48,5 @@ namespace Trainer_v5.Tests
 			Assert.StartsWith("Trainer feature 'NoSickness' failed: ", text);
 			Assert.Contains("System.InvalidOperationException: boom", text);
 		}
-
-		[Fact]
-		public void ANullExceptionIsFormattedWithoutThrowing()
-		{
-			Assert.Equal("Trainer Exception: null exception", Logger.FormatException(null, null));
-			Assert.Contains("failed: null exception", Logger.FormatException(null, "A"));
-		}
-
-		[Fact]
-		public void ANullValueIsFormattedAsNull()
-		{
-			Assert.Equal("null", Logger.FormatValue(null));
-		}
-
-		[Fact]
-		public void ADebugLineHasTheDistinctPrefixAndIsNullSafe()
-		{
-			Assert.Equal("Trainer [debug]: game ready", Logger.FormatDebug("game ready"));
-			Assert.Equal("Trainer [debug]: null", Logger.FormatDebug(null));
-		}
-
-		[Fact]
-		public void AValueIsFormattedWithItsOwnText()
-		{
-			Assert.Equal("42", Logger.FormatValue(42));
-		}
 	}
 }

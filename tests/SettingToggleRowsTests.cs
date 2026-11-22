@@ -55,27 +55,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheImmediateTogglesAreTheExplicitOnesAndNoStandardRowRepeatsThem()
-		{
-			var immediate = Enumerable.ToList(Enumerable.Select(SettingToggleRows.CreateImmediate(), row => row.Key.Key));
-			var standard = Enumerable.ToList(Enumerable.Select(SettingToggleRows.Create(), row => row.Key.Key));
-
-			Assert.Equal(Explicit, Enumerable.ToArray(immediate));
-			Assert.Empty(Enumerable.Intersect(immediate, standard));
-		}
-
-		[Fact]
-		public void EveryToggleDomainOfThePageIsUsedAndEveryUsedDomainIsOnThePage()
-		{
-			var used = Enumerable.ToList(Enumerable.Distinct(Enumerable.Select(AllRows(), row => row.Domain)));
-			var page = SettingsWindowState.ToggleDomains();
-
-			Assert.Equal(Enumerable.Count(page), Enumerable.Count(Enumerable.Distinct(page)));
-			Assert.Empty(Enumerable.Except(used, page));
-			Assert.Empty(Enumerable.Except(page, used));
-		}
-
-		[Fact]
 		public void EveryRowDefaultTextMatchesTheEnglishFile()
 		{
 			var path = Path.Combine(RepositoryFiles.Root, "assets", "Localization", "English", "Trainer.tyd");

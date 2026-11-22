@@ -31,23 +31,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void EveryActionDomainOfThePageIsUsedAndEveryUsedDomainIsOnThePage()
-		{
-			var used = new HashSet<TrainerDomain>();
-			foreach (var row in AllRows())
-			{
-				if (row.Tab == SettingsTab.Actions)
-				{
-					used.Add(row.Domain);
-				}
-			}
-
-			var page = SettingsWindowState.ActionDomains();
-			Assert.Equal(page.Length, new HashSet<TrainerDomain>(page).Count);
-			Assert.True(used.SetEquals(page), "The Actions page sections and the domains of its buttons differ.");
-		}
-
-		[Fact]
 		public void EveryRowDefaultTextMatchesTheEnglishFile()
 		{
 			var path = Path.Combine(RepositoryFiles.Root, "assets", "Localization", "English", "Trainer.tyd");

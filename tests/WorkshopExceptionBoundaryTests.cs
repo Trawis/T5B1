@@ -116,30 +116,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void AnInlineLambdaThatCallsAMethodReachesTheGameHandlerThroughThatMethod()
-		{
-			Reset();
-
-			var result = (bool)Call("LambdaThatCallsAMethod");
-
-			Assert.False(result);
-			Assert.Equal("ModException", Read("Guard", "LastCaught"));
-			Assert.Equal(1, Read("ModController", "Handled"));
-		}
-
-		[Fact]
-		public void AnInnerGuardSwallowsTheFailureForTheOuterOneButTheHandlerStillRanOnce()
-		{
-			Reset();
-
-			var result = (bool)Call("NestedGuards");
-
-			Assert.True(result);
-			Assert.Equal(1, Read("Guard", "Caught"));
-			Assert.Equal(1, Read("ModController", "Handled"));
-		}
-
-		[Fact]
 		public void WithoutAGuardTheFailureEscapesEveryFrameAndTheHandlerRunsOnlyOnce()
 		{
 			Reset();

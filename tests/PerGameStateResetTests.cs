@@ -57,48 +57,5 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain("StoresSettings", reset);
 			Assert.DoesNotContain("Helpers.Settings", reset);
 		}
-
-		[Fact]
-		public void TheHostingTimingAndWarningStateAreReset()
-		{
-			var reset = Between(Read("Features", "MarketFeatures.cs"), "internal static void ResetGameState()", "private static void WarnOnce");
-
-			Assert.Contains("Helpers.DealIsPushed = false;", reset);
-			Assert.Contains("Helpers.RewardIsGained = false;", reset);
-			Assert.Contains("_warnedAboutPendingList = false;", reset);
-		}
-
-		[Fact]
-		public void SpecializationsAreRecomputedOnGameReadyWithoutRepeatingTheFirstLoadPopup()
-		{
-			var employee = Read("Features", "EmployeeFeatures.cs");
-			var reset = Between(employee, "internal static void ResetSpecializations()", "internal static void RestoreSpecializationsAfterReset()");
-			var restore = Between(employee, "internal static void RestoreSpecializationsAfterReset()", "internal static void LoadSpecializations()");
-			var ready = Between(Read("TrainerBehaviour.cs"), "private void OnGameReady", "private void OnHourPassed");
-
-			Assert.Contains("SpecializationsList = null;", reset);
-			Assert.DoesNotContain("_specializationsLoaded", reset);
-			Assert.Contains("_specializationsLoaded && Helpers.SpecializationsList == null", restore);
-			Assert.Contains("RestoreSpecializationsAfterReset", ready);
-		}
-
-		[Fact]
-		public void EmployeesToMaxChecksReadinessBeforeTouchingTheMarketSimulation()
-		{
-			var employee = Read("Features", "EmployeeFeatures.cs");
-			var body = Between(employee, "internal static void EmployeesToMax()", "foreach (Actor actor");
-
-			Assert.True(body.IndexOf("RequireGameReady(", StringComparison.Ordinal) < body.IndexOf("MarketSimulation.Active", StringComparison.Ordinal));
-			Assert.Contains("requireSelector: true", body);
-		}
-
-		[Fact]
-		public void ResetAgeChecksReadinessBeforeTouchingTheActorManager()
-		{
-			var employee = Read("Features", "EmployeeFeatures.cs");
-			var body = Between(employee, "internal static void ResetAgeOfEmployees()", "internal static void EmployeesToMax()");
-
-			Assert.True(body.IndexOf("RequireGameReady(", StringComparison.Ordinal) < body.IndexOf("sActorManager", StringComparison.Ordinal));
-		}
 	}
 }

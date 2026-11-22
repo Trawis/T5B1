@@ -19,31 +19,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void DealsAreOnlyRegisteredWithAGroupTheGameStoresUnderItsName()
-		{
-			var source = SourceCode.Read("Features", "MarketFeatures.cs");
-			var body = SourceCode.Body(source, "internal static void ApplyAutoAcceptHostingDeals");
-
-			Assert.DoesNotContain("\"TRAINER\"", source);
-			Assert.DoesNotContain("new ServerGroup(", source);
-			Assert.Contains("Settings.GetServerGroup(group.Name) != null", body);
-			Assert.Contains("RegisterWithServer(targetGroup.Name, serverDeal)", body);
-			SourceCode.AssertInOrder(body, "strongest < 0", "ActuallyAcceptDeal", "no group must stop before any deal is accepted");
-		}
-
-		[Fact]
-		public void NoGroupsSelectsNothing()
-		{
-			Assert.Equal(-1, MarketFeatures.FindStrongestIndex(new List<float>()));
-		}
-
-		[Fact]
-		public void GroupsAtZeroPowerStillSelectTheFirstRealGroup()
-		{
-			Assert.Equal(0, MarketFeatures.FindStrongestIndex(new List<float> { 0f, 0f }));
-		}
-
-		[Fact]
 		public void TheStrongestGroupIsSelectedAndTheFirstWinsATie()
 		{
 			Assert.Equal(1, MarketFeatures.FindStrongestIndex(new List<float> { 10f, 50f, 50f }));

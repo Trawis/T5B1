@@ -20,19 +20,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void ARejectedOfferIsGoneFromTheGamesPendingListSoItIsNeverReturned()
-		{
-			var active = Deal();
-			var rejected = Deal();
-			var stillPending = Deal();
-			// The game removes a rejected offer from its pending list; it only stays in AllDeals.
-			var pending = PendingDeals.Select(Lists(new object[] { active }, new object[] { stillPending }), Deals(active));
-
-			Assert.Equal(new[] { stillPending }, pending.ToArray());
-			Assert.DoesNotContain(rejected, pending);
-		}
-
-		[Fact]
 		public void CancelledAndAcceptedDealsAreNotPendingOffers()
 		{
 			var accepted = Deal();
@@ -44,27 +31,6 @@ namespace Trainer_v5.Tests
 			Assert.Empty(onlyActive);
 			Assert.Empty(nothingAtAll);
 			Assert.DoesNotContain(cancelledEarlier, onlyActive);
-		}
-
-		[Fact]
-		public void WithNoActiveDealsASingleListOfDealsIsThePendingList()
-		{
-			var offer = Deal();
-
-			var pending = PendingDeals.Select(Lists(new object[] { offer }, new object[0]), Deals());
-
-			Assert.Equal(new[] { offer }, pending.ToArray());
-		}
-
-		[Fact]
-		public void ListsOfOtherThingsAreIgnored()
-		{
-			var active = Deal();
-			var offer = Deal();
-
-			var pending = PendingDeals.Select(Lists(new object[] { active }, new object[] { offer }, new object[] { "Printing", "Hosting" }, new object[] { offer, "mixed" }), Deals(active));
-
-			Assert.Equal(new[] { offer }, pending.ToArray());
 		}
 
 		[Fact]

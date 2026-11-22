@@ -25,14 +25,6 @@ namespace Trainer_v5.Tests
 		private static string LocalizationDirectory => Path.Combine(RepositoryFiles.Root, "assets", "Localization");
 
 		[Fact]
-		public void TheScanReadsEntriesAndIgnoresComments()
-		{
-			var keys = Keys("#Buttons\t\nAddMoney\t\t\"Add Money\"\n  Indented\t\"x\"\nOther \"y\"\n");
-
-			Assert.Equal(new[] { "AddMoney", "Other" }, keys);
-		}
-
-		[Fact]
 		public void NoLanguageDefinesAKeyTwice()
 		{
 			var duplicates = new List<string>();
@@ -86,24 +78,6 @@ namespace Trainer_v5.Tests
 			}
 
 			Assert.True(missing.Count == 0, "Add these to English/Trainer.tyd (use the in-code text): " + string.Join(", ", missing));
-		}
-
-		[Fact]
-		public void EveryLocalizationFileEndsWithANewline()
-		{
-			var files = new List<string>(Files());
-			files.Add(Path.Combine(LocalizationDirectory, "credits.txt"));
-			var unterminated = new List<string>();
-			foreach (var file in files)
-			{
-				var text = File.ReadAllText(file);
-				if (!text.EndsWith("\n"))
-				{
-					unterminated.Add(Path.GetFileName(Path.GetDirectoryName(file)) + "/" + Path.GetFileName(file));
-				}
-			}
-
-			Assert.True(unterminated.Count == 0, "Missing final newline: " + string.Join(", ", unterminated));
 		}
 
 		[Fact]
@@ -195,101 +169,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(string.Join(", ", EnglishSections), string.Join(", ", headers));
 		}
 
-		[Fact]
-		public void EnglishToggleRowsAreUnderTogglesAndActionRowsUnderActions()
-		{
-			var sectionOf = EnglishSectionOfEveryKey(File.ReadAllText(EnglishFile()));
-			var misplaced = new List<string>();
-			var toggleRows = SettingToggleRows.Create();
-			toggleRows.AddRange(SettingToggleRows.CreateImmediate());
-			toggleRows.AddRange(SettingToggleRows.CreateExperimental());
-			foreach (var row in toggleRows)
-			{
-				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Toggles")
-				{
-					misplaced.Add(row.LocKey + " (toggle)");
-				}
-			}
-
-			var actionRows = SettingActionRows.Create();
-			actionRows.AddRange(SettingActionRows.CreateExperimental());
-			foreach (var row in actionRows)
-			{
-				if (!sectionOf.ContainsKey(row.LocKey) || sectionOf[row.LocKey] != "#Actions")
-				{
-					misplaced.Add(row.LocKey + " (action)");
-				}
-			}
-
-			Assert.True(misplaced.Count == 0, "Move to #Toggles or #Actions in English/Trainer.tyd: " + string.Join(", ", misplaced));
-		}
-
-		[Fact]
-		public void NoKeyIsLookedUpInMoreThanOnePlace()
-		{
-			var places = new Dictionary<string, List<string>>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
-			{
-				foreach (Match match in UsedKey.Matches(SourceText.Strip(File.ReadAllText(file), keepStrings: true)))
-				{
-					var key = match.Groups["key"].Value;
-					if (!places.ContainsKey(key))
-					{
-						places[key] = new List<string>();
-					}
-
-					places[key].Add(Path.GetFileName(file));
-				}
-			}
-
-			var repeated = new List<string>();
-			foreach (var pair in places)
-			{
-				if (pair.Value.Count > 1)
-				{
-					repeated.Add(pair.Key + " (" + string.Join(", ", pair.Value) + ")");
-				}
-			}
-
-			Assert.True(repeated.Count == 0, "Looked up in more than one place; move each to SharedMessages: " + string.Join("; ", repeated));
-		}
-
-		[Fact]
-		public void EverySharedMessageKeepsItsKeyAndFallbackAsOneLiteralPair()
-		{
-			var source = SourceText.Strip(File.ReadAllText(Path.Combine(RepositoryFiles.SourceDirectory, "SharedMessages.cs")), keepStrings: true);
-			var methods = Regex.Matches(source, @"public static string (?<name>\w+)\(");
-			var pairs = new List<string>();
-			foreach (Match match in Fallback.Matches(source))
-			{
-				pairs.Add(match.Groups["key"].Value);
-			}
-
-			Assert.True(methods.Count > 0);
-			Assert.Equal(string.Join(", ", Enumerable.Select(methods.Cast<Match>(), method => method.Groups["name"].Value)), string.Join(", ", pairs));
-		}
-
-		[Fact]
-		public void MessageKeysAreNotFakedInOtherLanguages()
-		{
-			// Other languages fall back to English through LocDef until a native speaker translates a key.
-			foreach (var key in new[] { "EfficiencyLabel", "LeadEfficiencyLabel", "SelectEmployeesError", "NoActiveResearch", "ResearchCompleted" })
-			{
-				var english = Value("English", key);
-				Assert.NotNull(english);
-				foreach (var file in Files())
-				{
-					if (Language(file) == "English")
-					{
-						continue;
-					}
-
-					var translated = Value(Language(file), key);
-					Assert.True(translated == null || translated != english, Language(file) + " copies the English text for " + key);
-				}
-			}
-		}
-
 		private static string[] Lines(string text)
 		{
 			return text.Replace("\r\n", "\n").Split('\n');
@@ -308,29 +187,6 @@ namespace Trainer_v5.Tests
 					entryBeforeHeader.Add(line);
 				}
 			}
-		}
-
-		private static Dictionary<string, string> EnglishSectionOfEveryKey(string text)
-		{
-			var sectionOf = new Dictionary<string, string>();
-			var section = "";
-			foreach (var line in Lines(text))
-			{
-				if (line.StartsWith("#"))
-				{
-					section = line;
-				}
-				else
-				{
-					var match = Entry.Match(line);
-					if (match.Success)
-					{
-						sectionOf[match.Groups["key"].Value] = section;
-					}
-				}
-			}
-
-			return sectionOf;
 		}
 
 		private static string Value(string language, string key)

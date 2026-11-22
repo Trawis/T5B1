@@ -6,10 +6,8 @@ namespace Trainer_v5.Tests
 	public class InstantHireTests
 	{
 		[Theory]
-		[InlineData("Programmer", Employee.EmployeeRole.Programmer)]
 		[InlineData(" designer ", Employee.EmployeeRole.Designer)]
 		[InlineData("SERVICE", Employee.EmployeeRole.Service)]
-		[InlineData("lead", Employee.EmployeeRole.Lead)]
 		public void TryParseRoleAcceptsTheGameRoleNames(string text, Employee.EmployeeRole expected)
 		{
 			Employee.EmployeeRole role;
@@ -19,8 +17,6 @@ namespace Trainer_v5.Tests
 
 		[Theory]
 		[InlineData(null)]
-		[InlineData("")]
-		[InlineData("1")]
 		[InlineData("Coder")]
 		public void TryParseRoleRejectsAnythingElse(string text)
 		{

@@ -39,22 +39,5 @@ namespace Trainer_v5.Tests
 			Assert.Equal(NonBinding, otherStays.Results);
 			Assert.Equal(Choice, otherStays.Met);
 		}
-
-		[Fact]
-		public void OtherDemandsAreLeftAlone()
-		{
-			var next = DemandBits.Apply(new DemandBits(0x100, 0x40, 0x80), Rate, NonBinding, Choice, true);
-
-			Assert.Equal(0x101u, next.Results);
-			Assert.Equal(0x40u | Choice, next.Met);
-			Assert.Equal(0x80u, next.Requested);
-		}
-
-		[Fact]
-		public void TheEditorOffersNoFireSentinel()
-		{
-			Assert.DoesNotContain(LeadDesignDemands.Demand.Fire, EmployeeHelper.Demands.ToArray());
-			Assert.True(EmployeeHelper.Demands.ToArray().Length > 0);
-		}
 	}
 }

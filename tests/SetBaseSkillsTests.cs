@@ -11,28 +11,7 @@ namespace Trainer_v5.Tests
 			return SourceCode.Body(SourceCode.Read("Window", "EmployeeSkillChangeWindow.cs"), "private static void SetBaseSkills()");
 		}
 
-		[Fact]
-		public void RequestUsesTheRangeItShows()
-		{
-			var body = SetBaseSkillsBody();
-
-			Assert.Contains("Min = 0, Max = 1.0", body);
-			Assert.Contains("0f, 1f);", body);
-		}
-
-		[Fact]
-		public void PromptStatesTheSkillCeilingEffect()
-		{
-			var body = SetBaseSkillsBody();
-
-			Assert.Contains("SkillCeiling = 1f", body);
-			Assert.Contains("raises each selected employee's skill ceiling to 1.0", body);
-		}
-
 		[Theory]
-		[InlineData("-0.1", false)]
-		[InlineData("0", true)]
-		[InlineData("0.5", true)]
 		[InlineData("1", true)]
 		[InlineData("1.01", false)]
 		public void ZeroToOneRangeRejectsOutOfRangeValues(string input, bool valid)

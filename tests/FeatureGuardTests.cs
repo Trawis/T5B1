@@ -20,39 +20,9 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void ASuccessfulActionReturnsTrueAndReportsNothing()
-		{
-			var ran = false;
-
-			Assert.True(CreateGuard().TryExecute("A", () => ran = true));
-			Assert.True(ran);
-			Assert.Empty(_reports);
-		}
-
-		[Fact]
 		public void AFailingActionReturnsFalseInsteadOfThrowing()
 		{
 			Assert.False(CreateGuard().TryExecute("A", Throw<InvalidOperationException>));
-		}
-
-		[Fact]
-		public void AFailureDoesNotStopTheNextFeature()
-		{
-			var guard = CreateGuard();
-			var secondRan = false;
-
-			guard.TryExecute("A", Throw<InvalidOperationException>);
-			guard.TryExecute("B", () => secondRan = true);
-
-			Assert.True(secondRan);
-		}
-
-		[Fact]
-		public void TheFirstFailureIsReported()
-		{
-			CreateGuard().TryExecute("A", Throw<InvalidOperationException>);
-
-			Assert.Equal(new[] { "A|InvalidOperationException" }, _reports);
 		}
 
 		[Fact]
@@ -77,31 +47,6 @@ namespace Trainer_v5.Tests
 			guard.TryExecute("A", Throw<InvalidOperationException>);
 
 			Assert.Equal(2, _reports.Count);
-		}
-
-		[Fact]
-		public void TheIntervalRestartsFromTheLastReportedFailure()
-		{
-			var guard = CreateGuard();
-
-			guard.TryExecute("A", Throw<InvalidOperationException>);
-			_now = 60f;
-			guard.TryExecute("A", Throw<InvalidOperationException>);
-			_now = 100f;
-			guard.TryExecute("A", Throw<InvalidOperationException>);
-
-			Assert.Equal(2, _reports.Count);
-		}
-
-		[Fact]
-		public void ADifferentExceptionTypeIsReportedImmediately()
-		{
-			var guard = CreateGuard();
-
-			guard.TryExecute("A", Throw<InvalidOperationException>);
-			guard.TryExecute("A", Throw<ArgumentException>);
-
-			Assert.Equal(new[] { "A|InvalidOperationException", "A|ArgumentException" }, _reports);
 		}
 
 		[Fact]

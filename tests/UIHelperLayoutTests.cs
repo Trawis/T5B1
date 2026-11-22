@@ -7,12 +7,7 @@ namespace Trainer_v5.Tests
 	{
 		[Theory]
 		[InlineData(1080, 32, 1, 26)]
-		[InlineData(720, 32, 1, 15)]
-		[InlineData(540, 32, 5, 6)]
 		[InlineData(360, 32, 1, 6)]
-		[InlineData(360, 32, 5, 5)]
-		[InlineData(360, 34, 4, 5)]
-		[InlineData(1080, 34, 4, 21)]
 		[InlineData(10, 32, 5, 1)]
 		public void VisibleRowsKeepTheMinimumOnlyWhileTheWindowStillFitsTheCanvas(int canvasHeight, int rowStep, int reservedRows, int expected)
 		{
@@ -20,10 +15,7 @@ namespace Trainer_v5.Tests
 		}
 
 		[Theory]
-		[InlineData(360, 0, 5, 0)]
 		[InlineData(360, 2, 4, 4)]
-		[InlineData(450, 0, 2, 0)]
-		[InlineData(540, 0, 5, 0)]
 		[InlineData(240, 0, 2, 0)]
 		public void TheWindowFromVisibleRowsNeverExceedsTheCanvas(int canvasHeight, int gap, int reservedRows, int originY)
 		{

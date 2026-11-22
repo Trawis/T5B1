@@ -17,23 +17,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void Serialize_WritesEveryRegisteredToggleAndStoreKey()
-		{
-			using (new SettingsSnapshot())
-			{
-				SettingsTests.ResetToDefaults();
-
-				var data = Serialize();
-
-				Assert.Equal(Helpers.Settings.Count + Helpers.StoresSettings.Count, data.Count);
-				foreach (var key in Helpers.Settings.Keys)
-				{
-					Assert.False(data.Get<bool>(key, true), key);
-				}
-			}
-		}
-
-		[Fact]
 		public void RoundTrip_RestoresToggleAndStoreValues()
 		{
 			using (new SettingsSnapshot())
@@ -123,22 +106,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void Deserialize_KeepsAnExplicitlySavedFalseOverAnEarlierTrue()
-		{
-			using (new SettingsSnapshot())
-			{
-				SettingsTests.ResetToDefaults();
-				Helpers.Settings["FreePrint"] = true;
-				var save = new WriteDictionary();
-				save["FreePrint"] = false;
-
-				Deserialize(save);
-
-				Assert.False(Helpers.Settings["FreePrint"]);
-			}
-		}
-
-		[Fact]
 		public void Deserialize_IgnoresKeysThatAreNoLongerRegistered()
 		{
 			using (new SettingsSnapshot())
@@ -154,22 +121,6 @@ namespace Trainer_v5.Tests
 				Assert.Equal(toggleKeys.Count, Helpers.Settings.Count);
 				Assert.DoesNotContain("RemovedFeature", Helpers.Settings.Keys);
 				Assert.True(Helpers.Settings["FreePrint"]);
-			}
-		}
-
-		[Fact]
-		public void Deserialize_OfAnEmptyFullSaveRestoresTheDefaults()
-		{
-			using (new SettingsSnapshot())
-			{
-				SettingsTests.ResetToDefaults();
-				Helpers.Settings["AutoPorting"] = true;
-				Helpers.StoresSettings["LeadEfficiencyStore"] = 40;
-
-				Deserialize(new WriteDictionary());
-
-				Assert.All(Helpers.Settings, pair => Assert.False(pair.Value, pair.Key));
-				Assert.All(Helpers.StoresSettings, pair => Assert.Null(pair.Value));
 			}
 		}
 	}

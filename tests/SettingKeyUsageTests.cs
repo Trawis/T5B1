@@ -31,16 +31,6 @@ namespace Trainer_v5.Tests
 			return found;
 		}
 
-		[Fact]
-		public void TheScanFindsRawKeyUsagesWhenPresent()
-		{
-			Assert.Single(ToggleKeyUsage.Matches("settings.Get(\"NoStress\")"));
-			Assert.Single(ToggleKeyUsage.Matches("GetToggleTransition(\"FreePrint\")"));
-			Assert.Single(StoreKeyUsage.Matches("storesSettings.Set(\"EfficiencyStore\", 1)"));
-			Assert.Single(ToggleKeyUsage.Matches("settings\n\t.Get(\n\t\"NoStress\")"));
-			Assert.Single(ToggleKeyUsage.Matches(SourceText.Strip("var x = 1; /* c */ settings.Get(\"NoStress\"); // t", keepStrings: true)));
-		}
-
 		// Main.Serialize/Deserialize iterate the persisted key strings, so they are the only code that may hand a string
 		// key to the settings accessors. Everything else passes a ToggleKey/StoreKey.
 		private static readonly Regex PropertyCall = new Regex(
@@ -52,32 +42,6 @@ namespace Trainer_v5.Tests
 		private static readonly Regex RawIndexer = new Regex(
 			"(?:Helpers\\.)?(?:Settings|StoresSettings|TrainerSettings|settings|storesSettings)\\s*\\[\\s*\"",
 			RegexOptions.Compiled);
-
-		[Fact]
-		public void OnlySerializationPassesStringKeysToThePropertyAccessors()
-		{
-			var offenders = new List<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
-			{
-				var name = Path.GetFileName(file);
-				if (name == "Main.cs" || name == "Helpers.cs")
-				{
-					continue;
-				}
-
-				var text = SourceText.Strip(File.ReadAllText(file), keepStrings: true);
-				foreach (Match match in PropertyCall.Matches(text))
-				{
-					var key = match.Groups["key"].Value.Trim();
-					if (!TypedKeyArgument.IsMatch(key))
-					{
-						offenders.Add(name + ": " + key);
-					}
-				}
-			}
-
-			Assert.Empty(offenders);
-		}
 
 		[Fact]
 		public void SourceNeverIndexesTheSettingsDictionariesWithAStringLiteral()

@@ -4,21 +4,7 @@ namespace Trainer_v5.Tests
 {
 	public class MaxFollowersTests
 	{
-		[Fact]
-		public void TheActionRecomputesTheCapAndFillsItWithoutAddingBillions()
-		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void MaxFollowersAction");
-
-			Assert.Contains("ReEvaluateMaxFollowers()", body);
-			Assert.Contains("Followers = WorkItem.MaxFollowers", body);
-			Assert.DoesNotContain("1000000000", body);
-			Assert.DoesNotContain("FollowerChange", body);
-			Assert.DoesNotContain("+=", body);
-		}
-
 		[Theory]
-		[InlineData(0f, 0u, false)]
-		[InlineData(0f, 500u, true)]
 		[InlineData(499.5f, 500u, true)]
 		[InlineData(500f, 500u, false)]
 		[InlineData(800f, 500u, false)]

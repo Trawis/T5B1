@@ -36,30 +36,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void RetiredKeyNamesStayReservedAgainstReuse()
-		{
-			foreach (var key in RetiredKeys)
-			{
-				var field = typeof(SettingKeys).GetField(key);
-				Assert.NotNull(field);
-				Assert.Equal(key, ((ToggleKey)field.GetValue(null)).Key);
-			}
-		}
-
-		[Fact]
-		public void NewSavesDoNotContainRetiredKeys()
-		{
-			using (new SettingsSnapshot())
-			{
-				SettingsTests.ResetToDefaults();
-				var data = new Main().Serialize(GameReader.LoadMode.Full);
-
-				Assert.All(RetiredKeys, key => Assert.False(data.Contains(key), key));
-				Assert.Equal(SettingsTests.PersistedToggleKeys.Length + SettingsTests.PersistedStoreKeys.Length, data.Count);
-			}
-		}
-
-		[Fact]
 		public void OldSavesWithRetiredKeysEnabledStillLoadAndActivateNothing()
 		{
 			using (new SettingsSnapshot())

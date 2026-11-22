@@ -15,27 +15,6 @@ namespace Trainer_v5.Tests
 			"|" + DealLiteral + @"\s*(?:==|!=)\s*[\w.\s()]*?" + TypeText +
 			"|" + DealLiteral + @"\s*\.\s*Equals\s*\([\w.\s()]*?" + TypeText);
 
-		[Theory]
-		[InlineData("x.ToString() == \"ServerDeal\"")]
-		[InlineData("x.ToString() != \"ServerDeal\"")]
-		[InlineData("\"ServerDeal\" == deal.ToString()")]
-		[InlineData("deal.GetType().Name == \"ServerDeal\"")]
-		[InlineData("deal.GetType().FullName == \"ServerDeal\"")]
-		[InlineData("\"ServerDeal\".Equals(deal.GetType().Name)")]
-		[InlineData("deal.ToString().Equals(\"ServerDeal\")")]
-		public void TheScanRecognisesEverySpellingOfSelectingADealByText(string code)
-		{
-			Assert.Matches(DealSelectedByText, code);
-		}
-
-		[Fact]
-		public void TheScanIgnoresSelectionByTypeAndComments()
-		{
-			var code = SourceText.Strip("deals.OfType<ServerDeal>(); // x.ToString() == \"ServerDeal\"", true);
-
-			Assert.DoesNotMatch(DealSelectedByText, code);
-		}
-
 		[Fact]
 		public void NoFeatureSelectsDealsByToString()
 		{

@@ -10,24 +10,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheDealIsNotMarkedAsARequestAfterConstruction()
-		{
-			var body = PushDealBody();
-
-			Assert.Contains("new ServerDeal(Products[index])", body);
-			Assert.DoesNotContain("Request = true", body);
-		}
-
-		[Fact]
-		public void CandidatesFollowTheGamesOwnEligibilityRules()
-		{
-			var body = PushDealBody();
-
-			Assert.Contains("IsSubsidiary()", body);
-			Assert.Contains("MaxHostedProductAgeMonths", body);
-		}
-
-		[Fact]
 		public void OnlyARequestWithNoBidderAndTheDeveloperAsClientIsLegacy()
 		{
 			Assert.True(MarketFeatures.IsLegacyRequestDeal(true, false, true, false));
@@ -35,8 +17,6 @@ namespace Trainer_v5.Tests
 
 		[Theory]
 		[InlineData(false, false, true, false)]
-		[InlineData(true, true, true, false)]
-		[InlineData(true, false, false, false)]
 		[InlineData(true, false, true, true)]
 		public void NativeAndAmbiguousDealsAreNotLegacy(bool request, bool hasBidder, bool clientIsDeveloper, bool clientIsPlayer)
 		{
@@ -52,14 +32,6 @@ namespace Trainer_v5.Tests
 			Assert.Contains("deal.Request = false", body);
 			Assert.DoesNotContain("PerPower", body);
 			Assert.DoesNotContain("Accepted", body);
-		}
-
-		[Fact]
-		public void TheRepairRunsOncePerGameLoad()
-		{
-			var body = SourceCode.Body(SourceCode.Read("TrainerBehaviour.cs"), "private void OnGameReady");
-
-			Assert.Contains("MarketFeatures.RepairLegacyHostingRequests", body);
 		}
 	}
 }

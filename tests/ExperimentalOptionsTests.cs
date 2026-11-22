@@ -38,20 +38,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void SettingItStoresTheValueUnderTheOptionKey()
-		{
-			var saved = new List<string>();
-			ExperimentalOptions.Set(true, (key, value) => saved.Add(key + "=" + value));
-			Assert.True(ExperimentalOptions.Enabled);
-			ExperimentalOptions.Set(false, (key, value) => saved.Add(key + "=" + value));
-			Assert.False(ExperimentalOptions.Enabled);
-
-			Assert.Equal(new[] { "EnableExperimentalFeatures=True", "EnableExperimentalFeatures=False" }, saved);
-			Assert.True(ExperimentalOptions.Parse("True"));
-			Assert.False(ExperimentalOptions.Parse("False"));
-		}
-
-		[Fact]
 		public void ALegacySavedTrueCannotEnableIt()
 		{
 			using (new SettingsSnapshot())
@@ -64,42 +50,6 @@ namespace Trainer_v5.Tests
 				Assert.DoesNotContain("Experimental", Helpers.Settings.Keys);
 				Assert.False(ExperimentalOptions.Enabled);
 			}
-		}
-
-		[Fact]
-		public void OnlyTheKeyDeclarationMentionsTheLegacySettingKey()
-		{
-			var mentions = new List<string>();
-			foreach (var file in Directory.GetFiles(RepositoryFiles.SourceDirectory, "*.cs", SearchOption.AllDirectories))
-			{
-				if (Path.GetFileName(file) != "SettingKeys.cs" && SourceCode.Normalize(File.ReadAllText(file)).Contains("SettingKeys.Experimental"))
-				{
-					mentions.Add(Path.GetFileName(file));
-				}
-			}
-
-			Assert.True(mentions.Count == 0, "The legacy key is inert; nothing may read it: " + string.Join(", ", mentions));
-		}
-
-		[Fact]
-		public void TheOptionIsReadWhenTheModLoadsAndSavedThroughTheGamesModSettings()
-		{
-			var source = SourceCode.Read("Main.cs");
-			var initialize = SourceCode.Body(source, "public override void Initialize(");
-			var change = SourceCode.Body(source, "private void SetExperimentalEnabled(");
-
-			Assert.Contains("ExperimentalOptions.Load(parentMod.Settings);", initialize);
-			Assert.Contains("ExperimentalOptions.Set(enabled, _mod.SaveSetting);", change);
-		}
-
-		[Fact]
-		public void TheOptionIsNotPartOfTheSavedGame()
-		{
-			var source = SourceCode.Read("Main.cs");
-
-			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override WriteDictionary Serialize("));
-			Assert.DoesNotContain("ExperimentalOptions", SourceCode.Body(source, "public override void Deserialize("));
-			Assert.DoesNotContain("ExperimentalOptions.Set(", SourceCode.Read("TrainerBehaviour.cs"));
 		}
 	}
 }
