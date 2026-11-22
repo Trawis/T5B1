@@ -18,27 +18,24 @@ namespace Trainer_v5
 
 			var employee = target.Employee;
 			var shown = employee.Founder;
-			Confirmation.Ask("Founder", string.Format("FounderPrompt".LocDef("{0}: Founder {1} -> {2}"), employee.Name, Label(shown), Label(!shown)), () => Apply(target, shown));
+			Confirmation.AskAndApply("Founder", string.Format("FounderPrompt".LocDef("{0}: Founder {1} -> {2}"), employee.Name, Label(shown), Label(!shown)), () => FindChange(target, shown), () => Apply(target, shown));
 		}
 
-		// The dialog stays open while the game runs, so the target is checked again before writing.
-		private static void Apply(EmployeeTarget target, bool shown)
+		private static string FindChange(EmployeeTarget target, bool shown)
 		{
 			var blocked = FindBlocker(target);
-			if (blocked != null)
+			if (blocked != null || target.Employee.Founder == shown)
 			{
-				Notification.ShowError(blocked);
-				return;
+				return blocked;
 			}
 
-			if (target.Employee.Founder != shown)
-			{
-				Notification.ShowError("EmployeeChangedNoEdit".LocDef("The employee changed. Nothing was edited."));
-				return;
-			}
+			return "EmployeeChangedNoEdit".LocDef("The employee changed. Nothing was edited.");
+		}
 
+		private static string Apply(EmployeeTarget target, bool shown)
+		{
 			target.Employee.Founder = !shown;
-			Notification.ShowInfo(string.Format("FounderChanged".LocDef("{0}: Founder is now {1}. Select the employee again to refresh the Fire button."), target.Employee.Name, Label(!shown)));
+			return string.Format("FounderChanged".LocDef("{0}: Founder is now {1}. Select the employee again to refresh the Fire button."), target.Employee.Name, Label(!shown));
 		}
 
 		private static string FindBlocker(EmployeeTarget target)

@@ -12,6 +12,10 @@ from `Helpers.Version`. All releases target *Software Inc.* Beta 1.
   window and F1 show "Not available in multiplayer". Toggles and settings act
   as off, so toggles that undo their changes do so when a multiplayer game
   loads.
+- Every confirmed action now re-checks its targets the same way and reports
+  its result in Messages. AI Bankrupt All and Bankrupt now say which
+  companies are going bankrupt. Unlock and Claim Rewards compares the exact
+  rewards, not just their number.
 
 ## [5.6.1] - 2026-10-29
 

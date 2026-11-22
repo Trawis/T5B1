@@ -57,19 +57,13 @@ namespace Trainer_v5
 			}
 
 			string preview = string.Format("TeamAssignmentsPreview".LocDef("Apply {0} team change(s)? Scores are the team members with the work's role.\n{1}"), changes.Count, list);
-			GameSettings game = Settings;
-			Confirmation.Ask("Optimize Team Assignments", preview, () => ApplyTeamRecommendations(game, changes, skipped));
+			Confirmation.AskAndApply("Optimize Team Assignments", preview, null, () => ApplyTeamRecommendations(changes, skipped));
 		}
 
-		// Each recommendation is computed again; one that no longer matches is skipped, never redirected.
-		private static void ApplyTeamRecommendations(GameSettings game, List<TeamRecommendation> changes, int skipped)
+		// Each recommendation is computed again; one that no longer matches is skipped, never redirected. Shows its own
+		// result, which can be partial.
+		private static string ApplyTeamRecommendations(List<TeamRecommendation> changes, int skipped)
 		{
-			if (!ReferenceEquals(game, Settings))
-			{
-				Confirmation.ShowScopeChanged();
-				return;
-			}
-
 			int changed = 0;
 			int failed = 0;
 			foreach (TeamRecommendation change in changes)
@@ -98,7 +92,7 @@ namespace Trainer_v5
 			if (TeamAssignmentResult.ChangedNothing(changed, failed))
 			{
 				Notification.ShowInfo(SharedMessages.TeamAssignmentsNoChange(skipped));
-				return;
+				return null;
 			}
 
 			string summary = string.Format("TeamAssignmentsSummary".LocDef("Trainer: Team assignments: {0} changed, {1} skipped, {2} failed."), changed, skipped, failed);
@@ -114,6 +108,8 @@ namespace Trainer_v5
 			{
 				Notification.ShowError(summary);
 			}
+
+			return null;
 		}
 
 		// The optimizer's rule for one work item: null with a reason to show, or null without one for work it never handles.
