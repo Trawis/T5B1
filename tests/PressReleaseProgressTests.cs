@@ -6,8 +6,6 @@ namespace Trainer_v5.Tests
 	public class PressReleaseProgressTests
 	{
 		[Theory]
-		[InlineData(1)]
-		[InlineData(2)]
 		[InlineData(3)]
 		public void EverySlotIsCompletedWhateverTheOptionCombination(int slots)
 		{

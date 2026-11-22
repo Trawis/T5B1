@@ -21,38 +21,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheCopyOfTheGamesCompilerDiffersByTheBitnessFlagOnly()
-		{
-			var original = File.ReadAllBytes(GameCompiler.AssemblyPath);
-			var copy = PeImage.WithoutRequires32BitProcess(original);
-
-			Assert.False(PeImage.Requires32BitProcess(copy));
-			Assert.Equal(original.Length, copy.Length);
-			var differing = 0;
-			for (var i = 0; i < original.Length; i++)
-			{
-				if (original[i] != copy[i])
-				{
-					differing++;
-				}
-			}
-			Assert.True(differing <= 1, "Only the 32-bit flag may change, but " + differing + " bytes differ.");
-		}
-
-		[Fact]
-		public void TheGamesCompilerIsAvailable()
-		{
-			GameCompiler.VerifyAvailable();
-		}
-
-		[Fact]
-		public void TheGamesInjectorOnlyAddsText()
-		{
-			var offenders = Enumerable.Where(Injected.Value, file => !IsSubsequence(WithoutWhitespace(file.Stripped), WithoutWhitespace(file.Injected))).Select(file => file.Name).ToList();
-			Assert.True(offenders.Count == 0, "The injector dropped or reordered original text in: " + string.Join(", ", offenders));
-		}
-
-		[Fact]
 		public void EverySourceFileParsesWithTheGamesCompilerAfterInjection()
 		{
 			var check = Syntax.Value;

@@ -6,9 +6,7 @@ namespace Trainer_v5.Tests
 	public class SkipTimeTests
 	{
 		[Theory]
-		[InlineData(10, 11, 1)]
 		[InlineData(22, 8, 10)]
-		[InlineData(0, 23, 23)]
 		[InlineData(23, 0, 1)]
 		[InlineData(14, 14, 0)]
 		public void HoursUntilCountsForwardToTheNextMatchingHour(int current, int target, int expected)

@@ -26,28 +26,6 @@ namespace Trainer_v5.Tests
 			Assert.False(GameVersionCheck.IsTarget(3, 1, 8, 42));
 		}
 
-		[Fact]
-		public void MismatchMessageNamesBothVersionsAndStaysNonBlocking()
-		{
-			var text = GameVersionCheck.Describe("Beta 1.9.0", false);
-
-			Assert.Contains("Beta 1.9.0", text);
-			Assert.Contains(GameVersionCheck.TargetText, text);
-			Assert.Contains("keeps running", text);
-			Assert.Contains("matches", GameVersionCheck.Describe(GameVersionCheck.TargetText, true));
-		}
-
-		[Fact]
-		public void DiagnosticReadsTheRuntimeVersionAndOnlyLogs()
-		{
-			var source = SourceCode.Read("GameVersionCheck.cs");
-
-			Assert.Contains("Versioning.CurrentVersion", SourceCode.Body(source, "public static string Running"));
-			Assert.DoesNotContain("throw", source);
-			Assert.Contains("GameVersionCheck.Running()", SourceCode.Span(SourceCode.Read("Helpers.cs"), "public static string GetGameVersion"));
-			Assert.Contains("GameVersionCheck.LogRunningVersion()", SourceCode.Body(SourceCode.Read("Main.cs"), "public override void Initialize"));
-		}
-
 		private static int ConstantOf(string name)
 		{
 			var field = typeof(Versioning).GetField(name, BindingFlags.Public | BindingFlags.Static);

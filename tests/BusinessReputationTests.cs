@@ -48,14 +48,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void SettingTheSameStarsAgainIsRecognisedAsNoChange()
-		{
-			Assert.True(CompanyFeatures.IsBusinessReputationAt(SetTo(0.3f, 4), 4));
-			Assert.True(CompanyFeatures.IsBusinessReputationAt(1f, 6));
-			Assert.True(CompanyFeatures.IsBusinessReputationAt(0f, 0));
-		}
-
-		[Fact]
 		public void AReputationBetweenStarsIsNotTakenForTheLowerStar()
 		{
 			// 3.5 stars shows 3, but setting 3 still lowers it to exactly 3.

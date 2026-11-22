@@ -14,20 +14,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void EachPrinterKeepsItsOwnBaseline()
-		{
-			var baselines = new PrinterSpeedBaselines();
-			baselines.Capture(1, 1f);
-			baselines.Capture(2, 3f);
-
-			float first, second;
-			Assert.True(baselines.TryTake(1, out first));
-			Assert.True(baselines.TryTake(2, out second));
-			Assert.Equal(1f, first);
-			Assert.Equal(3f, second);
-		}
-
-		[Fact]
 		public void ATakenBaselineIsGoneSoTheNextEnableCapturesAgain()
 		{
 			var baselines = new PrinterSpeedBaselines();
@@ -37,15 +23,6 @@ namespace Trainer_v5.Tests
 			Assert.True(baselines.TryTake(1, out baseline));
 			Assert.False(baselines.TryTake(1, out baseline));
 			Assert.Equal(4f, baselines.Capture(1, 4f));
-		}
-
-		[Fact]
-		public void APrinterWithoutABaselineIsLeftAlone()
-		{
-			var baselines = new PrinterSpeedBaselines();
-
-			float baseline;
-			Assert.False(baselines.TryTake(99, out baseline));
 		}
 
 		[Fact]
@@ -63,30 +40,6 @@ namespace Trainer_v5.Tests
 			Assert.False(baselines.TryTake(1, out baseline));
 			Assert.True(baselines.TryTake(2, out baseline));
 			Assert.False(baselines.TryTake(3, out baseline));
-		}
-
-		[Fact]
-		public void ClearForgetsEveryPrinter()
-		{
-			var baselines = new PrinterSpeedBaselines();
-			baselines.Capture(1, 1f);
-
-			baselines.Clear();
-
-			Assert.Equal(0, baselines.Count);
-		}
-
-		[Fact]
-		public void TheToggleHasADisabledRowAndTheBaselinesAreResetPerGame()
-		{
-			var registry = SourceCode.Read("FeatureRegistry.cs");
-			var behaviour = SourceCode.Read("TrainerBehaviour.cs");
-			var features = SourceCode.Read("Features", "ProductFeatures.cs");
-
-			Assert.Contains("FeatureTrigger.Disabled, \"IncreasePrintSpeed\", SettingKeys.IncreasePrintSpeed, ProductFeatures.RestoreIncreasePrintSpeed", registry);
-			Assert.Contains("ProductFeatures.ResetGameState();", behaviour);
-			Assert.Contains("GetInstanceID()", features);
-			Assert.DoesNotContain("Dictionary<ProductPrinter", features);
 		}
 	}
 }

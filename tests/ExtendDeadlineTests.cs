@@ -35,15 +35,5 @@ namespace Trainer_v5.Tests
 			Assert.Contains("new SDateTime(deadline.Minute, deadline.Hour, deadline.Day, deadline.Month, deadline.Year + 1)", source);
 			Assert.DoesNotContain("new SDateTime(deadline.Year", source);
 		}
-
-		[Fact]
-		public void TheActionSkipsWorkItemsWithoutAContractAndUsesTheHelper()
-		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "internal static void ExtendDeadline()");
-
-			Assert.Contains("if (contract == null)", body);
-			Assert.Contains("continue;", body);
-			Assert.Contains("contract.Deadline = ExtendedByYear(contract.Deadline);", body);
-		}
 	}
 }

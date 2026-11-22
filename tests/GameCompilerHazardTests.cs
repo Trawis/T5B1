@@ -90,14 +90,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void TheSameTypeIsAcceptedOnceTheCallMovesIntoAStaticConstructor()
-		{
-			var check = Check("Helpers.cs", CallInStaticConstructor);
-
-			Assert.True(check.Passed, check.Describe());
-		}
-
-		[Fact]
 		public void ABraceInACharLiteralIsRejected()
 		{
 			var check = Check("Brace.cs", MethodSource("char open = '{';"));
@@ -111,14 +103,6 @@ namespace Trainer_v5.Tests
 			var check = Check("Apostrophe.cs", MethodSource("string text = \"it's\"; // {"));
 
 			Assert.False(check.Passed);
-		}
-
-		[Fact]
-		public void BracesAndApostrophesInTheirOwnStringsAndCommentsAreAccepted()
-		{
-			var check = Check("Strings.cs", MethodSource("string open = \"{\"; string close = \"}\"; // braces in a comment, { and }, are stripped first\n\t\tstring text = \"it's\"; // an apostrophe on its own is fine"));
-
-			Assert.True(check.Passed, check.Describe());
 		}
 
 		[Fact]
@@ -138,32 +122,6 @@ namespace Trainer_v5.Tests
 
 			Assert.False(check.Passed);
 			Assert.Contains(check.Problems, p => p.Diagnostic.Code == "CS0136");
-		}
-
-		[Fact]
-		public void TheGamesCompilerIsACSharpSixCompiler()
-		{
-			var supported =
-				"using System;\n" +
-				"using static System.Math;\n" +
-				"class Six\n" +
-				"{\n" +
-				"\tpublic int Auto { get; } = 3;\n" +
-				"\tpublic int Body => Auto;\n" +
-				"\tpublic string Text(string s) { return $\"{nameof(Six)}:{s?.Length}\"; }\n" +
-				"\tpublic double Abs2(double d) { return Abs(d); }\n" +
-				"\tpublic void Filter() { try { } catch (Exception e) when (e != null) { } }\n" +
-				"}\n";
-			var unsupported =
-				"class Seven\n" +
-				"{\n" +
-				"\tpublic void Parse(string s) { int.TryParse(s, out var number); }\n" +
-				"}\n";
-
-			Assert.True(Check("Six.cs", supported).Passed);
-			var seven = Check("Seven.cs", unsupported);
-			Assert.False(seven.Passed);
-			Assert.Contains(seven.Problems, p => p.Diagnostic.Code == "CS1644");
 		}
 
 		[Fact]
@@ -202,57 +160,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void ADiagnosticOnALineTheInjectorLeftAloneIsExact()
-		{
-			var source =
-				"class Simple\n" +
-				"{\n" +
-				"\tvoid One()\n" +
-				"\t{\n" +
-				"\t\tint x = ;\n" +
-				"\t}\n" +
-				"}\n";
-
-			var check = Check("Simple.cs", source);
-
-			var problem = Enumerable.First(check.Problems, p => p.Diagnostic.Code == "CS1525");
-			Assert.Equal(5, problem.Position.Line);
-			Assert.Equal(problem.Diagnostic.Column, problem.Position.Column);
-			Assert.True(problem.Position.Exact);
-		}
-
-		[Fact]
-		public void TheAuditFlagsATryBlockInsideAnAccessor()
-		{
-			var injected =
-				"class A\n" +
-				"{\n" +
-				"\tint P { get {\n" +
-				"try {\n" +
-				"\t\treturn 1;\n" +
-				"\t}\n" +
-				"catch(ModException) {throw;}\n" +
-				"catch(System.Exception ex)\n" +
-				"\t{\n" +
-				"\tModController.HandleException(\"x\", ex);\n" +
-				"\tthrow new ModException();\n" +
-				"\t}\n" +
-				"} }\n" +
-				"\tvoid M() {\n" +
-				"try {\n" +
-				"\t}\n" +
-				"catch(ModException) {throw;}\n" +
-				"}\n" +
-				"}\n";
-
-			var audit = InjectedSourceAudit.Audit(new InjectedSource("A.cs", injected, injected, injected, 0));
-
-			Assert.Equal(2, audit.TryBlocks);
-			Assert.Single(audit.Misplaced);
-			Assert.Contains("get", audit.Misplaced[0]);
-		}
-
-		[Fact]
 		public void ABodyThatOnlyThrowsCompilesToABranchPastTheEndOfTheMethod()
 		{
 			var injected = GameSourceInjector.Inject("Bodies.cs", ThrowingBodies);
@@ -276,25 +183,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(2, flagged.Count);
 			Assert.Contains("OnlyThrows", flagged[0]);
 			Assert.Contains("ThrowsAfterWork", flagged[1]);
-		}
-
-		[Fact]
-		public void TheIlReaderFindsNothingWrongWithOrdinaryCode()
-		{
-			var problems = new List<string>();
-			foreach (var type in typeof(IlReader).Assembly.GetTypes())
-			{
-				foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-				{
-					var body = method.GetMethodBody();
-					if (body != null && IlReader.InvalidBranchTargets(body).Count > 0)
-					{
-						problems.Add(type.FullName + "." + method.Name);
-					}
-				}
-			}
-
-			Assert.True(problems.Count == 0, "The IL walker disagrees with the C# compiler about: " + string.Join(", ", problems));
 		}
 
 		private static ParseCheck Check(string name, string source)

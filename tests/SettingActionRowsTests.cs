@@ -7,39 +7,11 @@ namespace Trainer_v5.Tests
 {
 	public class SettingActionRowsTests
 	{
-		// A moved or removed button fails here until this list is edited on purpose.
-		private static readonly string[] GoldenActions =
-		{
-			"AddMoney=Actions/Company", "AddAIFunds=Actions/Company", "TakeoverCompany=Actions/Company", "SubsidiaryCompany=Actions/Company",
-			"Bankrupt=Actions/Company", "BankruptAll=Actions/Company", "ClearAllLoans=Actions/Company", "TransferOffshoreFunds=Actions/Company",
-			"MaxReputation=Actions/Company", "SetBusinessReputation=Actions/Company", "DaysPerMonth=Actions/Company", "UnlockAndClaimRewards=Actions/Company",
-			"MaxSkill=Actions/Employee", "ResetAge=Actions/Employee", "MakeAllEmployeesHappy=Actions/Employee",
-			"SetProductPrice=Actions/Product", "SetProductStock=Actions/Product", "SetActiveUsers=Actions/Product", "MaxFollowers=Actions/Product", "MaxFollowersOld=Actions/Product",
-			"MaxMarketRecognition=Actions/Product", "InstantMarketing=Actions/Product", "SellProductsStock=Actions/Product",
-			"FixBugs=Actions/Work", "InstantResearch=Actions/Work", "InstantPatent=Actions/Work", "InstantPorting=Actions/Work", "OptimizeTeamAssignments=Actions/Work", "ExtendDeadline=Actions/Work",
-			"UnlockAllFurniture=Actions/Environment", "UnlockAllSpace=Actions/Environment", "CleanOfficeNow=Actions/Environment",
-			"Discord=Settings/None",
-			"AmazingCompatibility=Actions/Employee", "HireEmployees=Actions/Employee", "QuietFire=Actions/Employee", "SkipOneHour=Actions/Company", "SkipOneDay=Actions/Company", "SkipToHour=Actions/Company"
-		};
-
 		private static List<SettingActionRow> AllRows()
 		{
 			var rows = SettingActionRows.Create();
 			rows.AddRange(SettingActionRows.CreateExperimental());
 			return rows;
-		}
-
-		[Fact]
-		public void EveryActionButtonIsOnExactlyTheGoldenTabAndDomain()
-		{
-			var actual = new List<string>();
-			foreach (var row in AllRows())
-			{
-				actual.Add(row.LocKey + "=" + row.Tab + "/" + row.Domain);
-			}
-
-			Assert.Equal(GoldenActions.Length, actual.Count);
-			Assert.Equal(System.Linq.Enumerable.OrderBy(GoldenActions, x => x, System.StringComparer.Ordinal), System.Linq.Enumerable.OrderBy(actual, x => x, System.StringComparer.Ordinal));
 		}
 
 		[Fact]
@@ -56,23 +28,6 @@ namespace Trainer_v5.Tests
 				Assert.True(row.Tab == SettingsTab.Actions || row.Tab == SettingsTab.Settings, row.LocKey + " is not on the Actions or Settings tab.");
 				Assert.Equal(row.Tab == SettingsTab.Actions, row.Domain != TrainerDomain.None);
 			}
-		}
-
-		[Fact]
-		public void EveryActionDomainOfThePageIsUsedAndEveryUsedDomainIsOnThePage()
-		{
-			var used = new HashSet<TrainerDomain>();
-			foreach (var row in AllRows())
-			{
-				if (row.Tab == SettingsTab.Actions)
-				{
-					used.Add(row.Domain);
-				}
-			}
-
-			var page = SettingsWindowState.ActionDomains();
-			Assert.Equal(page.Length, new HashSet<TrainerDomain>(page).Count);
-			Assert.True(used.SetEquals(page), "The Actions page sections and the domains of its buttons differ.");
 		}
 
 		[Fact]

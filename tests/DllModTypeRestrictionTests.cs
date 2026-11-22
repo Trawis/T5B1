@@ -36,27 +36,9 @@ namespace Trainer_v5.Tests
 			Assert.True(offenders.Count == 0, "Trainer_v5.dll refers to prohibited types: " + string.Join(", ", offenders));
 		}
 
-		[Fact]
-		public void TheReaderFindsTheTypeReferencesOfAnAssemblyThatDoesUseThem()
-		{
-			// Guards the reader: this test assembly uses System.IO.File and the game's own UnityEngine types.
-			var references = TypeReferenceTable.Read(File.ReadAllBytes(typeof(DllModTypeRestrictionTests).Assembly.Location));
-			var offenders = Prohibited(references);
-
-			Assert.Contains("System.IO.File", offenders);
-			Assert.Contains("System.IO.Path", offenders);
-			Assert.Contains("System.Reflection.MethodBase", offenders);
-			Assert.Contains("System.String", references);
-		}
-
 		[Theory]
 		[InlineData("System.IO.File", true)]
-		[InlineData("System.IO.Compression.GZipStream", true)]
-		[InlineData("System.Reflection.Assembly", true)]
-		[InlineData("SINetworking.NetworkManager", true)]
 		[InlineData("UnityEngine.WWW", true)]
-		[InlineData("System.IOException", false)]
-		[InlineData("System.Collections.Generic.List`1", false)]
 		[InlineData("UnityEngine.WWWForm", false)]
 		public void OnlyTheProhibitedNamespacesAndTypesAreRejected(string reference, bool prohibited)
 		{

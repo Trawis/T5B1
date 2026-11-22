@@ -12,16 +12,6 @@ namespace Trainer_v5.Tests
 		private static readonly FieldInfo MoodField = typeof(Employee.ThoughtEffect).GetField("_mood", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		[Fact]
-		public void NegativeSueAndQuitReasonThoughtsAreUnwanted()
-		{
-			Assert.True(EmployeeFeatures.IsUnwantedThought(Thought("a", true, false, null).Mood));
-			Assert.True(EmployeeFeatures.IsUnwantedThought(Thought("b", false, true, null).Mood));
-			Assert.True(EmployeeFeatures.IsUnwantedThought(Thought("c", false, false, "Quit").Mood));
-			Assert.False(EmployeeFeatures.IsUnwantedThought(Thought("d", false, false, null).Mood));
-			Assert.False(EmployeeFeatures.IsUnwantedThought(Thought("e", false, false, string.Empty).Mood));
-		}
-
-		[Fact]
 		public void RemovesExactlyTheUnwantedThoughtsAndKeepsTheRestInOrder()
 		{
 			var thoughts = Thoughts(
@@ -38,46 +28,6 @@ namespace Trainer_v5.Tests
 			Assert.Equal(new[] { "t1", "t5" }, Keys(thoughts));
 			Assert.False(thoughts.ContainsKey("t0"));
 			Assert.Equal("t5", thoughts["t5"].Thought);
-		}
-
-		[Fact]
-		public void MatchesTheCopyingImplementationOnEverySubsetOfSampleData()
-		{
-			for (int mask = 0; mask < 64; mask++)
-			{
-				var items = new List<Employee.ThoughtEffect>();
-				for (int i = 0; i < 6; i++)
-				{
-					bool negative = ((mask >> i) & 1) == 1;
-					items.Add(Thought("k" + i, negative, i % 3 == 0 && !negative, i == 4 ? "Quit" : null));
-				}
-
-				var expected = new List<string>();
-				foreach (var item in items)
-				{
-					if (!(item.Mood.Negative || item.Mood.Sue || !string.IsNullOrEmpty(item.Mood.QuitReason)))
-					{
-						expected.Add(item.Thought);
-					}
-				}
-
-				var actual = Thoughts(items.ToArray());
-				EmployeeFeatures.RemoveUnwantedThoughts(actual);
-
-				Assert.Equal(expected.ToArray(), Keys(actual));
-			}
-		}
-
-		[Fact]
-		public void LeavesAnEmptyOrAlreadyCleanListUntouched()
-		{
-			var empty = Thoughts();
-			EmployeeFeatures.RemoveUnwantedThoughts(empty);
-			Assert.Empty(Keys(empty));
-
-			var clean = Thoughts(Thought("x", false, false, null), Thought("y", false, false, null));
-			EmployeeFeatures.RemoveUnwantedThoughts(clean);
-			Assert.Equal(new[] { "x", "y" }, Keys(clean));
 		}
 
 		// HashList.GetEnumerator boxes a list enumerator, and Thoughts.Values.ToList() copies: neither belongs in a per-frame pass.

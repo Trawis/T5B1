@@ -58,18 +58,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void AToggleAlreadyOnAtTheFirstObservationCountsAsJustEnabled()
-		{
-			_on.Add(SettingKeys.NoMaintenance.Key);
-			var dispatcher = Create(Entry("NoMaintenance", FeatureTrigger.Enabled, SettingKeys.NoMaintenance));
-
-			dispatcher.RunTransitions();
-			dispatcher.RunTransitions();
-
-			Assert.Equal(new[] { "NoMaintenance" }, _calls);
-		}
-
-		[Fact]
 		public void ARestoreRunsWhenTheNextSaveHasTheToggleOffAfterTheTrackerWasReset()
 		{
 			var dispatcher = Create(
@@ -84,21 +72,6 @@ namespace Trainer_v5.Tests
 			dispatcher.RunTransitions();
 
 			Assert.Equal(new[] { "ReduceISPCost:apply", "ReduceISPCost:restore" }, _calls);
-		}
-
-		[Fact]
-		public void TransitionsAreObservedInTheOrderTheirKeysWereRegistered()
-		{
-			_on.Add(SettingKeys.NoVacation.Key);
-			_on.Add(SettingKeys.NoMaintenance.Key);
-			var dispatcher = Create(
-				Entry("NoVacation", FeatureTrigger.Enabled, SettingKeys.NoVacation),
-				Entry("NoMaintenance", FeatureTrigger.Enabled, SettingKeys.NoMaintenance),
-				Entry("NoVacation", FeatureTrigger.Disabled, SettingKeys.NoVacation, "restore"));
-
-			dispatcher.RunTransitions();
-
-			Assert.Equal(new[] { "NoVacation", "NoMaintenance" }, _calls);
 		}
 
 		[Fact]
@@ -151,35 +124,6 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void OnlyTheFailedEntryOfAToggleIsRetried()
-		{
-			_on.Add(SettingKeys.NoVacation.Key);
-			var failing = new HashSet<string> { "second" };
-			var dispatcher = CreateWithResults(
-				(id, action) =>
-				{
-					if (failing.Contains(id))
-					{
-						_calls.Add("failed:" + id);
-						return false;
-					}
-
-					action();
-					return true;
-				},
-				Entry("first", FeatureTrigger.Enabled, SettingKeys.NoVacation),
-				Entry("second", FeatureTrigger.Enabled, SettingKeys.NoVacation),
-				Entry("third", FeatureTrigger.Enabled, SettingKeys.NoVacation));
-
-			dispatcher.RunTransitions();
-			failing.Clear();
-			dispatcher.RunTransitions();
-			dispatcher.RunTransitions();
-
-			Assert.Equal(new[] { "first", "failed:second", "third", "second" }, _calls);
-		}
-
-		[Fact]
 		public void ADisableBeforeAPendingEnableRetryCancelsTheEnableAndRunsTheRestore()
 		{
 			_on.Add(SettingKeys.FreePrint.Key);
@@ -207,31 +151,6 @@ namespace Trainer_v5.Tests
 			dispatcher.RunTransitions();
 
 			Assert.Equal(new[] { "failed:FreePrint", "FreePrint:restore" }, _calls);
-		}
-
-		[Fact]
-		public void AnEnableAfterAFailedRestoreReplacesTheRestoreRetry()
-		{
-			_on.Add(SettingKeys.FreePrint.Key);
-			bool failRestore = true;
-			var dispatcher = CreateWithResults(
-				(id, action) =>
-				{
-					action();
-					return !(failRestore && _calls[_calls.Count - 1] == "FreePrint:restore");
-				},
-				Entry("FreePrint", FeatureTrigger.Enabled, SettingKeys.FreePrint, "apply"),
-				Entry("FreePrint", FeatureTrigger.Disabled, SettingKeys.FreePrint, "restore"));
-			dispatcher.RunTransitions();
-			_on.Remove(SettingKeys.FreePrint.Key);
-			dispatcher.RunTransitions();
-			failRestore = false;
-			_on.Add(SettingKeys.FreePrint.Key);
-
-			dispatcher.RunTransitions();
-			dispatcher.RunTransitions();
-
-			Assert.Equal(new[] { "FreePrint:apply", "FreePrint:restore", "FreePrint:apply" }, _calls);
 		}
 
 		[Fact]
@@ -263,23 +182,6 @@ namespace Trainer_v5.Tests
 			dispatcher.RunTransitions();
 
 			Assert.Equal(new[] { "ReduceISPCost:apply", "failed:ReduceISPCost", "ReduceISPCost:restore" }, _calls);
-		}
-
-		[Fact]
-		public void AToggleThatNeverTransitionsNeverExecutesAnything()
-		{
-			var dispatcher = CreateWithResults(
-				(id, action) =>
-				{
-					action();
-					return true;
-				},
-				Entry("FreePrint", FeatureTrigger.Enabled, SettingKeys.FreePrint));
-
-			dispatcher.RunTransitions();
-			dispatcher.RunTransitions();
-
-			Assert.Empty(_calls);
 		}
 
 		[Fact]

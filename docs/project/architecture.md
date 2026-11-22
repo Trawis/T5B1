@@ -125,8 +125,7 @@ toward a limit that can pause the game.
 
 1. Declare it in `SettingKeys` and add it to
    `SettingsTests.PersistedToggleKeys`.
-2. Add a `SettingToggleRows` row and its key to the golden list in
-   `SettingToggleRowsTests`.
+2. Add a `SettingToggleRows` row.
 3. Add its text to `assets/Localization/English/Trainer.tyd`.
 4. Add `FeatureRegistry` rows: the cadence row, an Enabled row and, if it
    restores, a Disabled row. Put the action in a `Features/*Features` class.

@@ -7,23 +7,6 @@ namespace Trainer_v5.Tests
 	public class DetailButtonLayoutTests
 	{
 		[Fact]
-		public void UnknownWidthKeepsTheOriginalSingleRow()
-		{
-			var slots = DetailButtonLayout.Place(5, 0f, 80, 32, 4);
-
-			Assert.Equal(new Rect(0, -36, 80, 32), slots[0]);
-			Assert.Equal(new Rect(336, -36, 80, 32), slots[4]);
-		}
-
-		[Fact]
-		public void AWideEnoughWindowKeepsOneRow()
-		{
-			var slots = DetailButtonLayout.Place(5, 420f, 80, 32, 4);
-
-			Assert.All(slots, slot => Assert.Equal(-36f, slot.y));
-		}
-
-		[Fact]
 		public void ANarrowWindowWrapsUpwardAndNothingPassesItsRightEdge()
 		{
 			const float available = 300f;

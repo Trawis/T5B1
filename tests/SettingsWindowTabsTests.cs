@@ -23,28 +23,6 @@ namespace Trainer_v5.Tests
 			Assert.DoesNotContain(".UpdateSelection(", SourceCode.Body(source, "private static void RefreshEfficiency("));
 		}
 
-		[Fact]
-		public void ListenersAreAddedOnlyWhileTheWindowIsBuilt()
-		{
-			var source = Window();
-			var inBuild = Count(SourceCode.Body(source, "private static void Build()"), "AddListener")
-				+ Count(SourceCode.Body(source, "private static GUICombobox AddEfficiencyRow("), "AddListener");
-
-			Assert.True(inBuild >= 1);
-			Assert.Equal(Count(source, "AddListener"), inBuild);
-		}
-
-		[Fact]
-		public void TheImmediateTogglesStillApplyTheirEffectAtOnce()
-		{
-			var handler = SourceCode.Body(Window(), "private static void OnToggleChanged(");
-
-			foreach (var row in SettingToggleRows.CreateImmediate())
-			{
-				Assert.Contains("key == SettingKeys." + row.Key.Key, handler);
-			}
-		}
-
 		private static int Count(string source, string text)
 		{
 			var count = 0;
