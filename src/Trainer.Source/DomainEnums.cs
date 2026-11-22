@@ -28,6 +28,14 @@ namespace Trainer_v5
 		NotPatentable = 3
 	}
 
+	internal enum ResultSeverity
+	{
+		None = 0,
+		Success = 1,
+		Partial = 2,
+		Failed = 3
+	}
+
 	internal enum InputError
 	{
 		None = 0,

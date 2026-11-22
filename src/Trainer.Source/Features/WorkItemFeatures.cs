@@ -89,18 +89,19 @@ namespace Trainer_v5
 				}
 			}
 
-			if (TeamAssignmentResult.ChangedNothing(changed, failed))
+			ResultSeverity severity = TeamAssignmentResult.Severity(changed, failed);
+			if (severity == ResultSeverity.None)
 			{
 				Notification.ShowInfo(SharedMessages.TeamAssignmentsNoChange(skipped));
 				return null;
 			}
 
 			string summary = string.Format("TeamAssignmentsSummary".LocDef("Trainer: Team assignments: {0} changed, {1} skipped, {2} failed."), changed, skipped, failed);
-			if (failed == 0)
+			if (severity == ResultSeverity.Success)
 			{
 				Notification.Popup(summary);
 			}
-			else if (changed > 0)
+			else if (severity == ResultSeverity.Partial)
 			{
 				Notification.ShowWarning(summary);
 			}

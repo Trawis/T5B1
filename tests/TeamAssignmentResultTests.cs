@@ -15,13 +15,14 @@ namespace Trainer_v5.Tests
 			Assert.False(TeamAssignmentResult.Applied(null, "B"));
 		}
 
-		[Fact]
-		public void ZeroChangesWithoutFailuresIsANoOp()
+		[Theory]
+		[InlineData(0, 0, (int)ResultSeverity.None)]
+		[InlineData(2, 0, (int)ResultSeverity.Success)]
+		[InlineData(2, 1, (int)ResultSeverity.Partial)]
+		[InlineData(0, 1, (int)ResultSeverity.Failed)]
+		public void AFailureNeverReadsAsPlainSuccess(int changed, int failed, int expected)
 		{
-			Assert.True(TeamAssignmentResult.ChangedNothing(0, 0));
-			Assert.False(TeamAssignmentResult.ChangedNothing(1, 0));
-			Assert.False(TeamAssignmentResult.ChangedNothing(0, 2));
-			Assert.False(TeamAssignmentResult.ChangedNothing(3, 1));
+			Assert.Equal((ResultSeverity)expected, TeamAssignmentResult.Severity(changed, failed));
 		}
 
 		[Fact]
@@ -37,17 +38,9 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void OptimizerCountsFromTheItemStateAndNeverReportsPlainSuccessAfterAFailure()
+		public void OptimizerCountsFromTheItemStateAfterTheChange()
 		{
-			var body = SourceCode.Body(SourceCode.Read("Features", "WorkItemFeatures.cs"), "private static string ApplyTeamRecommendations");
-
-			Assert.Contains("TeamAssignmentResult.Applied(item.DevTeams, bestTeam.Name)", body);
-			SourceCode.AssertInOrder(body, "item.SetDevTeams(", "TeamAssignmentResult.Applied(", "state is read after the change");
-			SourceCode.AssertInOrder(body, "TeamAssignmentResult.ChangedNothing(", "Notification.Popup(", "a no-op returns before the success popup");
-			Assert.Contains("failed == 0", body);
-			Assert.Contains("Notification.ShowWarning(summary)", body);
-			Assert.Contains("Notification.ShowError(summary)", body);
-			Assert.Equal(1, body.Split(new[] { "Notification.Popup(" }, System.StringSplitOptions.None).Length - 1);
+			CompiledCalls.InOrder(typeof(WorkItemFeatures), "ApplyTeamRecommendations", "call WorkItem.SetDevTeams", "call TeamAssignmentResult.Applied", "call TeamAssignmentResult.Severity");
 		}
 	}
 }

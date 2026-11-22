@@ -33,13 +33,14 @@ namespace Trainer_v5.Tests
 			Assert.Contains("IsSameTargets(companies, FindAllBankruptTargets())", Member("internal static void AIBankrupt"));
 		}
 
-		[Fact]
-		public void TheEligibilityRuleSparesThePlayersCompanyAndItsSubsidiaries()
+		[Theory]
+		[InlineData(false, false, true)]
+		[InlineData(true, false, false)]
+		[InlineData(false, true, false)]
+		public void TheEligibilityRuleSparesThePlayersCompanyAndItsSubsidiaries(bool isPlayersCompany, bool isPlayerOwned, bool expected)
 		{
-			var body = Member("private static bool IsBankruptTarget");
-
-			Assert.Contains("company != Settings.MyCompany", body);
-			Assert.Contains("!company.IsPlayerOwned()", body);
+			Assert.Equal(expected, CompanyFeatures.IsBankruptEligible(isPlayersCompany, isPlayerOwned));
+			CompiledCalls.InOrder(typeof(CompanyFeatures), "IsBankruptTarget", "ldfld GameSettings.MyCompany", "call Company.IsPlayerOwned", "call CompanyFeatures.IsBankruptEligible");
 		}
 
 		[Fact]
