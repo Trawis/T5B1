@@ -133,8 +133,8 @@ toward a limit that can pause the game.
 6. To retire it, declare it with `Retired(...)` and remove its UI and rows.
    Never rename the key.
 
-The settings, serialization, row, localization and schedule tests fail when a
-step is missed.
+`SettingsTests` fails until step 1 is done. The other steps are checked in
+the game.
 
 ## Workshop source build
 
@@ -203,7 +203,7 @@ Names are never used to find it.
 When something changed, the reason is shown as an error and nothing is
 applied. Actions with partial results (Hire Employees, Optimize Team
 Assignments, the skips) show their own result. `ConfirmationTests` tests
-`Run` and pins this set; update it with this list:
+`Run`. The actions that ask:
 
 - AI Bankrupt All, Bankrupt and a negative Adjust AI Funds
 - Clear all loans, Unlock and Claim Rewards, Max Reputation
@@ -221,9 +221,8 @@ Assignments, the skips) show their own result. `ConfirmationTests` tests
   `IsStoreSet`, which return false. Toggles that were on run their Disabled
   rows. `MaxFloor` and the hosting-deal repair are skipped.
 
-The game sets `GameData.MultiplayerMode` only when a lobby starts or is joined.
-`MultiplayerRuleTests` fails if another file reads it, spawns a button or
-reads a toggle directly.
+The game sets `GameData.MultiplayerMode` only when a lobby starts or is
+joined. Only `MultiplayerRule` reads it.
 
 **Messages.** Only `Notification` calls the game's popup and dialog APIs.
 Popups start with `Trainer: ` once and use `PopupIDs.None`, the only id the
@@ -260,17 +259,18 @@ game shows.
 - Placeholders are filled with `string.Format` at the `LocDef` call.
 - `LocDef` cannot run in the test host, so pure helpers return values and the
   text is built where it is shown.
-- `LocalizationTests` enforces these rules.
 
 ## Validation
 
 - CI builds and tests `Release` only.
-- `Trainer_v5.Tests` (xUnit, `net462`) runs trainer code against the vendored
-  assemblies outside Unity: settings and saves, input validation, scheduling,
-  transitions, localization and the Workshop source pipeline. Code that
-  touches live game objects needs in-game testing.
-- Tests of which method calls what read the compiled `Trainer_v5.dll`
-  through `CompiledCalls` (calls, strings, constants and fields in IL order,
-  with lambda bodies inlined), not the source text.
+- `Trainer_v5.Tests` (xUnit, `net462`) has two parts:
+  - the game-compiler tests: the Workshop injector and `mcs` pipeline, the
+    compiler hazards, the DLL-mod type restriction, the exception boundary
+    and the target game version;
+  - a few unit tests of rules that would break saves or safety silently:
+    the save keys, serialization and per-game settings, the scheduler and
+    toggle transitions, input parsing, the confirmation sequence and the
+    multiplayer rule.
+- Everything else, including all wiring and UI, is checked in the game.
 
 Open technical debt is tracked as GitHub issues labelled `type: tech-debt`.
