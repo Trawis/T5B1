@@ -416,7 +416,13 @@ namespace Trainer_v5
 		// The player's own company and its subsidiaries are never bankrupted.
 		private static bool IsBankruptTarget(SimulatedCompany company)
 		{
-			return company != Settings.MyCompany && !company.IsPlayerOwned();
+			return IsBankruptEligible(company == Settings.MyCompany, company.IsPlayerOwned());
+		}
+
+		// The player's company and its subsidiaries (player-owned) are never targets.
+		internal static bool IsBankruptEligible(bool isPlayersCompany, bool isPlayerOwned)
+		{
+			return !isPlayersCompany && !isPlayerOwned;
 		}
 
 		private static string ApplyMaxReputation()

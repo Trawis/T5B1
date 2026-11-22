@@ -22,9 +22,15 @@ namespace Trainer_v5
 			return string.Join("\n", shown);
 		}
 
-		public static bool ChangedNothing(int changed, int failed)
+		// None: nothing changed and nothing failed. A failure never reads as plain success.
+		public static ResultSeverity Severity(int changed, int failed)
 		{
-			return changed == 0 && failed == 0;
+			if (failed == 0)
+			{
+				return changed == 0 ? ResultSeverity.None : ResultSeverity.Success;
+			}
+
+			return changed > 0 ? ResultSeverity.Partial : ResultSeverity.Failed;
 		}
 	}
 }
