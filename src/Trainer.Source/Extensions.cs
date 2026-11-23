@@ -3,13 +3,10 @@ using OrbCreationExtensions;
 
 namespace Trainer_v5
 {
-	// The only settings accessors. Feature and UI code passes a ToggleKey or StoreKey; the string overloads exist for
-	// save serialization (Main), which iterates the raw save keys.
 	public static class Extensions
 	{
 		private static readonly HashSet<string> _loggedUnregisteredKeys;
 
-		// The game's mod loader mis-parses calls in member initializers, so it is assigned here.
 		static Extensions()
 		{
 			_loggedUnregisteredKeys = new HashSet<string>();
@@ -25,7 +22,6 @@ namespace Trainer_v5
 
 		public static void Set(this Dictionary<string, object> settings, StoreKey key, object value) => settings.Set(key.Key, value);
 
-		// The position of the stored value among the choices; the first choice when nothing is stored.
 		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, StoreKey key)
 		{
 			var stored = settings.Get(key);
@@ -78,7 +74,6 @@ namespace Trainer_v5
 			settings[key] = value;
 		}
 
-		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
 		private static void LogUnregisteredKey(string source, string key)
 		{
 			string message = string.Format("{0}: setting key '{1}' is not registered - check for a typo in the key name. Falling back to the default value.", source, key);
