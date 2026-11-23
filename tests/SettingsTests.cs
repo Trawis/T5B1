@@ -65,10 +65,10 @@ namespace Trainer_v5.Tests
 		}
 
 		[Fact]
-		public void GetProperty_ForUnregisteredKeyReturnsDefaultAndDoesNotRegisterIt()
+		public void Get_ForUnregisteredKeyReturnsDefaultAndDoesNotRegisterIt()
 		{
-			Assert.False(Helpers.GetProperty(Helpers.Settings, "NoSuchSetting"));
-			Assert.Null(Helpers.GetProperty(Helpers.StoresSettings, "NoSuchStore"));
+			Assert.False(Helpers.Settings.Get("NoSuchSetting"));
+			Assert.Null(Helpers.StoresSettings.Get("NoSuchStore"));
 
 			Assert.DoesNotContain("NoSuchSetting", Helpers.Settings.Keys);
 			Assert.DoesNotContain("NoSuchStore", Helpers.StoresSettings.Keys);

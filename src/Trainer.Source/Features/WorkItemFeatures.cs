@@ -443,7 +443,7 @@ namespace Trainer_v5
 		{
 			foreach (LegalWork legalWork in PendingPatentWorks())
 			{
-				if (legalWork.Progress >= 1f)
+				if (legalWork.Progress >= 1f && !EndUnpatentableWork(legalWork))
 				{
 					TryPatentNow(legalWork);
 				}
@@ -608,7 +608,6 @@ namespace Trainer_v5
 					.ToList();
 		}
 
-		// The only call to PatentNow.
 		private static PatentOutcome TryPatentNow(LegalWork legalWork)
 		{
 			bool patentable = CanPatentNow(legalWork);
@@ -626,6 +625,18 @@ namespace Trainer_v5
 
 			legalWork.PatentNow();
 			return PatentOutcome.Patented;
+		}
+
+		private static bool EndUnpatentableWork(LegalWork legalWork)
+		{
+			if (legalWork.Done || legalWork.Progress < 1f || legalWork.Patent == null || legalWork.Patent.CanPatent
+				|| legalWork.GetNetworkDealState() != WorkItem.NetworkDealState.None)
+			{
+				return false;
+			}
+
+			legalWork.PatentNow();
+			return true;
 		}
 
 		// PatentNow charges even when nothing transfers; expiry goes before PatentOwner, whose getter clears expired patents.

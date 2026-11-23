@@ -199,7 +199,7 @@ namespace Trainer_v5
 		{
 			if (comboBox != null)
 			{
-				comboBox.UpdateSelectionSupressEvents(EfficiencyChoices().GetIndex(Helpers.StoresSettings, key, 2));
+				comboBox.UpdateSelectionSupressEvents(EfficiencyChoices().GetIndex(Helpers.StoresSettings, key));
 			}
 		}
 
@@ -255,7 +255,6 @@ namespace Trainer_v5
 		private static void BuildToggles(List<GameObject>[] toggleCells, List<GameObject>[] experimentalCells)
 		{
 			var rows = SettingToggleRows.Create();
-			rows.AddRange(SettingToggleRows.CreateImmediate());
 			int regularCount = rows.Count;
 			if (ExperimentalOptions.Enabled)
 			{
@@ -283,21 +282,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			var settings = Helpers.Settings;
-			settings.Toggle(key);
-			bool enabled = settings.Get(key);
-			if (key == SettingKeys.UnlimitedSubsidiaries)
-			{
-				CompanyFeatures.ApplyUnlimitedSubsidiaries(enabled);
-			}
-			else if (key == SettingKeys.ForceLights)
-			{
-				EnvironmentFeatures.ApplyForceLights(enabled);
-			}
-			else if (key == SettingKeys.ShowRoomCeilings)
-			{
-				EnvironmentFeatures.ApplyShowRoomCeilings(enabled);
-			}
+			Helpers.Settings.Toggle(key);
 		}
 
 		private static Dictionary<string, object> EfficiencyChoices()
@@ -332,7 +317,7 @@ namespace Trainer_v5
 			settingsCells.Add(labelCell);
 			var comboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, key, 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, key)
 			);
 			comboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(key, efficiencySelectItems.GetAt(comboBox.Selected).Value));
 			settingsCells.Add(comboBox.gameObject);

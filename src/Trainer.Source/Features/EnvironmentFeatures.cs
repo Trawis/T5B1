@@ -9,7 +9,20 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 
-		// The game reads these flags directly, so they are bound when the setting changes rather than polled.
+		private static bool _maxFloorCaptured;
+		private static int _gameMaxFloor;
+
+		internal static void ApplyMaxFloor()
+		{
+			if (!_maxFloorCaptured)
+			{
+				_gameMaxFloor = GameSettings.MaxFloor;
+				_maxFloorCaptured = true;
+			}
+
+			GameSettings.MaxFloor = MultiplayerRule.Active ? _gameMaxFloor : Constants.MAX_FLOOR;
+		}
+
 		internal static void ApplyForceLights(bool enabled)
 		{
 			Cheats.ForceLights = enabled;

@@ -18,7 +18,7 @@ namespace Trainer_v5.Experimental
 
 			foreach (ToggleKey key in Keys())
 			{
-				settings[key.Key] = false;
+				settings.Set(key, false);
 			}
 		}
 	}

@@ -70,13 +70,6 @@ namespace Trainer_v5
 			rows.Add(new SettingToggleRow(TrainerDomain.Product, "FreeMarketing", "Free Marketing", SettingKeys.FreeMarketing));
 			rows.Add(new SettingToggleRow(TrainerDomain.Company, "NoOffshoreHeat", "No Offshore Heat", SettingKeys.NoOffshoreHeat));
 			rows.Add(new SettingToggleRow(TrainerDomain.Company, "NoFounderDividends", "No Founder Dividends", SettingKeys.NoFounderDividends));
-			return rows;
-		}
-
-		// Their handler also applies the value to the running game; shown after the standard rows.
-		public static List<SettingToggleRow> CreateImmediate()
-		{
-			var rows = new List<SettingToggleRow>();
 			rows.Add(new SettingToggleRow(TrainerDomain.Company, "UnlimitedSubsidiaries", "Unlimited Subsidiaries", SettingKeys.UnlimitedSubsidiaries));
 			rows.Add(new SettingToggleRow(TrainerDomain.Environment, "ForceLights", "Force Lights", SettingKeys.ForceLights));
 			rows.Add(new SettingToggleRow(TrainerDomain.Environment, "ShowRoomCeilings", "Show Room Ceilings", SettingKeys.ShowRoomCeilings));

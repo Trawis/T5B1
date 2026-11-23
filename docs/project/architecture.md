@@ -16,7 +16,7 @@ those constants; `GameVersionCheckTests` fails until they match.
 | Part | Role |
 |---|---|
 | `Main` | Mod entry, Options screen, Trainer button, save data |
-| `TrainerBehaviour` | Scene and time events, toggle transitions, `Cheats.*` flags. Raises triggers; owns no feature logic |
+| `TrainerBehaviour` | Scene and time events, toggle transitions, the `MaxFloor` call. Raises triggers; owns no feature logic |
 | `FeatureRegistry`, `FeatureDispatcher`, `FeatureGuard`, `ToggleStateTracker` | Schedule, runner, error boundary, toggle-change detection |
 | `Features/*Features` | Game-state changes and one-shot actions, per domain |
 | `SettingKeys` | Every saved setting, its save key and default |
@@ -39,8 +39,10 @@ those constants; `GameVersionCheckTests` fails until they match.
 - Scheduled work waits for `Helpers.IsSimulationReady()`: game singletons
   exist, loading is done and pre-simulation has finished. Earlier events are
   dropped, not replayed.
-- `GameSettings.MaxFloor` is set before that gate, because the game reads it
-  while rooms load.
+- `GameSettings.MaxFloor` is not a registry row: the game reads it while
+  rooms load, before that gate. `EnvironmentFeatures.ApplyMaxFloor` runs
+  every frame from `Update`. It keeps the game's own value, which only the
+  game's static constructor sets, and writes it back in multiplayer.
 - Buttons call `Helpers.RequireGameReady` and tell the player when nothing
   happened.
 
@@ -57,8 +59,10 @@ Enabled/Disabled once when it changes.
 - A periodic row also has an Enabled row, so it acts as soon as it is switched
   on, unless it is listed in `FeatureRegistry.NoCatchUp`.
 - A Disabled (restore) row needs an Enabled row.
-- `Cheats.*` flags have no save backing, so they are pushed on the first frame
-  and on every transition.
+- Force Lights, Show Room Ceilings and Unlimited Subsidiaries set the game's
+  process-wide `Cheats.*` flags in Enabled and Disabled rows. A click
+  applies on the next frame. Every load is a cold start, so a toggle that is
+  on sets its flag again after a reload or a restart.
 
 `FeatureDispatcher` runs every row through `Helpers.TryExecute`. One feature is
 one error boundary: a failure does not stop other features and is
@@ -97,7 +101,9 @@ recorded original, or values the game rewrites at an unknown time.
 Settings are stored in the save game by `Main.Serialize` and `Deserialize`.
 
 - Each setting is declared once in `SettingKeys`. Code uses `SettingKeys.X`,
-  never a string, so a typo fails to compile.
+  never a string, so a typo fails to compile. The accessors in `Extensions`
+  (`Get`, `Set`, `Toggle`, `GetIndex`) are the only ones; their string
+  overloads are for `Main`'s save serialization.
 - **The key string is the save key. Never rename or reuse it.** Changing it
   resets that setting for every player.
 - `ToggleKey` and `StoreKey` are not generic, because the game's compiler emits
@@ -219,7 +225,8 @@ Assignments, the skips) show their own result. `ConfirmationTests` tests
   refuses F1, with `SharedMessages.NotAvailableInMultiplayer()`.
 - Toggle and setting reads go through `MultiplayerRule.IsToggleOn` and
   `IsStoreSet`, which return false. Toggles that were on run their Disabled
-  rows. `MaxFloor` and the hosting-deal repair are skipped.
+  rows. `MaxFloor` gets the game's own value back, and the hosting-deal
+  repair is skipped.
 
 The game sets `GameData.MultiplayerMode` only when a lobby starts or is
 joined. Only `MultiplayerRule` reads it.
@@ -243,8 +250,10 @@ game shows.
   `NoteFiring` itself and runs only when that lawsuit is impossible
   (employed 12 months or less, or `ComplaintLevel` at most 1).
 - `PatentNow` charges without checking funds, even when the patent does not
-  transfer. Only `TryPatentNow` calls it, after checking funds, expiry and
-  ownership.
+  transfer, unless the tech can no longer be patented: then it ends the work
+  with the game's notice for free. Only `TryPatentNow` (after checking
+  funds, expiry and ownership) and `EndUnpatentableWork` (finished work
+  whose tech cannot be patented) call it.
 - Research the market has passed is cancelled only while someone works on
   it, and finishing a year the company already has clears that tech's
   `CanPatent`. Only `TryFinishResearchNow` finishes research early, and it
