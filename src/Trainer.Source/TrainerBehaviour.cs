@@ -19,12 +19,6 @@ namespace Trainer_v5
 
 		private readonly GameMinuteWatcher _minuteWatcher = new GameMinuteWatcher();
 
-		// Settings the game itself only ever sets once (ctor/new-game/save-load).
-		private bool _oneTimeSettingsApplied;
-		private bool _forceLightsApplied;
-		private bool _showRoomCeilingsApplied;
-		private bool _unlimitedSubsidiariesApplied;
-
 		private static GameSettings Settings => GameSettings.Instance;
 
 		public override void OnActivate()
@@ -265,11 +259,6 @@ namespace Trainer_v5
 			return _dispatcher;
 		}
 
-		private ToggleTransitionEnum GetToggleTransition(ToggleKey settingKey)
-		{
-			return _toggleStates.Observe(settingKey.Key, MultiplayerRule.IsToggleOn(settingKey));
-		}
-
 		// Company.Bankrupt is recomputed daily (SimulateMonth runs from UpdateDay), not monthly.
 		private void OnDayPassed(object obj, EventArgs args)
 		{
@@ -309,7 +298,7 @@ namespace Trainer_v5
 			}
 
 			// The game reads MaxFloor while it loads the rooms, before the simulation is ready.
-			Helpers.TryExecute("MaxFloor", ApplyMaxFloorOnce);
+			Helpers.TryExecute("MaxFloor", EnvironmentFeatures.ApplyMaxFloor);
 
 			// Loading and pre-simulation still run: nothing below may touch the game or consume a toggle transition yet.
 			if (!Helpers.IsSimulationReady())
@@ -327,71 +316,11 @@ namespace Trainer_v5
 			}
 
 			// Each shared step has its own boundary so a failure cannot skip the Frame run below.
-			Helpers.TryExecute("ProcessStaticSettings", () => ApplyProcessStaticSettings());
-
 			Helpers.TryExecute("ToggleTransitions", () => GetDispatcher().RunTransitions());
 
 			Helpers.TryExecute("MinutePoll", () => _minuteWatcher.Poll());
 
 			GetDispatcher().Run(FeatureTrigger.Frame);
-		}
-
-		private void ApplyMaxFloorOnce()
-		{
-			if (!_oneTimeSettingsApplied && !MultiplayerRule.Active)
-			{
-				GameSettings.MaxFloor = Constants.MAX_FLOOR;
-				_oneTimeSettingsApplied = true;
-			}
-		}
-
-		private void ApplyProcessStaticSettings()
-		{
-			// Cheats.* flags have no save backing and reset on every process start, so they are re-pushed once per load.
-			if (!_forceLightsApplied)
-			{
-				_forceLightsApplied = Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(MultiplayerRule.IsToggleOn(SettingKeys.ForceLights)));
-
-				if (LoggingOptions.DebugEnabled && _forceLightsApplied)
-				{
-					"ForceLights applied once".LogDebug();
-				}
-			}
-
-			if (!_showRoomCeilingsApplied)
-			{
-				_showRoomCeilingsApplied = Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(MultiplayerRule.IsToggleOn(SettingKeys.ShowRoomCeilings)));
-
-				if (LoggingOptions.DebugEnabled && _showRoomCeilingsApplied)
-				{
-					"ShowRoomCeilings applied once".LogDebug();
-				}
-			}
-
-			if (!_unlimitedSubsidiariesApplied)
-			{
-				_unlimitedSubsidiariesApplied = Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(MultiplayerRule.IsToggleOn(SettingKeys.UnlimitedSubsidiaries)));
-
-				if (LoggingOptions.DebugEnabled && _unlimitedSubsidiariesApplied)
-				{
-					"UnlimitedSubsidiaries applied once".LogDebug();
-				}
-			}
-
-			if (GetToggleTransition(SettingKeys.ForceLights) != ToggleTransitionEnum.Unchanged)
-			{
-				Helpers.TryExecute("ForceLights", () => EnvironmentFeatures.ApplyForceLights(MultiplayerRule.IsToggleOn(SettingKeys.ForceLights)));
-			}
-
-			if (GetToggleTransition(SettingKeys.ShowRoomCeilings) != ToggleTransitionEnum.Unchanged)
-			{
-				Helpers.TryExecute("ShowRoomCeilings", () => EnvironmentFeatures.ApplyShowRoomCeilings(MultiplayerRule.IsToggleOn(SettingKeys.ShowRoomCeilings)));
-			}
-
-			if (GetToggleTransition(SettingKeys.UnlimitedSubsidiaries) != ToggleTransitionEnum.Unchanged)
-			{
-				Helpers.TryExecute("UnlimitedSubsidiaries", () => CompanyFeatures.ApplyUnlimitedSubsidiaries(MultiplayerRule.IsToggleOn(SettingKeys.UnlimitedSubsidiaries)));
-			}
 		}
 	}
 }
