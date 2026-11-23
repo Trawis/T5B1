@@ -91,7 +91,7 @@ namespace Trainer_v5.Window
 		{
 			var rolesList = Helpers.RolesList;
 			return rolesList
-				.Select(role => UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList.Toggle(role.Key)).gameObject)
+				.Select(role => UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList[role.Key] = !rolesList.GetOrDefault(role.Key)).gameObject)
 				.ToArray();
 		}
 
@@ -117,7 +117,7 @@ namespace Trainer_v5.Window
 		{
 			var specs = Helpers.SpecializationsList;
 			return specs
-				.Select(spec => UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs.Toggle(spec.Key)).gameObject)
+				.Select(spec => UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs[spec.Key] = !specs.GetOrDefault(spec.Key)).gameObject)
 				.ToArray();
 		}
 

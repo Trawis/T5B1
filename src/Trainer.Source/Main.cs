@@ -99,12 +99,12 @@ namespace Trainer_v5
 			var data = new WriteDictionary();
 			foreach (var setting in Helpers.Settings)
 			{
-				data[setting.Key] = Helpers.GetProperty(Helpers.Settings, setting.Key);
+				data[setting.Key] = Helpers.Settings.Get(setting.Key);
 			}
 
 			foreach (var store in Helpers.StoresSettings)
 			{
-				data[store.Key] = Helpers.GetProperty(Helpers.StoresSettings, store.Key);
+				data[store.Key] = Helpers.StoresSettings.Get(store.Key);
 			}
 
 			return data;
@@ -135,16 +135,16 @@ namespace Trainer_v5
 			var settings = Helpers.Settings.Keys.ToList();
 			foreach (var setting in settings)
 			{
-				var fallback = isFullLoad ? toggleDefaults[setting] : Helpers.GetProperty(Helpers.Settings, setting);
-				Helpers.SetProperty(Helpers.Settings, setting, data.Get(setting, fallback));
+				var fallback = isFullLoad ? toggleDefaults[setting] : Helpers.Settings.Get(setting);
+				Helpers.Settings.Set(setting, data.Get(setting, fallback));
 			}
 
 			var storeDefaults = SettingKeys.CreateStoreDefaults();
 			var stores = Helpers.StoresSettings.Keys.ToList();
 			foreach (var store in stores)
 			{
-				var fallback = isFullLoad ? storeDefaults[store] : Helpers.GetProperty(Helpers.StoresSettings, store);
-				Helpers.SetProperty(Helpers.StoresSettings, store, data.Get(store, fallback));
+				var fallback = isFullLoad ? storeDefaults[store] : Helpers.StoresSettings.Get(store);
+				Helpers.StoresSettings.Set(store, data.Get(store, fallback));
 			}
 		}
 

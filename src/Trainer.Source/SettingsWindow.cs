@@ -199,7 +199,7 @@ namespace Trainer_v5
 		{
 			if (comboBox != null)
 			{
-				comboBox.UpdateSelectionSupressEvents(Helpers.EfficiencySelectItems.GetIndex(Helpers.StoresSettings, key, 2));
+				comboBox.UpdateSelectionSupressEvents(Helpers.EfficiencySelectItems.GetIndex(Helpers.StoresSettings, key));
 			}
 		}
 
@@ -318,7 +318,7 @@ namespace Trainer_v5
 			settingsCells.Add(labelCell);
 			var comboBox = UIHelper.CreateComboBox(
 				selectableItems: efficiencySelectItems,
-				selection: efficiencySelectItems.GetIndex(storesSettings, key, 2)
+				selection: efficiencySelectItems.GetIndex(storesSettings, key)
 			);
 			comboBox.OnSelectedChanged.AddListener(() => storesSettings.Set(key, efficiencySelectItems.GetAt(comboBox.Selected).Value));
 			settingsCells.Add(comboBox.gameObject);

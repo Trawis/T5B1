@@ -3,17 +3,33 @@ using OrbCreationExtensions;
 
 namespace Trainer_v5
 {
+	// The only settings accessors. Feature and UI code passes a ToggleKey or StoreKey; the string overloads exist for
+	// save serialization (Main), which iterates the raw save keys.
 	public static class Extensions
 	{
-		public static object Get(this Dictionary<string, object> settings, string key)
+		private static readonly HashSet<string> _loggedUnregisteredKeys;
+
+		// The game's mod loader mis-parses calls in member initializers, so it is assigned here.
+		static Extensions()
 		{
-			object value;
-			if (settings.TryGetValue(key, out value))
-			{
-				return value;
-			}
-			Helpers.LogUnregisteredKey("Get", key);
-			return null;
+			_loggedUnregisteredKeys = new HashSet<string>();
+		}
+
+		public static bool Get(this Dictionary<string, bool> settings, ToggleKey key) => settings.Get(key.Key);
+
+		public static void Set(this Dictionary<string, bool> settings, ToggleKey key, bool value) => settings.Set(key.Key, value);
+
+		public static void Toggle(this Dictionary<string, bool> settings, ToggleKey key) => settings.Set(key.Key, !settings.Get(key.Key));
+
+		public static object Get(this Dictionary<string, object> settings, StoreKey key) => settings.Get(key.Key);
+
+		public static void Set(this Dictionary<string, object> settings, StoreKey key, object value) => settings.Set(key.Key, value);
+
+		// The position of the stored value among the choices; the first choice when nothing is stored.
+		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, StoreKey key)
+		{
+			var stored = settings.Get(key);
+			return stored == null ? 0 : items.FindIndex(x => x.Value.MakeFloat() == stored.MakeFloat());
 		}
 
 		public static bool Get(this Dictionary<string, bool> settings, string key)
@@ -23,61 +39,53 @@ namespace Trainer_v5
 			{
 				return value;
 			}
-			Helpers.LogUnregisteredKey("Get", key);
+
+			LogUnregisteredKey("Get", key);
 			return false;
 		}
 
-		public static bool Get(this Dictionary<string, bool> settings, ToggleKey key) => settings.Get(key.Key);
+		public static object Get(this Dictionary<string, object> settings, string key)
+		{
+			object value;
+			if (settings.TryGetValue(key, out value))
+			{
+				return value;
+			}
 
-		public static object Get(this Dictionary<string, object> settings, StoreKey key) => settings.Get(key.Key);
+			LogUnregisteredKey("Get", key);
+			return null;
+		}
 
-		public static void Set(this Dictionary<string, object> settings, StoreKey key, object value) => settings.Set(key.Key, value);
+		public static void Set(this Dictionary<string, bool> settings, string key, bool value)
+		{
+			if (!settings.ContainsKey(key))
+			{
+				LogUnregisteredKey("Set", key);
+				return;
+			}
 
-		public static void Toggle(this Dictionary<string, bool> settings, ToggleKey key) => settings.Toggle(key.Key);
-
-		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, StoreKey key, int valueType) => items.GetIndex(settings, key.Key, valueType);
+			settings[key] = value;
+		}
 
 		public static void Set(this Dictionary<string, object> settings, string key, object value)
 		{
 			if (!settings.ContainsKey(key))
 			{
-				Helpers.LogUnregisteredKey("Set", key);
+				LogUnregisteredKey("Set", key);
 				return;
 			}
+
 			settings[key] = value;
 		}
 
-		public static void Toggle(this Dictionary<string, bool> settings, string key)
+		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
+		private static void LogUnregisteredKey(string source, string key)
 		{
-			bool value;
-			if (settings.TryGetValue(key, out value))
+			string message = string.Format("{0}: setting key '{1}' is not registered - check for a typo in the key name. Falling back to the default value.", source, key);
+			if (_loggedUnregisteredKeys.Add(message))
 			{
-				settings[key] = !value;
-			}
-			else
-			{
-				Helpers.LogUnregisteredKey("Toggle", key);
+				message.Log();
 			}
 		}
-
-		public static int GetIndex(this Dictionary<string, object> items, Dictionary<string, object> settings, string key, int valueType)
-		{
-			var stored = settings.Get(key);
-			switch (valueType)
-			{
-				case 1:
-					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeInt() == stored.MakeInt());
-				case 2:
-					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeFloat() == stored.MakeFloat());
-				case 3:
-					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeString() == stored.MakeString());
-				case 4:
-					return stored == null ? 0 : items.FindIndex(x => x.Value.MakeBool() == stored.MakeBool());
-				default:
-					"Method GetIndex received an unknown value type as parameter".Log();
-					return -1;
-			}
-		}
-
 	}
 }

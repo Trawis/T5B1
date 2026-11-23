@@ -131,7 +131,7 @@ namespace Trainer_v5
 
 		internal static void ApplyLeadEfficiencyStore()
 		{
-			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.LeadEfficiencyStore).MakeFloat();
+			float value = Helpers.StoresSettings.Get(SettingKeys.LeadEfficiencyStore).MakeFloat();
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
@@ -144,7 +144,7 @@ namespace Trainer_v5
 
 		internal static void ApplyEfficiencyStore()
 		{
-			float value = Helpers.GetProperty(Helpers.StoresSettings, SettingKeys.EfficiencyStore).MakeFloat();
+			float value = Helpers.StoresSettings.Get(SettingKeys.EfficiencyStore).MakeFloat();
 			for (int i = 0; i < Settings.sActorManager.Actors.Count; i++)
 			{
 				Actor actor = Settings.sActorManager.Actors[i];
