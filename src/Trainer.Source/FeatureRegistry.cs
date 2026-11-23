@@ -85,7 +85,6 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "NoEducationCost", SettingKeys.NoEducationCost, CompanyFeatures.ApplyNoEducationCost);
 			Add(entries, FeatureTrigger.Disabled, "NoEducationCost", SettingKeys.NoEducationCost, CompanyFeatures.RestoreEducationCost);
 
-			// Process-wide Cheats flags: every load is a cold start, so a toggle that is on runs Enabled again after a reload.
 			Add(entries, FeatureTrigger.Enabled, "ForceLights", SettingKeys.ForceLights, () => EnvironmentFeatures.ApplyForceLights(true));
 			Add(entries, FeatureTrigger.Disabled, "ForceLights", SettingKeys.ForceLights, () => EnvironmentFeatures.ApplyForceLights(false));
 			Add(entries, FeatureTrigger.Enabled, "ShowRoomCeilings", SettingKeys.ShowRoomCeilings, () => EnvironmentFeatures.ApplyShowRoomCeilings(true));

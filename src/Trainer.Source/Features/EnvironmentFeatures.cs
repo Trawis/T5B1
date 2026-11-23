@@ -9,11 +9,9 @@ namespace Trainer_v5
 
 		private static GameSettings Settings => GameSettings.Instance;
 
-		// The game sets MaxFloor only in GameSettings' static constructor, so its own value is kept to restore in multiplayer.
 		private static bool _maxFloorCaptured;
 		private static int _gameMaxFloor;
 
-		// The game reads it while rooms load, before the scheduler's readiness gate, so TrainerBehaviour calls this every frame.
 		internal static void ApplyMaxFloor()
 		{
 			if (!_maxFloorCaptured)
@@ -25,7 +23,6 @@ namespace Trainer_v5
 			GameSettings.MaxFloor = MultiplayerRule.Active ? _gameMaxFloor : Constants.MAX_FLOOR;
 		}
 
-		// The game reads these flags directly, so they are set on the toggle's transitions rather than polled.
 		internal static void ApplyForceLights(bool enabled)
 		{
 			Cheats.ForceLights = enabled;
