@@ -6,9 +6,14 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
-		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
+		private static readonly PrinterSpeedBaselines _printerSpeeds;
 
-		internal static string ProductNameInput;
+		internal static string ProductNameInput { get; set; }
+
+		static ProductFeatures()
+		{
+			_printerSpeeds = new PrinterSpeedBaselines();
+		}
 
 		private static GameSettings Settings => GameSettings.Instance;
 
