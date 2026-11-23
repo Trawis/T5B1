@@ -7,49 +7,27 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeDemandChangeWindow
+	internal class EmployeeDemandChangeWindow : SingleEmployeeEditor
 	{
 		private static readonly Lazy<EmployeeDemandChangeWindow> _instance = new Lazy<EmployeeDemandChangeWindow>(() => new EmployeeDemandChangeWindow());
-		private GUIWindow _window;
 		private Dictionary<LeadDesignDemands.Demand, Toggle> _demandToggles;
-		private EmployeeTarget _target;
-		private bool _isRefreshing;
 
 		public static EmployeeDemandChangeWindow Instance => _instance.Value;
 
-		public void Show()
+		protected override string Title(string employee)
 		{
-			if (EmployeeTarget.RequireOne() == null)
-				return;
-
-			if (_window == null)
-				CreateWindow();
-			else
-				_window.Toggle();
-			Refresh();
+			return SharedMessages.EditDemandsTitle(employee);
 		}
 
-		public void Refresh()
+		protected override void ShowEmployee(Employee employee)
 		{
-			var window = _window;
-			TargetSource source;
-			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
-				return;
-
-			var employee = _target?.Employee;
-
-			window.SetTitle(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(_target, source)));
-
-			_isRefreshing = true;
 			foreach (var pair in _demandToggles)
 			{
-				var isOn = employee?.HasDemanded(pair.Key) ?? false;
-				pair.Value.isOn = isOn;
+				pair.Value.isOn = employee != null && employee.HasDemanded(pair.Key);
 			}
-			_isRefreshing = false;
 		}
 
-		private void CreateWindow()
+		protected override GUIWindow CreateWindow()
 		{
 			var self = this;
 			var window = UIHelper.SpawnWindow(SharedMessages.EditDemandsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditDemands", "EditDemandsPanel");
@@ -68,22 +46,15 @@ namespace Trainer_v5.Window
 
 			window.SetMinSize(Constants.SECOND_COLUMN - 1, UIHelper.GetColumnWindowHeight(height, 0, 0));
 
-			_window = window;
 			_demandToggles = demands;
+			return window;
 		}
 
 		private void ToggleDemand(LeadDesignDemands.Demand demand, bool on)
 		{
-			if (_isRefreshing)
+			var employee = EditableEmployee();
+			if (employee == null)
 				return;
-
-			if (_target == null || !_target.IsStillValid())
-			{
-				if (!_isRefreshing)
-					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
-				return;
-			}
-			var employee = _target.Employee;
 
 			var choice = LeadDesignDemands.GetChoice(demand);
 			if (choice == null)

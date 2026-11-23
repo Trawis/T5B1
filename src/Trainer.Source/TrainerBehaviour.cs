@@ -125,6 +125,9 @@ namespace Trainer_v5
 		{
 			SettingsWindow.Reset();
 			EmployeeSkillChangeWindow.Reset();
+			EmployeeTraitChangeWindow.Instance.Reset();
+			EmployeeDemandChangeWindow.Instance.Reset();
+			EmployeeLeadSpecChangeWindow.Instance.Reset();
 			EmployeeFeatures.ResetSpecializations();
 			MarketFeatures.ResetGameState();
 			ProductFeatures.ResetGameState();

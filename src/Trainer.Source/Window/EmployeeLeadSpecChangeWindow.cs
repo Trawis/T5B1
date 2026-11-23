@@ -7,51 +7,29 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeLeadSpecChangeWindow
+	internal class EmployeeLeadSpecChangeWindow : SingleEmployeeEditor
 	{
 		private static readonly Lazy<EmployeeLeadSpecChangeWindow> _instance = new Lazy<EmployeeLeadSpecChangeWindow>(() => new EmployeeLeadSpecChangeWindow());
-		private GUIWindow _window;
 		private Dictionary<string, SoftwareType> _softwareTypes;
 		private Dictionary<string, Toggle> _specToggles;
-		private EmployeeTarget _target;
-		private bool _isRefreshing;
 
 		public static EmployeeLeadSpecChangeWindow Instance => _instance.Value;
 
-		public void Show()
+		protected override string Title(string employee)
 		{
-			if (EmployeeTarget.RequireOne() == null)
-				return;
-
-			if (_window == null)
-				CreateWindow();
-			else
-				_window.Toggle();
-			Refresh();
+			return SharedMessages.EditLeadSpecTitle(employee);
 		}
 
-		public void Refresh()
+		protected override void ShowEmployee(Employee employee)
 		{
-			var window = _window;
-			TargetSource source;
-			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
-				return;
-
-
-			var employee = _target?.Employee;
-			window.SetTitle(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(_target, source)));
-
-			_isRefreshing = true;
 			foreach (var pair in _specToggles)
 			{
 				float value;
-				var isOn = employee != null && employee.LeadSpecializationFix.TryGetValue(pair.Key, out value) && value > 0f;
-				pair.Value.isOn = isOn;
+				pair.Value.isOn = employee != null && employee.LeadSpecializationFix.TryGetValue(pair.Key, out value) && value > 0f;
 			}
-			_isRefreshing = false;
 		}
 
-		private void CreateWindow()
+		protected override GUIWindow CreateWindow()
 		{
 			var self = this;
 			var window = UIHelper.SpawnWindow(SharedMessages.EditLeadSpecTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditLeadSpec", "MainPanel");
@@ -100,14 +78,14 @@ namespace Trainer_v5.Window
 			int totalHeight = UIHelper.GetColumnWindowHeight(col1Height, col2Height, padding);
 			window.SetMinSize(totalWidth, totalHeight);
 
-			_window = window;
 			_softwareTypes = softwareTypes;
 			_specToggles = toggles;
+			return window;
 		}
 
 		private void OnToggle(string key, bool isOn)
 		{
-			if (_isRefreshing)
+			if (IsRefreshing)
 				return;
 
 			_specToggles[key].isOn = isOn;
@@ -121,12 +99,12 @@ namespace Trainer_v5.Window
 
 		private void SetLeadSpec()
 		{
-			if (_target == null || !_target.IsStillValid())
+			if (Target == null || !Target.IsStillValid())
 			{
 				Notification.ShowError(SharedMessages.SelectEmployeeFirst());
 				return;
 			}
-			var target = _target;
+			var target = Target;
 			var employee = target.Employee;
 
 			var selectTypes = _specToggles

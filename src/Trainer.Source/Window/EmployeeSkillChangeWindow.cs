@@ -6,7 +6,9 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeSkillChangeWindow : MonoBehaviour
+	// Edits several employees at once, so it does not use SingleEmployeeEditor: it has no single target to resolve,
+	// re-check or show, and its title counts the selection.
+	public static class EmployeeSkillChangeWindow
 	{
 		public static GUIWindow Window { get; set; }
 
