@@ -1,8 +1,5 @@
 namespace Trainer_v5.Window
 {
-	// The mechanics the single-employee editors share: one window, the employee it edits, and the guard that keeps the
-	// game's change events (raised when Refresh sets a toggle) from being taken as edits. Not generic: the game's compiler
-	// emits invalid IL for fields of generic classes.
 	internal abstract class SingleEmployeeEditor
 	{
 		protected GUIWindow Window;
@@ -40,13 +37,11 @@ namespace Trainer_v5.Window
 			}
 		}
 
-		// The controls are bound to one game's lists, so a new game builds the window again.
 		public void Reset()
 		{
 			Window = null;
 		}
 
-		// The employee an edit may change, or null: during a refresh, or after telling the player to refresh.
 		protected Employee EditableEmployee()
 		{
 			if (IsRefreshing)
@@ -65,7 +60,6 @@ namespace Trainer_v5.Window
 
 		protected abstract GUIWindow CreateWindow();
 
-		// Sets the controls to the employee's values; null when there is no employee to show.
 		protected abstract void ShowEmployee(Employee employee);
 	}
 }
