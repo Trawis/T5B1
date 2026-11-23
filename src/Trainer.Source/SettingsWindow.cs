@@ -300,7 +300,6 @@ namespace Trainer_v5
 			}
 		}
 
-		// The Efficiency and Lead Efficiency choices: label and multiplier; Default stores nothing.
 		private static Dictionary<string, object> EfficiencyChoices()
 		{
 			return new Dictionary<string, object>

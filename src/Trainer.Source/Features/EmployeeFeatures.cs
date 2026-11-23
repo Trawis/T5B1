@@ -11,7 +11,6 @@ namespace Trainer_v5
 		private static GameSettings Settings => GameSettings.Instance;
 		private static bool _specializationsLoaded;
 
-		// The roles the Skills editor offers, and the specializations of those roles in this game.
 		internal static readonly string[] RoleNames = { "Lead", "Service", "Programmer", "Artist", "Designer" };
 
 		internal static Dictionary<string, bool> SpecializationsList { get; private set; }

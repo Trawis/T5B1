@@ -10,10 +10,8 @@ namespace Trainer_v5.Window
 	{
 		public static GUIWindow Window { get; set; }
 
-		// The roles ticked in the editor; static so the choice survives closing the window.
 		private static readonly Dictionary<string, bool> RolesList;
 
-		// The game's mod loader mis-parses calls in member initializers, so it is assigned here.
 		static EmployeeSkillChangeWindow()
 		{
 			RolesList = new Dictionary<string, bool>();

@@ -10,12 +10,10 @@ namespace Trainer_v5
 
 		private static bool _warnedAboutPendingList;
 
-		// Hosting-deal timing: once per in-game hour window, reset per game.
 		private static bool _rewardIsGained;
 		private static bool _dealIsPushed;
 		private static readonly System.Random _random;
 
-		// The game's mod loader mis-parses calls in member initializers, so it is assigned here.
 		static MarketFeatures()
 		{
 			_random = new System.Random();

@@ -8,7 +8,6 @@ namespace Trainer_v5
 	{
 		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
 
-		// The text of the Settings window's product-name field; static so it survives a window rebuild.
 		internal static string ProductNameInput;
 
 		private static GameSettings Settings => GameSettings.Instance;
