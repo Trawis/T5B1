@@ -256,7 +256,6 @@ namespace Trainer_v5
 		private static void BuildToggles(List<GameObject>[] toggleCells, List<GameObject>[] experimentalCells)
 		{
 			var rows = SettingToggleRows.Create();
-			rows.AddRange(SettingToggleRows.CreateImmediate());
 			int regularCount = rows.Count;
 			if (ExperimentalOptions.Enabled)
 			{
@@ -284,21 +283,7 @@ namespace Trainer_v5
 				return;
 			}
 
-			var settings = Helpers.Settings;
-			settings.Toggle(key);
-			bool enabled = settings.Get(key);
-			if (key == SettingKeys.UnlimitedSubsidiaries)
-			{
-				CompanyFeatures.ApplyUnlimitedSubsidiaries(enabled);
-			}
-			else if (key == SettingKeys.ForceLights)
-			{
-				EnvironmentFeatures.ApplyForceLights(enabled);
-			}
-			else if (key == SettingKeys.ShowRoomCeilings)
-			{
-				EnvironmentFeatures.ApplyShowRoomCeilings(enabled);
-			}
+			Helpers.Settings.Toggle(key);
 		}
 
 		// Efficiency controls come first: the order PlaceSettingsPage lays them out in.

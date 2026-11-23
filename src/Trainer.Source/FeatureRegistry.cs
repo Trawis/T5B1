@@ -84,6 +84,14 @@ namespace Trainer_v5
 			Add(entries, FeatureTrigger.Enabled, "DisableFurnitureStealing", SettingKeys.DisableFurnitureStealing, EnvironmentFeatures.ApplyDisableFurnitureStealing);
 			Add(entries, FeatureTrigger.Enabled, "NoEducationCost", SettingKeys.NoEducationCost, CompanyFeatures.ApplyNoEducationCost);
 			Add(entries, FeatureTrigger.Disabled, "NoEducationCost", SettingKeys.NoEducationCost, CompanyFeatures.RestoreEducationCost);
+
+			// Process-wide Cheats flags: every load is a cold start, so a toggle that is on runs Enabled again after a reload.
+			Add(entries, FeatureTrigger.Enabled, "ForceLights", SettingKeys.ForceLights, () => EnvironmentFeatures.ApplyForceLights(true));
+			Add(entries, FeatureTrigger.Disabled, "ForceLights", SettingKeys.ForceLights, () => EnvironmentFeatures.ApplyForceLights(false));
+			Add(entries, FeatureTrigger.Enabled, "ShowRoomCeilings", SettingKeys.ShowRoomCeilings, () => EnvironmentFeatures.ApplyShowRoomCeilings(true));
+			Add(entries, FeatureTrigger.Disabled, "ShowRoomCeilings", SettingKeys.ShowRoomCeilings, () => EnvironmentFeatures.ApplyShowRoomCeilings(false));
+			Add(entries, FeatureTrigger.Enabled, "UnlimitedSubsidiaries", SettingKeys.UnlimitedSubsidiaries, () => CompanyFeatures.ApplyUnlimitedSubsidiaries(true));
+			Add(entries, FeatureTrigger.Disabled, "UnlimitedSubsidiaries", SettingKeys.UnlimitedSubsidiaries, () => CompanyFeatures.ApplyUnlimitedSubsidiaries(false));
 			Add(entries, FeatureTrigger.Enabled, "AutoResearchStart", SettingKeys.AutoResearchStart, WorkItemFeatures.ApplyAutoResearchStart);
 			Add(entries, FeatureTrigger.Enabled, "DigitalDistributionMonopol", SettingKeys.DigitalDistributionMonopol, MarketFeatures.ApplyDigitalDistributionMonopol);
 			Add(entries, FeatureTrigger.Enabled, "AutoAcceptHostingDeals", SettingKeys.AutoAcceptHostingDeals, MarketFeatures.ApplyAutoAcceptHostingDeals);

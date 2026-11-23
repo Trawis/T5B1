@@ -75,7 +75,7 @@ namespace Trainer_v5
 			Notification.Popup("AllFurnitureUnlocked".LocDef("Trainer: All furniture has been unlocked!"));
 		}
 
-		// Read directly by CompanyDetailWindow.TakeOverSub, so it is bound when the setting changes rather than polled.
+		// Read directly by CompanyDetailWindow.TakeOverSub, so it is set on the toggle's transitions rather than polled.
 		internal static void ApplyUnlimitedSubsidiaries(bool enabled)
 		{
 			Cheats.InfiniteSubs = enabled;

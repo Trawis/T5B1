@@ -16,7 +16,7 @@ those constants; `GameVersionCheckTests` fails until they match.
 | Part | Role |
 |---|---|
 | `Main` | Mod entry, Options screen, Trainer button, save data |
-| `TrainerBehaviour` | Scene and time events, toggle transitions, `Cheats.*` flags. Raises triggers; owns no feature logic |
+| `TrainerBehaviour` | Scene and time events, toggle transitions, the `MaxFloor` call. Raises triggers; owns no feature logic |
 | `FeatureRegistry`, `FeatureDispatcher`, `FeatureGuard`, `ToggleStateTracker` | Schedule, runner, error boundary, toggle-change detection |
 | `Features/*Features` | Game-state changes and one-shot actions, per domain |
 | `SettingKeys` | Every saved setting, its save key and default |
@@ -39,8 +39,10 @@ those constants; `GameVersionCheckTests` fails until they match.
 - Scheduled work waits for `Helpers.IsSimulationReady()`: game singletons
   exist, loading is done and pre-simulation has finished. Earlier events are
   dropped, not replayed.
-- `GameSettings.MaxFloor` is set before that gate, because the game reads it
-  while rooms load.
+- `GameSettings.MaxFloor` is not a registry row: the game reads it while
+  rooms load, before that gate. `EnvironmentFeatures.ApplyMaxFloor` runs
+  every frame from `Update`. It keeps the game's own value, which only the
+  game's static constructor sets, and writes it back in multiplayer.
 - Buttons call `Helpers.RequireGameReady` and tell the player when nothing
   happened.
 
@@ -57,8 +59,10 @@ Enabled/Disabled once when it changes.
 - A periodic row also has an Enabled row, so it acts as soon as it is switched
   on, unless it is listed in `FeatureRegistry.NoCatchUp`.
 - A Disabled (restore) row needs an Enabled row.
-- `Cheats.*` flags have no save backing, so they are pushed on the first frame
-  and on every transition.
+- Force Lights, Show Room Ceilings and Unlimited Subsidiaries set the game's
+  process-wide `Cheats.*` flags in Enabled and Disabled rows. A click
+  applies on the next frame. Every load is a cold start, so a toggle that is
+  on sets its flag again after a reload or a restart.
 
 `FeatureDispatcher` runs every row through `Helpers.TryExecute`. One feature is
 one error boundary: a failure does not stop other features and is
@@ -219,7 +223,8 @@ Assignments, the skips) show their own result. `ConfirmationTests` tests
   refuses F1, with `SharedMessages.NotAvailableInMultiplayer()`.
 - Toggle and setting reads go through `MultiplayerRule.IsToggleOn` and
   `IsStoreSet`, which return false. Toggles that were on run their Disabled
-  rows. `MaxFloor` and the hosting-deal repair are skipped.
+  rows. `MaxFloor` gets the game's own value back, and the hosting-deal
+  repair is skipped.
 
 The game sets `GameData.MultiplayerMode` only when a lobby starts or is
 joined. Only `MultiplayerRule` reads it.
