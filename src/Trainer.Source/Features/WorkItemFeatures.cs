@@ -608,7 +608,6 @@ namespace Trainer_v5
 					.ToList();
 		}
 
-		// The shared patent path: TryPatentNow and EndUnpatentableWork are the only callers of PatentNow.
 		private static PatentOutcome TryPatentNow(LegalWork legalWork)
 		{
 			bool patentable = CanPatentNow(legalWork);
@@ -628,8 +627,6 @@ namespace Trainer_v5
 			return PatentOutcome.Patented;
 		}
 
-		// Finished work whose tech can no longer be patented (CanPatent false): the game's PatentNow posts its "too slow" notice
-		// once, ends the work and charges nothing. An expired or owned tech keeps CanPatent and would be charged, so it stays.
 		private static bool EndUnpatentableWork(LegalWork legalWork)
 		{
 			if (legalWork.Done || legalWork.Progress < 1f || legalWork.Patent == null || legalWork.Patent.CanPatent
