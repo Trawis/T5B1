@@ -7,49 +7,27 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeTraitChangeWindow
+	internal class EmployeeTraitChangeWindow : SingleEmployeeEditor
 	{
 		private static readonly Lazy<EmployeeTraitChangeWindow> _instance = new Lazy<EmployeeTraitChangeWindow>(() => new EmployeeTraitChangeWindow());
-		private GUIWindow _window;
 		private Dictionary<Employee.Trait, Toggle> _traitsToggles;
-		private EmployeeTarget _target;
-		private bool _isRefreshing;
 
 		public static EmployeeTraitChangeWindow Instance => _instance.Value;
 
-		public void Show()
+		protected override string Title(string employee)
 		{
-			if (EmployeeTarget.RequireOne() == null)
-				return;
-
-			if (_window == null)
-				CreateWindow();
-			else
-				_window.Toggle();
-			Refresh();
+			return SharedMessages.EditTraitsTitle(employee);
 		}
 
-		public void Refresh()
+		protected override void ShowEmployee(Employee employee)
 		{
-			var window = _window;
-			TargetSource source;
-			if (!EmployeeTarget.TryResolveFor(window, out _target, out source))
-				return;
-
-			var employee = _target?.Employee;
-
-			window.SetTitle(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(_target, source)));
-
-			_isRefreshing = true;
 			foreach (var pair in _traitsToggles)
 			{
-				var isOn = employee?.HasTrait(pair.Key) ?? false;
-				pair.Value.isOn = isOn;
+				pair.Value.isOn = employee != null && employee.HasTrait(pair.Key);
 			}
-			_isRefreshing = false;
 		}
 
-		private void CreateWindow()
+		protected override GUIWindow CreateWindow()
 		{
 			var self = this;
 			var window = UIHelper.SpawnWindow(SharedMessages.EditTraitsTitle(EmployeeTarget.Describe(null, TargetSource.None)), "EditTrait", "EditTraitPanel");
@@ -93,22 +71,15 @@ namespace Trainer_v5.Window
 
 			window.SetMinSize(Constants.FOURTH_COLUMN - 1, UIHelper.GetColumnWindowHeight(UIHelper.GetColumnWindowHeight(col1Height, col2Height, 0), col3Height, 0));
 
-			_window = window;
 			_traitsToggles = traits;
+			return window;
 		}
 
 		private void ToggleTrait(Employee.Trait trait, bool on)
 		{
-			if (_isRefreshing)
+			var employee = EditableEmployee();
+			if (employee == null)
 				return;
-
-			if (_target == null || !_target.IsStillValid())
-			{
-				if (!_isRefreshing)
-					Notification.ShowError(SharedMessages.EmployeeChangedPressRefresh());
-				return;
-			}
-			var employee = _target.Employee;
 
 			var hasTrait = (employee.Traits & trait) > 0;
 			if (hasTrait != on)

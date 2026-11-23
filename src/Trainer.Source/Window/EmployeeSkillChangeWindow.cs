@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Trainer_v5.Window
 {
-	public class EmployeeSkillChangeWindow : MonoBehaviour
+	public static class EmployeeSkillChangeWindow
 	{
 		public static GUIWindow Window { get; set; }
 
