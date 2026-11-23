@@ -16,34 +16,7 @@ namespace Trainer_v5
 		public static string TrainerVersion => $"Trainer v{Version}";
 		public static string DiscordUrl => "https://discord.com/invite/J584aG";
 
-		public static Random Random { get; set; }
-		public static bool RewardIsGained { get; set; }
-		public static bool DealIsPushed { get; set; }
-		public static string ProductPriceName { get; set; }
-		public static Dictionary<string, bool> SpecializationsList { get; set; }
-
-		public static Dictionary<string, object> EfficiencySelectItems => new Dictionary<string, object>
-		{
-			{"Default", null},
-			{"100%", 1},
-			{"200%", 2},
-			{"500%", 5},
-			{"1000%", 10},
-			{"2000%", 20},
-			{"4000%", 40},
-			{"8000%", 80}
-		};
-
 		public static Dictionary<string, bool> Settings { get; private set; }
-
-		public static Dictionary<string, bool> RolesList { get; } = new Dictionary<string, bool>
-		{
-			{"Lead", false},
-			{"Service", false},
-			{"Programmer", false},
-			{"Artist", false},
-			{"Designer", false}
-		};
 
 		public static Dictionary<string, object> StoresSettings { get; private set; }
 

@@ -8,6 +8,9 @@ namespace Trainer_v5
 	{
 		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
 
+		// The text of the Settings window's product-name field; static so it survives a window rebuild.
+		internal static string ProductNameInput;
+
 		private static GameSettings Settings => GameSettings.Instance;
 
 		internal static void SellProductStock()
@@ -154,7 +157,7 @@ namespace Trainer_v5
 		private static SoftwareProduct RequireNamedProduct()
 		{
 			string error;
-			SoftwareProduct product = ResolveProductByName(Helpers.ProductPriceName, out error);
+			SoftwareProduct product = ResolveProductByName(ProductNameInput, out error);
 			if (product == null)
 			{
 				Notification.ShowError(error);
