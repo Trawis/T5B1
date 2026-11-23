@@ -6,7 +6,14 @@ namespace Trainer_v5
 {
 	internal static class ProductFeatures
 	{
-		private static readonly PrinterSpeedBaselines _printerSpeeds = new PrinterSpeedBaselines();
+		private static readonly PrinterSpeedBaselines _printerSpeeds;
+
+		internal static string ProductNameInput { get; set; }
+
+		static ProductFeatures()
+		{
+			_printerSpeeds = new PrinterSpeedBaselines();
+		}
 
 		private static GameSettings Settings => GameSettings.Instance;
 
@@ -154,7 +161,7 @@ namespace Trainer_v5
 		private static SoftwareProduct RequireNamedProduct()
 		{
 			string error;
-			SoftwareProduct product = ResolveProductByName(Helpers.ProductPriceName, out error);
+			SoftwareProduct product = ResolveProductByName(ProductNameInput, out error);
 			if (product == null)
 			{
 				Notification.ShowError(error);

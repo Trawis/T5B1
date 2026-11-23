@@ -11,6 +11,10 @@ namespace Trainer_v5
 		private static GameSettings Settings => GameSettings.Instance;
 		private static bool _specializationsLoaded;
 
+		internal static readonly string[] RoleNames = { "Lead", "Service", "Programmer", "Artist", "Designer" };
+
+		internal static Dictionary<string, bool> SpecializationsList { get; private set; }
+
 		internal static bool SpecializationsLoaded => _specializationsLoaded;
 
 		internal static void ResetAgeOfEmployees()
@@ -235,13 +239,13 @@ namespace Trainer_v5
 		// stays set: it also gates the one-time Discord popup in TrainerBehaviour.Update.
 		internal static void ResetSpecializations()
 		{
-			Helpers.SpecializationsList = null;
+			SpecializationsList = null;
 		}
 
 		// Recomputes the list for a later game; the first load of a session still belongs to TrainerBehaviour.Update.
 		internal static void RestoreSpecializationsAfterReset()
 		{
-			if (_specializationsLoaded && Helpers.SpecializationsList == null)
+			if (_specializationsLoaded && SpecializationsList == null)
 			{
 				LoadSpecializations();
 			}
@@ -249,16 +253,16 @@ namespace Trainer_v5
 
 		internal static void LoadSpecializations()
 		{
-			if (Helpers.SpecializationsList != null && Helpers.SpecializationsList.Count() > 0)
+			if (SpecializationsList != null && SpecializationsList.Count() > 0)
 			{
 				return;
 			}
 
 			var specializations = new Dictionary<string, bool>();
 
-			foreach (var role in Helpers.RolesList)
+			foreach (var role in RoleNames)
 			{
-				foreach (var specialization in Settings.GetAllSpecializations(role.Key.ToEmployeeRole()))
+				foreach (var specialization in Settings.GetAllSpecializations(role.ToEmployeeRole()))
 				{
 					if (!specializations.ContainsKey(specialization))
 					{
@@ -267,7 +271,7 @@ namespace Trainer_v5
 				}
 			}
 
-			Helpers.SpecializationsList = specializations;
+			SpecializationsList = specializations;
 
 			_specializationsLoaded = true;
 		}

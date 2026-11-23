@@ -10,6 +10,15 @@ namespace Trainer_v5
 
 		private static bool _warnedAboutPendingList;
 
+		private static bool _rewardIsGained;
+		private static bool _dealIsPushed;
+		private static readonly System.Random _random;
+
+		static MarketFeatures()
+		{
+			_random = new System.Random();
+		}
+
 		private static GameSettings Settings => GameSettings.Instance;
 
 		internal static void InstantMarketing()
@@ -43,10 +52,10 @@ namespace Trainer_v5
 
 			for (int i = 0; i < Deals.Length; i++)
 			{
-				Settings.MyCompany.MakeTransaction(Helpers.Random.Next(500, 50000), Company.TransactionCategory.Deals);
+				Settings.MyCompany.MakeTransaction(_random.Next(500, 50000), Company.TransactionCategory.Deals);
 			}
 
-			Helpers.RewardIsGained = true;
+			_rewardIsGained = true;
 		}
 
 		internal static void PushDeal()
@@ -64,7 +73,7 @@ namespace Trainer_v5
 			if (Products.Length == 0)
 				return;
 
-			int index = Helpers.Random.Next(0, Products.Length);
+			int index = _random.Next(0, Products.Length);
 			var dealExist = HUD.Instance.dealWindow.AllDeals.Values.AnyOf<ServerDeal>(x => x.Product.Name == Products[index].Name);
 			if (!dealExist)
 			{
@@ -74,7 +83,7 @@ namespace Trainer_v5
 
 				HUD.Instance.dealWindow.InsertDeal(deal);
 
-				Helpers.DealIsPushed = true;
+				_dealIsPushed = true;
 			}
 		}
 
@@ -118,13 +127,13 @@ namespace Trainer_v5
 			ApplyHostingDealCatchUp();
 
 			int inGameHour = TimeOfDay.Instance.Hour;
-			if (!Helpers.RewardIsGained && inGameHour == 12)
+			if (!_rewardIsGained && inGameHour == 12)
 			{
 				PushReward();
 			}
-			else if (inGameHour != 12 && Helpers.RewardIsGained)
+			else if (inGameHour != 12 && _rewardIsGained)
 			{
-				Helpers.RewardIsGained = false;
+				_rewardIsGained = false;
 			}
 		}
 
@@ -134,13 +143,13 @@ namespace Trainer_v5
 		{
 			int inGameHour = TimeOfDay.Instance.Hour;
 
-			if ((inGameHour == 9 || inGameHour == 15) && !Helpers.DealIsPushed)
+			if ((inGameHour == 9 || inGameHour == 15) && !_dealIsPushed)
 			{
 				PushDeal();
 			}
-			else if (inGameHour != 9 && inGameHour != 15 && Helpers.DealIsPushed)
+			else if (inGameHour != 9 && inGameHour != 15 && _dealIsPushed)
 			{
-				Helpers.DealIsPushed = false;
+				_dealIsPushed = false;
 			}
 		}
 
@@ -258,8 +267,8 @@ namespace Trainer_v5
 
 		internal static void ResetGameState()
 		{
-			Helpers.DealIsPushed = false;
-			Helpers.RewardIsGained = false;
+			_dealIsPushed = false;
+			_rewardIsGained = false;
 			_warnedAboutPendingList = false;
 		}
 

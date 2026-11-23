@@ -10,6 +10,17 @@ namespace Trainer_v5.Window
 	{
 		public static GUIWindow Window { get; set; }
 
+		private static readonly Dictionary<string, bool> RolesList;
+
+		static EmployeeSkillChangeWindow()
+		{
+			RolesList = new Dictionary<string, bool>();
+			foreach (var role in EmployeeFeatures.RoleNames)
+			{
+				RolesList[role] = false;
+			}
+		}
+
 		public static void Show()
 		{
 			if (!EmployeeTarget.RequireAny())
@@ -89,7 +100,7 @@ namespace Trainer_v5.Window
 
 		private static GameObject[] RoleToggles()
 		{
-			var rolesList = Helpers.RolesList;
+			var rolesList = RolesList;
 			return rolesList
 				.Select(role => UIFactory.Toggle(role.Key, rolesList.GetOrDefault(role.Key), a => rolesList[role.Key] = !rolesList.GetOrDefault(role.Key)).gameObject)
 				.ToArray();
@@ -115,7 +126,7 @@ namespace Trainer_v5.Window
 
 		private static GameObject[] SpecializationToggles()
 		{
-			var specs = Helpers.SpecializationsList;
+			var specs = EmployeeFeatures.SpecializationsList;
 			return specs
 				.Select(spec => UIFactory.Toggle(spec.Key, specs.GetOrDefault(spec.Key), a => specs[spec.Key] = !specs.GetOrDefault(spec.Key)).gameObject)
 				.ToArray();
@@ -135,7 +146,7 @@ namespace Trainer_v5.Window
 
 		private static List<Employee.EmployeeRole> CaptureRoles()
 		{
-			var roles = Helpers.RolesList
+			var roles = RolesList
 				.Where(r => r.Value)
 				.Select(e => e.Key.ToEmployeeRole())
 				.ToList();
@@ -151,7 +162,7 @@ namespace Trainer_v5.Window
 
 		private static List<string> CaptureSpecializations()
 		{
-			var specializations = Helpers.SpecializationsList
+			var specializations = EmployeeFeatures.SpecializationsList
 				.Where(s => s.Value)
 				.Select(s => s.Key)
 				.ToList();

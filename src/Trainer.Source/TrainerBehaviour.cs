@@ -4,7 +4,6 @@ using Trainer_v5.Experimental;
 using Trainer_v5.Window;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Random = System.Random;
 
 namespace Trainer_v5
 {
@@ -44,8 +43,6 @@ namespace Trainer_v5
 
 		private void Start()
 		{
-			Helpers.Random = new Random();
-
 			if (!isActiveAndEnabled)
 			{
 				return;

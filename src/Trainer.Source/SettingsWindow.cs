@@ -199,7 +199,7 @@ namespace Trainer_v5
 		{
 			if (comboBox != null)
 			{
-				comboBox.UpdateSelectionSupressEvents(Helpers.EfficiencySelectItems.GetIndex(Helpers.StoresSettings, key));
+				comboBox.UpdateSelectionSupressEvents(EfficiencyChoices().GetIndex(Helpers.StoresSettings, key));
 			}
 		}
 
@@ -224,8 +224,7 @@ namespace Trainer_v5
 
 		private static void BuildActions(List<GameObject>[] actionCells, List<GameObject>[] experimentalCells, List<GameObject> settingsCells)
 		{
-			// Helpers.ProductPriceName is static so the field text survives a rebuild.
-			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(Helpers.ProductPriceName, "ProductName".LocDef("Product Name Here")), boxText => Helpers.ProductPriceName = boxText));
+			actionCells[(int)TrainerDomain.Product].Add(UIHelper.CreateInputBox(SettingsWindowState.ProductNameFieldText(ProductFeatures.ProductNameInput, "ProductName".LocDef("Product Name Here")), boxText => ProductFeatures.ProductNameInput = boxText));
 
 			var rows = SettingActionRows.Create();
 			int regularCount = rows.Count;
@@ -286,6 +285,21 @@ namespace Trainer_v5
 			Helpers.Settings.Toggle(key);
 		}
 
+		private static Dictionary<string, object> EfficiencyChoices()
+		{
+			return new Dictionary<string, object>
+			{
+				{ "Default", null },
+				{ "100%", 1 },
+				{ "200%", 2 },
+				{ "500%", 5 },
+				{ "1000%", 10 },
+				{ "2000%", 20 },
+				{ "4000%", 40 },
+				{ "8000%", 80 }
+			};
+		}
+
 		// Efficiency controls come first: the order PlaceSettingsPage lays them out in.
 		private static void BuildEfficiency(List<GameObject> settingsCells)
 		{
@@ -296,7 +310,7 @@ namespace Trainer_v5
 		private static GUICombobox AddEfficiencyRow(List<GameObject> settingsCells, string label, StoreKey key)
 		{
 			var storesSettings = Helpers.StoresSettings;
-			var efficiencySelectItems = Helpers.EfficiencySelectItems;
+			var efficiencySelectItems = EfficiencyChoices();
 
 			var labelCell = UIHelper.CreateLabel(label);
 			labelCell.GetComponent<Text>().alignment = TextAnchor.MiddleLeft;
