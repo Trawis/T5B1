@@ -16,12 +16,12 @@ namespace Trainer_v5
 
 		internal static bool IsToggleOn(ToggleKey key)
 		{
-			return ActsOn(Helpers.GetProperty(Helpers.Settings, key), Active);
+			return ActsOn(Helpers.Settings.Get(key), Active);
 		}
 
 		internal static bool IsStoreSet(StoreKey key)
 		{
-			return ActsOn(Helpers.GetProperty(Helpers.StoresSettings, key) != null, Active);
+			return ActsOn(Helpers.StoresSettings.Get(key) != null, Active);
 		}
 
 		// True when the click was refused.

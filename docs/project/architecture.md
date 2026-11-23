@@ -101,7 +101,9 @@ recorded original, or values the game rewrites at an unknown time.
 Settings are stored in the save game by `Main.Serialize` and `Deserialize`.
 
 - Each setting is declared once in `SettingKeys`. Code uses `SettingKeys.X`,
-  never a string, so a typo fails to compile.
+  never a string, so a typo fails to compile. The accessors in `Extensions`
+  (`Get`, `Set`, `Toggle`, `GetIndex`) are the only ones; their string
+  overloads are for `Main`'s save serialization.
 - **The key string is the save key. Never rename or reuse it.** Changing it
   resets that setting for every player.
 - `ToggleKey` and `StoreKey` are not generic, because the game's compiler emits

@@ -7,7 +7,6 @@ namespace Trainer_v5
 	public static class Helpers
 	{
 		// Keys already reported as unregistered, so a typo'd key hit every frame logs once. Shared with Extensions.
-		private static readonly HashSet<string> _loggedUnregisteredKeys;
 
 		private static readonly FeatureGuard _featureGuard;
 
@@ -52,7 +51,6 @@ namespace Trainer_v5
 		{
 			Settings = SettingKeys.CreateToggleDefaults();
 			StoresSettings = SettingKeys.CreateStoreDefaults();
-			_loggedUnregisteredKeys = new HashSet<string>();
 			_featureGuard = new FeatureGuard(
 				() => UnityEngine.Time.realtimeSinceStartup,
 				(featureId, ex) =>
@@ -63,52 +61,6 @@ namespace Trainer_v5
 		}
 
 		#region methods
-
-		public static bool GetProperty(Dictionary<string, bool> properties, string key)
-		{
-			bool value;
-			if (properties.TryGetValue(key, out value))
-			{
-				return value;
-			}
-			LogUnregisteredKey("GetProperty", key);
-			return false;
-		}
-
-		public static object GetProperty(Dictionary<string, object> properties, string key)
-		{
-			object value;
-			if (properties.TryGetValue(key, out value))
-			{
-				return value;
-			}
-			LogUnregisteredKey("GetProperty", key);
-			return null;
-		}
-
-		public static bool GetProperty(Dictionary<string, bool> properties, ToggleKey key) => GetProperty(properties, key.Key);
-
-		public static object GetProperty(Dictionary<string, object> properties, StoreKey key) => GetProperty(properties, key.Key);
-
-		public static void SetProperty(Dictionary<string, bool> properties, string key, bool value)
-		{
-			if (!properties.ContainsKey(key))
-			{
-				LogUnregisteredKey("SetProperty", key);
-				return;
-			}
-			properties[key] = value;
-		}
-
-		public static void SetProperty(Dictionary<string, object> properties, string key, object value)
-		{
-			if (!properties.ContainsKey(key))
-			{
-				LogUnregisteredKey("SetProperty", key);
-				return;
-			}
-			properties[key] = value;
-		}
 
 		public static bool TryExecute(string featureId, Action action) => _featureGuard.TryExecute(featureId, action);
 
@@ -122,16 +74,6 @@ namespace Trainer_v5
 			else
 			{
 				Notification.ShowInfo(message);
-			}
-		}
-
-		// A key missing here was never registered (a typo); a registered key absent from an old save never reaches these accessors.
-		internal static void LogUnregisteredKey(string source, string key)
-		{
-			string message = $"{source}: setting key '{key}' is not registered - check for a typo in the key name. Falling back to the default value.";
-			if (_loggedUnregisteredKeys.Add(message))
-			{
-				message.Log();
 			}
 		}
 
