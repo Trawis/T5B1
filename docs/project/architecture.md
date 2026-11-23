@@ -243,8 +243,10 @@ game shows.
   `NoteFiring` itself and runs only when that lawsuit is impossible
   (employed 12 months or less, or `ComplaintLevel` at most 1).
 - `PatentNow` charges without checking funds, even when the patent does not
-  transfer. Only `TryPatentNow` calls it, after checking funds, expiry and
-  ownership.
+  transfer, unless the tech can no longer be patented: then it ends the work
+  with the game's notice for free. Only `TryPatentNow` (after checking
+  funds, expiry and ownership) and `EndUnpatentableWork` (finished work
+  whose tech cannot be patented) call it.
 - Research the market has passed is cancelled only while someone works on
   it, and finishing a year the company already has clears that tech's
   `CanPatent`. Only `TryFinishResearchNow` finishes research early, and it

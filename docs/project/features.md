@@ -75,7 +75,7 @@ settings act as off; toggles that undo their changes do so.
 | Auto Design End | Promotes finished design documents |
 | Auto Contract Progression | Promotes contract work after design and development; QA and release stay manual |
 | Auto Research End | Finishes research and files patents |
-| Auto Patent End | Files finished patent work like Instant Patent; skipped work is retried every minute |
+| Auto Patent End | Files finished patent work like Instant Patent; skipped work is retried every minute. Finished work whose tech can no longer be patented is ended with the game's notice, at no cost |
 | Auto Porting | Advances your active porting work |
 | Disable Force Pause / Disable Force Freeze | The game does not force-pause / force-freeze |
 | Digital Distribution Monopol | Shuts down rival distribution platforms |
