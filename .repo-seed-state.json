@@ -16,7 +16,7 @@
     ".agents/guidelines/issues.md": "4bb8d4613b3d87e07c86d7a1cae8ec65e279bca4eed063f368caa40392f9a717",
     ".agents/skills/architecture-review/NOTICE.md": "ac4372acc9bbfe66a591c668d0094b64a6754dd18359684dbbd2f172201d72d7",
     ".agents/skills/architecture-review/SKILL.md": "8dde52b834fb6212f3522d89439ad5d4f85cebde5f627e6d165ea4382ecb1924",
-    ".agents/skills/bug-fix/SKILL.md": "dc57d28b248cd5040e4dea4c1541f3e82da95e070645f96f2f1f236611882f91",
+    ".agents/skills/bug-fix/SKILL.md": "dc3e9d636be3a8d7cacbb0c0c4f7fc7d1f37209d9f8fcb637e55e3784b9eb13a",
     ".agents/skills/code-review/SKILL.md": "693b46fca5de1e96a9fec487aabb42aa2e084a2c114ea93cb23da693b275c9d3",
     ".agents/skills/code-simplification/NOTICE.md": "f3f0e5c4c8e3882858f398f196d444b5ff06e794da902055eb6000a12386dc6a",
     ".agents/skills/code-simplification/SKILL.md": "133691516bc81222a1cbfd25aae52cb48806c794532999d894a5aaa9d7b8cfeb",
@@ -33,7 +33,7 @@
     ".agents/skills/test-driven-development/SKILL.md": "ff7e8e6dd7ddeb9b53990c06bbd10693ad7fc968e16d49aef4ed206d4e1e48bd",
     ".claude/skills/architecture-review/NOTICE.md": "ac4372acc9bbfe66a591c668d0094b64a6754dd18359684dbbd2f172201d72d7",
     ".claude/skills/architecture-review/SKILL.md": "8dde52b834fb6212f3522d89439ad5d4f85cebde5f627e6d165ea4382ecb1924",
-    ".claude/skills/bug-fix/SKILL.md": "dc57d28b248cd5040e4dea4c1541f3e82da95e070645f96f2f1f236611882f91",
+    ".claude/skills/bug-fix/SKILL.md": "dc3e9d636be3a8d7cacbb0c0c4f7fc7d1f37209d9f8fcb637e55e3784b9eb13a",
     ".claude/skills/code-review/SKILL.md": "693b46fca5de1e96a9fec487aabb42aa2e084a2c114ea93cb23da693b275c9d3",
     ".claude/skills/code-simplification/NOTICE.md": "f3f0e5c4c8e3882858f398f196d444b5ff06e794da902055eb6000a12386dc6a",
     ".claude/skills/code-simplification/SKILL.md": "133691516bc81222a1cbfd25aae52cb48806c794532999d894a5aaa9d7b8cfeb",
@@ -65,7 +65,7 @@
     "docs/templates/tsd.template.md": "e5458fc3eab8778c6648f62a28ddb6e237c06bbf83191be02d09c7e165cf2c90",
     "scripts/sync-docs.py": "ea495410a22e22a12bf3db861483b21938de61839ec1c40b7e2086e80ab6f6c6"
   },
-  "pack_version": "6.0.2",
+  "pack_version": "6.0.3",
   "profile": "library",
   "schema_version": 2,
   "tombstones": {}
