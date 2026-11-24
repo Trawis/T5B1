@@ -1,6 +1,6 @@
 ---
 name: bug-fix
-description: Diagnoses and fixes incorrect existing behavior with a root-cause-first workflow and regression validation. Use when asked to fix a bug, regression, crash, failing edge case, incorrect result, or reproducible test failure.
+description: Diagnoses and fixes incorrect existing behavior with a root-cause-first workflow and regression validation. Use when asked to fix a bug, regression, crash, failing edge case, incorrect result, visual defect, or reproducible test failure.
 ---
 
 # Bug Fix
@@ -15,7 +15,8 @@ repository provides for the affected code.
    on this bug: an existing or new failing test, a focused command against a
    fixture, a captured input replayed in isolation, a differential run of two
    versions, or a concrete traced failure path when execution is unavailable.
-   It must assert the reported symptom, not merely "runs without error".
+   For a visual defect, a capture of the wrong state can be that signal. The
+   loop must assert the reported symptom, not merely "runs without error".
    Run it once and keep its output.
 2. Make the loop trustworthy: confirm it shows the symptom the user described
    rather than a nearby failure, make it deterministic (pin time and seeds,
@@ -45,6 +46,30 @@ repository provides for the affected code.
     relevant broader validation. Remove temporary debug output and throwaway
     harnesses.
 
+## Visual Defects
+
+A visual defect is a wrong rendered result: overlapping or clipped layout,
+misplaced or missing elements, wrong colors, or an incorrect state on screen.
+Treat it as incorrect behavior, not as a cosmetic detail.
+
+- Use the evidence the report already carries, such as screenshots, annotations,
+  recordings, and reproduction steps, to establish both the reported symptom and
+  the expected behavior. Ask for the viewport size, resolution, zoom, theme, and
+  application state when a missing detail changes the result.
+- Reproduce the defect before changing code, and compare before and after under
+  the same conditions: viewport, resolution, zoom, theme, data, and state. A
+  capture taken at another size or state is not evidence that the defect is
+  fixed.
+- A successful build or a passing test that never renders the affected view does
+  not show that a visual defect is corrected. If the only available seam is too
+  shallow to render it, say so instead of adding a test that gives false
+  confidence.
+- Keep the before and after artifacts with the run and describe what changed.
+  When the result can be judged only by eye, that comparison is the validation.
+- If visual verification is impossible, for example in a headless environment or
+  without the affected device, report what was verified and what was not.
+- Non-visual fixes need no screenshots, recordings, or visual tooling.
+
 ## Investigation Rules
 
 - Do not guess at a cause because an error message appears nearby.
@@ -63,7 +88,8 @@ repository provides for the affected code.
 
 ## Completion
 
-Report the root cause, the fix, regression coverage, and validation performed.
-Name the confirmed hypothesis so later debugging benefits from it. Call out any
+Report the root cause, the fix, regression coverage, and validation performed,
+including the before and after evidence when the defect was visual. Name the
+confirmed hypothesis so later debugging benefits from it. Call out any
 failure mode that could not be reproduced or any broader check that was
 unavailable.
