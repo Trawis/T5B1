@@ -40,10 +40,8 @@ Framework conventions, when selected, add to this file.
 - Avoid mutable default arguments; use `None` and create the value inside.
 - Add type hints for public functions and new code when the project uses them,
   and keep them valid for the minimum supported version.
-- Document public modules, classes, and functions with docstrings following
-  PEP 257 and the project's docstring style. State behavior, parameters,
-  return values, raised exceptions, and side effects that callers rely on.
-  Keep comments for constraints and non-obvious intent.
+- Use PEP 257 and the project's docstring style for required documentation or
+  caller-relevant contracts not evident from the signature and code.
 
 ## Errors and Resources
 
@@ -77,8 +75,7 @@ For executable scripts:
 ## Validation
 
 Run the project's configured tests, linters, and type checkers on the affected
-code. Cover pure logic, error paths, and boundaries such as the filesystem,
-network, and time. For scripts, include the failure cases in `scripts.md`.
+code. Focus on relevant behavior and risks. For scripts, see `scripts.md`.
 
 ## References
 

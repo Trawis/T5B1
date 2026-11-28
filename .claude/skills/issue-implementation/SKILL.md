@@ -42,8 +42,9 @@ areas.
    changes. If the issue prescribes an approach the repository has since
    outgrown, deliver the outcome by the current approach and report the
    difference.
-6. Add or update focused tests for the changed behavior where practical. Never
-   weaken existing validation or tests to make the issue pass.
+6. Use the smallest sufficient validation under `AGENTS.md`. Add tests only
+   when they protect meaningful behavior not already covered. Never weaken
+   meaningful existing validation to make the issue pass.
 7. Run narrow checks while working, then the validation the repository requires
    for the files changed, plus the narrowest broader checks needed for
    confidence.

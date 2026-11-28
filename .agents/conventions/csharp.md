@@ -94,18 +94,15 @@ Never put `return`, `throw`, `break`, or `continue` on the same line as the cond
 
 ## Documentation Comments
 
-- Give public types and members in libraries and shared APIs XML documentation
-  comments: `<summary>`, plus `<param>`, `<returns>`, and `<exception>` where
-  they add information. Use `<inheritdoc/>` for implementations that do not
-  change the contract.
+- Use XML documentation for required public API documentation or contracts not
+  evident from signatures and code. Use `<inheritdoc/>` when the implementation
+  does not change the contract.
 - Follow the project's documentation settings, such as
   `GenerateDocumentationFile` and CS1591 warnings. Do not add comments that
   only restate member names.
 
-## Comments and Tests
+## Tests
 
-- Comment intent, constraints, tradeoffs, and non-obvious behavior, not obvious code.
-- Add focused tests for changed behavior, validation, mappings, parsing, and edge cases.
 - Keep tests deterministic. Report flaky or unavailable tests; do not hide them.
 - Validate with `dotnet build` and `dotnet test`, or the project's build
   scripts. Fix new analyzer and compiler warnings, and run `dotnet format` only

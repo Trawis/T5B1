@@ -1039,6 +1039,8 @@ def synchronize(
     scaffold_names: tuple[str, ...] = (),
     dry_run: bool = False,
     show_diff: bool = False,
+    scaffold_sync_workflow: bool = False,
+    scaffold_audit_workflow: bool = False,
 ) -> list[SyncAction]:
     source_root = source_root.expanduser().resolve()
     target_root = target_root.expanduser().resolve()
@@ -1071,10 +1073,19 @@ def synchronize(
     if scaffold_workflows:
         requested_groups.add("workflows")
 
+    requested_workflows = set()
+    if scaffold_sync_workflow:
+        requested_workflows.add("repo-seed-sync")
+    if scaffold_audit_workflow:
+        requested_workflows.add("repo-seed-audit")
     group_scaffold_assets = [
         asset
         for asset in selected
-        if asset.asset_type == "template" and asset.scaffold_group in requested_groups
+        if asset.asset_type == "template"
+        and (
+            asset.scaffold_group in requested_groups
+            or (asset.scaffold_group == "workflows" and scaffold_name(asset) in requested_workflows)
+        )
     ]
     optional_by_name = {
         scaffold_name(asset): asset
@@ -1185,6 +1196,16 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--scaffold-sync-workflow",
+        action="store_true",
+        help="Create only the optional sync pull-request caller when missing.",
+    )
+    parser.add_argument(
+        "--scaffold-audit-workflow",
+        action="store_true",
+        help="Create only the optional drift-audit caller when missing.",
+    )
+    parser.add_argument(
         "--scaffold-editorconfig",
         action="store_true",
         help="Create .editorconfig only when it is missing.",
@@ -1275,6 +1296,8 @@ def main(argv: list[str] | None = None) -> int:
             scaffold_github_templates=args.scaffold_github_templates,
             scaffold_editorconfig=args.scaffold_editorconfig,
             scaffold_workflows=args.scaffold_workflows,
+            scaffold_sync_workflow=args.scaffold_sync_workflow,
+            scaffold_audit_workflow=args.scaffold_audit_workflow,
             scaffold_names=tuple(args.scaffold_names or ()),
             dry_run=dry_run,
             show_diff=args.diff,
