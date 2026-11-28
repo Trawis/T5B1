@@ -30,8 +30,8 @@ indentation, and minimum supported Bash version.
   so use distinct names or a subshell.
 - In scripts with several functions, define them first and call
   `main "$@"` last.
-- Give a non-obvious function a short comment stating its arguments, outputs,
-  and return status.
+- Document function arguments, outputs, or return status only when the caller
+  needs information not evident from the code.
 
 ## Quoting and Arguments
 

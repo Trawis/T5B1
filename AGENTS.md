@@ -9,15 +9,13 @@ Repository-level instructions for coding agents.
 
 1. Follow the current user request.
 2. Read `.agents/project.md` when it exists.
-3. Read the nearest child `AGENTS.md` when working in its scope.
-4. Load specialized guidance only when its subject is relevant to the operation.
-5. Read project requirements or documentation only when the task refers to them,
-   they govern the affected behavior, or you need them to resolve a concrete
-   uncertainty. Do not scan `docs/project/` by default.
+3. Before editing, read applicable child `AGENTS.md` files along the affected
+   paths, including any the agent did not load automatically.
+4. Read only the specialized guidance and project requirements needed for the
+   task. Do not scan `docs/project/` by default.
 
-Precedence: user request, closest child `AGENTS.md`, `.agents/project.md`,
-this file, then supporting guidance. Report meaningful conflicts instead of
-guessing.
+Precedence: user request, applicable child instructions (closest first),
+`.agents/project.md`, this file, then supporting guidance. Report conflicts.
 
 ## Ownership and Documentation Authority
 
@@ -45,9 +43,15 @@ If a change makes project-owned documentation inaccurate, update it.
   uncertainty.
 - Make the smallest safe change that satisfies the task. Do not reformat,
   rename, or clean up unrelated code.
-- Prefer source files over generated output. Keep comments focused on
-  constraints or non-obvious intent.
-- Add or update relevant tests for behavior changes when practical.
+- Prefer source files over generated output.
+- Write self-explanatory code. Do not add comments or docstrings unless they
+  convey essential information not apparent from code or are required by the
+  project. Never invent intent. Preserve required documentation, annotations,
+  directives, and license notices.
+- Prefer existing checks or a focused smoke test. Add permanent automated tests
+  only for meaningful behavior or regression risks not already covered, or when
+  the project requires them. Do not test trivial code, prose, formatting, or
+  incidental implementation details just to increase coverage.
 - For review or diagnosis, report evidence without changing files unless a fix
   is requested.
 - Do not expose secrets or conceal failures.
@@ -60,30 +64,19 @@ If a change makes project-owned documentation inaccurate, update it.
 
 ## Specialized Guidance
 
-Use native repository skills when the agent supports them for repeatable
-workflows such as code review, bug fixing, refactoring, dependency upgrades,
-technical design, and existing-project documentation bootstrap. Skills
-supplement these instructions; they do not replace project-specific rules or
-the guidance below.
-
-Load only the additional guidance relevant to the task:
+Use relevant native repository skills when supported. Skills supplement these
+instructions. Load only guidance needed for the task:
 
 - language or script work: `.agents/conventions/`
 - Git, branches, commits, pull requests, or PR descriptions:
   `.agents/guidelines/git.md`
 - CI/CD or releases: `.agents/guidelines/ci-cd.md`
-- substantial documentation work, including creation, restructuring,
-  bootstrapping, technical designs or specifications, and significant
-  maintenance: `.agents/guidelines/documentation.md`
+- substantial documentation or technical designs: `.agents/guidelines/documentation.md`
 - issue creation, labels, issue structure, or triage:
   `.agents/guidelines/issues.md`
 
-Do not scan skill directories or supporting guidance merely because they exist.
-Agents without native skill discovery should use these core rules and load the
-guidance relevant to the task.
-
-Repository-specific rules and nearby code take precedence over managed
-conventions. Do not create or materially alter workflows, permissions,
+Do not scan skill directories. Follow nearby code where consistent with the
+applicable rules. Do not create or materially alter workflows, permissions,
 publishing, deployment, or infrastructure unless explicitly requested.
 
 When provided, explicit acceptance criteria and tickets define task scope.
@@ -99,7 +92,8 @@ check. Do not run irrelevant language or project checks.
 
 Before completion, review the final diff against the request for scope,
 correctness, applicable local conventions, ownership boundaries, and relevant
-validation. Check branch and pull-request requirements only when performing Git
+validation. Remove unnecessary added comments, docstrings, and documentation.
+Check branch and pull-request requirements only when performing Git
 or pull-request operations. Report what changed and was validated, plus
 skipped or blocked checks and remaining risks. Never claim an action or check
 succeeded unless it did.

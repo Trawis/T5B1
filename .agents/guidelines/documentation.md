@@ -31,7 +31,8 @@
   `docs/project/designs/<short-name>.md`, created from
   `docs/templates/tsd.template.md`
 
-Update only documents affected by verified behavior. Do not create documentation as busywork.
+Update only documents affected by verified behavior. Create documentation only
+when needed to use, maintain, or govern the project.
 
 `fsd.md`, `gdd.md`, `architecture.md`, and `user-guide.md` are on-demand
 documents. repo-seed offers their templates but does not scaffold them
@@ -99,25 +100,15 @@ improvements. Preserve verified project content.
 
 ## Style
 
-Documentation style:
-
-- Describe the current truth.
-- Use the shortest structure that makes the content clear.
-- Use bullets for lists, scope, requirements, constraints, and tasks.
-- Use short prose for overview, intent, product direction, or design. Do not
-  require bullets everywhere.
-- Do not narrate agent reasoning, consolidation, replacement, or redesign
-  history. Do not explain why a previous doc changed.
-- Do not write agent/process phrases such as "we decided", "this replaces",
-  "the old system", "consolidated", "tighter redesign", or "because the
-  previous version".
+- Describe verified current behavior; omit unknowns. Use concise, factual prose
+  and examples when useful. Use lists only for actual lists.
+- Do not repeat code or other authoritative documentation unless needed by
+  the reader. Link to details instead.
+- Avoid decorative formatting, emojis, unnecessary em dashes, and agent-process
+  narration. Keep historical context in changelogs or decision records.
 - Write changelog entries as short prose under a version heading, without
   category headings or bullets. Order the sentences added, changed, fixed,
   removed, skipping any that do not apply. Keep them factual: what changed,
   not the agent's reasoning.
 - Keep decision rationale only in files explicitly meant for decisions or ADRs.
-- Be concise, factual, and example-driven.
-- Link to detailed documents instead of duplicating them.
-- Keep living documents focused on current design, scope, rules, and decisions.
-- Omit unknown information rather than inventing it.
 - Preserve the repository's established formatting and punctuation.

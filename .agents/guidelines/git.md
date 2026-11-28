@@ -99,7 +99,9 @@ Create release branches, tags, and version bumps only when the task asks.
 - GitHub Flow: release from `main` by tagging it. Add a release branch only if
   the repository already uses them.
 - Use semantic versions when the project has a versioned public interface.
-  Keep the version, changelog, and tag consistent.
+  Keep the version, changelog, and tag consistent; do not reuse published
+  versions or move release tags. Follow `ci-cd.md` for artifact validation,
+  build provenance and release permissions.
 
 Before opening a PR, confirm the source and target branches still match the
 discovered model. A wrong branch family or wrong PR target is blocking.

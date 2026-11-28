@@ -33,15 +33,16 @@ files, decide ownership, handle stale paths, or migrate state by hand.
 5. Choose scaffolds as opt-in. Add each only when it is useful or requested:
    baseline project files for a repository that lacks a README or CHANGELOG,
    GitHub templates when requested, `.editorconfig` when appropriate, and
-   optional documents only when the project needs them. Add the two scheduled
-   workflows (`--scaffold-workflows`) only when the user asks for them: the
-   drift-check issue and the sync pull request, which has write permissions.
+   optional documents only when the project needs them. Add workflow callers
+   only when requested: `--scaffold-sync-workflow` for a sync pull request,
+   `--scaffold-audit-workflow` for a read-only audit that reports issues, or
+   `--scaffold-workflows` for both. Sync needs write permissions.
 6. Check what the sync would overwrite. `AGENTS.md` and `CLAUDE.md` are managed,
    so existing copies are replaced. If either holds project-specific content,
    tell the user and move that content to `.agents/project.md` first, with their
    agreement. Other project-owned files are not touched, and
-   `.github/workflows/` changes only when `--scaffold-workflows` was requested,
-   and then creates both callers.
+   `.github/workflows/` changes only when workflow scaffolding is requested,
+   and creates only missing selected callers.
 7. Run `python <pack>/files/scripts/sync-docs.py --target <repo> --profile
    <profile> --conventions <list>` plus the chosen scaffold options with
    `--dry-run`. Read every line. Stop and resolve any unexpected overwrite,

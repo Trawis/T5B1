@@ -30,19 +30,17 @@ repository provides for the affected code.
 5. Inspect the affected implementation, callers, tests, configuration, and
    recent relevant changes only as needed. Separate the root cause from
    downstream symptoms and trace bad values back to where they originate.
-6. State two or more falsifiable hypotheses, each with the prediction that would
-   confirm or reject it, before testing any. Test one variable at a time and
-   keep any temporary debug output under a unique greppable marker.
-7. Add or update a regression test when a seam exists that exercises the real
-   failure path. If the only available seam is too shallow to catch the bug,
-   say so instead of adding a test that gives false confidence. Confirm the test
-   fails for the original defect before the fix.
+6. Test plausible causes against evidence. Do not invent alternative hypotheses
+   when the cause is already established.
+7. Keep a permanent regression test only when it protects meaningful behavior
+   not already covered. Use the existing reproduction otherwise. Confirm any
+   new regression test catches the original defect.
 8. Make the smallest coherent fix at the source. Do not combine it with
    unrelated cleanup or redesign.
 9. Avoid compatibility wrappers, fallback branches, or legacy behavior unless a
    supported version, public contract, stored data format, or explicit
    requirement still needs them.
-10. Re-run the original loop and the regression test, then the narrowest
+10. Re-run the original loop and any regression test, then the narrowest
     relevant broader validation. Remove temporary debug output and throwaway
     harnesses.
 
